@@ -1,53 +1,38 @@
-import { View, Text, Image, ActivityIndicator } from "react-native";
+import { View, Text } from "react-native";
+import { WeatherType } from "../hooks/useWeather/getWeather";
+import {styles} from "../../lib/styles";
 
-export function Weather({ data, loading, error }: any) {
-    if (loading) {
-        return <ActivityIndicator />;
-    }
+type WeatherProps = {
+    data: WeatherType;
+};
 
-    if (error || !data) {
-        return <Text>Unable to load weather</Text>;
-    }
-
+export function Weather({ data}: WeatherProps) {
     const weather = data.weather[0];
 
     return (
         <View
-            style={{
-                padding: 20,
-                borderRadius: 16,
-                backgroundColor: "#111",
-                alignItems: "center",
-                gap: 8,
-                flex: 1,
-            }}
+            style={styles.hero}
         >
-            <Text style={{ color: "white", fontSize: 18 }}>
+            <Text style={{ color: "white", fontSize: 20, opacity: 0.8 }}>
                 {data.name}
             </Text>
 
-            <Image
-                source={{
-                    uri: `https://openweathermap.org/img/wn/${weather.icon}@2x.png`,
-                }}
-                style={{ width: 80, height: 80 }}
-            />
-
-            <Text style={{ color: "white", fontSize: 42 }}>
+            <Text style={{ color: "white", fontSize: 64, fontWeight: "200" }}>
                 {Math.round(data.main.temp)}°
             </Text>
 
-            <Text style={{ color: "#ccc" }}>
+            <Text style={{ color: "#ddd", fontSize: 16 }}>
                 {weather.description}
             </Text>
 
-            <Text style={{ color: "#aaa" }}>
-                Feels like {Math.round(data.main.feels_like)}°
-            </Text>
-
-            <Text style={{ color: "#888" }}>
-                Wind {Math.round(data.wind.speed)} km/h
-            </Text>
+            <View style={{ marginTop: 16, gap: 6 }}>
+                <Text style={{ color: "#aaa" }}>
+                    Wind {Math.round(data.wind.speed)} km/h
+                </Text>
+                <Text style={{ color: "#aaa" }}>
+                    Humidity {data.main.humidity}%
+                </Text>
+            </View>
         </View>
     );
 }

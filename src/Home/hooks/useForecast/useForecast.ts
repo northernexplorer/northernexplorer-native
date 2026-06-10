@@ -1,52 +1,17 @@
 import { useEffect, useState } from "react";
-import {requestForegroundPermissionsAsync, getCurrentPositionAsync} from "expo-location";
-import {Forecast, getForecast} from "./getForecast";
+import { getForecast, type ForecastType } from "./getForecast";
 
-export function useForecast() {
-    const [data, setData] = useState<Forecast | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+export function useForecast(lat?: number, lon?: number) {
+    const [data, setData] = useState<ForecastType | null>(null);
 
     useEffect(() => {
-        let mounted = true;
+        if (lat == null || lon == null) return;
 
         (async () => {
-            try {
-                const { status } =
-                    await requestForegroundPermissionsAsync();
-
-                if (status !== "granted") {
-                    setError("Location permission denied");
-                    return;
-                }
-
-                const location = await getCurrentPositionAsync();
-
-                const forecast = await getForecast(
-                    location.coords.latitude,
-                    location.coords.longitude,
-                );
-
-                if (mounted) {
-                    setData(forecast);
-                }
-            } catch (e) {
-                if (mounted) {
-                    setError(
-                        e instanceof Error ? e.message : "Unknown error",
-                    );
-                }
-            } finally {
-                if (mounted) {
-                    setLoading(false);
-                }
-            }
+            const forecast = await getForecast(lat, lon);
+            setData(forecast);
         })();
+    }, [lat, lon]);
 
-        return () => {
-            mounted = false;
-        };
-    }, []);
-
-    return { data, loading, error };
+    return data;
 }

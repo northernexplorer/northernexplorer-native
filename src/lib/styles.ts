@@ -1,42 +1,27 @@
-import { StyleSheet } from "react-native";
-import { Platform } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 export const styles = StyleSheet.create({
     background: {
         flex: 1,
         resizeMode: "cover",
     },
-    overlay: {
-        ...StyleSheet.absoluteFill,
-        backgroundColor: "rgba(0,0,0,0.55)",
+    hero: {
+        marginTop: 32,
+        width: "100%",
+    },
+
+    section: {
+        marginTop: 20,
+        width: "100%",
     },
     container: {
         flex: 1,
-        padding: 20,
         paddingTop: 60,
-        alignItems: "center",
+        paddingHorizontal: 20,
+    },
+    inner: {
         width: "100%",
-        maxWidth: 900, // key for web/tablet
-        alignSelf: "center",
-    },
-    brand: {
-        color: "white",
-        fontSize: 18,
-        fontWeight: "600",
-        opacity: 0.9,
-    },
-    hero: {
-        marginTop: 40,
-    },
-    tempPlaceholder: {
-        color: "rgba(255,255,255,0.6)",
-        fontSize: 84,
-        fontWeight: "200",
-    },
-    conditionPlaceholder: {
-        color: "rgba(255,255,255,0.5)",
-        fontSize: 20,
-        marginTop: 6,
+        maxWidth: 1100,
     },
     grid: {
         width: "100%",
@@ -47,39 +32,77 @@ export const styles = StyleSheet.create({
         gap: 20,
         alignItems: "stretch",
     },
-    card: {
-        flex: 1,
-        backgroundColor: "rgba(255,255,255,0.08)",
-    },
-    label: {
-        color: "rgba(255,255,255,0.5)",
-        fontSize: 12,
-    },
-    value: {
-        color: "rgba(255,255,255,0.7)",
-        fontSize: 16,
-        marginTop: 4,
-    },
-    forecast: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 40,
-    },
-    forecastItem: {
-        alignItems: "center",
-    },
-    forecastDay: {
-        color: "rgba(255,255,255,0.4)",
-    },
-    forecastTemp: {
-        color: "rgba(255,255,255,0.4)",
-        marginTop: 4,
-        fontSize: 16,
+    brand: {
+        color: "white",
+        fontSize: 18,
+        fontWeight: "600",
+        opacity: 0.9,
     },
     panel: {
         flex: 1,
         borderRadius: 20,
         padding: 16,
         backgroundColor: "rgba(0,0,0,0.6)",
-    }
+    },
+    glassCard: {
+        backgroundColor: "rgba(255,255,255,0.08)",
+        borderRadius: 24,
+        padding: 16,
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.12)",
+    },
+    city: {
+        color: "rgba(255,255,255,0.7)",
+        fontSize: 18,
+    },
+    temp: {
+        color: "white",
+        fontSize: 86,
+        fontWeight: "200",
+        letterSpacing: -2,
+    },
+    condition: {
+        color: "rgba(255,255,255,0.6)",
+        fontSize: 16,
+        marginTop: 6,
+    },
+    hourTile: {
+        width: 80,
+        padding: 12,
+        marginRight: 10,
+        borderRadius: 18,
+        backgroundColor: "rgba(255,255,255,0.06)",
+        alignItems: "center",
+    },
+
+    hourDay: {
+        color: "rgba(255,255,255,0.5)",
+        fontSize: 12,
+    },
+
+    hourTemp: {
+        color: "white",
+        fontSize: 18,
+        marginTop: 6,
+    },
+    heroSection: {
+        marginTop: 60,
+    },
+
+    forecastSection: {
+        marginTop: 30,
+        width: '100%',
+    },
+    darkOverlay: {
+        ...StyleSheet.absoluteFill,
+        backgroundColor: "rgba(0,0,0,0.35)",
+        zIndex: -1,
+        pointerEvents: "none",
+    },
+    vignette: {
+        ...StyleSheet.absoluteFill,
+        backgroundColor: "rgba(0,0,0,0.2)",
+        zIndex: -1,
+        pointerEvents: "none",
+    },
 });

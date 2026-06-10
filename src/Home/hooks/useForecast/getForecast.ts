@@ -1,6 +1,6 @@
 const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
-export type Forecast = {
+export type ForecastType = {
     cod: string;
     message: number;
     cnt: number;
@@ -62,7 +62,7 @@ export type ForecastCity = {
 export async function getForecast(
     lat: number,
     lon: number,
-): Promise<Forecast> {
+): Promise<ForecastType> {
     const url = new URL(`${BASE_URL}/forecast`);
 
     url.searchParams.set("lat", String(lat));
@@ -74,11 +74,10 @@ export async function getForecast(
     url.searchParams.set("units", "metric");
 
     const res = await fetch(url.toString());
-    console.log(res);
 
     if (!res.ok) {
         throw new Error(`Forecast fetch failed: ${res.status}`);
     }
 
-    return res.json() as Promise<Forecast>;
+    return res.json() as Promise<ForecastType>;
 }

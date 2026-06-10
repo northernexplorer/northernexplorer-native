@@ -1,6 +1,6 @@
 const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
-export type Weather = {
+export type WeatherType = {
     coord: {
         lon: number;
         lat: number;
@@ -48,7 +48,7 @@ export type Weather = {
 export async function getWeather(
     lat: number,
     lon: number,
-): Promise<Weather> {
+): Promise<WeatherType> {
     const url = new URL(`${BASE_URL}/weather`);
 
     url.searchParams.set("lat", String(lat));
