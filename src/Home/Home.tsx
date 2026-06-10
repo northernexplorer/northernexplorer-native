@@ -1,23 +1,32 @@
-import { View } from "react-native";
-import { Text, Card } from "react-native-paper";
+import { ImageBackground, View } from "react-native";
+import { Text } from "react-native-paper";
+import { styles } from "../lib/styles";
+import { Weather } from "./components/Weather";
+import { Forecast } from "./components/Forecast";
+import { useWeather } from "./hooks/useWeather";
+import { useForecast } from "./hooks/useForecast";
 
 export function Home() {
-    return (
-        <View style={{ flex: 1, justifyContent: "center", padding: 20 }}>
-            <Card>
-                <Card.Content>
-                    <Text variant="headlineLarge" style={{ textAlign: "center" }}>
-                        Northern Explorer
-                    </Text>
+    const weather = useWeather();
+    const forecast = useForecast();
 
-                    <Text
-                        variant="bodyMedium"
-                        style={{ textAlign: "center", marginTop: 10 }}
-                    >
-                        Discover nature, wildlife, and remote places.
-                    </Text>
-                </Card.Content>
-            </Card>
-        </View>
+    return (
+        <ImageBackground
+            source={{
+                uri: "https://images.unsplash.com/photo-1501630834273-4b5604d2ee31",
+            }}
+            style={styles.background}
+        >
+            <View style={styles.overlay} />
+
+            <View style={styles.container}>
+                <Text style={styles.brand}>Northern Explorer</Text>
+
+                <View style={styles.grid}>
+                    <Weather {...weather} />
+                    <Forecast {...forecast} />
+                </View>
+            </View>
+        </ImageBackground>
     );
 }
