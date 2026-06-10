@@ -5,7 +5,7 @@ import { Forecast } from "./components/Forecast";
 import { useLocation } from "./hooks/useLocation";
 import { useWeather } from "./hooks/useWeather";
 import { useForecast } from "./hooks/useForecast";
-import { getWeatherTheme } from "./lib/getWeatherTheme";
+import { getWeatherTheme } from "../lib/getWeatherTheme";
 import { Sidebar } from "./components/Sidebar";
 
 export function Home() {

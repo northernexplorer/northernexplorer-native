@@ -2,6 +2,8 @@ import {Animated, Text, View} from "react-native";
 import {ForecastEntry, ForecastType} from "../hooks/useForecast/getForecast";
 import ScrollView = Animated.ScrollView;
 import {styles} from "../../lib/styles";
+import {getWeatherIcon} from "../../lib/getWeatherIcon";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
 
 type ForecastProps = {
     data: ForecastType;
@@ -22,19 +24,31 @@ export function Forecast({ data }: ForecastProps) {
 
     return (
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {daily.map((f) => (
-                <View key={f.dt} style={styles.hourTile}>
-                    <Text style={styles.hourDay}>
-                        {new Date(f.dt * 1000).toLocaleDateString("en-CA", {
-                            weekday: "short",
-                        })}
-                    </Text>
+            {daily.map((f) => {
+                const iconCode = f.weather?.[0]?.icon ?? "03d";
+                const iconName = getWeatherIcon(iconCode);
 
-                    <Text style={styles.hourTemp}>
-                        {Math.round(f.main.temp)}°
-                    </Text>
-                </View>
-            ))}
+                return (
+                    <View key={f.dt} style={styles.hourTile}>
+                        <Text style={styles.hourDay}>
+                            {new Date(f.dt * 1000).toLocaleDateString("en-CA", {
+                                weekday: "short",
+                            })}
+                        </Text>
+
+                        <MaterialCommunityIcons
+                            name={iconName}
+                            size={28}
+                            color="#fff"
+                            style={{ marginVertical: 8 }}
+                        />
+
+                        <Text style={styles.hourTemp}>
+                            {Math.round(f.main.temp)}°
+                        </Text>
+                    </View>
+                );
+            })}
         </ScrollView>
     );
 }
