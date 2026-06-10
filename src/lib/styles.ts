@@ -32,12 +32,6 @@ export const styles = StyleSheet.create({
         gap: 20,
         alignItems: "stretch",
     },
-    brand: {
-        color: "white",
-        fontSize: 18,
-        fontWeight: "600",
-        opacity: 0.9,
-    },
     panel: {
         flex: 1,
         borderRadius: 20,

@@ -39,8 +39,6 @@ export function Home() {
                         styles.main,
                     ]}
                 >
-                    <Text style={styles.brand}>Northern Explorer</Text>
-
                     {weather && (
                         <View style={styles.heroSection}>
                             <Weather data={weather} />
