@@ -105,4 +105,22 @@ export const styles = StyleSheet.create({
         zIndex: -1,
         pointerEvents: "none",
     },
+    page: {
+        flex: 1,
+        flexDirection: Platform.OS === "web" ? "row" : "column",
+    },
+    main: {
+        flex: 1,
+        paddingTop: 60,
+        paddingHorizontal: 20,
+    },
+    sidebar: {
+        width: Platform.OS === "web" ? 320 : "100%",
+        padding: 20,
+
+        borderTopWidth: Platform.OS === "web" ? 0 : 1,
+        borderLeftWidth: Platform.OS === "web" ? 1 : 0,
+
+        borderColor: "rgba(255,255,255,0.1)",
+    },
 });
