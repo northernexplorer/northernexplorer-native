@@ -1,4 +1,4 @@
-import { ImageBackground, View, Text, ScrollView, useWindowDimensions } from "react-native";
+import { ImageBackground, View, ScrollView, useWindowDimensions } from "react-native";
 import { styles } from "../lib/styles";
 import { Weather } from "./components/Weather";
 import { Forecast } from "./components/Forecast";

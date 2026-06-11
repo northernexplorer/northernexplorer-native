@@ -68,37 +68,37 @@ export function getWeatherTheme(main: string): WeatherTheme {
             return {
                 overlay: "rgba(0,0,0,0.45)",
                 tint: "#7f8c8d",
-                image: "https://images.unsplash.com/photo-1499346030926-9a72daac6c63",
+                image: "images/dust.png",
             };
         case "fog":
             return {
                 overlay: "rgba(0,0,0,0.45)",
                 tint: "#7f8c8d",
-                image: "https://images.unsplash.com/photo-1499346030926-9a72daac6c63",
+                image: "images/fog.png",
             };
         case "sand":
             return {
                 overlay: "rgba(0,0,0,0.45)",
                 tint: "#7f8c8d",
-                image: "https://images.unsplash.com/photo-1499346030926-9a72daac6c63",
+                image: "images/sand.png",
             };
         case "ash":
             return {
                 overlay: "rgba(0,0,0,0.45)",
                 tint: "#7f8c8d",
-                image: "https://images.unsplash.com/photo-1499346030926-9a72daac6c63",
+                image: "images/ash.png",
             };
         case "squall":
             return {
                 overlay: "rgba(0,0,0,0.45)",
                 tint: "#7f8c8d",
-                image: "https://images.unsplash.com/photo-1499346030926-9a72daac6c63",
+                image: "images/squall.png",
             };
         case "tornado":
             return {
                 overlay: "rgba(0,0,0,0.45)",
                 tint: "#7f8c8d",
-                image: "https://images.unsplash.com/photo-1499346030926-9a72daac6c63",
+                image: "images/tornado.png",
             };
 
         default:

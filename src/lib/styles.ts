@@ -9,7 +9,6 @@ export const styles = StyleSheet.create({
         marginTop: 32,
         width: "100%",
     },
-
     section: {
         marginTop: 20,
         width: "100%",
@@ -68,12 +67,10 @@ export const styles = StyleSheet.create({
         backgroundColor: "rgba(255,255,255,0.06)",
         alignItems: "center",
     },
-
     hourDay: {
         color: "rgba(255,255,255,0.5)",
         fontSize: 12,
     },
-
     hourTemp: {
         color: "white",
         fontSize: 18,
@@ -82,7 +79,6 @@ export const styles = StyleSheet.create({
     heroSection: {
         marginTop: 60,
     },
-
     forecastSection: {
         marginTop: 30,
         width: '100%',
@@ -111,10 +107,8 @@ export const styles = StyleSheet.create({
     sidebar: {
         width: Platform.OS === "web" ? 320 : "100%",
         padding: 20,
-
         borderTopWidth: Platform.OS === "web" ? 0 : 1,
         borderLeftWidth: Platform.OS === "web" ? 1 : 0,
-
         borderColor: "rgba(255,255,255,0.1)",
     },
 });
