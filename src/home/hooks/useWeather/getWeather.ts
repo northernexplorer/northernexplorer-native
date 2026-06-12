@@ -1,5 +1,3 @@
-const BASE_URL = "https://api.openweathermap.org/data/2.5";
-
 export type WeatherType = {
     coord: {
         lon: number;
@@ -45,19 +43,27 @@ export type WeatherType = {
     name: string;
 };
 
+interface PHPWeatherResponse {
+    source: "database_cache" | "openweather_api";
+    distance_offset?: string;
+    cached_at?: string;
+    data: WeatherType;
+}
+
 export async function getWeather(
     lat: number,
     lon: number,
 ): Promise<WeatherType> {
-    const url = new URL(`${BASE_URL}/weather`);
+    const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
 
+    if (!serverUrl) {
+        throw new Error("EXPO_PUBLIC_SERVER_URL is not defined in your environment config.");
+    }
+
+    const url = new URL(`${serverUrl}/index.php`);
     url.searchParams.set("lat", String(lat));
     url.searchParams.set("lon", String(lon));
-    url.searchParams.set(
-        "appid",
-        process.env.EXPO_PUBLIC_OPENWEATHER_API_KEY ?? "",
-    );
-    url.searchParams.set("units", "metric");
+    url.searchParams.set("type", "weather");
 
     const res = await fetch(url.toString());
 
@@ -65,5 +71,11 @@ export async function getWeather(
         throw new Error(`Weather fetch failed: ${res.status}`);
     }
 
-    return res.json();
+    const json: PHPWeatherResponse = await res.json();
+
+    if (__DEV__) {
+        console.log(`[Weather] Loaded via ${json.source}. ${json.distance_offset ?? ''}`);
+    }
+
+    return json.data;
 }

@@ -1,5 +1,3 @@
-const BASE_URL = "https://api.openweathermap.org/geo/1.0";
-
 export type GeocodeLocation = {
     name: string;
     local_names?: Record<string, string>;
@@ -9,25 +7,39 @@ export type GeocodeLocation = {
     state?: string;
 };
 
+interface PHPCityResponse {
+    source: "database_cache" | "openweather_api";
+    distance_offset?: string;
+    cached_at?: string;
+    data: GeocodeLocation[];
+}
+
 export async function getCity(
     lat: number,
     lon: number,
 ): Promise<GeocodeLocation[]> {
-    const url = new URL(`${BASE_URL}/reverse`);
+    const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
 
+    if (!serverUrl) {
+        throw new Error("EXPO_PUBLIC_SERVER_URL is not defined in your environment config.");
+    }
+
+    const url = new URL(`${serverUrl}/index.php`);
     url.searchParams.set("lat", String(lat));
     url.searchParams.set("lon", String(lon));
-    url.searchParams.set("limit", "1");
-    url.searchParams.set(
-        "appid",
-        process.env.EXPO_PUBLIC_OPENWEATHER_API_KEY ?? "",
-    );
+    url.searchParams.set("type", "city");
 
     const res = await fetch(url.toString());
 
     if (!res.ok) {
-        throw new Error(`Geocoding fetch failed: ${res.status}`);
+        throw new Error(`City lookup fetch failed: ${res.status}`);
     }
 
-    return res.json() as Promise<GeocodeLocation[]>;
+    const json: PHPCityResponse = await res.json();
+
+    if (__DEV__) {
+        console.log(`[City] Loaded via ${json.source}. ${json.distance_offset ?? ''}`);
+    }
+
+    return json.data;
 }

@@ -1,5 +1,3 @@
-const BASE_URL = "https://api.openweathermap.org/data/2.5";
-
 export type ForecastType = {
     cod: string;
     message: number;
@@ -36,7 +34,7 @@ export type ForecastEntry = {
         gust?: number;
     };
     visibility: number;
-    pop: number; // probability of precipitation (0-1)
+    pop: number;
     rain?: {
         "3h"?: number;
     };
@@ -59,19 +57,27 @@ export type ForecastCity = {
     };
 };
 
+interface PHPForecastResponse {
+    source: "database_cache" | "openweather_api";
+    distance_offset?: string;
+    cached_at?: string;
+    data: ForecastType;
+}
+
 export async function getForecast(
     lat: number,
     lon: number,
 ): Promise<ForecastType> {
-    const url = new URL(`${BASE_URL}/forecast`);
+    const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
 
+    if (!serverUrl) {
+        throw new Error("EXPO_PUBLIC_SERVER_URL is not defined in your environment config.");
+    }
+
+    const url = new URL(`${serverUrl}/index.php`);
     url.searchParams.set("lat", String(lat));
     url.searchParams.set("lon", String(lon));
-    url.searchParams.set(
-        "appid",
-        process.env.EXPO_PUBLIC_OPENWEATHER_API_KEY ?? "",
-    );
-    url.searchParams.set("units", "metric");
+    url.searchParams.set("type", "forecast");
 
     const res = await fetch(url.toString());
 
@@ -79,5 +85,7 @@ export async function getForecast(
         throw new Error(`Forecast fetch failed: ${res.status}`);
     }
 
-    return res.json() as Promise<ForecastType>;
+    const json: PHPForecastResponse = await res.json();
+
+    return json.data;
 }
