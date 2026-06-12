@@ -32,10 +32,11 @@ export function useLocation() {
                 }
 
                 if (__DEV__) {
-                    console.log("[Location] Hardware permission denied. Querying IP fallback...");
+                    console.log("[Location] Hardware permission denied. Querying secure IP fallback...");
                 }
 
-                const response = await fetch("http://ip-api.com/json/?fields=status,lat,lon");
+                // 2. Secure HTTPS Fallback Layer using ipapi.co
+                const response = await fetch("https://ipapi.co/json/");
 
                 if (!response.ok) {
                     throw new Error(`IP Geolocation HTTP error: ${response.status}`);
@@ -45,13 +46,13 @@ export function useLocation() {
 
                 if (!mounted) return;
 
-                if (data && data.status === "success") {
+                if (data && typeof data.latitude === "number" && typeof data.longitude === "number") {
                     setCoords({
-                        lat: Number(data.lat),
-                        lon: Number(data.lon),
+                        lat: data.latitude,
+                        lon: data.longitude,
                     });
                 } else {
-                    console.warn("[Location] IP Geolocation lookup returned an unsuccessful status.");
+                    console.warn("[Location] IP Geolocation lookup returned unexpected properties.", data);
                 }
 
             } catch (error) {

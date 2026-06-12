@@ -38,10 +38,10 @@ export function Weather({ data}: WeatherProps) {
             </Text>
 
             <View style={{ marginTop: 16, gap: 6 }}>
-                <Text style={{ color: "#aaa" }}>
+                <Text style={styles.metric}>
                     Wind {Math.round(data.wind.speed)} km/h
                 </Text>
-                <Text style={{ color: "#aaa" }}>
+                <Text style={styles.metric}>
                     Humidity {data.main.humidity}%
                 </Text>
             </View>

@@ -37,13 +37,6 @@ export const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: "rgba(0,0,0,0.6)",
     },
-    glassCard: {
-        backgroundColor: "rgba(255,255,255,0.08)",
-        borderRadius: 24,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.12)",
-    },
     city: {
         color: "rgba(255,255,255,0.7)",
         fontSize: 18,
@@ -111,4 +104,14 @@ export const styles = StyleSheet.create({
         borderLeftWidth: Platform.OS === "web" ? 1 : 0,
         borderColor: "rgba(255,255,255,0.1)",
     },
+    heroRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+    },
+    lunarSection: {
+        width: 160,
+        marginLeft: 16,
+    },
+    metric: { color: "#aaa" }
 });

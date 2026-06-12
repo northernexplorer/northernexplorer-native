@@ -7,12 +7,15 @@ import { useWeather } from "./hooks/useWeather";
 import { useForecast } from "./hooks/useForecast";
 import { getWeatherTheme } from "../lib/getWeatherTheme";
 import { Sidebar } from "./components/Sidebar";
+import {Lunar} from "~/home/components/Lunar";
+import {useLunarCycle} from "~/home/hooks/useLunarCycle";
 
 export function Home() {
     const coords = useLocation();
     const weather = useWeather(coords?.lat, coords?.lon);
     const forecast = useForecast(coords?.lat, coords?.lon);
     const theme = weather ? getWeatherTheme(weather.weather[0].main) : null;
+    const lunar = useLunarCycle();
 
     const { width } = useWindowDimensions();
     const isMobileView = width < 768;
@@ -39,11 +42,19 @@ export function Home() {
                         styles.main,
                     ]}
                 >
-                    {weather && (
-                        <View style={styles.heroSection}>
-                            <Weather data={weather} />
-                        </View>
-                    )}
+                    <View style={styles.heroRow}>
+                        {weather && (
+                            <View style={styles.heroSection}>
+                                <Weather data={weather} />
+                            </View>
+                        )}
+
+                        {lunar && (
+                            <View style={styles.lunarSection}>
+                                <Lunar data={lunar} />
+                            </View>
+                        )}
+                    </View>
 
                     {forecast && (
                         <View style={styles.forecastSection}>
