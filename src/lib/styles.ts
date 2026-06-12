@@ -6,7 +6,6 @@ export const styles = StyleSheet.create({
         resizeMode: "cover",
     },
     hero: {
-        marginTop: 32,
         width: "100%",
     },
     section: {
@@ -69,9 +68,6 @@ export const styles = StyleSheet.create({
         fontSize: 18,
         marginTop: 6,
     },
-    heroSection: {
-        marginTop: 60,
-    },
     forecastSection: {
         marginTop: 30,
         width: '100%',
@@ -104,14 +100,38 @@ export const styles = StyleSheet.create({
         borderLeftWidth: Platform.OS === "web" ? 1 : 0,
         borderColor: "rgba(255,255,255,0.1)",
     },
+    metric: { color: "#aaa" },
     heroRow: {
         flexDirection: "row",
-        justifyContent: "space-between",
         alignItems: "flex-start",
+        gap: 32,
+        width: "100%",
+    },
+    weatherSection: {
+        flex: 1,
+        minWidth: 0,
+    },
+    quoteSection: {
+        width: 320,
+        marginHorizontal: 32,
     },
     lunarSection: {
         width: 160,
+    },
+    mobileSection: {
+        width: "100%",
+        marginHorizontal: 0,
+        marginTop: 20,
+    },
+    mobileHeroRow: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+    },
+    mobileLunarSection: {
+        width: 140,
         marginLeft: 16,
     },
-    metric: { color: "#aaa" }
+    mobileQuoteSection: {
+        marginTop: 20,
+    },
 });

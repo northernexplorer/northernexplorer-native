@@ -9,6 +9,8 @@ import { getWeatherTheme } from "../lib/getWeatherTheme";
 import { Sidebar } from "./components/Sidebar";
 import {Lunar} from "~/home/components/Lunar";
 import {useLunarCycle} from "~/home/hooks/useLunarCycle";
+import {Quote} from "~/home/components/Quote";
+import {useQuote} from "~/home/hooks/useQuote";
 
 export function Home() {
     const coords = useLocation();
@@ -16,6 +18,7 @@ export function Home() {
     const forecast = useForecast(coords?.lat, coords?.lon);
     const theme = weather ? getWeatherTheme(weather.weather[0].main) : null;
     const lunar = useLunarCycle();
+    const quote = useQuote();
 
     const { width } = useWindowDimensions();
     const isMobileView = width < 768;
@@ -42,20 +45,49 @@ export function Home() {
                         styles.main,
                     ]}
                 >
-                    <View style={styles.heroRow}>
-                        {weather && (
-                            <View style={styles.heroSection}>
-                                <Weather data={weather} />
-                            </View>
-                        )}
+                    {isMobileView ? (
+                        <>
+                            <View style={styles.mobileHeroRow}>
+                                {weather && (
+                                    <View style={styles.weatherSection}>
+                                        <Weather data={weather} />
+                                    </View>
+                                )}
 
-                        {lunar && (
-                            <View style={styles.lunarSection}>
-                                <Lunar data={lunar} />
+                                {lunar && (
+                                    <View style={styles.mobileLunarSection}>
+                                        <Lunar data={lunar} />
+                                    </View>
+                                )}
                             </View>
-                        )}
-                    </View>
 
+                            {quote && (
+                                <View style={styles.mobileQuoteSection}>
+                                    <Quote data={quote} />
+                                </View>
+                            )}
+                        </>
+                    ) : (
+                        <View style={styles.heroRow}>
+                            {weather && (
+                                <View style={styles.weatherSection}>
+                                    <Weather data={weather} />
+                                </View>
+                            )}
+
+                            {quote && (
+                                <View style={styles.quoteSection}>
+                                    <Quote data={quote} />
+                                </View>
+                            )}
+
+                            {lunar && (
+                                <View style={styles.lunarSection}>
+                                    <Lunar data={lunar} />
+                                </View>
+                            )}
+                        </View>
+                    )}
                     {forecast && (
                         <View style={styles.forecastSection}>
                             <Forecast data={forecast} />
