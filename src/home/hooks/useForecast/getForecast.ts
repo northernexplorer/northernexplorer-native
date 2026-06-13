@@ -1,3 +1,5 @@
+import {config} from "~/config";
+
 export type ForecastType = {
     cod: string;
     message: number;
@@ -68,11 +70,7 @@ export async function getForecast(
     lat: number,
     lon: number,
 ): Promise<ForecastType> {
-    const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-
-    if (!serverUrl) {
-        throw new Error("EXPO_PUBLIC_SERVER_URL is not defined in your environment config.");
-    }
+    const serverUrl = config.SERVER_URL;
 
     const url = new URL(`${serverUrl}/index.php`);
     url.searchParams.set("lat", String(lat));

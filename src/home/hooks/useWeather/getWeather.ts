@@ -1,3 +1,5 @@
+import {config} from "~/config";
+
 export type WeatherType = {
     coord: {
         lon: number;
@@ -54,11 +56,7 @@ export async function getWeather(
     lat: number,
     lon: number,
 ): Promise<WeatherType> {
-    const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-
-    if (!serverUrl) {
-        throw new Error("EXPO_PUBLIC_SERVER_URL is not defined in your environment config.");
-    }
+    const serverUrl = config.SERVER_URL;
 
     const url = new URL(`${serverUrl}/index.php`);
     url.searchParams.set("lat", String(lat));

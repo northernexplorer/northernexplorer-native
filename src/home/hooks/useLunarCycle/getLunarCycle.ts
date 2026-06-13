@@ -1,3 +1,5 @@
+import {config} from "~/config";
+
 export type LunarCyclePayload = {
     phase_fraction: number;          // Position in cycle (0.0 to 1.0)
     moon_age_days: number;           // Days since last New Moon (0 to 29.53)
@@ -7,11 +9,7 @@ export type LunarCyclePayload = {
 };
 
 export async function getLunarCycle(): Promise<LunarCyclePayload> {
-    const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-
-    if (!serverUrl) {
-        throw new Error("EXPO_PUBLIC_SERVER_URL is not defined.");
-    }
+    const serverUrl = config.SERVER_URL;
 
     const url = new URL(`${serverUrl}/index.php`);
     url.searchParams.set("type", "lunar");

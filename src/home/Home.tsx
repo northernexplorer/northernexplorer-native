@@ -1,4 +1,4 @@
-import { ImageBackground, View, ScrollView, useWindowDimensions } from "react-native";
+import {ImageBackground, View, ScrollView, useWindowDimensions, ActivityIndicator} from "react-native";
 import { styles } from "../lib/styles";
 import { Weather } from "./components/Weather";
 import { Forecast } from "./components/Forecast";
@@ -22,6 +22,28 @@ export function Home() {
 
     const { width } = useWindowDimensions();
     const isMobileView = width < 768;
+
+    const isReady =
+        coords &&
+        weather &&
+        forecast &&
+        lunar &&
+        quote;
+
+    if (!isReady) {
+        return (
+            <ImageBackground
+                source={theme?.image ? { uri: theme.image } : undefined}
+                style={styles.background}
+            >
+                <View style={styles.darkOverlay} />
+                <View style={styles.vignette} />
+                <View style={styles.page}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                </View>
+            </ImageBackground>
+        );
+    }
 
     // Use ScrollView on mobile screens to allow scrolling down to the sidebar
     const Container = isMobileView ? ScrollView : View;
@@ -48,51 +70,33 @@ export function Home() {
                     {isMobileView ? (
                         <>
                             <View style={styles.mobileHeroRow}>
-                                {weather && (
-                                    <View style={styles.weatherSection}>
-                                        <Weather data={weather} />
-                                    </View>
-                                )}
-
-                                {lunar && (
-                                    <View style={styles.mobileLunarSection}>
-                                        <Lunar data={lunar} />
-                                    </View>
-                                )}
-                            </View>
-
-                            {quote && (
-                                <View style={styles.mobileQuoteSection}>
-                                    <Quote data={quote} />
-                                </View>
-                            )}
-                        </>
-                    ) : (
-                        <View style={styles.heroRow}>
-                            {weather && (
                                 <View style={styles.weatherSection}>
                                     <Weather data={weather} />
                                 </View>
-                            )}
-
-                            {quote && (
-                                <View style={styles.quoteSection}>
-                                    <Quote data={quote} />
-                                </View>
-                            )}
-
-                            {lunar && (
-                                <View style={styles.lunarSection}>
+                                <View style={styles.mobileLunarSection}>
                                     <Lunar data={lunar} />
                                 </View>
-                            )}
+                            </View>
+                            <View style={styles.mobileQuoteSection}>
+                                <Quote data={quote} />
+                            </View>
+                        </>
+                    ) : (
+                        <View style={styles.heroRow}>
+                            <View style={styles.weatherSection}>
+                                <Weather data={weather} />
+                            </View>
+                            <View style={styles.quoteSection}>
+                                <Quote data={quote} />
+                            </View>
+                            <View style={styles.lunarSection}>
+                                <Lunar data={lunar} />
+                            </View>
                         </View>
                     )}
-                    {forecast && (
-                        <View style={styles.forecastSection}>
-                            <Forecast data={forecast} />
-                        </View>
-                    )}
+                    <View style={styles.forecastSection}>
+                        <Forecast data={forecast} />
+                    </View>
                 </View>
 
                 <View

@@ -1,3 +1,5 @@
+import {config} from "~/config";
+
 export type GeocodeLocation = {
     name: string;
     local_names?: Record<string, string>;
@@ -18,11 +20,7 @@ export async function getCity(
     lat: number,
     lon: number,
 ): Promise<GeocodeLocation[]> {
-    const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-
-    if (!serverUrl) {
-        throw new Error("EXPO_PUBLIC_SERVER_URL is not defined in your environment config.");
-    }
+    const serverUrl = config.SERVER_URL;
 
     const url = new URL(`${serverUrl}/index.php`);
     url.searchParams.set("lat", String(lat));

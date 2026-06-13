@@ -1,3 +1,5 @@
+import {config} from "~/config";
+
 export interface QuotePayload {
     source: string;
     date: string;
@@ -7,8 +9,7 @@ export interface QuotePayload {
 }
 
 export async function getQuote(): Promise<QuotePayload> {
-    const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-    if (!serverUrl) throw new Error("EXPO_PUBLIC_SERVER_URL is missing.");
+    const serverUrl = config.SERVER_URL;
 
     // Strips trailing slashes and configures the non-coordinate route parameter
     const url = new URL(`${serverUrl.replace(/\/$/, "")}/index.php`);
