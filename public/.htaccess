@@ -6,3 +6,6 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     Order allow,deny
     Deny from all
 </Files>
+
+# Send everything to index.html
+RewriteRule . /index.html [L]
