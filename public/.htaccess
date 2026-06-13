@@ -1,11 +1,18 @@
 # HTTPS Redirect
+RewriteEngine On
 RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# Block sensitive files
 <Files .env>
     Order allow,deny
     Deny from all
 </Files>
 
-# Send everything to index.html
+# IMPORTANT: Do NOT rewrite real files or folders
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# SPA fallback ONLY for routes
 RewriteRule . /index.html [L]
