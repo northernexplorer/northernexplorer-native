@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "northernexplorer-native",
+    "name": "Northern Explorer",
     "slug": "northernexplorer-native",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,14 +22,14 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-router"
-    ],
     "extra": {
       "router": {},
       "eas": {
         "projectId": "03aa8d6a-1e97-407b-b899-ca055989cd8a"
       }
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
