@@ -21,7 +21,7 @@ export function Home() {
     const quote = useQuote();
 
     const { width } = useWindowDimensions();
-    const isMobileView = width < 768;
+    const isMobileView = width < 1000;
 
     const isReady =
         coords &&
@@ -38,7 +38,7 @@ export function Home() {
             >
                 <View style={styles.darkOverlay} />
                 <View style={styles.vignette} />
-                <View style={styles.page}>
+                <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#ffffff" />
                 </View>
             </ImageBackground>

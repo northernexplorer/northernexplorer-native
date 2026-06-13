@@ -88,6 +88,11 @@ export const styles = StyleSheet.create({
         flex: 1,
         flexDirection: Platform.OS === "web" ? "row" : "column",
     },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
     main: {
         flex: 1,
         paddingTop: 60,
