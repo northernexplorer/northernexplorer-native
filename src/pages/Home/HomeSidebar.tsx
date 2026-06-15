@@ -4,7 +4,7 @@ import {useLocation} from "~/state/hooks/useLocation";
 
 export function HomeSidebar() {
     const coords = useLocation();
-    const locationName = useCity();
+    const city = useCity();
 
     return (
         <View style={{ flex: 1, padding: 20 }}>
@@ -23,7 +23,7 @@ export function HomeSidebar() {
                 }}
             >
                 <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
-                    {locationName ?? (coords ? "Locating..." : "No location selected")}
+                    {city?.name}
                 </Text>
 
                 <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>

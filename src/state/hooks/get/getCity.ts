@@ -1,6 +1,6 @@
 import {config} from "~/config";
 
-export type GeocodeLocation = {
+export type CityType = {
     name: string;
     local_names?: Record<string, string>;
     lat: number;
@@ -9,17 +9,17 @@ export type GeocodeLocation = {
     state?: string;
 };
 
-export interface CityType {
+interface CityResponse {
     source: "database_cache" | "openweather_api";
     distance_offset?: string;
     cached_at?: string;
-    data: GeocodeLocation[];
+    data: CityType[];
 }
 
 export async function getCity(
     lat: number,
     lon: number,
-): Promise<GeocodeLocation[]> {
+): Promise<CityType> {
     const serverUrl = config.SERVER_URL;
 
     const url = new URL(`${serverUrl}/index.php`);
@@ -33,11 +33,14 @@ export async function getCity(
         throw new Error(`City lookup fetch failed: ${res.status}`);
     }
 
-    const json: CityType = await res.json();
+    const json: CityResponse = await res.json();
 
     if (__DEV__) {
         console.log(`[City] Loaded via ${json.source}. ${json.distance_offset ?? ''}`);
     }
 
-    return json.data;
+    const cityDetails = json.data.at(0);
+    if(!cityDetails) throw new Error("No city found");
+
+    return cityDetails;
 }

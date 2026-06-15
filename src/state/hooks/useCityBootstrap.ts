@@ -6,34 +6,39 @@ import { getCity } from "./get/getCity";
 export function useCityBootstrap() {
     const dispatch = useAppDispatch();
     const coords = useAppSelector((s) => s.location.data);
-    const city = useAppSelector((s) => s.city.name);
+    const city = useAppSelector((s) => s.city.data);
 
     useEffect(() => {
         if (!coords) return;
-        if (city) return;
 
-        (async () => {
+        let cancelled = false;
+
+        const { lat, lon } = coords;
+
+        async function run() {
             try {
                 dispatch(setCityLoading(true));
 
-                const locations = await getCity(coords.lat, coords.lon);
+                const location = await getCity(lat, lon);
 
-                if (locations && locations.length > 0) {
-                    const place = locations[0];
+                if (cancelled) return;
 
-                    const formattedName = place.state
-                        ? `${place.name}, ${place.state}`
-                        : `${place.name}, ${place.country}`;
-
-                    dispatch(setCity(formattedName));
-                } else {
-                    dispatch(setCity("Unknown Location"));
+                dispatch(setCity(location));
+            } catch {
+                if (!cancelled) {
+                    dispatch(setCityError("Failed to resolve city"));
                 }
-            } catch (error) {
-                dispatch(setCityError("Failed to resolve city"));
             } finally {
-                dispatch(setCityLoading(false));
+                if (!cancelled) {
+                    dispatch(setCityLoading(false));
+                }
             }
-        })();
+        }
+
+        run();
+
+        return () => {
+            cancelled = true;
+        };
     }, [coords, city, dispatch]);
 }

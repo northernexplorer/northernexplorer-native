@@ -51,10 +51,12 @@ export const styles = StyleSheet.create({
     hourTile: {
         width: 80,
         padding: 12,
-        marginRight: 10,
-        borderRadius: 18,
-        backgroundColor: "rgba(255,255,255,0.06)",
         alignItems: "center",
+        justifyContent: 'center',
+        marginRight: 10,
+        backgroundColor: "rgba(255,255,255,0.06)",
+        borderRadius: 12,
+        flexShrink: 0,
     },
     hourDay: {
         color: "rgba(255,255,255,0.5)",
