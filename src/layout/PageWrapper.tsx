@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 import { styles } from "./styles";
-import {getWeatherTheme} from "~/pages/Home/lib/getWeatherTheme";
+import {getWeatherTheme} from "~/layout/getWeatherTheme";
 import {useWeather} from "~/state/hooks/weather/useWeather";
 
 interface Props {
@@ -22,9 +22,7 @@ export function PageWrapper({ Content, Sidebar, title }: Props) {
     const isMobileView = width < 1000;
 
     const weather = useWeather();
-
-    const weatherMain = weather?.weather?.[0]?.main;
-    const theme = weatherMain ? getWeatherTheme(weatherMain) : null;
+    const theme = weather ? getWeatherTheme(weather.current.condition.code) : null;
 
     return (
         <ImageBackground style={styles.background}  source={theme?.image ? { uri: theme.image } : undefined}>

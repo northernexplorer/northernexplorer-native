@@ -40,5 +40,5 @@ export function useCityBootstrap() {
         return () => {
             cancelled = true;
         };
-    }, [coords, city, dispatch]);
+    }, [coords, dispatch]);
 }

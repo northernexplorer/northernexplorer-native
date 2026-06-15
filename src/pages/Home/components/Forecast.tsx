@@ -3,35 +3,26 @@ import ScrollView = Animated.ScrollView;
 import {styles} from "~/pages/Home/lib/styles";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {getWeatherIcon} from "~/pages/Home/lib/getWeatherIcon";
-import {ForecastEntry, ForecastType} from "~/state/hooks/forecast/getForecast";
+import {ForecastType} from "~/state/hooks/forecast/getForecast";
 
 type ForecastProps = {
     data: ForecastType;
 };
 
 export function Forecast({ data }: ForecastProps) {
-    const daily = Object.values(
-        data.list.reduce((acc: Record<string, ForecastEntry>, entry: ForecastEntry) => {
-            const date = entry.dt_txt.split(" ")[0];
-
-            if (!acc[date]) {
-                acc[date] = entry;
-            }
-
-            return acc;
-        }, {} as Record<string, ForecastEntry>),
-    ).slice(0, 5);
+    const daily = data.forecast.forecastday.slice(0, 5);
 
     return (
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {daily.map((f) => {
-                const iconCode = f.weather?.[0]?.icon ?? "03d";
+                const iconCode = String(f.day.condition.code);
                 const iconName = getWeatherIcon(iconCode);
+                const localDate = new Date(f.date.replace(/-/g, "/"));
 
                 return (
-                    <View key={f.dt} style={styles.hourTile}>
+                    <View key={f.date_epoch} style={styles.hourTile}>
                         <Text style={styles.hourDay}>
-                            {new Date(f.dt * 1000).toLocaleDateString("en-CA", {
+                            {localDate.toLocaleDateString("en-CA", {
                                 weekday: "short",
                             })}
                         </Text>
@@ -43,9 +34,14 @@ export function Forecast({ data }: ForecastProps) {
                             style={{ marginVertical: 8 }}
                         />
 
-                        <Text style={styles.hourTemp}>
-                            {Math.round(f.main.temp)}°
-                        </Text>
+                        <View style={{ alignItems: "center" }}>
+                            <Text style={styles.hourTemp}>
+                                {Math.round(f.day.maxtemp_c)}°
+                            </Text>
+                            <Text style={[styles.hourTemp, { fontSize: 12, opacity: 0.6, marginTop: 2 }]}>
+                                {Math.round(f.day.mintemp_c)}°
+                            </Text>
+                        </View>
                     </View>
                 );
             })}

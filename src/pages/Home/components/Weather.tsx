@@ -1,25 +1,25 @@
 import { View, Text } from "react-native";
-import { WeatherType } from "~/state/hooks/useWeather/getWeather";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {getWeatherIcon} from "~/pages/Home/lib/getWeatherIcon";
 import {styles} from "~/pages/Home/lib/styles";
+import {WeatherType} from "~/state/hooks/weather/getWeather";
 
 type WeatherProps = {
     data: WeatherType;
 };
 
-export function Weather({ data}: WeatherProps) {
-    const weather = data.weather[0];
+export function Weather({ data }: WeatherProps) {
+    const current = data.current;
+    const condition = current?.condition;
 
-    const iconCode = weather?.icon ?? "03d";
+    const iconCode = String(condition?.code ?? 1000);
     const iconName = getWeatherIcon(iconCode);
+    console.log("Weather API real-time age:", data.current);
 
     return (
-        <View
-            style={styles.hero}
-        >
+        <View style={styles.hero}>
             <Text style={{ color: "white", fontSize: 20, opacity: 0.8 }}>
-                {data.name}
+                {data.location.name}
             </Text>
 
             <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 8, gap: 16 }}>
@@ -29,20 +29,20 @@ export function Weather({ data}: WeatherProps) {
                     color="#fff"
                 />
                 <Text style={{ color: "white", fontSize: 64, fontWeight: "200" }}>
-                    {Math.round(data.main.temp)}°
+                    {Math.round(current.temp_c)}°
                 </Text>
             </View>
 
             <Text style={{ color: "#ddd", fontSize: 16 }}>
-                {weather.description}
+                {condition?.text}
             </Text>
 
             <View style={{ marginTop: 16, gap: 6 }}>
                 <Text style={styles.metric}>
-                    Wind {Math.round(data.wind.speed)} km/h
+                    Wind {Math.round(current.wind_kph)} km/h
                 </Text>
                 <Text style={styles.metric}>
-                    Humidity {data.main.humidity}%
+                    Humidity {current.humidity}%
                 </Text>
             </View>
         </View>

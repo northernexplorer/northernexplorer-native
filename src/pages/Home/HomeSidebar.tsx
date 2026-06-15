@@ -19,11 +19,11 @@ export function HomeSidebar() {
                     paddingTop: 16,
                     borderTopWidth: 1,
                     borderTopColor: "rgba(255,255,255,0.1)",
-                    gap: 4, // Clean vertical rhythm spacing
+                    gap: 4,
                 }}
             >
                 <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
-                    {city?.name}
+                    {city?.name}, {city?.country}
                 </Text>
 
                 <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>

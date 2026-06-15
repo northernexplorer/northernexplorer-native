@@ -1,16 +1,17 @@
 import {config} from "~/config";
 
 export type CityType = {
+    id: number;
     name: string;
-    local_names?: Record<string, string>;
+    region: string;
+    country: string;
     lat: number;
     lon: number;
-    country: string;
-    state?: string;
+    url: string;
 };
 
 interface CityResponse {
-    source: "database_cache" | "openweather_api";
+    source: "database_cache" | "weatherapi_data";
     distance_offset?: string;
     cached_at?: string;
     data: CityType[];
@@ -40,7 +41,7 @@ export async function getCity(
     }
 
     const cityDetails = json.data.at(0);
-    if(!cityDetails) throw new Error("No city found");
+    if (!cityDetails) throw new Error("No city found");
 
     return cityDetails;
 }
