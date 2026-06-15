@@ -1,62 +1,65 @@
+import {AppMarkdown} from "~/layout";
+
 export function PrivacyPolicy() {
-    return (
-        <div>
-            <p>Last updated: June 13, 2026</p>
+    const PRIVACY_POLICY = `
+# Privacy Policy
 
-            <p>Northern Explorer ("we", "our", or "us") respects your privacy and is committed to protecting any information you may provide while using our application or website.</p>
+Last updated: June 13, 2026
 
-            <p>This Privacy Policy explains how we handle information when you use Northern Explorer.</p>
+Northern Explorer ("we", "our", or "us") respects your privacy and is committed to protecting any information you may provide while using our application or website.
 
-            <p><strong>1. Information We Collect</strong></p>
+This Privacy Policy explains how we handle information when you use Northern Explorer.
 
-            <p>We may collect limited information necessary to provide and improve the service. This may include:</p>
+## 1. Information We Collect
 
-            <p>- Device information (such as device type, operating system, and browser type)</p>
-            <p>- Usage data (such as pages viewed, time spent, and interactions within the app)</p>
-            <p>- Location data (only if you explicitly enable location-based features such as weather or local exploration)</p>
+We may collect limited information necessary to provide and improve the service. This may include:
 
-            <p>We do not collect personally identifiable information unless you voluntarily provide it.</p>
+- Device information (such as device type, operating system, and browser type)
+- Usage data (such as pages viewed, time spent, and interactions within the app)
+- Location data (only if you explicitly enable location-based features such as weather or local exploration)
 
-            <p><strong>2. How We Use Information</strong></p>
+We do not collect personally identifiable information unless you voluntarily provide it.
 
-            <p>We use collected information to:</p>
+## 2. How We Use Information
 
-            <p>- Improve app performance and user experience</p>
-            <p>- Provide location-based features such as weather and forecasts</p>
-            <p>- Analyze usage trends to improve content and functionality</p>
+We use collected information to:
 
-            <p><strong>3. Data Sharing</strong></p>
+- Improve app performance and user experience
+- Provide location-based features such as weather and forecasts
+- Analyze usage trends to improve content and functionality
 
-            <p>We do not sell, trade, or rent your personal information to third parties.</p>
+## 3. Data Sharing
 
-            <p>We may use trusted third-party services (such as analytics or weather providers) that process limited data strictly for service functionality.</p>
+We do not sell, trade, or rent your personal information to third parties.
 
-            <p><strong>4. Location Data</strong></p>
+We may use trusted third-party services (such as analytics or weather providers) that process limited data strictly for service functionality.
 
-            <p>If you enable location services, your location may be used to provide relevant features such as weather forecasts or nearby exploration content.</p>
+## 4. Location Data
 
-            <p>Location data is not stored or shared beyond what is required for real-time functionality.</p>
+If you enable location services, your location may be used to provide relevant features such as weather forecasts or nearby exploration content.
 
-            <p><strong>5. Data Security</strong></p>
+Location data is not stored or shared beyond what is required for real-time functionality.
 
-            <p>We take reasonable measures to protect data, but no method of transmission over the internet or electronic storage is 100% secure.</p>
+## 5. Data Security
 
-            <p><strong>6. Third-Party Services</strong></p>
+We take reasonable measures to protect data, but no method of transmission over the internet or electronic storage is 100% secure.
 
-            <p>Northern Explorer may contain links or integrations with third-party services. We are not responsible for the privacy practices of these services.</p>
+## 6. Third-Party Services
 
-            <p><strong>7. Children's Privacy</strong></p>
+Northern Explorer may contain links or integrations with third-party services. We are not responsible for the privacy practices of these services.
 
-            <p>Northern Explorer does not knowingly collect personal information from children under the age of 13.</p>
+## 7. Children's Privacy
 
-            <p><strong>8. Changes to This Policy</strong></p>
+Northern Explorer does not knowingly collect personal information from children under the age of 13.
 
-            <p>We may update this Privacy Policy from time to time. Changes will be posted within the app or website with an updated date.</p>
+## 8. Changes to This Policy
 
-            <p><strong>9. Contact</strong></p>
+We may update this Privacy Policy from time to time. Changes will be posted within the app or website with an updated date.
 
-            <p>If you have any questions about this Privacy Policy, you can contact us through the support section of the app or website.</p>
+## 9. Contact
 
-        </div>
-    );
+If you have any questions about this Privacy Policy, you can contact us through the support section of the app or website.
+`;
+
+    return <AppMarkdown content={PRIVACY_POLICY} />;
 }
