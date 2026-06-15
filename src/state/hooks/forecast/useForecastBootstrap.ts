@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "~/state/storeHooks";
-import { getForecast } from "./get/getForecast";
+import { getForecast } from "./getForecast";
 import {
     setForecast,
     setForecastError,

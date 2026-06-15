@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {styles} from "~/pages/Home/lib/styles";
-import {LunarCyclePayload} from "~/state/hooks/get/getLunarCycle";
+import {LunarCyclePayload} from "~/state/hooks/lunar/getLunarCycle";
 
 function getMoonIcon(data: LunarCyclePayload) {
     const illum = data.illumination_percentage;
@@ -25,13 +25,12 @@ export function Lunar({ data }: { data: LunarCyclePayload }) {
                     size={72}
                     color="rgba(255,255,255,0.9)"
                 />
+                <Text
+                    style={styles.condition}
+                >
+                    {data.phase_name}
+                </Text>
             </View>
-
-            <Text
-                style={styles.condition}
-            >
-                {data.phase_name}
-            </Text>
         </View>
     );
 }

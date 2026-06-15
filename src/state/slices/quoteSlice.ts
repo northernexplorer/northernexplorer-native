@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {QuoteType} from "~/state/hooks/get/getQuote";
+import {QuoteType} from "~/state/hooks/quote/getQuote";
 
 type QuoteState = {
     data: QuoteType | null;

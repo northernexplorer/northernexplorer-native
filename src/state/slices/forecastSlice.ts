@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { ForecastType } from "../hooks/get/getForecast";
+import type { ForecastType } from "../hooks/forecast/getForecast";
 
 type ForecastState = {
     data: ForecastType | null;

@@ -4,10 +4,10 @@ import { Forecast } from "./components/Forecast";
 import { Lunar } from "./components/Lunar";
 import { Quote } from "./components/Quote";
 
-import { useWeather } from "~/state/hooks/useWeather";
-import { useForecast } from "~/state/hooks/useForecast";
-import { useLunar } from "~/state/hooks/useLunar";
-import { useQuote } from "~/state/hooks/useQuote";
+import { useWeather } from "~/state/hooks/weather/useWeather";
+import { useForecast } from "~/state/hooks/forecast/useForecast";
+import { useLunar } from "~/state/hooks/lunar/useLunar";
+import { useQuote } from "~/state/hooks/quote/useQuote";
 import {styles} from "~/pages/Home/lib/styles";
 
 export function Home() {

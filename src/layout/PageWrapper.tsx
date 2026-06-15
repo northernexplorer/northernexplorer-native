@@ -9,7 +9,7 @@ import {
 
 import { styles } from "./styles";
 import {getWeatherTheme} from "~/pages/Home/lib/getWeatherTheme";
-import {useWeather} from "~/state/hooks/useWeather";
+import {useWeather} from "~/state/hooks/weather/useWeather";
 
 interface Props {
     Content: ComponentType;

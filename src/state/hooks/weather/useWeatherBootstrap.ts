@@ -5,7 +5,7 @@ import {
     setWeatherLoading,
     setWeatherError,
 } from "~/state/slices/weatherSlice";
-import { getWeather } from "./get/getWeather";
+import { getWeather } from "./getWeather";
 
 export function useWeatherBootstrap() {
     const dispatch = useAppDispatch();

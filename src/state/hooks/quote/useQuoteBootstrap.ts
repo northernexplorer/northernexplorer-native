@@ -1,17 +1,17 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "~/state/storeHooks";
 import {
-    setLunar,
-    setLunarLoading,
-    setLunarError,
-} from "~/state/slices/lunarSlice";
-import { getLunarCycle } from "./get/getLunarCycle";
+    setQuote,
+    setQuoteLoading,
+    setQuoteError,
+} from "~/state/slices/quoteSlice";
+import { getQuote } from "./getQuote";
 
-const STALE_TIME = 1000 * 60 * 60 * 6; // lunar data changes rarely
+const STALE_TIME = 1000 * 60 * 60; // 1 hour (quotes change rarely)
 
-export function useLunarBootstrap() {
+export function useQuoteBootstrap() {
     const dispatch = useAppDispatch();
-    const { data, lastUpdated } = useAppSelector((s) => s.lunar);
+    const { data, lastUpdated } = useAppSelector((s) => s.quote);
 
     useEffect(() => {
         const isStale =
@@ -24,20 +24,20 @@ export function useLunarBootstrap() {
 
         async function run() {
             try {
-                dispatch(setLunarLoading(true));
+                dispatch(setQuoteLoading(true));
 
-                const result = await getLunarCycle();
+                const result = await getQuote();
 
                 if (cancelled) return;
 
-                dispatch(setLunar(result));
+                dispatch(setQuote(result));
             } catch (e) {
                 if (!cancelled) {
-                    dispatch(setLunarError("Failed to fetch lunar data"));
+                    dispatch(setQuoteError("Failed to fetch quote"));
                 }
             } finally {
                 if (!cancelled) {
-                    dispatch(setLunarLoading(false));
+                    dispatch(setQuoteLoading(false));
                 }
             }
         }

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "~/state/storeHooks";
 import { setCity, setCityLoading, setCityError } from "~/state/slices/citySlice";
-import { getCity } from "./get/getCity";
+import { getCity } from "./getCity";
 
 export function useCityBootstrap() {
     const dispatch = useAppDispatch();

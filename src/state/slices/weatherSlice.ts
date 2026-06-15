@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {WeatherType} from "~/state/hooks/get/getWeather";
+import {WeatherType} from "~/state/hooks/weather/getWeather";
 
 export type WeatherState = {
     data: WeatherType | null;
