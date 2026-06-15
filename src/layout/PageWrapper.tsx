@@ -8,8 +8,8 @@ import {
 } from "react-native";
 
 import { styles } from "./styles";
-import {useLocation} from "~/pages/Home/hooks/useLocation";
-import {useWeather} from "~/pages/Home/hooks/useWeather";
+import {useLocation} from "~/hooks/useLocation";
+import {useWeather} from "~/hooks/useWeather";
 import {getWeatherTheme} from "~/pages/Home/lib/getWeatherTheme";
 
 interface Props {

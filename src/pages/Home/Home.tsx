@@ -4,11 +4,11 @@ import { Forecast } from "./components/Forecast";
 import { Lunar } from "./components/Lunar";
 import { Quote } from "./components/Quote";
 
-import { useLocation } from "./hooks/useLocation";
-import { useWeather } from "./hooks/useWeather";
-import { useForecast } from "./hooks/useForecast";
-import { useLunarCycle } from "./hooks/useLunarCycle";
-import { useQuote } from "./hooks/useQuote";
+import { useLocation } from "~/hooks/useLocation";
+import { useWeather } from "~/hooks/useWeather";
+import { useForecast } from "~/hooks/useForecast";
+import { useLunarCycle } from "~/hooks/useLunarCycle";
+import { useQuote } from "~/hooks/useQuote";
 import {styles} from "~/pages/Home/lib/styles";
 
 export function Home() {
