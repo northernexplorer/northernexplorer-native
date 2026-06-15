@@ -14,7 +14,6 @@ export function Weather({ data }: WeatherProps) {
 
     const iconCode = String(condition?.code ?? 1000);
     const iconName = getWeatherIcon(iconCode);
-    console.log("Weather API real-time age:", data.current);
 
     return (
         <View style={styles.hero}>
