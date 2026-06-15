@@ -1,0 +1,46 @@
+import Markdown from "react-native-markdown-display";
+import { useWindowDimensions } from "react-native";
+
+export function AppMarkdown({ content }: { content: string }) {
+    const { width } = useWindowDimensions();
+
+    return (
+        <Markdown
+            style={{
+                body: {
+                    color: "rgba(255,255,255,0.85)",
+                    fontSize: 16,
+                    lineHeight: 24,
+                },
+
+                heading1: {
+                    color: "white",
+                    fontSize: 22,
+                    marginTop: 20,
+                    marginBottom: 10,
+                },
+
+                heading2: {
+                    color: "white",
+                    fontSize: 18,
+                    marginTop: 18,
+                    marginBottom: 8,
+                },
+
+                paragraph: {
+                    marginBottom: 12,
+                },
+
+                list_item: {
+                    marginBottom: 6,
+                },
+
+                strong: {
+                    color: "white",
+                },
+            }}
+        >
+            {content}
+        </Markdown>
+    );
+}
