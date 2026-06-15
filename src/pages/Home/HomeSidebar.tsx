@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import { useCity } from "./hooks/useCity";
-import {useLocation} from "~/home/hooks/useLocation";
+import {useLocation} from "~/pages/Home/hooks/useLocation";
 
 export function HomeSidebar() {
     const coords = useLocation();

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { QuotePayload } from "~/home/hooks/useQuote/getQuote";
+import {QuotePayload} from "~/pages/Home/hooks/useQuote/getQuote";
 
 export function Quote({ data }: { data: QuotePayload }) {
     return (

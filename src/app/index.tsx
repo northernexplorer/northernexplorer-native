@@ -1,7 +1,6 @@
-import { Home } from "~/home";
 import {PageWrapper} from "~/layout";
-import {PrivacyPolicy} from "~/pages";
-import {HomeSidebar} from "~/home/HomeSidebar";
+import {Home} from "~/pages/Home";
+import {HomeSidebar} from "~/pages/Home/HomeSidebar";
 
 export default function Page() {
     return <PageWrapper Content={Home} Sidebar={HomeSidebar} />;

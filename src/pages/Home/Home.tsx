@@ -1,5 +1,4 @@
 import { View, ActivityIndicator, useWindowDimensions } from "react-native";
-import { styles } from "~/home/lib/styles";
 import { Weather } from "./components/Weather";
 import { Forecast } from "./components/Forecast";
 import { Lunar } from "./components/Lunar";
@@ -10,6 +9,7 @@ import { useWeather } from "./hooks/useWeather";
 import { useForecast } from "./hooks/useForecast";
 import { useLunarCycle } from "./hooks/useLunarCycle";
 import { useQuote } from "./hooks/useQuote";
+import {styles} from "~/pages/Home/lib/styles";
 
 export function Home() {
     const coords = useLocation();

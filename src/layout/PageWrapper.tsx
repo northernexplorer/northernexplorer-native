@@ -8,9 +8,9 @@ import {
 } from "react-native";
 
 import { styles } from "./styles";
-import { useLocation } from "~/home/hooks/useLocation";
-import { useWeather } from "~/home/hooks/useWeather";
-import { getWeatherTheme } from "~/home/lib/getWeatherTheme";
+import {useLocation} from "~/pages/Home/hooks/useLocation";
+import {useWeather} from "~/pages/Home/hooks/useWeather";
+import {getWeatherTheme} from "~/pages/Home/lib/getWeatherTheme";
 
 interface Props {
     Content: ComponentType;
@@ -33,8 +33,6 @@ export function PageWrapper({
         ? getWeatherTheme(weather.weather[0].main)
         : null;
 
-    const Container = isMobileView ? ScrollView : View;
-
     return (
         <ImageBackground
             source={theme?.image ? { uri: theme.image } : undefined}
@@ -43,13 +41,11 @@ export function PageWrapper({
             <View style={styles.darkOverlay} />
             <View style={styles.vignette} />
 
-            <Container
-                style={[
+            <ScrollView
+                contentContainerStyle={[
                     styles.page,
                     {
-                        flexDirection: isMobileView
-                            ? "column"
-                            : "row",
+                        flexDirection: isMobileView ? "column" : "row",
                     },
                 ]}
             >
@@ -63,7 +59,7 @@ export function PageWrapper({
                         <Sidebar />
                     </View>
                 )}
-            </Container>
+            </ScrollView>
         </ImageBackground>
     );
 }
