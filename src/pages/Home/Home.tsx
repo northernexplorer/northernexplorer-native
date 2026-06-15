@@ -4,25 +4,21 @@ import { Forecast } from "./components/Forecast";
 import { Lunar } from "./components/Lunar";
 import { Quote } from "./components/Quote";
 
-import { useLocation } from "~/hooks/useLocation";
-import { useWeather } from "~/hooks/useWeather";
-import { useForecast } from "~/hooks/useForecast";
-import { useLunarCycle } from "~/hooks/useLunarCycle";
-import { useQuote } from "~/hooks/useQuote";
+import { useWeather } from "~/state/hooks/useWeather";
+import { useForecast } from "~/state/hooks/useForecast";
+import { useLunar } from "~/state/hooks/useLunar";
+import { useQuote } from "~/state/hooks/useQuote";
 import {styles} from "~/pages/Home/lib/styles";
 
 export function Home() {
-    const coords = useLocation();
-    const weather = useWeather(coords?.lat, coords?.lon);
-    const forecast = useForecast(coords?.lat, coords?.lon);
-    const lunar = useLunarCycle();
+    const weather = useWeather();
+    const forecast = useForecast();
+    const lunar = useLunar();
     const quote = useQuote();
-
     const { width } = useWindowDimensions();
     const isMobileView = width < 1000;
 
     const isReady =
-        coords &&
         weather &&
         forecast &&
         lunar &&

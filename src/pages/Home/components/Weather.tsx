@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import { WeatherType } from "~/hooks/useWeather/getWeather";
+import { WeatherType } from "~/state/hooks/useWeather/getWeather";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {getWeatherIcon} from "~/pages/Home/lib/getWeatherIcon";
 import {styles} from "~/pages/Home/lib/styles";

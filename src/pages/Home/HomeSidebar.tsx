@@ -1,10 +1,10 @@
 import { View, Text } from "react-native";
-import { useCity } from "~/hooks/useCity";
-import {useLocation} from "~/hooks/useLocation";
+import { useCity } from "~/state/hooks/useCity";
+import {useLocation} from "~/state/hooks/useLocation";
 
 export function HomeSidebar() {
     const coords = useLocation();
-    const locationName = useCity(coords?.lat, coords?.lon);
+    const locationName = useCity();
 
     return (
         <View style={{ flex: 1, padding: 20 }}>

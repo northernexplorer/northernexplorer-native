@@ -1,35 +1,35 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type WeatherState = {
-    data: any | null;
+type CityState = {
+    data: string | null;
     loading: boolean;
     error: string | null;
     lastUpdated: number | null;
 };
 
-const initialState: WeatherState = {
+const initialState: CityState = {
     data: null,
     loading: false,
     error: null,
     lastUpdated: null,
 };
 
-const weatherSlice = createSlice({
-    name: "weather",
+const citySlice = createSlice({
+    name: "city",
     initialState,
     reducers: {
-        setWeather(state, action: PayloadAction<any>) {
+        setCity(state, action: PayloadAction<string>) {
             state.data = action.payload;
             state.lastUpdated = Date.now();
             state.error = null;
         },
-        setWeatherLoading(state, action: PayloadAction<boolean>) {
+        setCityLoading(state, action: PayloadAction<boolean>) {
             state.loading = action.payload;
         },
-        setWeatherError(state, action: PayloadAction<string | null>) {
+        setCityError(state, action: PayloadAction<string | null>) {
             state.error = action.payload;
         },
-        clearWeather(state) {
+        clearCity(state) {
             state.data = null;
             state.loading = false;
             state.error = null;
@@ -39,10 +39,10 @@ const weatherSlice = createSlice({
 });
 
 export const {
-    setWeather,
-    setWeatherLoading,
-    setWeatherError,
-    clearWeather,
-} = weatherSlice.actions;
+    setCity,
+    setCityLoading,
+    setCityError,
+    clearCity,
+} = citySlice.actions;
 
-export default weatherSlice.reducer;
+export default citySlice.reducer;

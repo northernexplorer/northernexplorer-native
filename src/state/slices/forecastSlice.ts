@@ -1,35 +1,36 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { ForecastType } from "../hooks/get/getForecast";
 
-export type WeatherState = {
-    data: any | null;
+type ForecastState = {
+    data: ForecastType | null;
     loading: boolean;
     error: string | null;
     lastUpdated: number | null;
 };
 
-const initialState: WeatherState = {
+const initialState: ForecastState = {
     data: null,
     loading: false,
     error: null,
     lastUpdated: null,
 };
 
-const weatherSlice = createSlice({
-    name: "weather",
+const forecastSlice = createSlice({
+    name: "forecast",
     initialState,
     reducers: {
-        setWeather(state, action: PayloadAction<any>) {
+        setForecast(state, action: PayloadAction<ForecastType>) {
             state.data = action.payload;
             state.lastUpdated = Date.now();
             state.error = null;
         },
-        setWeatherLoading(state, action: PayloadAction<boolean>) {
+        setForecastLoading(state, action: PayloadAction<boolean>) {
             state.loading = action.payload;
         },
-        setWeatherError(state, action: PayloadAction<string | null>) {
+        setForecastError(state, action: PayloadAction<string | null>) {
             state.error = action.payload;
         },
-        clearWeather(state) {
+        clearForecast(state) {
             state.data = null;
             state.loading = false;
             state.error = null;
@@ -39,10 +40,10 @@ const weatherSlice = createSlice({
 });
 
 export const {
-    setWeather,
-    setWeatherLoading,
-    setWeatherError,
-    clearWeather,
-} = weatherSlice.actions;
+    setForecast,
+    setForecastLoading,
+    setForecastError,
+    clearForecast,
+} = forecastSlice.actions;
 
-export default weatherSlice.reducer;
+export default forecastSlice.reducer;

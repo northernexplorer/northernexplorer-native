@@ -8,9 +8,8 @@ import {
 } from "react-native";
 
 import { styles } from "./styles";
-import {useLocation} from "~/hooks/useLocation";
-import {useWeather} from "~/hooks/useWeather";
 import {getWeatherTheme} from "~/pages/Home/lib/getWeatherTheme";
+import {useWeather} from "~/state/hooks/useWeather";
 
 interface Props {
     Content: ComponentType;
@@ -18,26 +17,17 @@ interface Props {
     title?: string;
 }
 
-export function PageWrapper({
-                                Content,
-                                Sidebar,
-                                title,
-                            }: Props) {
+export function PageWrapper({ Content, Sidebar, title }: Props) {
     const { width } = useWindowDimensions();
     const isMobileView = width < 1000;
 
-    const coords = useLocation();
-    const weather = useWeather(coords?.lat, coords?.lon);
+    const weather = useWeather();
 
-    const theme = weather
-        ? getWeatherTheme(weather.weather[0].main)
-        : null;
+    const weatherMain = weather?.weather?.[0]?.main;
+    const theme = weatherMain ? getWeatherTheme(weatherMain) : null;
 
     return (
-        <ImageBackground
-            source={theme?.image ? { uri: theme.image } : undefined}
-            style={styles.background}
-        >
+        <ImageBackground style={styles.background}  source={theme?.image ? { uri: theme.image } : undefined}>
             <View style={styles.darkOverlay} />
             <View style={styles.vignette} />
 

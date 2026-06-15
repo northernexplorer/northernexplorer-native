@@ -1,35 +1,35 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type WeatherState = {
+type LunarState = {
     data: any | null;
     loading: boolean;
     error: string | null;
     lastUpdated: number | null;
 };
 
-const initialState: WeatherState = {
+const initialState: LunarState = {
     data: null,
     loading: false,
     error: null,
     lastUpdated: null,
 };
 
-const weatherSlice = createSlice({
-    name: "weather",
+const lunarSlice = createSlice({
+    name: "lunar",
     initialState,
     reducers: {
-        setWeather(state, action: PayloadAction<any>) {
+        setLunar(state, action: PayloadAction<any>) {
             state.data = action.payload;
             state.lastUpdated = Date.now();
             state.error = null;
         },
-        setWeatherLoading(state, action: PayloadAction<boolean>) {
+        setLunarLoading(state, action: PayloadAction<boolean>) {
             state.loading = action.payload;
         },
-        setWeatherError(state, action: PayloadAction<string | null>) {
+        setLunarError(state, action: PayloadAction<string | null>) {
             state.error = action.payload;
         },
-        clearWeather(state) {
+        clearLunar(state) {
             state.data = null;
             state.loading = false;
             state.error = null;
@@ -39,10 +39,10 @@ const weatherSlice = createSlice({
 });
 
 export const {
-    setWeather,
-    setWeatherLoading,
-    setWeatherError,
-    clearWeather,
-} = weatherSlice.actions;
+    setLunar,
+    setLunarLoading,
+    setLunarError,
+    clearLunar,
+} = lunarSlice.actions;
 
-export default weatherSlice.reducer;
+export default lunarSlice.reducer;
