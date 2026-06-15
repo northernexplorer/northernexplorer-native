@@ -1,10 +1,7 @@
 import { StyleSheet, Platform } from "react-native";
 
 export const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-        resizeMode: "cover",
-    },
+
     hero: {
         width: "100%",
     },
@@ -72,31 +69,10 @@ export const styles = StyleSheet.create({
         marginTop: 30,
         width: '100%',
     },
-    darkOverlay: {
-        ...StyleSheet.absoluteFill,
-        backgroundColor: "rgba(0,0,0,0.35)",
-        zIndex: -1,
-        pointerEvents: "none",
-    },
-    vignette: {
-        ...StyleSheet.absoluteFill,
-        backgroundColor: "rgba(0,0,0,0.2)",
-        zIndex: -1,
-        pointerEvents: "none",
-    },
-    page: {
-        flex: 1,
-        flexDirection: Platform.OS === "web" ? "row" : "column",
-    },
     loadingContainer: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-    },
-    main: {
-        flex: 1,
-        paddingTop: 60,
-        paddingHorizontal: 20,
     },
     sidebar: {
         width: Platform.OS === "web" ? 320 : "100%",

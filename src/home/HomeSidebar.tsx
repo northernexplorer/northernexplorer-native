@@ -1,14 +1,9 @@
 import { View, Text } from "react-native";
-import { useCity } from "../hooks/useCity";
+import { useCity } from "./hooks/useCity";
+import {useLocation} from "~/home/hooks/useLocation";
 
-type SidebarProps = {
-    coords: {
-        lat: number;
-        lon: number;
-    } | null;
-};
-
-export function Sidebar({ coords }: SidebarProps) {
+export function HomeSidebar() {
+    const coords = useLocation();
     const locationName = useCity(coords?.lat, coords?.lon);
 
     return (

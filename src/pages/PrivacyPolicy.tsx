@@ -1,9 +1,6 @@
 export function PrivacyPolicy() {
     return (
         <div>
-
-            <p><strong>Privacy Policy</strong></p>
-
             <p>Last updated: June 13, 2026</p>
 
             <p>Northern Explorer ("we", "our", or "us") respects your privacy and is committed to protecting any information you may provide while using our application or website.</p>
