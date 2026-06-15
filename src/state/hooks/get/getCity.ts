@@ -9,7 +9,7 @@ export type GeocodeLocation = {
     state?: string;
 };
 
-interface PHPCityResponse {
+export interface CityType {
     source: "database_cache" | "openweather_api";
     distance_offset?: string;
     cached_at?: string;
@@ -33,7 +33,7 @@ export async function getCity(
         throw new Error(`City lookup fetch failed: ${res.status}`);
     }
 
-    const json: PHPCityResponse = await res.json();
+    const json: CityType = await res.json();
 
     if (__DEV__) {
         console.log(`[City] Loaded via ${json.source}. ${json.distance_offset ?? ''}`);

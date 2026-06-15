@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {CityType} from "~/state/hooks/get/getCity";
 
 type CityState = {
-    data: string | null;
+    data: CityType | null;
     loading: boolean;
     error: string | null;
     lastUpdated: number | null;
@@ -18,7 +19,7 @@ const citySlice = createSlice({
     name: "city",
     initialState,
     reducers: {
-        setCity(state, action: PayloadAction<string>) {
+        setCity(state, action: PayloadAction<CityType>) {
             state.data = action.payload;
             state.lastUpdated = Date.now();
             state.error = null;

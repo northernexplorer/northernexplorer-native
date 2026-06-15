@@ -1,6 +1,6 @@
 import {config} from "~/config";
 
-export interface QuotePayload {
+export interface QuoteType {
     source: string;
     date: string;
     quote: string;
@@ -8,7 +8,7 @@ export interface QuotePayload {
     usage_count: number;
 }
 
-export async function getQuote(): Promise<QuotePayload> {
+export async function getQuote(): Promise<QuoteType> {
     const serverUrl = config.SERVER_URL;
 
     // Strips trailing slashes and configures the non-coordinate route parameter

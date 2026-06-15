@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {QuoteType} from "~/state/hooks/get/getQuote";
 
 type QuoteState = {
-    data: any | null;
+    data: QuoteType | null;
     loading: boolean;
     error: string | null;
     lastUpdated: number | null;
@@ -18,7 +19,7 @@ const quoteSlice = createSlice({
     name: "quote",
     initialState,
     reducers: {
-        setQuote(state, action: PayloadAction<any>) {
+        setQuote(state, action: PayloadAction<QuoteType>) {
             state.data = action.payload;
             state.lastUpdated = Date.now();
         },

@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {WeatherType} from "~/state/hooks/get/getWeather";
 
 export type WeatherState = {
-    data: any | null;
+    data: WeatherType | null;
     loading: boolean;
     error: string | null;
     lastUpdated: number | null;
@@ -18,7 +19,7 @@ const weatherSlice = createSlice({
     name: "weather",
     initialState,
     reducers: {
-        setWeather(state, action: PayloadAction<any>) {
+        setWeather(state, action: PayloadAction<WeatherType>) {
             state.data = action.payload;
             state.lastUpdated = Date.now();
             state.error = null;

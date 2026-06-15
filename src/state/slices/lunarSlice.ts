@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {LunarCycleType} from "~/state/hooks/get/getLunarCycle";
 
 type LunarState = {
-    data: any | null;
+    data: LunarCycleType | null;
     loading: boolean;
     error: string | null;
     lastUpdated: number | null;
@@ -18,7 +19,7 @@ const lunarSlice = createSlice({
     name: "lunar",
     initialState,
     reducers: {
-        setLunar(state, action: PayloadAction<any>) {
+        setLunar(state, action: PayloadAction<LunarCycleType>) {
             state.data = action.payload;
             state.lastUpdated = Date.now();
             state.error = null;
