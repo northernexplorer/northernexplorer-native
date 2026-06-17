@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text } from "react-native";
-import {QuoteType} from "~/state/hooks/quote/getQuote";
+import {FieldNoteType} from "~/state/hooks/fieldNote/getFieldNote";
 
-export function Quote({ data }: { data: QuoteType }) {
+export function FieldNote({ data }: { data: FieldNoteType }) {
     return (
         <View>
             <Text
@@ -14,7 +14,7 @@ export function Quote({ data }: { data: QuoteType }) {
                     fontStyle: "italic",
                 }}
             >
-                "{data.quote}"
+                "{data.title}"
             </Text>
 
             <Text
@@ -25,7 +25,7 @@ export function Quote({ data }: { data: QuoteType }) {
                     marginTop: 12,
                 }}
             >
-                — {data.author}
+                — {data.body}
             </Text>
         </View>
     );

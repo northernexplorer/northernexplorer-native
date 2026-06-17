@@ -2,19 +2,19 @@ import { View, ActivityIndicator, useWindowDimensions } from "react-native";
 import { Weather } from "./components/Weather";
 import { Forecast } from "./components/Forecast";
 import { Lunar } from "./components/Lunar";
-import { Quote } from "./components/Quote";
+import { FieldNote } from "./components/FieldNote";
 
 import { useWeather } from "~/state/hooks/weather/useWeather";
 import { useForecast } from "~/state/hooks/forecast/useForecast";
 import { useLunar } from "~/state/hooks/lunar/useLunar";
-import { useQuote } from "~/state/hooks/quote/useQuote";
+import { useFieldNote } from "~/state/hooks/fieldNote/useFieldNote";
 import {styles} from "~/pages/Home/lib/styles";
 
 export function Home() {
     const weather = useWeather();
     const forecast = useForecast();
     const lunar = useLunar();
-    const quote = useQuote();
+    const fieldNote = useFieldNote();
     const { width } = useWindowDimensions();
     const isMobileView = width < 1000;
 
@@ -22,7 +22,7 @@ export function Home() {
         weather &&
         forecast &&
         lunar &&
-        quote;
+        fieldNote;
 
     if (!isReady) {
         return (
@@ -46,8 +46,8 @@ export function Home() {
                         </View>
                     </View>
 
-                    <View style={styles.mobileQuoteSection}>
-                        <Quote data={quote} />
+                    <View style={styles.mobileFieldNoteSection}>
+                        <FieldNote data={fieldNote} />
                     </View>
                 </>
             ) : (
@@ -56,8 +56,8 @@ export function Home() {
                         <Weather data={weather} />
                     </View>
 
-                    <View style={styles.quoteSection}>
-                        <Quote data={quote} />
+                    <View style={styles.fieldNote}>
+                        <FieldNote data={fieldNote} />
                     </View>
 
                     <View style={styles.lunarSection}>

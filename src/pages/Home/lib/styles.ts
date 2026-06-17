@@ -94,7 +94,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         minWidth: 0,
     },
-    quoteSection: {
+    fieldNote: {
         width: 320,
         marginHorizontal: 32,
     },
@@ -114,7 +114,7 @@ export const styles = StyleSheet.create({
         width: 140,
         marginLeft: 16,
     },
-    mobileQuoteSection: {
+    mobileFieldNoteSection: {
         marginTop: 20,
     },
 });
