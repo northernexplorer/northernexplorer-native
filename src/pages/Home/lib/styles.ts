@@ -68,7 +68,7 @@ export const styles = StyleSheet.create({
         marginTop: 6,
     },
     forecastSection: {
-        marginTop: 30,
+        marginTop: 16,
         width: '100%',
     },
     loadingContainer: {
@@ -116,5 +116,16 @@ export const styles = StyleSheet.create({
     },
     mobileFieldNoteSection: {
         marginTop: 20,
+    },
+    historicSitesSection: {
+        marginTop: 16,
+        width: "100%",
+    },
+    exploreHeader: {
+        color: "rgba(255,255,255,0.9)",
+        fontSize: 18,
+        fontWeight: "600",
+        marginTop: 20,
+        marginBottom: 12,
     },
 });

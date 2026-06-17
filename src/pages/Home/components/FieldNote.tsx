@@ -3,7 +3,6 @@ import { View, Text } from "react-native";
 import {FieldNoteType} from "~/state/hooks/fieldNote/getFieldNote";
 
 export function FieldNote({ data }: { data: FieldNoteType }) {
-    console.log(data);
     return (
         <View>
             <Text
@@ -15,7 +14,7 @@ export function FieldNote({ data }: { data: FieldNoteType }) {
                     fontStyle: "italic",
                 }}
             >
-                "{data.title}"
+                {data.title}
             </Text>
 
             <Text
@@ -26,7 +25,7 @@ export function FieldNote({ data }: { data: FieldNoteType }) {
                     marginTop: 12,
                 }}
             >
-                — {data.body}
+                {data.body}
             </Text>
         </View>
     );
