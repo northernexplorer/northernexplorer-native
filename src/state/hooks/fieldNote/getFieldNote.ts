@@ -13,7 +13,7 @@ export async function getFieldNote(
 
     const url = new URL(`${serverUrl.replace(/\/$/, "")}/index.php`);
 
-    url.searchParams.set("type", "fieldnote");
+    url.searchParams.set("type", "fieldNote");
     url.searchParams.set("lat", lat.toString());
     url.searchParams.set("lon", lon.toString());
 

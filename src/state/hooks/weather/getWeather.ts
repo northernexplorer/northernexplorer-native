@@ -68,9 +68,5 @@ export async function getWeather(
 
     const json: PHPWeatherResponse = await res.json();
 
-    if (__DEV__) {
-        console.log(`[Weather] Loaded via ${json.source}. ${json.distance_offset ?? ''}`);
-    }
-
     return json.data;
 }

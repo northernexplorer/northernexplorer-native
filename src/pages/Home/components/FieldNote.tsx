@@ -3,6 +3,7 @@ import { View, Text } from "react-native";
 import {FieldNoteType} from "~/state/hooks/fieldNote/getFieldNote";
 
 export function FieldNote({ data }: { data: FieldNoteType }) {
+    console.log(data);
     return (
         <View>
             <Text

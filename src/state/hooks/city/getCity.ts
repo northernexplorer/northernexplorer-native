@@ -36,10 +36,6 @@ export async function getCity(
 
     const json: CityResponse = await res.json();
 
-    if (__DEV__) {
-        console.log(`[City] Loaded via ${json.source}. ${json.distance_offset ?? ''}`);
-    }
-
     const cityDetails = json.data.at(0);
     if (!cityDetails) throw new Error("No city found");
 
