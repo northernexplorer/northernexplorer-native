@@ -10,12 +10,14 @@ import { useLunar } from "~/state/hooks/lunar/useLunar";
 import { useFieldNote } from "~/state/hooks/fieldNote/useFieldNote";
 import {styles} from "~/pages/Home/lib/styles";
 import {HistoricSitePreview} from "~/pages/Home/components/HistoricSitePreview";
+import {useClosestHistoricSites} from "~/hooks/useClosestHistoricSites";
 
 export function Home() {
     const weather = useWeather();
     const forecast = useForecast();
     const lunar = useLunar();
     const fieldNote = useFieldNote();
+    const historicSites = useClosestHistoricSites();
     const { width } = useWindowDimensions();
     const isMobileView = width < 1000;
 
@@ -32,24 +34,6 @@ export function Home() {
             </View>
         );
     }
-
-    const historicSites = [
-        {
-            name: "Lower Fort Garry",
-            description: "A preserved 19th-century fur trading post on the Red River.",
-            image: "https://upload.wikimedia.org/wikipedia/commons/0/0c/Lower_Fort_Garry.jpg"
-        },
-        {
-            name: "St. Boniface Cathedral",
-            description: "Historic cathedral and cultural landmark in Manitoba.",
-            image: "https://upload.wikimedia.org/wikipedia/commons/6/6d/St_Boniface_Cathedral_ruins.jpg"
-        },
-        {
-            name: "Riel House",
-            description: "Home of the Riel family and key Métis heritage site.",
-            image: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Riel_House.jpg"
-        }
-    ];
 
     return (
         <>
@@ -84,7 +68,6 @@ export function Home() {
                     </View>
                 </View>
             )}
-
             <Text style={styles.exploreHeader}>
                 Plan Ahead...
             </Text>
@@ -99,7 +82,7 @@ export function Home() {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                 >
-                    {historicSites.map((site) => (
+                    {historicSites.sites.map((site) => (
                         <HistoricSitePreview
                             key={site.name}
                             name={site.name}
