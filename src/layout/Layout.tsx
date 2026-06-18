@@ -12,7 +12,7 @@ import {getWeatherTheme} from "~/layout/getWeatherTheme";
 import {useWeather} from "~/state/hooks/weather/useWeather";
 import {Sidebar} from "~/layout/components/Sidebar";
 import {getImagePath} from "~/lib/getImagePath";
-import Navigation from "~/layout/components/Navigation";
+import {Navigation} from "~/layout/components/Navigation";
 
 interface Props {
     Content: ComponentType;
@@ -29,6 +29,7 @@ export function Layout({ Content, components, title }: Props) {
 
     return (
         <ImageBackground style={styles.background}  source={theme?.image ? { uri: getImagePath(theme.image) } : undefined}>
+            <Navigation />
             <View style={styles.darkOverlay} />
 
             <ScrollView
