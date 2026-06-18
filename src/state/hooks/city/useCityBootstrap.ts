@@ -6,7 +6,6 @@ import { getCity } from "./getCity";
 export function useCityBootstrap() {
     const dispatch = useAppDispatch();
     const coords = useAppSelector((s) => s.location.data);
-    const city = useAppSelector((s) => s.city.data);
 
     useEffect(() => {
         if (!coords) return;

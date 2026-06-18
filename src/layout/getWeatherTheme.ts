@@ -4,12 +4,6 @@ export interface WeatherTheme {
     image: string;
 }
 
-export interface WeatherTheme {
-    overlay: string;
-    tint: string;
-    image: string;
-}
-
 export function getWeatherTheme(code: number): WeatherTheme {
     // 1. Clear / Sunny
     if (code === 1000) {

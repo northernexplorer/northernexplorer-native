@@ -1,9 +1,6 @@
 import Markdown from "react-native-markdown-display";
-import { useWindowDimensions } from "react-native";
 
 export function AppMarkdown({ content }: { content: string }) {
-    const { width } = useWindowDimensions();
-
     return (
         <Markdown
             style={{
