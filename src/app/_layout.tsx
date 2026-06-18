@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import {Provider} from "react-redux";
 import {store} from "~/state";
-import {AppBootstrap} from "~/layout/AppBoostrap";
+import {AppBootstrap} from "~/layout/components/Boostrap";
 
 export default function Layout() {
     return (

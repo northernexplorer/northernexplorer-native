@@ -1,2 +1,2 @@
-export {PageWrapper} from './PageWrapper';
-export {AppMarkdown} from './AppMarkdown';
+export {Layout} from './Layout';
+export {Markdown} from './components/Markdown';

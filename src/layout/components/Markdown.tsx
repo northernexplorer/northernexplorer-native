@@ -1,8 +1,8 @@
-import Markdown from "react-native-markdown-display";
+import NativeMarkdown from "react-native-markdown-display";
 
-export function AppMarkdown({ content }: { content: string }) {
+export function Markdown({ content }: { content: string }) {
     return (
-        <Markdown
+        <NativeMarkdown
             style={{
                 body: {
                     color: "rgba(255,255,255,0.85)",
@@ -38,6 +38,6 @@ export function AppMarkdown({ content }: { content: string }) {
             }}
         >
             {content}
-        </Markdown>
+        </NativeMarkdown>
     );
 }
