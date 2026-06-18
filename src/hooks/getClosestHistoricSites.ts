@@ -10,6 +10,8 @@ export type HistoricSiteType = {
         longitude: number;
     };
     distance_offset_meters: number;
+    country: string;
+    region: string;
 };
 
 export interface HistoricSiteResponse {
@@ -27,7 +29,7 @@ export async function getHistoricSites(
     const url = new URL(`${serverUrl}/index.php`);
     url.searchParams.set("lat", String(lat));
     url.searchParams.set("lon", String(lon));
-    url.searchParams.set("type", "historicSite");
+    url.searchParams.set("type", "historicSites");
 
     const res = await fetch(url.toString());
 
