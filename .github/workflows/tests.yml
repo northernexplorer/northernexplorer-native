@@ -22,8 +22,14 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: TypeScript check
+      - name: Test - Dependencies
+        run: yarn test:deps
+
+      - name: Test - TypeScript
         run: yarn test:types
 
-      - name: Lint
+      - name: Test - Lint
         run: yarn test:lint
+
+      - name: Test - Prettier
+        run: yarn test:format
