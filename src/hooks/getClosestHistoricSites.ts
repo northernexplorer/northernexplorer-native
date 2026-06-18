@@ -10,6 +10,8 @@ export type HistoricSiteType = {
         longitude: number;
     };
     distance_offset_meters: number;
+    country: string;
+    region: string;
 };
 
 export interface HistoricSiteResponse {
