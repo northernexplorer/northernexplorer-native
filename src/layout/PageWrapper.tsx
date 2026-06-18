@@ -29,7 +29,6 @@ export function PageWrapper({ Content, components, title }: Props) {
     return (
         <ImageBackground style={styles.background}  source={theme?.image ? { uri: getImagePath(theme.image) } : undefined}>
             <View style={styles.darkOverlay} />
-            <View style={styles.vignette} />
 
             <ScrollView
                 contentContainerStyle={[

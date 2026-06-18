@@ -30,13 +30,6 @@ export const styles = StyleSheet.create({
     darkOverlay: {
         ...StyleSheet.absoluteFill,
         backgroundColor: "rgba(0,0,0,0.35)",
-        zIndex: -1,
-        pointerEvents: "none",
-    },
-    vignette: {
-        ...StyleSheet.absoluteFill,
-        backgroundColor: "rgba(0,0,0,0.2)",
-        zIndex: -1,
         pointerEvents: "none",
     },
     page: {
