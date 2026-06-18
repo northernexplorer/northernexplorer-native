@@ -48,15 +48,14 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         marginTop: 6,
     },
-    hourTile: {
-        width: 80,
-        padding: 12,
+    tile: {
         alignItems: "center",
         justifyContent: 'center',
         marginRight: 10,
-        backgroundColor: "rgba(255,255,255,0.06)",
+        backgroundColor: "rgba(255,255,255,0.2)",
         borderRadius: 12,
         flexShrink: 0,
+        overflow: "hidden",
     },
     hourDay: {
         color: "rgba(255,255,255,0.5)",

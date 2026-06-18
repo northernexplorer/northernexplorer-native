@@ -2,7 +2,7 @@ import {Animated, Text, View} from "react-native";
 import ScrollView = Animated.ScrollView;
 import {styles} from "~/pages/Home/styles";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
-import {getWeatherIcon} from "~/pages/Home/lib/getWeatherIcon";
+import {getWeatherIcon} from "~/lib/getWeatherIcon";
 import {ForecastType} from "~/state/hooks/forecast/getForecast";
 
 type ForecastProps = {
@@ -17,10 +17,10 @@ export function Forecast({ data }: ForecastProps) {
             {daily.map((f) => {
                 const iconCode = String(f.day.condition.code);
                 const iconName = getWeatherIcon(iconCode);
-                const localDate = new Date(f.date.replace(/-/g, "/"));
+                const localDate = new Date(`${f.date}T00:00:00`);
 
                 return (
-                    <View key={f.date_epoch} style={styles.hourTile}>
+                    <View key={f.date_epoch} style={[styles.tile, {width: 80}]}>
                         <Text style={styles.hourDay}>
                             {localDate.toLocaleDateString("en-CA", {
                                 weekday: "short",

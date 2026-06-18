@@ -22,10 +22,11 @@ export function Home() {
     const isMobileView = width < 1000;
 
     const isReady =
-        weather &&
-        forecast &&
-        lunar &&
-        fieldNote;
+        !!weather &&
+        !!forecast &&
+        !!lunar &&
+        !!fieldNote &&
+        !!historicSites;
 
     if (!isReady) {
         return (

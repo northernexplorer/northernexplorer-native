@@ -2,6 +2,7 @@
   "expo": {
     "name": "Northern Explorer",
     "slug": "northernexplorer-native",
+    "scheme": "northernexplorer-native",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -29,7 +30,13 @@
       }
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Northern Explorer to access your location."
+        }
+      ]
     ]
   }
 }

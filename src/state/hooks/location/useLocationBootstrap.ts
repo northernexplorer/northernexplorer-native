@@ -7,9 +7,12 @@ import {
 } from "~/state/slices/locationSlice";
 import {
     Accuracy,
-    getCurrentPositionAsync,
+    getForegroundPermissionsAsync,
     requestForegroundPermissionsAsync,
+    getLastKnownPositionAsync,
+    getCurrentPositionAsync,
 } from "expo-location";
+import { Platform } from "react-native";
 
 export function useLocationBootstrap() {
     const dispatch = useAppDispatch();
@@ -20,30 +23,8 @@ export function useLocationBootstrap() {
 
         let cancelled = false;
 
-        async function resolvePosition() {
+        async function fetchIPFallback() {
             try {
-                dispatch(setLocationLoading(true));
-
-                const { status } =
-                    await requestForegroundPermissionsAsync();
-
-                if (status === "granted") {
-                    const loc = await getCurrentPositionAsync({
-                        accuracy: Accuracy.Balanced,
-                    });
-
-                    if (cancelled) return;
-
-                    dispatch(
-                        setLocation({
-                            lat: loc.coords.latitude,
-                            lon: loc.coords.longitude,
-                        })
-                    );
-
-                    return;
-                }
-
                 const response = await fetch("https://ipapi.co/json/");
                 const data = await response.json();
 
@@ -64,8 +45,61 @@ export function useLocationBootstrap() {
                 }
             } catch {
                 if (!cancelled) {
-                    dispatch(setLocationError("Location resolution failed"));
+                    dispatch(setLocationError("Location resolution completely failed"));
                 }
+            }
+        }
+
+        async function resolvePosition() {
+            try {
+                dispatch(setLocationLoading(true));
+
+                // Check existing permission status
+                const permissions = await getForegroundPermissionsAsync();
+                let granted = permissions.granted;
+
+                // Only request if not granted AND the OS allows us to ask again
+                if (!granted && permissions.canAskAgain) {
+                    const requested = await requestForegroundPermissionsAsync();
+                    granted = requested.granted;
+                }
+
+                // If we have permission, hunt for coordinates
+                if (granted) {
+                    // Fast cache check (instant on emulator/device reloads)
+                    const cachedLoc = await getLastKnownPositionAsync();
+                    if (cachedLoc && !cancelled) {
+                        dispatch(
+                            setLocation({
+                                lat: cachedLoc.coords.latitude,
+                                lon: cachedLoc.coords.longitude,
+                            })
+                        );
+                        return;
+                    }
+
+                    // Active hardware poll if cache is empty
+                    const loc = await getCurrentPositionAsync({
+                        accuracy: Platform.OS === "android" ? Accuracy.Balanced : Accuracy.High,
+                    });
+
+                    if (cancelled) return;
+
+                    dispatch(
+                        setLocation({
+                            lat: loc.coords.latitude,
+                            lon: loc.coords.longitude,
+                        })
+                    );
+                    return;
+                }
+
+                // If permissions are denied or can't ask again, pivot to IP fallback
+                await fetchIPFallback();
+
+            } catch (e) {
+                // If native hardware polling timed out or failed, fall back to IP as a safety net
+                await fetchIPFallback();
             } finally {
                 if (!cancelled) {
                     dispatch(setLocationLoading(false));
@@ -78,5 +112,5 @@ export function useLocationBootstrap() {
         return () => {
             cancelled = true;
         };
-    }, [dispatch]);
+    }, [dispatch, coords]);
 }
