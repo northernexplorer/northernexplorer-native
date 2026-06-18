@@ -10,14 +10,15 @@ import {
 import { styles } from "./styles";
 import {getWeatherTheme} from "~/layout/getWeatherTheme";
 import {useWeather} from "~/state/hooks/weather/useWeather";
+import {Sidebar} from "~/layout/Sidebar";
 
 interface Props {
     Content: ComponentType;
-    Sidebar?: ComponentType;
+    components?: ComponentType[];
     title?: string;
 }
 
-export function PageWrapper({ Content, Sidebar, title }: Props) {
+export function PageWrapper({ Content, components, title }: Props) {
     const { width } = useWindowDimensions();
     const isMobileView = width < 1000;
 
@@ -41,12 +42,9 @@ export function PageWrapper({ Content, Sidebar, title }: Props) {
                     {title && <Text style={styles.title}>{title}</Text>}
                     <Content />
                 </View>
-
-                {Sidebar && (
-                    <View style={styles.sidebar}>
-                        <Sidebar />
-                    </View>
-                )}
+                <View style={styles.sidebar}>
+                    <Sidebar components={components} />
+                </View>
             </ScrollView>
         </ImageBackground>
     );

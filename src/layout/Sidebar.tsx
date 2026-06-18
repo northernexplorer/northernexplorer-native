@@ -1,8 +1,13 @@
 import { View, Text } from "react-native";
 import { useCity } from "~/state/hooks/city/useCity";
 import {useLocation} from "~/state/hooks/location/useLocation";
+import {ComponentType} from "react";
 
-export function HomeSidebar() {
+interface Props {
+    components?: ComponentType[]
+}
+
+export function Sidebar({components}: Props) {
     const coords = useLocation();
     const city = useCity();
 
@@ -10,7 +15,7 @@ export function HomeSidebar() {
         <View style={{ flex: 1, padding: 20 }}>
             <View style={{ flex: 1 }}>
                 <Text style={{ color: "white", fontSize: 16 }}>
-                    {/* Placeholder for future menu links or content */}
+                    {components?.map(Component => <Component />)}
                 </Text>
             </View>
 

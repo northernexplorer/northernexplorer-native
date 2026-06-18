@@ -18,13 +18,17 @@ export function HistoricSiteDetails() {
             </Text>
         );
     }
-
+    console.log("site.image =", site.image);
     return (
-        <>
-            {site.image && (
-                <Image source={{ uri: site.image }} style={styles.banner} resizeMode="cover" />
-            )}
-
+        <View>
+            <Image
+                source={{
+                    uri: site.image,
+                }}
+                style={styles.banner}
+                onLoad={() => console.log("loaded")}
+                onError={(e) => console.log("error", e.nativeEvent)}
+            />
             <View style={styles.content}>
                 <Text style={styles.breadcrumbs}>
                     {site.country} › {site.region}
@@ -40,6 +44,6 @@ export function HistoricSiteDetails() {
 
                 <Text style={styles.body}>{site.description}</Text>
             </View>
-        </>
+        </View>
     );
 }

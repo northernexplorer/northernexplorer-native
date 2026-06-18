@@ -16,7 +16,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         return {
             overlay: "rgba(0,0,0,0.25)",
             tint: "#f6c453",
-            image: "images/clear.png",
+            image: "/images/weather/clear.png",
         };
     }
 
@@ -25,7 +25,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         return {
             overlay: "rgba(0,0,0,0.45)",
             tint: "#6b7c8f",
-            image: "images/clouds.png",
+            image: "/images/weather/clouds.png",
         };
     }
 
@@ -34,7 +34,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         return {
             overlay: "rgba(0,0,0,0.45)",
             tint: "#7f8c8d",
-            image: "images/fog.png",
+            image: "/images/weather/fog.png",
         };
     }
 
@@ -43,7 +43,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         return {
             overlay: "rgba(0,0,0,0.45)",
             tint: "#7f8c8d",
-            image: "images/thunderstorm.png",
+            image: "/images/weather/thunderstorm.png",
         };
     }
 
@@ -52,7 +52,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         return {
             overlay: "rgba(0,0,40,0.55)",
             tint: "#4a6fa5",
-            image: "images/drizzle.png",
+            image: "/images/weather/drizzle.png",
         };
     }
 
@@ -61,7 +61,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         return {
             overlay: "rgba(0,0,0,0.45)",
             tint: "#7f8c8d",
-            image: "images/rain.png",
+            image: "/images/weather/rain.png",
         };
     }
 
@@ -74,7 +74,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         return {
             overlay: "rgba(0,0,0,0.35)",
             tint: "#e8f0ff",
-            image: "images/snow.png",
+            image: "/images/weather/snow.png",
         };
     }
 
@@ -82,6 +82,6 @@ export function getWeatherTheme(code: number): WeatherTheme {
     return {
         overlay: "rgba(0,0,0,0.5)",
         tint: "#999",
-        image: "images/clear.png",
+        image: "/images/weather/clear.png",
     };
 }
