@@ -97,7 +97,7 @@ export function useLocationBootstrap() {
                 // If permissions are denied or can't ask again, pivot to IP fallback
                 await fetchIPFallback();
 
-            } catch (e) {
+            } catch {
                 // If native hardware polling timed out or failed, fall back to IP as a safety net
                 await fetchIPFallback();
             } finally {

@@ -40,7 +40,7 @@ export function useForecastBootstrap() {
                 if (cancelled) return;
 
                 dispatch(setForecast(result));
-            } catch (e) {
+            } catch {
                 if (!cancelled) {
                     dispatch(setForecastError("Failed to fetch forecast"));
                 }

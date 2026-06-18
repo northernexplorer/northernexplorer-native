@@ -39,7 +39,7 @@ export function useWeatherBootstrap() {
                 if (cancelled) return;
 
                 dispatch(setWeather(result));
-            } catch (e) {
+            } catch {
                 if (!cancelled) {
                     dispatch(setWeatherError("Failed to fetch weather"));
                 }

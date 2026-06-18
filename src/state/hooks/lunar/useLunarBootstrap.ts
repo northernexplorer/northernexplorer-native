@@ -31,7 +31,7 @@ export function useLunarBootstrap() {
                 if (cancelled) return;
 
                 dispatch(setLunar(result));
-            } catch (e) {
+            } catch {
                 if (!cancelled) {
                     dispatch(setLunarError("Failed to fetch lunar data"));
                 }

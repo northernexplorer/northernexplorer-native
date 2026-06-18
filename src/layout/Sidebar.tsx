@@ -15,7 +15,7 @@ export function Sidebar({components}: Props) {
         <View style={{ flex: 1, padding: 20 }}>
             <View style={{ flex: 1 }}>
                 <Text style={{ color: "white", fontSize: 16 }}>
-                    {components?.map(Component => <Component />)}
+                    {components?.map((Component, index) => <Component key={index} />)}
                 </Text>
             </View>
 
