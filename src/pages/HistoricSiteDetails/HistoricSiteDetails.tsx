@@ -7,7 +7,6 @@ import {styles} from "~/pages/HistoricSiteDetails/styles";
 export function HistoricSiteDetails() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const { site, loading, error } = useGetHistoricSiteDetails(id);
-
     if (loading) {
         return <ActivityIndicator size="large" color="#0088cc" style={styles.centerSpinner} />;
     }
