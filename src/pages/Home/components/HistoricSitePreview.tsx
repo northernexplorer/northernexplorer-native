@@ -3,7 +3,7 @@ import { View, Text, Image } from "react-native";
 import {Link} from "expo-router";
 
 type Props = {
-    id: string;
+    id: number;
     name: string;
     description: string;
     image: string;
@@ -19,7 +19,7 @@ export function HistoricSitePreview({ id, name, description, image, country, reg
         <Link
             href={{
                 pathname: "/[country]/[region]/[name]/[id]",
-                params: { country: urlCountry, region: urlRegion, id, name: urlName}
+                params: { country: urlCountry, region: urlRegion, id: id.toString(), name: urlName}
             }}
             asChild
         >

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import {styles} from "~/pages/Home/lib/styles";
+import {styles} from "~/pages/Home/styles";
 import {LunarCycleType} from "~/state/hooks/lunar/getLunarCycle";
 
 function getMoonIcon(data: LunarCycleType) {

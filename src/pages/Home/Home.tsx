@@ -8,7 +8,7 @@ import { useWeather } from "~/state/hooks/weather/useWeather";
 import { useForecast } from "~/state/hooks/forecast/useForecast";
 import { useLunar } from "~/state/hooks/lunar/useLunar";
 import { useFieldNote } from "~/state/hooks/fieldNote/useFieldNote";
-import {styles} from "~/pages/Home/lib/styles";
+import {styles} from "~/pages/Home/styles";
 import {HistoricSitePreview} from "~/pages/Home/components/HistoricSitePreview";
 import {useClosestHistoricSites} from "~/hooks/useClosestHistoricSites";
 
@@ -88,6 +88,9 @@ export function Home() {
                             name={site.name}
                             description={site.description}
                             image={site.image}
+                            country={site.country}
+                            region={site.region}
+                            id={site.id}
                         />
                     ))}
                 </ScrollView>

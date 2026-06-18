@@ -1,6 +1,6 @@
 import {Animated, Text, View} from "react-native";
 import ScrollView = Animated.ScrollView;
-import {styles} from "~/pages/Home/lib/styles";
+import {styles} from "~/pages/Home/styles";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {getWeatherIcon} from "~/pages/Home/lib/getWeatherIcon";
 import {ForecastType} from "~/state/hooks/forecast/getForecast";
