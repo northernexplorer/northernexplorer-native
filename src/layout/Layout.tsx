@@ -29,8 +29,8 @@ export function Layout({ Content, components, title }: Props) {
 
     return (
         <ImageBackground style={styles.background}  source={theme?.image ? { uri: getImagePath(theme.image) } : undefined}>
-            <Navigation />
             <View style={styles.darkOverlay} />
+            <Navigation />
 
             <ScrollView
                 contentContainerStyle={[

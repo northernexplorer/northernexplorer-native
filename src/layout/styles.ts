@@ -78,8 +78,8 @@ export const styles = StyleSheet.create({
         height: 56,
     },
     brandText: {
-        color: "white",
-        fontSize: 18,
+        color: "rgba(255,255,255,0.7)",
+        fontSize: 20,
         fontWeight: "600",
     },
     hamburger: {
@@ -144,5 +144,20 @@ export const styles = StyleSheet.create({
     },
     drawerMenuText: {
         fontSize: 16,
-    }
+    },
+    logo: {
+        width: 40,
+        height: 40,
+        resizeMode: "contain",
+    },
+    drawerLogo: {
+        width: 36,
+        height: 36,
+        resizeMode: "contain",
+    },
+    brandContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+    },
 });
