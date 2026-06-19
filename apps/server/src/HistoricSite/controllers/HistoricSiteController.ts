@@ -16,7 +16,7 @@ export class HistoricSiteController {
       const em = RequestContext.getEntityManager()!;
 
       // Use the Haversine formula inside a subquery to calculate exact distances in meters
-      const sql = `
+      const query = `
         SELECT id, name, description, image, lat, lon, country, region, distance_meters as distanceMeters
         FROM (
             SELECT id, name, description, image, lat, lon, country, region,
@@ -30,7 +30,7 @@ export class HistoricSiteController {
         LIMIT 3
       `;
 
-      const rawResults = await em.getConnection().execute(sql, [lat, lon, lat]);
+      const rawResults = await em.getConnection().execute(query, [lat, lon, lat]);
 
       // Format results cleanly, rounding distance offsets into explicit numbers
       const formattedSites = rawResults.map((site: any) => ({

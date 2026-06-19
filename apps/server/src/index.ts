@@ -1,9 +1,10 @@
+import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
-import { config } from './config';
+import ormConfig from './mikro-orm.config';
+import { config } from './config'; // Holds application vars like PORT
 
-// Import your domain controllers cleanly
 import { CityController } from './City';
 import { WeatherController } from './Weather';
 import { ForecastController } from './Forecast';
@@ -19,16 +20,15 @@ const PORT = config.PORT;
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-// Boot pipeline wrapper to absorb top-level await limits safely
 async function bootstrap() {
   try {
-    // 1. Await database initialization inside the async loop
-    const orm = await MikroORM.init(config.db);
+    // 1. Pass the clean, un-evaluated database config object directly
+    const orm = await MikroORM.init(ormConfig);
 
-    // 2. Fork clean context per transaction loop
+    // 2. Fork transaction context
     app.use((req, res, next) => RequestContext.create(orm.em, next));
 
-    // 3. Bind endpoints to your clean controller architecture
+    // 3. Router setup
     app.get(`/api/${EndpointType.City}`, validateCoords, CityController.getCityData);
     app.get(`/api/${EndpointType.Weather}`, validateCoords, WeatherController.getWeatherData);
     app.get(`/api/${EndpointType.Forecast}`, validateCoords, ForecastController.getForecastData);
@@ -46,5 +46,4 @@ async function bootstrap() {
   }
 }
 
-// Execute the bootstrap initialization block
 bootstrap();

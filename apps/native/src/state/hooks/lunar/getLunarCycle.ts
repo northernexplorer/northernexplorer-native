@@ -1,4 +1,5 @@
-import {config} from "~/config";
+import { config } from "~/config";
+import { EndpointType } from "@northernexplorer/shared";
 
 export type LunarCycleType = {
     phase_fraction: number;          // Position in cycle (0.0 to 1.0)
@@ -11,8 +12,7 @@ export type LunarCycleType = {
 export async function getLunarCycle(): Promise<LunarCycleType> {
     const serverUrl = config.SERVER_URL;
 
-    const url = new URL(`${serverUrl}/index.php`);
-    url.searchParams.set("type", "lunar");
+    const url = new URL(`${serverUrl}/api/${EndpointType.Lunar}`);
 
     const res = await fetch(url.toString());
 

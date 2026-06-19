@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { RequestContext } from '@mikro-orm/core';
-import { CityCache } from '../entities/City.js';
+import { CityCache } from '../entities/CityCache';
 import { config } from '../../config.js';
 
 export class CityController {
@@ -12,21 +12,20 @@ export class CityController {
 
       const em = RequestContext.getEntityManager()!;
 
-      // We drop down to raw SQL here to run the exact formula matching your PHP layer
-      const sql = `
-        SELECT city_data as cityData, updated_at as updatedAt,
-               (6371000 * acos(
-                   cos(radians(?)) * cos(radians(lat)) * cos(radians(lon) - radians(?)) +
-                   sin(radians(?)) * sin(radians(lat))
-               )) AS distance_meters
-        FROM city_cache
-        WHERE updated_at >= NOW() - INTERVAL 60 DAY
-        HAVING distance_meters <= 5000
-        ORDER BY distance_meters ASC
-        LIMIT 1
+      const query = `
+          SELECT city_data as "cityData", updated_at as "updatedAt", distance_meters as "distanceMeters"
+          FROM (
+                   SELECT city_data, updated_at,
+                          (6371000 * acos( cos(radians(${lat})) * cos(radians(lat)) * cos(radians(lon) - radians(${lon})) + sin(radians(${lat})) * sin(radians(lat)) )) AS distance_meters
+                   FROM city_cache
+                   WHERE updated_at >= NOW() - INTERVAL '60 days'
+               ) AS search_results
+          WHERE distance_meters <= 5000
+          ORDER BY distance_meters ASC
+              LIMIT 1
       `;
 
-      const rawResults = await em.getConnection().execute(sql, [lat, lon, lat]);
+      const rawResults = await em.getConnection().execute(query, [lat, lon, lat]);
       const cachedResult = rawResults[0];
 
       if (cachedResult) {
@@ -60,8 +59,8 @@ export class CityController {
       em.persist(newCacheEntry);
       await em.flush();
 
-      const cleanupSql = `DELETE FROM city_cache WHERE updated_at < NOW() - INTERVAL 90 DAY`;
-      await em.getConnection().execute(cleanupSql);
+      const cleanupQuery = `DELETE FROM city_cache WHERE updated_at < NOW() - INTERVAL 90 DAY`;
+      await em.getConnection().execute(cleanupQuery);
 
       res.json({
         source: "weatherapi_data",

@@ -1,4 +1,5 @@
 import { config } from "~/config";
+import { EndpointType } from "@northernexplorer/shared";
 
 export type HistoricSiteType = {
     id: number;
@@ -16,9 +17,8 @@ export type HistoricSiteType = {
 export async function getHistoricSiteDetails(id: string | number): Promise<HistoricSiteType> {
     const serverUrl = config.SERVER_URL;
 
-    const url = new URL(`${serverUrl}/index.php`);
+    const url = new URL(`${serverUrl}/api/${EndpointType.HistoricSiteDetails}`);
     url.searchParams.set("id", String(id));
-    url.searchParams.set("type", "historicSiteDetails");
 
     const res = await fetch(url.toString());
 

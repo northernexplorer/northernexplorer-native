@@ -15,9 +15,11 @@
     "@northernexplorer/shared": "*",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
+    "@mikro-orm/cli": "^7.1.4",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^22.0.0",

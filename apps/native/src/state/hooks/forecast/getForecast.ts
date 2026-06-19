@@ -1,4 +1,5 @@
-import {config} from "~/config";
+import { config } from "~/config";
+import { EndpointType } from "@northernexplorer/shared";
 
 export type ForecastType = {
     location: {
@@ -113,15 +114,14 @@ interface PHPForecastResponse {
 }
 
 export async function getForecast(
-    lat: number,
-    lon: number,
+  lat: number,
+  lon: number,
 ): Promise<ForecastType> {
     const serverUrl = config.SERVER_URL;
 
-    const url = new URL(`${serverUrl}/index.php`);
+    const url = new URL(`${serverUrl}/api/${EndpointType.Forecast}`);
     url.searchParams.set("lat", String(lat));
     url.searchParams.set("lon", String(lon));
-    url.searchParams.set("type", "forecast");
 
     const res = await fetch(url.toString());
 

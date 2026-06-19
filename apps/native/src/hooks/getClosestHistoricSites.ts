@@ -1,4 +1,5 @@
 import { config } from "~/config";
+import { EndpointType } from "@northernexplorer/shared";
 
 export type HistoricSiteType = {
     id: number;
@@ -21,15 +22,14 @@ export interface HistoricSiteResponse {
 }
 
 export async function getHistoricSites(
-    lat: number,
-    lon: number,
+  lat: number,
+  lon: number,
 ): Promise<HistoricSiteType[]> {
     const serverUrl = config.SERVER_URL;
 
-    const url = new URL(`${serverUrl}/index.php`);
+    const url = new URL(`${serverUrl}/api/${EndpointType.HistoricSites}`);
     url.searchParams.set("lat", String(lat));
     url.searchParams.set("lon", String(lon));
-    url.searchParams.set("type", "historicSites");
 
     const res = await fetch(url.toString());
 

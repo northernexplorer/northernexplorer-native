@@ -11,7 +11,7 @@ export class ForecastController {
       const em = RequestContext.getEntityManager()!;
 
       // 1. Check cache using the Haversine Formula inside a subquery (3-hour cache window)
-      const sql = `
+      const query = `
         SELECT forecast_data as forecastData, updated_at as updatedAt, distance_meters as distanceMeters
         FROM (
             SELECT forecast_data, updated_at,
@@ -20,14 +20,14 @@ export class ForecastController {
                        sin(radians(?)) * sin(radians(lat))
                    )) AS distance_meters
             FROM forecast_cache
-            WHERE updated_at >= NOW() - INTERVAL 3 HOUR
+            WHERE updated_at >= NOW() - INTERVAL '3 HOUR'
         ) AS search_results
         WHERE distance_meters <= 3000
         ORDER BY distance_meters ASC
         LIMIT 1
       `;
 
-      const rawResults = await em.getConnection().execute(sql, [lat, lon, lat]);
+      const rawResults = await em.getConnection().execute(query, [lat, lon, lat]);
       const cachedResult = rawResults[0];
 
       if (cachedResult) {
@@ -60,8 +60,8 @@ export class ForecastController {
       await em.flush();
 
       // 4. Housekeeping: Purge stale records older than 24 hours
-      const cleanupSql = `DELETE FROM forecast_cache WHERE updated_at < NOW() - INTERVAL 24 HOUR`;
-      await em.getConnection().execute(cleanupSql);
+      const cleanupQuery = `DELETE FROM forecast_cache WHERE updated_at < NOW() - INTERVAL '24 HOUR'`;
+      await em.getConnection().execute(cleanupQuery);
 
       res.json({
         source: "weatherapi_data",

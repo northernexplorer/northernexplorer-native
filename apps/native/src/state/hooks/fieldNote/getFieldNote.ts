@@ -1,4 +1,5 @@
 import { config } from "~/config";
+import { EndpointType } from "@northernexplorer/shared";
 
 export interface FieldNoteType {
     title: string;
@@ -6,14 +7,13 @@ export interface FieldNoteType {
 }
 
 export async function getFieldNote(
-    lat: number,
-    lon: number,
+  lat: number,
+  lon: number,
 ): Promise<FieldNoteType> {
     const serverUrl = config.SERVER_URL;
 
-    const url = new URL(`${serverUrl.replace(/\/$/, "")}/index.php`);
+    const url = new URL(`${serverUrl.replace(/\/$/, "")}/api/${EndpointType.FieldNote}`);
 
-    url.searchParams.set("type", "fieldNote");
     url.searchParams.set("lat", lat.toString());
     url.searchParams.set("lon", lon.toString());
 
