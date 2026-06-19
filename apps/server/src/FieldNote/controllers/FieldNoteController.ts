@@ -7,7 +7,7 @@ export class FieldNoteController {
       const lat = res.locals.lat;
       const lon = res.locals.lon;
 
-      // 1. Fetch weather payload directly using our existing Weather controller internal logic
+      // Fetch weather payload directly using our existing Weather controller internal logic
       // Note: Assumes WeatherController has an internal method or returns data cleanly.
       const weather = await WeatherController.getInternalWeatherData(lat, lon);
 
@@ -19,7 +19,7 @@ export class FieldNoteController {
         return;
       }
 
-      // 2. Map WeatherAPI properties safely with fallbacks
+      // Map WeatherAPI properties safely with fallbacks
       const temp = weather.current.temp_c !== undefined ? parseFloat(weather.current.temp_c) : 999;
       const wind = weather.current.wind_kph ?? 0;
       const clouds = weather.current.cloud ?? 0;
@@ -27,7 +27,7 @@ export class FieldNoteController {
       const visibility = weather.current.vis_km ?? 10;
       const description = (weather.current.condition?.text ?? '').toLowerCase();
 
-      // 3. Rules Evaluation Engine (Ordered by priority matching your PHP logic)
+      // Rules Evaluation Engine (Ordered by priority matching your PHP logic)
 
       // Rule 1: Storm / severe conditions
       if (description.includes('thunder') || description.includes('storm')) {

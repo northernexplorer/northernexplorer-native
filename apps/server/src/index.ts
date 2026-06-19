@@ -22,13 +22,13 @@ app.use(express.json());
 
 async function bootstrap() {
   try {
-    // 1. Pass the clean, un-evaluated database config object directly
+    // Pass the clean, un-evaluated database config object directly
     const orm = await MikroORM.init(ormConfig);
 
-    // 2. Fork transaction context
+    // Fork transaction context
     app.use((req, res, next) => RequestContext.create(orm.em, next));
 
-    // 3. Router setup
+    // Router setup
     app.get(`/api/${EndpointType.City}`, validateCoords, CityController.getCityData);
     app.get(`/api/${EndpointType.Weather}`, validateCoords, WeatherController.getWeatherData);
     app.get(`/api/${EndpointType.Forecast}`, validateCoords, ForecastController.getForecastData);

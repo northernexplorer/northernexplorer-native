@@ -5,7 +5,7 @@ export interface WeatherTheme {
 }
 
 export function getWeatherTheme(code: number): WeatherTheme {
-    // 1. Clear / Sunny
+    // Clear / Sunny
     if (code === 1000) {
         return {
             overlay: "rgba(0,0,0,0.25)",
@@ -14,7 +14,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         };
     }
 
-    // 2. Clouds (Partly Cloudy, Cloudy, Overcast)
+    // Clouds (Partly Cloudy, Cloudy, Overcast)
     if ([1003, 1006, 1009].includes(code)) {
         return {
             overlay: "rgba(0,0,0,0.45)",
@@ -23,7 +23,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         };
     }
 
-    // 3. Mist / Fog / Freezing Fog
+    // Mist / Fog / Freezing Fog
     if ([1030, 1135, 1147].includes(code)) {
         return {
             overlay: "rgba(0,0,0,0.45)",
@@ -32,7 +32,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         };
     }
 
-    // 4. Thunderstorms (Thundery outbreaks, Rain/Snow with thunder)
+    // Thunderstorms (Thundery outbreaks, Rain/Snow with thunder)
     if ([1087, 1273, 1276, 1279, 1282].includes(code)) {
         return {
             overlay: "rgba(0,0,0,0.45)",
@@ -41,7 +41,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         };
     }
 
-    // 5. Drizzle / Light Rain / Freezing Drizzle
+    // Drizzle / Light Rain / Freezing Drizzle
     if ([1063, 1150, 1153, 1168, 1171, 1180, 1183, 1186].includes(code)) {
         return {
             overlay: "rgba(0,0,40,0.55)",
@@ -50,7 +50,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         };
     }
 
-    // 6. Moderate / Heavy / Torrential Rain
+    // Moderate / Heavy / Torrential Rain
     if ([1189, 1192, 1195, 1240, 1243, 1246].includes(code)) {
         return {
             overlay: "rgba(0,0,0,0.45)",
@@ -59,7 +59,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
         };
     }
 
-    // 7. Snow / Sleet / Blizzards / Ice Pellets
+    // Snow / Sleet / Blizzards / Ice Pellets
     if ([
         1066, 1069, 1072, 1114, 1117, 1198, 1201, 1204, 1207,
         1210, 1213, 1216, 1219, 1222, 1225, 1237, 1249, 1252,

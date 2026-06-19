@@ -3,29 +3,29 @@ import { Request, Response, NextFunction } from 'express';
 export class LunarController {
   public static async getLunarData(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // 1. Known reference New Moon date (January 6, 2000, 18:14 UTC) in milliseconds
+      // Known reference New Moon date (January 6, 2000, 18:14 UTC) in milliseconds
       const referenceTimeMs = Date.UTC(2000, 0, 6, 18, 14, 0);
 
-      // 2. Force current timestamp evaluation strictly via UTC to prevent server timezone shifting
+      // Force current timestamp evaluation strictly via UTC to prevent server timezone shifting
       const currentTimeMs = Date.now();
 
-      // 3. Length of a single lunar synodic month in seconds converted to milliseconds
+      // Length of a single lunar synodic month in seconds converted to milliseconds
       const lunarPeriodSeconds = 29.530588853 * 86400;
       const lunarPeriodMs = lunarPeriodSeconds * 1000;
 
-      // 4. Total milliseconds elapsed since reference point
+      // Total milliseconds elapsed since reference point
       const elapsedMs = currentTimeMs - referenceTimeMs;
 
-      // 5. Calculate position in the current cycle (0.0 to 1.0) using fractional modulo
+      // Calculate position in the current cycle (0.0 to 1.0) using fractional modulo
       let currentPhaseFraction = (elapsedMs % lunarPeriodMs) / lunarPeriodMs;
       if (currentPhaseFraction < 0) {
         currentPhaseFraction += 1.0;
       }
 
-      // 6. Convert fraction into age of the moon in days (0 to 29.53)
+      // Convert fraction into age of the moon in days (0 to 29.53)
       const moonAgeDays = currentPhaseFraction * 29.530588853;
 
-      // 7. Determine Phase Name and Illumination Percentage
+      // Determine Phase Name and Illumination Percentage
       let illumination: number;
       if (currentPhaseFraction < 0.5) {
         illumination = currentPhaseFraction * 2; // Growing towards Full Moon
@@ -33,7 +33,7 @@ export class LunarController {
         illumination = (1.0 - currentPhaseFraction) * 2; // Shrinking towards New Moon
       }
 
-      // 8. Determine structural name layout based on standard octants
+      // Determine structural name layout based on standard octants
       let phaseName: string;
       if (moonAgeDays < 1) {
         phaseName = "New Moon";
@@ -55,7 +55,7 @@ export class LunarController {
         phaseName = "New Moon";
       }
 
-      // 9. Format response payload matching your Expo client contracts exactly
+      // Format response payload matching your Expo client contracts exactly
       res.json({
         phase_fraction: parseFloat(currentPhaseFraction.toFixed(4)),
         moon_age_days: parseFloat(moonAgeDays.toFixed(2)),

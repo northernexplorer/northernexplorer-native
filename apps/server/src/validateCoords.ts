@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 export const validateCoords = (req: Request, res: Response, next: NextFunction): void => {
   const { lat, lon } = req.query;
 
-  // 1. Ensure both parameters are present
+  // Ensure both parameters are present
   if (lat === undefined || lon === undefined) {
     res.status(400).json({
       error: "Missing required location parameters. Please provide both 'lat' and 'lon' query parameters."
@@ -11,11 +11,11 @@ export const validateCoords = (req: Request, res: Response, next: NextFunction):
     return;
   }
 
-  // 2. Parse into numbers
+  // Parse into numbers
   const latitude = parseFloat(lat as string);
   const longitude = parseFloat(lon as string);
 
-  // 3. Validate that they are valid numbers (not NaN)
+  // Validate that they are valid numbers (not NaN)
   if (isNaN(latitude) || isNaN(longitude)) {
     res.status(400).json({
       error: "Invalid coordinates structure. 'lat' and 'lon' parameters must be valid decimal numbers."
@@ -23,7 +23,7 @@ export const validateCoords = (req: Request, res: Response, next: NextFunction):
     return;
   }
 
-  // 4. Enforce realistic global geographic coordinate boundaries
+  // Enforce realistic global geographic coordinate boundaries
   if (latitude < -90 || latitude > 90) {
     res.status(400).json({ error: "Latitude coordinate value must be between -90 and 90 degrees." });
     return;
@@ -34,7 +34,7 @@ export const validateCoords = (req: Request, res: Response, next: NextFunction):
     return;
   }
 
-  // 5. Store parsed coordinates in res.locals for controllers to consume safely
+  // Store parsed coordinates in res.locals for controllers to consume safely
   res.locals.lat = latitude;
   res.locals.lon = longitude;
 
