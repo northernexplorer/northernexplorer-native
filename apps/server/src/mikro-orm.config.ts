@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { CityCache } from './City';
 import { ForecastCache } from './Forecast';
 import { HistoricSite } from './HistoricSite';
+import { Migrations} from './System';
 import { WeatherCache } from './Weather';
 
 dotenv.config();
@@ -17,6 +18,6 @@ export default defineConfig({
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASS || 'password',
   metadataProvider: ReflectMetadataProvider,
-  entities: [CityCache, ForecastCache, HistoricSite, WeatherCache],
+  entities: [CityCache, ForecastCache, HistoricSite, Migrations, WeatherCache],
   debug: process.env.NODE_ENV !== 'production',
 });
