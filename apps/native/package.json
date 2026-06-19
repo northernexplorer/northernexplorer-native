@@ -1,0 +1,44 @@
+{
+  "name": "northernexplorer-native",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "private": true,
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "@northernexplorer/shared": "*",
+    "@reduxjs/toolkit": "^2.12.0",
+    "expo": "~56.0.12",
+    "expo-linking": "~56.0.14",
+    "expo-location": "~56.0.18",
+    "expo-router": "~56.2.11",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.85.3",
+    "react-native-markdown-display": "^7.0.2",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "4.25.2",
+    "react-native-web": "^0.21.2",
+    "react-redux": "^9.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "depcheck": "^1.4.7",
+    "eslint-config-expo": "~56.0.4",
+    "eslint-config-prettier": "^10.1.8",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build:android": "eas build --platform android --profile production",
+    "build:ios": "eas build --platform ios --profile production",
+    "build:web": "expo export --platform web",
+    "fix:format": "prettier . --write",
+    "test:deps": "depcheck --specials=typescript --ignores=\"depcheck,prettier,typescript,~\"",
+    "test:format": "prettier . --check",
+    "test:lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "test:types": "tsc --noEmit"
+  }
+}
