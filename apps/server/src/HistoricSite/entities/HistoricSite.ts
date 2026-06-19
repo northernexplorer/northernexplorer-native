@@ -1,0 +1,40 @@
+import { Entity, PrimaryKey, Property, Index } from '@mikro-orm/decorators/legacy';
+
+@Entity()
+@Index({ name: 'idx_site_location', properties: ['lat', 'lon'] })
+export class HistoricSite {
+  @PrimaryKey({ type: 'number' })
+  id!: number;
+
+  @Property({ type: 'string', unique: true, length: 255 })
+  name!: string;
+
+  @Property({ type: 'text', columnType: 'text' })
+  description!: string;
+
+  @Property({ type: 'text', columnType: 'text' })
+  image!: string;
+
+  @Property({ type: 'double', columnType: 'decimal(10,6)' })
+  lat!: number;
+
+  @Property({ type: 'double', columnType: 'decimal(10,6)' })
+  lon!: number;
+
+  @Property({ type: 'string', length: 100, nullable: true })
+  country?: string;
+
+  @Property({ type: 'string', length: 100, nullable: true })
+  region?: string;
+
+  @Property({ type: 'datetime', columnType: 'timestamp', defaultRaw: 'CURRENT_TIMESTAMP' })
+  createdAt!: Date;
+
+  @Property({
+    type: 'datetime',
+    columnType: 'timestamp',
+    defaultRaw: 'CURRENT_TIMESTAMP',
+    extra: 'on update CURRENT_TIMESTAMP'
+  })
+  updatedAt!: Date;
+}
