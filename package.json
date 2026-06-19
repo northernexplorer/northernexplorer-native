@@ -12,6 +12,6 @@
     "start:android": "yarn workspace northernexplorer-native android",
     "start:ios": "yarn workspace northernexplorer-native ios",
     "start:web": "yarn workspace northernexplorer-native web",
-    "start:server": "yarn workspace northernexplorer-server start"
+    "start:server": "yarn workspace northernexplorer-server dev"
   }
 }
