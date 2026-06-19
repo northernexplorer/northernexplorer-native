@@ -10,8 +10,9 @@ import {
 import { styles } from "./styles";
 import {getWeatherTheme} from "~/layout/getWeatherTheme";
 import {useWeather} from "~/state/hooks/weather/useWeather";
-import {Sidebar} from "~/layout/Sidebar";
+import {Sidebar} from "~/layout/components/Sidebar";
 import {getImagePath} from "~/lib/getImagePath";
+import {Navigation} from "~/layout/components/Navigation";
 
 interface Props {
     Content: ComponentType;
@@ -19,7 +20,7 @@ interface Props {
     title?: string;
 }
 
-export function PageWrapper({ Content, components, title }: Props) {
+export function Layout({ Content, components, title }: Props) {
     const { width } = useWindowDimensions();
     const isMobileView = width < 1000;
 
@@ -29,6 +30,7 @@ export function PageWrapper({ Content, components, title }: Props) {
     return (
         <ImageBackground style={styles.background}  source={theme?.image ? { uri: getImagePath(theme.image) } : undefined}>
             <View style={styles.darkOverlay} />
+            <Navigation />
 
             <ScrollView
                 contentContainerStyle={[

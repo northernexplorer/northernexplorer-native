@@ -1,6 +1,6 @@
-import {PageWrapper} from "~/layout";
+import {Layout} from "~/layout";
 import {PrivacyPolicy} from "~/pages/PrivacyPolicy";
 
 export default function Page() {
-    return <PageWrapper Content={PrivacyPolicy} title="Privacy Policy" />;
+    return <Layout Content={PrivacyPolicy} title="Privacy Policy" />;
 }

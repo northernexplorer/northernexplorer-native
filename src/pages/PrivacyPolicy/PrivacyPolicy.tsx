@@ -1,4 +1,4 @@
-import {AppMarkdown} from "~/layout";
+import {Markdown} from "~/layout";
 
 export function PrivacyPolicy() {
     const PRIVACY_POLICY = `
@@ -59,5 +59,5 @@ We may update this Privacy Policy from time to time. Changes will be posted with
 If you have any questions about this Privacy Policy, you can contact us through the support section of the app or website.
 `;
 
-    return <AppMarkdown content={PRIVACY_POLICY} />;
+    return <Markdown content={PRIVACY_POLICY} />;
 }

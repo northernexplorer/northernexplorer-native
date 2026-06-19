@@ -1,6 +1,6 @@
-import {PageWrapper} from "~/layout";
+import {Layout} from "~/layout";
 import {HistoricSiteDetails} from "~/pages/HistoricSiteDetails";
 
 export default function Page() {
-    return <PageWrapper Content={HistoricSiteDetails} title="Historic Site" />;
+    return <Layout Content={HistoricSiteDetails} title="Historic Site" />;
 }
