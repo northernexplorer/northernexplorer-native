@@ -1,3 +1,3 @@
-export {WeatherController} from './controllers/WeatherController';
+export { WeatherController } from './controllers/WeatherController';
 
-export {WeatherCache} from './entities/WeatherCache';
+export { WeatherCache } from './entities/WeatherCache';

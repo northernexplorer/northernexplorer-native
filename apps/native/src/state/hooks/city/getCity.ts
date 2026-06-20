@@ -1,43 +1,40 @@
-import { config } from "~/config";
-import { EndpointType } from "@northernexplorer/shared";
+import { config } from '~/config';
+import { EndpointType } from '@northernexplorer/types';
 
 export type CityType = {
-    id: number;
-    name: string;
-    region: string;
-    country: string;
-    lat: number;
-    lon: number;
-    url: string;
+  id: number;
+  name: string;
+  region: string;
+  country: string;
+  lat: number;
+  lon: number;
+  url: string;
 };
 
 interface CityResponse {
-    source: "database_cache" | "weatherapi_data";
-    distance_offset?: string;
-    cached_at?: string;
-    data: CityType[];
+  source: 'database_cache' | 'weatherapi_data';
+  distance_offset?: string;
+  cached_at?: string;
+  data: CityType[];
 }
 
-export async function getCity(
-  lat: number,
-  lon: number,
-): Promise<CityType> {
-    const serverUrl = config.SERVER_URL;
+export async function getCity(lat: number, lon: number): Promise<CityType> {
+  const serverUrl = config.SERVER_URL;
 
-    const url = new URL(`${serverUrl}/api/${EndpointType.City}`);
-    url.searchParams.set("lat", String(lat));
-    url.searchParams.set("lon", String(lon));
+  const url = new URL(`${serverUrl}/api/${EndpointType.City}`);
+  url.searchParams.set('lat', String(lat));
+  url.searchParams.set('lon', String(lon));
 
-    const res = await fetch(url.toString());
+  const res = await fetch(url.toString());
 
-    if (!res.ok) {
-        throw new Error(`City lookup fetch failed: ${res.status}`);
-    }
+  if (!res.ok) {
+    throw new Error(`City lookup fetch failed: ${res.status}`);
+  }
 
-    const json: CityResponse = await res.json();
+  const json: CityResponse = await res.json();
 
-    const cityDetails = json.data.at(0);
-    if (!cityDetails) throw new Error("No city found");
+  const cityDetails = json.data.at(0);
+  if (!cityDetails) throw new Error('No city found');
 
-    return cityDetails;
+  return cityDetails;
 }

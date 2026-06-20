@@ -1,5 +1,5 @@
-import { useAppSelector } from "~/state/storeHooks";
+import { useAppSelector } from '~/state/storeHooks';
 
 export function useLunar() {
-    return useAppSelector((s) => s.lunar.data);
+  return useAppSelector((s) => s.lunar.data);
 }

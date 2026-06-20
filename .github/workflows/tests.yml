@@ -1,4 +1,4 @@
-name: CI
+name: Test
 
 on:
   push:
@@ -6,30 +6,50 @@ on:
   pull_request:
 
 jobs:
-  test:
+  dependencies:
+    name: Dependencies
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: yarn
+      - run: yarn install
+      - run: yarn test:deps
 
-      - name: Install dependencies
-        run: yarn install
+  typescript:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: yarn
+      - run: yarn install
+      - run: yarn test:types
 
-      - name: Test - Dependencies
-        run: yarn test:deps
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: yarn
+      - run: yarn install
+      - run: yarn test:lint
 
-      - name: Test - TypeScript
-        run: yarn test:types
-
-      - name: Test - Lint
-        run: yarn test:lint
-
-      - name: Test - Prettier
-        run: yarn test:format
+  format:
+    name: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: yarn
+      - run: yarn install
+      - run: yarn test:format

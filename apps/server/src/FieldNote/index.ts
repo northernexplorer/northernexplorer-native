@@ -1,1 +1,1 @@
-export {FieldNoteController} from './controllers/FieldNoteController';
+export { FieldNoteController } from './controllers/FieldNoteController';

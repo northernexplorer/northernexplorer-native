@@ -1,7 +1,7 @@
-import {Markdown} from "~/layout";
+import { Markdown } from '~/layout';
 
 export function PrivacyPolicy() {
-    const PRIVACY_POLICY = `
+  const PRIVACY_POLICY = `
 Last updated: June 13, 2026
 
 Northern Explorer ("we", "our", or "us") respects your privacy and is committed to protecting any information you may provide while using our application or website.
@@ -59,5 +59,5 @@ We may update this Privacy Policy from time to time. Changes will be posted with
 If you have any questions about this Privacy Policy, you can contact us through the support section of the app or website.
 `;
 
-    return <Markdown content={PRIVACY_POLICY} />;
+  return <Markdown content={PRIVACY_POLICY} />;
 }

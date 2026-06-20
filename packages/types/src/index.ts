@@ -5,5 +5,5 @@ export enum EndpointType {
   Lunar = 'lunar',
   FieldNote = 'fieldNote',
   HistoricSites = 'historicSites',
-  HistoricSiteDetails = 'historicSiteDetails'
+  HistoricSiteDetails = 'historicSiteDetails',
 }

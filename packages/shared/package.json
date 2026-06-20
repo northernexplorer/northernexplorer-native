@@ -1,6 +1,0 @@
-{
-  "name": "@northernexplorer/shared",
-  "version": "1.0.0",
-  "private": true,
-  "types": "./src/index.ts"
-}

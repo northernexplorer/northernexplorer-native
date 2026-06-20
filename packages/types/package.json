@@ -1,0 +1,9 @@
+{
+  "name": "@northernexplorer/types",
+  "version": "1.0.0",
+  "private": true,
+  "types": "./src/index.ts",
+  "scripts": {
+    "test:deps": "depcheck --specials=typescript"
+  }
+}

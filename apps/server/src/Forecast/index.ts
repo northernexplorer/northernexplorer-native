@@ -1,3 +1,3 @@
-export {ForecastController} from './controllers/ForecastController';
+export { ForecastController } from './controllers/ForecastController';
 
-export {ForecastCache} from './entities/ForecastCache';
+export { ForecastCache } from './entities/ForecastCache';

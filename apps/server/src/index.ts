@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import ormConfig from './mikro-orm.config';
-import { config } from './config'; // Holds application vars like PORT
+import { config } from './config';
 
 import { CityController } from './City';
 import { WeatherController } from './Weather';
@@ -12,7 +12,7 @@ import { FieldNoteController } from './FieldNote';
 import { HistoricSiteController } from './HistoricSite';
 import { LunarController } from './Lunar';
 import { validateCoords } from './validateCoords';
-import { EndpointType } from '@northernexplorer/shared';
+import { EndpointType } from '@northernexplorer/types';
 
 const app = express();
 const PORT = config.PORT;
@@ -33,7 +33,11 @@ async function bootstrap() {
     app.get(`/api/${EndpointType.Weather}`, validateCoords, WeatherController.getWeatherData);
     app.get(`/api/${EndpointType.Forecast}`, validateCoords, ForecastController.getForecastData);
     app.get(`/api/${EndpointType.FieldNote}`, validateCoords, FieldNoteController.getFieldNoteData);
-    app.get(`/api/${EndpointType.HistoricSites}`, validateCoords, HistoricSiteController.getNearbyHistoricSites);
+    app.get(
+      `/api/${EndpointType.HistoricSites}`,
+      validateCoords,
+      HistoricSiteController.getNearbyHistoricSites,
+    );
     app.get(`/api/${EndpointType.HistoricSiteDetails}`, HistoricSiteController.getHistoricSiteById);
     app.get(`/api/${EndpointType.Lunar}`, LunarController.getLunarData);
 

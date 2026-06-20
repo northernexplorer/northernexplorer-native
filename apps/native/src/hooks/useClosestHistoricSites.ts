@@ -1,43 +1,43 @@
-import { useState, useEffect } from "react";
-import {getHistoricSites, HistoricSiteType} from "~/hooks/getClosestHistoricSites";
-import {useAppSelector} from "~/state/storeHooks";
+import { useState, useEffect } from 'react';
+import { getHistoricSites, HistoricSiteType } from '~/hooks/getClosestHistoricSites';
+import { useAppSelector } from '~/state/storeHooks';
 
 export function useClosestHistoricSites() {
-    const [sites, setSites] = useState<HistoricSiteType[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
-    const coords = useAppSelector((s) => s.location.data);
+  const [sites, setSites] = useState<HistoricSiteType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const coords = useAppSelector((s) => s.location.data);
 
-    useEffect(() => {
-        if(!coords) return;
-        const {lat, lon} = coords;
+  useEffect(() => {
+    if (!coords) return;
+    const { lat, lon } = coords;
 
-        let isMounted = true;
-        setLoading(true);
-        setError(null);
+    let isMounted = true;
+    setLoading(true);
+    setError(null);
 
-        getHistoricSites(lat, lon)
-            .then((data) => {
-                if (isMounted) {
-                    setSites(data);
-                }
-            })
-            .catch((err) => {
-                if (isMounted) {
-                    console.error("Failed to load historic sites:", err);
-                    setError(err);
-                }
-            })
-            .finally(() => {
-                if (isMounted) {
-                    setLoading(false);
-                }
-            });
+    getHistoricSites(lat, lon)
+      .then((data) => {
+        if (isMounted) {
+          setSites(data);
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          console.error('Failed to load historic sites:', err);
+          setError(err);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
 
-        return () => {
-            isMounted = false;
-        };
-    }, [coords]);
+    return () => {
+      isMounted = false;
+    };
+  }, [coords]);
 
-    return { sites, loading, error };
+  return { sites, loading, error };
 }

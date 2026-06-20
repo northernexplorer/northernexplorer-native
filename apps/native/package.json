@@ -1,11 +1,10 @@
 {
   "name": "northernexplorer-native",
   "version": "1.0.0",
-  "main": "expo-router/entry",
   "private": true,
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
-    "@northernexplorer/shared": "*",
+    "@northernexplorer/types": "*",
     "@reduxjs/toolkit": "^2.12.0",
     "expo": "~56.0.12",
     "expo-linking": "~56.0.14",
@@ -22,10 +21,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
-    "depcheck": "^1.4.7",
-    "eslint-config-expo": "~56.0.4",
-    "eslint-config-prettier": "^10.1.8",
-    "typescript": "~6.0.3"
+    "eslint-config-expo": "~56.0.4"
   },
   "scripts": {
     "start": "expo start",
@@ -36,9 +32,6 @@
     "build:ios": "eas build --platform ios --profile production",
     "build:web": "expo export --platform web",
     "fix:format": "prettier . --write",
-    "test:deps": "depcheck --specials=typescript --ignores=\"depcheck,prettier,typescript,~\"",
-    "test:format": "prettier . --check",
-    "test:lint": "eslint . --ext .ts,.tsx,.js,.jsx",
-    "test:types": "tsc --noEmit"
+    "test:deps": "depcheck --specials=typescript --ignores=\"~\""
   }
 }

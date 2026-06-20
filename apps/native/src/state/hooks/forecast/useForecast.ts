@@ -1,5 +1,5 @@
-import { useAppSelector } from "~/state/storeHooks";
+import { useAppSelector } from '~/state/storeHooks';
 
 export function useForecast() {
-    return useAppSelector((s) => s.forecast.data);
+  return useAppSelector((s) => s.forecast.data);
 }
