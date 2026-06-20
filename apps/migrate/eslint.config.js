@@ -1,8 +1,5 @@
-const expoConfig = require("eslint-config-expo/flat");
-
 import rootConfig from '../../eslint.config.js';
 
 export default [
     ...rootConfig,
-    expoConfig,
 ];

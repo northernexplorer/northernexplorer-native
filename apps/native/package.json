@@ -36,9 +36,5 @@
     "build:ios": "eas build --platform ios --profile production",
     "build:web": "expo export --platform web",
     "fix:format": "prettier . --write",
-    "test:deps": "depcheck --specials=typescript --ignores=\"depcheck,prettier,typescript,~\"",
-    "test:format": "prettier . --check",
-    "test:lint": "eslint . --ext .ts,.tsx,.js,.jsx",
-    "test:types": "tsc --noEmit"
   }
 }

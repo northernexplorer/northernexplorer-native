@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Image, useWindowDimensions, Modal, StyleSheet } from "react-native";
+import { View, Text, Pressable, Image, useWindowDimensions, Modal } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";

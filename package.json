@@ -13,6 +13,7 @@
     "start:ios": "yarn workspace northernexplorer-native ios",
     "start:migrate": "yarn workspace northernexplorer-migrate start",
     "start:web": "yarn workspace northernexplorer-native web",
-    "start:server": "yarn workspace northernexplorer-server dev"
+    "start:server": "yarn workspace northernexplorer-server dev",
+    "test:lint": "eslint . --ext .ts,.tsx,.js,.jsx",
   }
 }
