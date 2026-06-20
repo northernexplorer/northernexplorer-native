@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import ormConfig from './mikro-orm.config';
-import { config } from './config'; // Holds application vars like PORT
+import { config } from './config';
 
 import { CityController } from './City';
 import { WeatherController } from './Weather';
