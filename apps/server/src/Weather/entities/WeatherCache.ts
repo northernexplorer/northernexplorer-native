@@ -20,7 +20,7 @@ export class WeatherCache {
     type: 'datetime',
     columnType: 'timestamp',
     defaultRaw: 'CURRENT_TIMESTAMP',
-    extra: 'on update CURRENT_TIMESTAMP'
+    extra: 'on update CURRENT_TIMESTAMP',
   })
   updatedAt!: Date & Opt;
 }

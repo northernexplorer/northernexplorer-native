@@ -36,23 +36,23 @@ export class LunarController {
       // Determine structural name layout based on standard octants
       let phaseName: string;
       if (moonAgeDays < 1) {
-        phaseName = "New Moon";
+        phaseName = 'New Moon';
       } else if (moonAgeDays < 6.38) {
-        phaseName = "Waxing Crescent";
+        phaseName = 'Waxing Crescent';
       } else if (moonAgeDays < 8.38) {
-        phaseName = "First Quarter";
+        phaseName = 'First Quarter';
       } else if (moonAgeDays < 13.76) {
-        phaseName = "Waxing Gibbous";
+        phaseName = 'Waxing Gibbous';
       } else if (moonAgeDays < 15.76) {
-        phaseName = "Full Moon";
+        phaseName = 'Full Moon';
       } else if (moonAgeDays < 21.14) {
-        phaseName = "Waning Gibbous";
+        phaseName = 'Waning Gibbous';
       } else if (moonAgeDays < 23.14) {
-        phaseName = "Third Quarter";
+        phaseName = 'Third Quarter';
       } else if (moonAgeDays < 28.53) {
-        phaseName = "Waning Crescent";
+        phaseName = 'Waning Crescent';
       } else {
-        phaseName = "New Moon";
+        phaseName = 'New Moon';
       }
 
       // Format response payload matching your Expo client contracts exactly
@@ -61,9 +61,8 @@ export class LunarController {
         moon_age_days: parseFloat(moonAgeDays.toFixed(2)),
         illumination_percentage: parseFloat((illumination * 100).toFixed(1)),
         phase_name: phaseName,
-        is_waxing: currentPhaseFraction < 0.5
+        is_waxing: currentPhaseFraction < 0.5,
       });
-
     } catch (error) {
       next(error);
     }

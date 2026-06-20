@@ -1,3 +1,3 @@
-export {CityController} from './controllers/CityController';
+export { CityController } from './controllers/CityController';
 
-export {CityCache} from './entities/CityCache';
+export { CityCache } from './entities/CityCache';

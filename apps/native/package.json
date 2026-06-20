@@ -1,7 +1,6 @@
 {
   "name": "northernexplorer-native",
   "version": "1.0.0",
-  "main": "expo-router/entry",
   "private": true,
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

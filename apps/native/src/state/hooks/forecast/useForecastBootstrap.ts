@@ -1,60 +1,51 @@
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "~/state/storeHooks";
-import { getForecast } from "./getForecast";
-import {
-    setForecast,
-    setForecastError,
-    setForecastLoading,
-} from "~/state/slices/forecastSlice";
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
+import { getForecast } from './getForecast';
+import { setForecast, setForecastError, setForecastLoading } from '~/state/slices/forecastSlice';
 
 const STALE_TIME = 1000 * 60 * 30;
 
 export function useForecastBootstrap() {
-    const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-    const coords = useAppSelector((s) => s.location.data);
-    const { data, lastUpdated } = useAppSelector((s) => s.forecast);
+  const coords = useAppSelector((s) => s.location.data);
+  const { data, lastUpdated } = useAppSelector((s) => s.forecast);
 
-    useEffect(() => {
-        if (!coords) return;
+  useEffect(() => {
+    if (!coords) return;
 
-        const isStale =
-            !lastUpdated ||
-            Date.now() - lastUpdated > STALE_TIME;
+    const isStale = !lastUpdated || Date.now() - lastUpdated > STALE_TIME;
 
-        if (data && !isStale) return;
+    if (data && !isStale) return;
 
-        let cancelled = false;
+    let cancelled = false;
 
-        const { lat, lon } = coords;
+    const { lat, lon } = coords;
 
-        async function run() {
-            try {
-                dispatch(setForecastLoading(true));
+    async function run() {
+      try {
+        dispatch(setForecastLoading(true));
 
-                const result = await getForecast(
-                    lat,
-                    lon
-                );
+        const result = await getForecast(lat, lon);
 
-                if (cancelled) return;
+        if (cancelled) return;
 
-                dispatch(setForecast(result));
-            } catch {
-                if (!cancelled) {
-                    dispatch(setForecastError("Failed to fetch forecast"));
-                }
-            } finally {
-                if (!cancelled) {
-                    dispatch(setForecastLoading(false));
-                }
-            }
+        dispatch(setForecast(result));
+      } catch {
+        if (!cancelled) {
+          dispatch(setForecastError('Failed to fetch forecast'));
         }
+      } finally {
+        if (!cancelled) {
+          dispatch(setForecastLoading(false));
+        }
+      }
+    }
 
-        run();
+    run();
 
-        return () => {
-            cancelled = true;
-        };
-    }, [coords, data, lastUpdated, dispatch]);
+    return () => {
+      cancelled = true;
+    };
+  }, [coords, data, lastUpdated, dispatch]);
 }

@@ -12,7 +12,7 @@ import { FieldNoteController } from './FieldNote';
 import { HistoricSiteController } from './HistoricSite';
 import { LunarController } from './Lunar';
 import { validateCoords } from './validateCoords';
-import { EndpointType } from "@northernexplorer/types";
+import { EndpointType } from '@northernexplorer/types';
 
 const app = express();
 const PORT = config.PORT;
@@ -33,7 +33,11 @@ async function bootstrap() {
     app.get(`/api/${EndpointType.Weather}`, validateCoords, WeatherController.getWeatherData);
     app.get(`/api/${EndpointType.Forecast}`, validateCoords, ForecastController.getForecastData);
     app.get(`/api/${EndpointType.FieldNote}`, validateCoords, FieldNoteController.getFieldNoteData);
-    app.get(`/api/${EndpointType.HistoricSites}`, validateCoords, HistoricSiteController.getNearbyHistoricSites);
+    app.get(
+      `/api/${EndpointType.HistoricSites}`,
+      validateCoords,
+      HistoricSiteController.getNearbyHistoricSites,
+    );
     app.get(`/api/${EndpointType.HistoricSiteDetails}`, HistoricSiteController.getHistoricSiteById);
     app.get(`/api/${EndpointType.Lunar}`, LunarController.getLunarData);
 

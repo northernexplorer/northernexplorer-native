@@ -1,3 +1,3 @@
-export {HistoricSiteController} from './controllers/HistoricSiteController';
+export { HistoricSiteController } from './controllers/HistoricSiteController';
 
-export {HistoricSite} from './entities/HistoricSite';
+export { HistoricSite } from './entities/HistoricSite';

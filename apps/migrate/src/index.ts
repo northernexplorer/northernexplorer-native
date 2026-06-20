@@ -28,9 +28,9 @@ async function runIncrementalMigrations() {
 
     // 2. Query already executed migrations
     const { rows } = await client.query('SELECT migration_key FROM migrations');
-    const executedKeys = new Set(rows.map(row => row.migration_key));
+    const executedKeys = new Set(rows.map((row) => row.migration_key));
 
-    const pendingKeys = Object.keys(migrationsRegistry).filter(key => !executedKeys.has(key));
+    const pendingKeys = Object.keys(migrationsRegistry).filter((key) => !executedKeys.has(key));
 
     if (pendingKeys.length === 0) {
       console.log('✨ Database schema is up to date. No pending migrations found.');
@@ -57,10 +57,7 @@ async function runIncrementalMigrations() {
         }
 
         // Log this key so it skips next time (using standard $1 token placeholder for pg)
-        await client.query(
-          'INSERT INTO migrations (migration_key) VALUES ($1)',
-          [key]
-        );
+        await client.query('INSERT INTO migrations (migration_key) VALUES ($1)', [key]);
 
         await client.query('COMMIT');
         console.log(`✅ Completed and recorded migration: [${key}]`);

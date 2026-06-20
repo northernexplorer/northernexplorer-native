@@ -1,1 +1,1 @@
-export {Migrations} from './entities/Migrations';
+export { Migrations } from './entities/Migrations';

@@ -1,59 +1,50 @@
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "~/state/storeHooks";
-import {
-    setWeather,
-    setWeatherLoading,
-    setWeatherError,
-} from "~/state/slices/weatherSlice";
-import { getWeather } from "./getWeather";
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
+import { setWeather, setWeatherLoading, setWeatherError } from '~/state/slices/weatherSlice';
+import { getWeather } from './getWeather';
 
 export function useWeatherBootstrap() {
-    const dispatch = useAppDispatch();
-    const coords = useAppSelector((s) => s.location.data);
-    const { data, lastUpdated } = useAppSelector((s) => s.weather);
+  const dispatch = useAppDispatch();
+  const coords = useAppSelector((s) => s.location.data);
+  const { data, lastUpdated } = useAppSelector((s) => s.weather);
 
-    useEffect(() => {
-        if (!coords) return;
+  useEffect(() => {
+    if (!coords) return;
 
-        const STALE_TIME = 1000 * 60 * 30;
+    const STALE_TIME = 1000 * 60 * 30;
 
-        const isStale =
-            !lastUpdated ||
-            Date.now() - lastUpdated > STALE_TIME;
+    const isStale = !lastUpdated || Date.now() - lastUpdated > STALE_TIME;
 
-        if (data && !isStale) return;
+    if (data && !isStale) return;
 
-        let cancelled = false;
+    let cancelled = false;
 
-        const { lat, lon } = coords;
+    const { lat, lon } = coords;
 
-        async function run() {
-            try {
-                dispatch(setWeatherLoading(true));
+    async function run() {
+      try {
+        dispatch(setWeatherLoading(true));
 
-                const result = await getWeather(
-                    lat,
-                    lon
-                );
+        const result = await getWeather(lat, lon);
 
-                if (cancelled) return;
+        if (cancelled) return;
 
-                dispatch(setWeather(result));
-            } catch {
-                if (!cancelled) {
-                    dispatch(setWeatherError("Failed to fetch weather"));
-                }
-            } finally {
-                if (!cancelled) {
-                    dispatch(setWeatherLoading(false));
-                }
-            }
+        dispatch(setWeather(result));
+      } catch {
+        if (!cancelled) {
+          dispatch(setWeatherError('Failed to fetch weather'));
         }
+      } finally {
+        if (!cancelled) {
+          dispatch(setWeatherLoading(false));
+        }
+      }
+    }
 
-        run();
+    run();
 
-        return () => {
-            cancelled = true;
-        };
-    }, [coords, data, lastUpdated, dispatch]);
+    return () => {
+      cancelled = true;
+    };
+  }, [coords, data, lastUpdated, dispatch]);
 }
