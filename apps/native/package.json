@@ -22,10 +22,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
-    "depcheck": "^1.4.7",
-    "eslint-config-expo": "~56.0.4",
-    "eslint-config-prettier": "^10.1.8",
-    "typescript": "~6.0.3"
+    "eslint-config-expo": "~56.0.4"
   },
   "scripts": {
     "start": "expo start",
@@ -35,6 +32,7 @@
     "build:android": "eas build --platform android --profile production",
     "build:ios": "eas build --platform ios --profile production",
     "build:web": "expo export --platform web",
-    "fix:format": "prettier . --write"
+    "fix:format": "prettier . --write",
+    "test:deps": "depcheck --specials=typescript --ignores=\"~\""
   }
 }
