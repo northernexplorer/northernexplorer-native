@@ -13,7 +13,7 @@
     "start:ios": "yarn workspace northernexplorer-native ios",
     "start:migrate": "yarn workspace northernexplorer-migrate start",
     "start:web": "yarn workspace northernexplorer-native web",
-    "start:server": "yarn workspace northernexplorer-server dev","test:deps": "depcheck --specials=typescript --ignores=\"eslint-plugin-prettier,prettier,depcheck,@types/node\" && yarn workspaces run test:deps",
+    "start:server": "yarn workspace northernexplorer-server dev","test:deps": "depcheck --specials=typescript --ignores=\"eslint-plugin-prettier,prettier,depcheck,@types/node,tsx\" && yarn workspaces run test:deps",
     "test:format": "prettier . --check",
     "test:lint": "eslint .",
     "test:types": "tsc --build --force"
