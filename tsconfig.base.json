@@ -9,6 +9,6 @@
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "noEmit": true,
+    "noEmit": true
   }
 }
