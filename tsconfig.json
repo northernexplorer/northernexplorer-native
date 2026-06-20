@@ -1,0 +1,10 @@
+// tsconfig.json (The new root traffic controller)
+{
+  "files": [],
+  "references": [
+    { "path": "./apps/migrate" },
+    { "path": "./apps/server" },
+    { "path": "./apps/native" },
+    { "path": "./packages/types" }
+  ]
+}

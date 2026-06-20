@@ -1,10 +1,10 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": ["expo/tsconfig.base", "../../tsconfig.base.json"],
   "compilerOptions": {
     "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": ["./src/*"]
     }
-  }
+  },
+  "include": ["src/**/*"]
 }

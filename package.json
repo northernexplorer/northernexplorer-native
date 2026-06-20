@@ -14,6 +14,9 @@
     "start:migrate": "yarn workspace northernexplorer-migrate start",
     "start:web": "yarn workspace northernexplorer-native web",
     "start:server": "yarn workspace northernexplorer-server dev",
-    "test:lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "test:deps": "depcheck --specials=typescript --ignores=\"depcheck,prettier,typescript,~\"",
+    "test:format": "prettier . --check",
+    "test:lint": "eslint .",
+    "test:types": "tsc --build --force"
   }
 }

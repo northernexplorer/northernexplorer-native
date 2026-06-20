@@ -13,7 +13,7 @@
     "@mikro-orm/core": "^7.1.4",
     "@mikro-orm/decorators": "^7.1.4",
     "@mikro-orm/postgresql": "^7.1.4",
-    "@northernexplorer/shared": "*",
+    "@northernexplorer/types": "*",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^4.21.0",

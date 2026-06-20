@@ -1,5 +1,5 @@
 import { config } from "~/config";
-import { EndpointType } from "@northernexplorer/shared";
+import { EndpointType } from "@northernexplorer/types";
 
 export type HistoricSiteType = {
     id: number;

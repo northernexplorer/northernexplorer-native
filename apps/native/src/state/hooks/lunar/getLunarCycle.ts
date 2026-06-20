@@ -1,5 +1,5 @@
 import { config } from "~/config";
-import { EndpointType } from "@northernexplorer/shared";
+import { EndpointType } from "@northernexplorer/types";
 
 export type LunarCycleType = {
     phase_fraction: number;          // Position in cycle (0.0 to 1.0)

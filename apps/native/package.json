@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
-    "@northernexplorer/shared": "*",
+    "@northernexplorer/types": "*",
     "@reduxjs/toolkit": "^2.12.0",
     "expo": "~56.0.12",
     "expo-linking": "~56.0.14",
@@ -35,6 +35,6 @@
     "build:android": "eas build --platform android --profile production",
     "build:ios": "eas build --platform ios --profile production",
     "build:web": "expo export --platform web",
-    "fix:format": "prettier . --write",
+    "fix:format": "prettier . --write"
   }
 }

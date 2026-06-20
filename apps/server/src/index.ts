@@ -12,7 +12,7 @@ import { FieldNoteController } from './FieldNote';
 import { HistoricSiteController } from './HistoricSite';
 import { LunarController } from './Lunar';
 import { validateCoords } from './validateCoords';
-import { EndpointType } from '@northernexplorer/shared';
+import { EndpointType } from "@northernexplorer/types";
 
 const app = express();
 const PORT = config.PORT;

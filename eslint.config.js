@@ -14,7 +14,7 @@ export default [
             parser: tsParser,
             parserOptions: {
                 // Look for tsconfig targets dynamically across both directories
-                project: ['./apps/*/tsconfig.json', './packages/*/tsconfig.json'],
+                project: ['./apps/*/tsconfig.base.json', './packages/*/tsconfig.base.json'],
                 tsconfigRootDir: import.meta.dirname,
             },
         },
