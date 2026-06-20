@@ -18,7 +18,7 @@ async function runIncrementalMigrations() {
   const client = await pool.connect();
 
   try {
-    // 1. Ensure tracking table exists
+    // Ensure tracking table exists
     await client.query(`
         CREATE TABLE IF NOT EXISTS "migrations" (
                                                            "migration_key" VARCHAR(255) PRIMARY KEY,
@@ -26,7 +26,7 @@ async function runIncrementalMigrations() {
                                         );
     `);
 
-    // 2. Query already executed migrations
+    // Query already executed migrations
     const { rows } = await client.query('SELECT migration_key FROM migrations');
     const executedKeys = new Set(rows.map((row) => row.migration_key));
 
@@ -39,7 +39,7 @@ async function runIncrementalMigrations() {
 
     console.log(`📥 Found ${pendingKeys.length} pending migration batches to execute.`);
 
-    // 3. Process each missing migration file sequentially
+    // Process each missing migration file sequentially
     for (const key of pendingKeys) {
       console.log(`\n⚡ Processing batch: [${key}]`);
       const sqlLines = migrationsRegistry[key];
