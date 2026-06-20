@@ -21,7 +21,7 @@ export function Lunar({ data }: { data: LunarCycleType }) {
         <View style={{width: 160}}>
             <View style={{ alignItems: "center", marginBottom: 10 }}>
                 <MaterialCommunityIcons
-                    name={icon as any}
+                    name={icon}
                     size={72}
                     color="rgba(255,255,255,0.9)"
                 />

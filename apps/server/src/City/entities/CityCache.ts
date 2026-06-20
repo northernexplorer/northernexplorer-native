@@ -14,7 +14,7 @@ export class CityCache {
   lon!: number;
 
   @Property({ type: 'json', columnType: 'text' })
-  cityData!: any;
+  cityData!: unknown;
 
   @Property({
     type: 'datetime',

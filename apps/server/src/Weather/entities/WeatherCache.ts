@@ -14,7 +14,7 @@ export class WeatherCache {
   lon!: number;
 
   @Property({ type: 'json', columnType: 'text' })
-  weatherData!: any;
+  weatherData!: unknown;
 
   @Property({
     type: 'datetime',

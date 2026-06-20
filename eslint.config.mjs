@@ -5,10 +5,14 @@ import path from 'path';
 
 export default [
     {
-        ignores: ['**/dist/**', '**/.expo/**', '**/node_modules/**'],
+        ignores: ['**/dist/**', '**/.expo/**', '**/node_modules/**', 'web-build/**'],
     },
     {
-        files: ['apps/**/*.{ts,tsx}', 'packages/**/*.{ts,tsx}'],
+        files: [
+            '**/*.{ts,tsx}',
+            'apps/**/*.{ts,tsx}',
+            'packages/**/*.{ts,tsx}'
+        ],
         languageOptions: {
             parser: tsParser,
             parserOptions: {
@@ -24,8 +28,6 @@ export default [
         },
         rules: {
             ...tsPlugin.configs.recommended.rules,
-            "@typescript-eslint/no-unused-vars": "error",
-            "react-hooks/set-state-in-effect": "off"
         },
     },
     prettier,
