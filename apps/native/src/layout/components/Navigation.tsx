@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '~/layout/styles';
 import { getImagePath } from '~/lib/getImagePath';
 
-const MENU_ITEMS = [{ label: 'Dashboard', route: '/', icon: 'grid-outline' as const }];
+const MENU_ITEMS = [{ label: 'Dashboard', route: '/', icon: 'grid-outline' as const }, { label: 'Map', route: '/map', icon: 'map' as const }];
 
 export function Navigation() {
   const router = useRouter();
