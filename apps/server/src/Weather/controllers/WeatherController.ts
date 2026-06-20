@@ -5,8 +5,13 @@ import { config } from '../../config.js';
 
 export class WeatherController {
 
+
+
+
   public static async getInternalWeatherData(lat: number, lon: number): Promise<any | null> {
     const em = RequestContext.getEntityManager()!;
+
+
 
     const query = `
         SELECT weather_data as "weatherData"
@@ -20,6 +25,7 @@ export class WeatherController {
         ORDER BY distance_meters ASC
             LIMIT 1
     `;
+
 
     const rawResults = await em.getConnection().execute(query);
     const cachedRecord = rawResults[0];

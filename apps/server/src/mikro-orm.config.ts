@@ -9,14 +9,14 @@ import { HistoricSite } from './HistoricSite';
 import { Migrations} from './System';
 import { WeatherCache } from './Weather';
 
-dotenv.config();
+dotenv.config({path:'.env.default'});
 
 export default defineConfig({
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '5432', 10),
   dbName: process.env.DB_NAME || 'northernexplorer',
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASS || 'password',
+  password: process.env.DB_PASS || 'BladeRunner1984',
   metadataProvider: ReflectMetadataProvider,
   entities: [CityCache, ForecastCache, HistoricSite, Migrations, WeatherCache],
   debug: process.env.NODE_ENV !== 'production',
