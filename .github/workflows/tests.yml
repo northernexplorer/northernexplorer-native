@@ -1,4 +1,4 @@
-name: CI
+name: Test
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   dependencies:
-    name: Test - Dependencies
+    name: Dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -19,7 +19,7 @@ jobs:
       - run: yarn test:deps
 
   typescript:
-    name: Test - TypeScript
+    name: TypeScript
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -31,7 +31,7 @@ jobs:
       - run: yarn test:types
 
   lint:
-    name: Test - Linting
+    name: Linting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -43,7 +43,7 @@ jobs:
       - run: yarn test:lint
 
   format:
-    name: Test - Formatting
+    name: Formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
