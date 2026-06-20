@@ -39,7 +39,7 @@ export class ForecastController {
       }
 
       // Cache Miss: Fetch fresh payload from WeatherAPI
-      const apiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${config.WEATHER_API_KEY}&q=${encodeURIComponent(`${lat},${lon}`)}&days=3&aqi=no`;
+      const apiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${config.WEATHER_API_KEY}&q=${encodeURIComponent(`${lat},${lon}`)}&days=7&aqi=no`;
 
       const apiResponse = await fetch(apiUrl);
       if (!apiResponse.ok) {
