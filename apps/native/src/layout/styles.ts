@@ -1,4 +1,4 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   content: {
@@ -23,10 +23,10 @@ export const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8,
   },
-    background: {
-        flex: 1,
-        minHeight: '100%',
-    },
+  background: {
+    flex: 1,
+    minHeight: '100%',
+  },
   title: {
     fontSize: 26,
     fontWeight: '700',
@@ -149,28 +149,28 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-    darkOverlay: {
-        ...StyleSheet.absoluteFill,
-        backgroundColor: 'rgba(0,0,0,0.35)',
-    },
-    page: {
-        flexGrow: 1,
-        alignItems: 'stretch',
-    },
-    sidebar: {
-        paddingLeft: 24,
-        paddingTop: 20,
-        backgroundColor: '#1a1a1a',
-    },
-    sidebarDesktop: {
-        width: 320,
-        borderLeftWidth: 1,
-        borderLeftColor: '#333333',
-    },
-    sidebarMobile: {
-        width: '100%',
-        borderTopWidth: 1,
-        borderTopColor: '#333333',
-        paddingRight: 24,
-    },
+  darkOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  page: {
+    flexGrow: 1,
+    alignItems: 'stretch',
+  },
+  sidebar: {
+    paddingLeft: 24,
+    paddingTop: 20,
+    backgroundColor: '#1a1a1a',
+  },
+  sidebarDesktop: {
+    width: 320,
+    borderLeftWidth: 1,
+    borderLeftColor: '#333333',
+  },
+  sidebarMobile: {
+    width: '100%',
+    borderTopWidth: 1,
+    borderTopColor: '#333333',
+    paddingRight: 24,
+  },
 });
