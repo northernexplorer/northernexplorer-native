@@ -47,5 +47,5 @@ export function useForecastBootstrap() {
     return () => {
       cancelled = true;
     };
-  }, [coords, data, lastUpdated, dispatch]);
+  }, [coords, lastUpdated, dispatch]);
 }

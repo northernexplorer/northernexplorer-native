@@ -41,5 +41,5 @@ export function useLunarBootstrap() {
     return () => {
       cancelled = true;
     };
-  }, [data, lastUpdated, dispatch]);
+  }, [lastUpdated, dispatch]);
 }

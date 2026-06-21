@@ -46,5 +46,5 @@ export function useWeatherBootstrap() {
     return () => {
       cancelled = true;
     };
-  }, [coords, data, lastUpdated, dispatch]);
+  }, [coords, lastUpdated, dispatch]);
 }
