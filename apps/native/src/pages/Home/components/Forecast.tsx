@@ -20,7 +20,7 @@ export function Forecast({ data }: ForecastProps) {
         const localDate = new Date(`${f.date}T00:00:00`);
 
         return (
-          <View key={f.date_epoch} style={[styles.tile, { width: 80 }]}>
+          <View key={f.date_epoch} style={[styles.tile, { width: 80, padding: 5 }]}>
             <Text style={styles.hourDay}>
               {localDate.toLocaleDateString('en-CA', {
                 weekday: 'short',

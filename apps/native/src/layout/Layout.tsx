@@ -12,7 +12,7 @@ interface Props {
     Content: ComponentType;
     components?: ComponentType[];
     title?: string;
-    fullPage?: boolean
+    fullPage?: boolean;
 }
 
 export function Layout({ Content, components, title, fullPage }: Props) {
@@ -35,15 +35,24 @@ export function Layout({ Content, components, title, fullPage }: Props) {
                     },
                 ]}
             >
-                <View style={isMobileView ? { width: '100%' } : { flex: 1, alignSelf: 'stretch' }}>
+                <View style={{ flex: 1, width: '100%', alignSelf: 'stretch' }}>
                     <ImageBackground
                         style={[styles.background, { alignSelf: 'stretch' }]}
                         source={theme?.image ? { uri: getImagePath(theme.image) } : undefined}
                     >
                         <View pointerEvents="none" style={styles.darkOverlay} />
-                        <View style={{ flex: 1, padding: fullPage ? 0 : 10 }}>
-                            {title && <Text style={styles.title}>{title}</Text>}
-                            <Content />
+
+                        <View style={{ flex: 1, padding: fullPage ? 0 : 10, display: 'flex', flexDirection: 'column' }}>
+                            {/* Keep padding on title if fullPage is active so text isn't hard up against the glass */}
+                            {title && (
+                                <Text style={[styles.title, fullPage && { paddingHorizontal: 10, paddingTop: 10 }]}>
+                                    {title}
+                                </Text>
+                            )}
+
+                            <View style={{ flexGrow: 1, display: 'flex', width: '100%' }}>
+                                <Content />
+                            </View>
                         </View>
                     </ImageBackground>
                 </View>
