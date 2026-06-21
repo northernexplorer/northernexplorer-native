@@ -1,5 +1,5 @@
-import { useAppSelector } from "~/state/storeHooks";
+import { useAppSelector } from '~/state/storeHooks';
 
 export function useFieldNote() {
-    return useAppSelector((s) => s.fieldNote.data);
+  return useAppSelector((s) => s.fieldNote.data);
 }

@@ -4,8 +4,11 @@ import { ForecastCache } from '../entities/ForecastCache'; // Verify your exact 
 import { config } from '../../config.js';
 
 export class ForecastController {
-
-  public static async getForecastData(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public static async getForecastData(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const lat = res.locals.lat;
       const lon = res.locals.lon;
@@ -30,16 +33,19 @@ export class ForecastController {
 
       if (cachedResult) {
         res.json({
-          source: "database_cache",
+          source: 'database_cache',
           distance_offset: `${Math.round(cachedResult.distanceMeters)} meters`,
           cached_at: cachedResult.updatedAt,
-          data: typeof cachedResult.forecastData === 'string' ? JSON.parse(cachedResult.forecastData) : cachedResult.forecastData
+          data:
+            typeof cachedResult.forecastData === 'string'
+              ? JSON.parse(cachedResult.forecastData)
+              : cachedResult.forecastData,
         });
         return;
       }
 
       // Cache Miss: Fetch fresh payload from WeatherAPI
-      const apiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${config.WEATHER_API_KEY}&q=${encodeURIComponent(`${lat},${lon}`)}&days=3&aqi=no`;
+      const apiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${config.WEATHER_API_KEY}&q=${encodeURIComponent(`${lat},${lon}`)}&days=7&aqi=no`;
 
       const apiResponse = await fetch(apiUrl);
       if (!apiResponse.ok) {
@@ -52,7 +58,7 @@ export class ForecastController {
       const freshCacheEntry = em.create(ForecastCache, {
         lat,
         lon,
-        forecastData: parsedJson
+        forecastData: parsedJson,
       });
       em.persist(freshCacheEntry);
       await em.flush();
@@ -62,10 +68,9 @@ export class ForecastController {
       await em.getConnection().execute(cleanupQuery);
 
       res.json({
-        source: "weatherapi_data",
-        data: parsedJson
+        source: 'weatherapi_data',
+        data: parsedJson,
       });
-
     } catch (error) {
       next(error);
     }

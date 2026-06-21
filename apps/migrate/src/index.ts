@@ -18,7 +18,7 @@ async function runIncrementalMigrations() {
   const client = await pool.connect();
 
   try {
-    // 1. Ensure tracking table exists
+    // Ensure tracking table exists
     await client.query(`
         CREATE TABLE IF NOT EXISTS "migrations" (
                                                            "migration_key" VARCHAR(255) PRIMARY KEY,
@@ -26,11 +26,11 @@ async function runIncrementalMigrations() {
                                         );
     `);
 
-    // 2. Query already executed migrations
+    // Query already executed migrations
     const { rows } = await client.query('SELECT migration_key FROM migrations');
-    const executedKeys = new Set(rows.map(row => row.migration_key));
+    const executedKeys = new Set(rows.map((row) => row.migration_key));
 
-    const pendingKeys = Object.keys(migrationsRegistry).filter(key => !executedKeys.has(key));
+    const pendingKeys = Object.keys(migrationsRegistry).filter((key) => !executedKeys.has(key));
 
     if (pendingKeys.length === 0) {
       console.log('✨ Database schema is up to date. No pending migrations found.');
@@ -39,7 +39,7 @@ async function runIncrementalMigrations() {
 
     console.log(`📥 Found ${pendingKeys.length} pending migration batches to execute.`);
 
-    // 3. Process each missing migration file sequentially
+    // Process each missing migration file sequentially
     for (const key of pendingKeys) {
       console.log(`\n⚡ Processing batch: [${key}]`);
       const sqlLines = migrationsRegistry[key];
@@ -57,10 +57,7 @@ async function runIncrementalMigrations() {
         }
 
         // Log this key so it skips next time (using standard $1 token placeholder for pg)
-        await client.query(
-          'INSERT INTO migrations (migration_key) VALUES ($1)',
-          [key]
-        );
+        await client.query('INSERT INTO migrations (migration_key) VALUES ($1)', [key]);
 
         await client.query('COMMIT');
         console.log(`✅ Completed and recorded migration: [${key}]`);

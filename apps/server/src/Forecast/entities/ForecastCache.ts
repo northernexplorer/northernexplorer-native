@@ -14,13 +14,13 @@ export class ForecastCache {
   lon!: number;
 
   @Property({ type: 'json', columnType: 'text' })
-  forecastData!: any;
+  forecastData!: unknown;
 
   @Property({
     type: 'datetime',
     columnType: 'timestamp',
     defaultRaw: 'CURRENT_TIMESTAMP',
-    extra: 'on update CURRENT_TIMESTAMP'
+    extra: 'on update CURRENT_TIMESTAMP',
   })
   updatedAt!: Date & Opt;
 }

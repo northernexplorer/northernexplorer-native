@@ -14,13 +14,13 @@ export class WeatherCache {
   lon!: number;
 
   @Property({ type: 'json', columnType: 'text' })
-  weatherData!: any;
+  weatherData!: unknown;
 
   @Property({
     type: 'datetime',
     columnType: 'timestamp',
     defaultRaw: 'CURRENT_TIMESTAMP',
-    extra: 'on update CURRENT_TIMESTAMP'
+    extra: 'on update CURRENT_TIMESTAMP',
   })
   updatedAt!: Date & Opt;
 }

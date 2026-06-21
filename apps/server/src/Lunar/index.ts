@@ -1,1 +1,1 @@
-export {LunarController} from './controllers/LunarController';
+export { LunarController } from './controllers/LunarController';

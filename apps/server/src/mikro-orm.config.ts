@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import { CityCache } from './City';
 import { ForecastCache } from './Forecast';
 import { HistoricSite } from './HistoricSite';
-import { Migrations} from './System';
+import { Migrations } from './System';
 import { WeatherCache } from './Weather';
 
 dotenv.config({path:'.env.default'});

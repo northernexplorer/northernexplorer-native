@@ -31,11 +31,14 @@ export class CityController {
 
       if (cachedResult) {
         res.json({
-          source: "database_cache",
+          source: 'database_cache',
           distance_offset: `${Math.round(cachedResult.distance_meters)} meters`,
           cached_at: cachedResult.updatedAt,
           // If your DB driver automatically parsed the text to json, return it; otherwise parse it
-          data: typeof cachedResult.cityData === 'string' ? JSON.parse(cachedResult.cityData) : cachedResult.cityData
+          data:
+            typeof cachedResult.cityData === 'string'
+              ? JSON.parse(cachedResult.cityData)
+              : cachedResult.cityData,
         });
         return;
       }
@@ -54,7 +57,7 @@ export class CityController {
       const newCacheEntry = em.create(CityCache, {
         lat: Number(lat),
         lon: Number(lon),
-        cityData: parsedJson
+        cityData: parsedJson,
       });
 
       em.persist(newCacheEntry);
@@ -64,10 +67,9 @@ export class CityController {
       await em.getConnection().execute(cleanupQuery);
 
       res.json({
-        source: "weatherapi_data",
-        data: parsedJson
+        source: 'weatherapi_data',
+        data: parsedJson,
       });
-
     } catch (error) {
       next(error);
     }

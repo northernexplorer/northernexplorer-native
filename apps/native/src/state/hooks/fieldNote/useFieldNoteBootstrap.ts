@@ -1,69 +1,55 @@
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "~/state/storeHooks";
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
 import {
-    setFieldNote,
-    setFieldNoteLoading,
-    setFieldNoteError,
-} from "~/state/slices/fieldNoteSlice";
-import { getFieldNote } from "./getFieldNote";
+  setFieldNote,
+  setFieldNoteLoading,
+  setFieldNoteError,
+} from '~/state/slices/fieldNoteSlice';
+import { getFieldNote } from './getFieldNote';
 
 const STALE_TIME = 1000 * 60 * 60; // 1 hour
 
 export function useFieldNoteBootstrap() {
-    const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-    const { data, lastUpdated } = useAppSelector((s) => s.fieldNote);
-    const coords = useAppSelector((s) => s.location.data);
+  const { data, lastUpdated } = useAppSelector((s) => s.fieldNote);
+  const coords = useAppSelector((s) => s.location.data);
 
-    useEffect(() => {
-        if (!coords) return;
+  useEffect(() => {
+    if (!coords) return;
 
-        const isStale =
-            !lastUpdated ||
-            Date.now() - lastUpdated > STALE_TIME;
+    const isStale = !lastUpdated || Date.now() - lastUpdated > STALE_TIME;
 
-        if (data && !isStale) return;
+    if (data && !isStale) return;
 
-        let cancelled = false;
+    let cancelled = false;
 
-        const {lat, lon} = coords;
+    const { lat, lon } = coords;
 
-        async function run() {
-            try {
-                dispatch(setFieldNoteLoading(true));
+    async function run() {
+      try {
+        dispatch(setFieldNoteLoading(true));
 
-                const result = await getFieldNote(
-                    lat,
-                    lon,
-                );
+        const result = await getFieldNote(lat, lon);
 
-                if (cancelled) return;
+        if (cancelled) return;
 
-                dispatch(setFieldNote(result));
-            } catch {
-                if (!cancelled) {
-                    dispatch(
-                        setFieldNoteError(
-                            "Failed to fetch field note",
-                        ),
-                    );
-                }
-            } finally {
-                if (!cancelled) {
-                    dispatch(setFieldNoteLoading(false));
-                }
-            }
+        dispatch(setFieldNote(result));
+      } catch {
+        if (!cancelled) {
+          dispatch(setFieldNoteError('Failed to fetch field note'));
         }
+      } finally {
+        if (!cancelled) {
+          dispatch(setFieldNoteLoading(false));
+        }
+      }
+    }
 
-        run();
+    run();
 
-        return () => {
-            cancelled = true;
-        };
-    }, [
-        coords,
-        data,
-        lastUpdated,
-        dispatch,
-    ]);
+    return () => {
+      cancelled = true;
+    };
+  }, [coords, data, lastUpdated, dispatch]);
 }

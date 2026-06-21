@@ -1,43 +1,43 @@
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "~/state/storeHooks";
-import { setCity, setCityLoading, setCityError } from "~/state/slices/citySlice";
-import { getCity } from "./getCity";
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
+import { setCity, setCityLoading, setCityError } from '~/state/slices/citySlice';
+import { getCity } from './getCity';
 
 export function useCityBootstrap() {
-    const dispatch = useAppDispatch();
-    const coords = useAppSelector((s) => s.location.data);
+  const dispatch = useAppDispatch();
+  const coords = useAppSelector((s) => s.location.data);
 
-    useEffect(() => {
-        if (!coords) return;
+  useEffect(() => {
+    if (!coords) return;
 
-        let cancelled = false;
+    let cancelled = false;
 
-        const { lat, lon } = coords;
+    const { lat, lon } = coords;
 
-        async function run() {
-            try {
-                dispatch(setCityLoading(true));
+    async function run() {
+      try {
+        dispatch(setCityLoading(true));
 
-                const location = await getCity(lat, lon);
+        const location = await getCity(lat, lon);
 
-                if (cancelled) return;
+        if (cancelled) return;
 
-                dispatch(setCity(location));
-            } catch {
-                if (!cancelled) {
-                    dispatch(setCityError("Failed to resolve city"));
-                }
-            } finally {
-                if (!cancelled) {
-                    dispatch(setCityLoading(false));
-                }
-            }
+        dispatch(setCity(location));
+      } catch {
+        if (!cancelled) {
+          dispatch(setCityError('Failed to resolve city'));
         }
+      } finally {
+        if (!cancelled) {
+          dispatch(setCityLoading(false));
+        }
+      }
+    }
 
-        run();
+    run();
 
-        return () => {
-            cancelled = true;
-        };
-    }, [coords, dispatch]);
+    return () => {
+      cancelled = true;
+    };
+  }, [coords, dispatch]);
 }

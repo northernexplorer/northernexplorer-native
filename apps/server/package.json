@@ -7,13 +7,14 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "schema": "yarn run mikro-orm schema:update -d"
+    "schema": "yarn run mikro-orm schema:update -d",
+    "test:deps": "depcheck --specials=typescript --ignores=\"@mikro-orm/cli\""
   },
   "dependencies": {
     "@mikro-orm/core": "^7.1.4",
     "@mikro-orm/decorators": "^7.1.4",
     "@mikro-orm/postgresql": "^7.1.4",
-    "@northernexplorer/shared": "*",
+    "@northernexplorer/types": "*",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^4.21.0",
@@ -22,9 +23,6 @@
   "devDependencies": {
     "@mikro-orm/cli": "^7.1.4",
     "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/node": "^22.0.0",
-    "tsx": "^4.0.0",
-    "typescript": "~6.0.3"
+    "@types/express": "^4.17.21"
   }
 }
