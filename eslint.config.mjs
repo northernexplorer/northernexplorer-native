@@ -33,13 +33,6 @@ export default [
     },
   },
   {
-    files: ['**/*.ts', '**/*.tsx'],
-    plugins: {
-      prettier: prettierPlugin,
-      '@typescript-eslint': tsPlugin,
-    },
-  },
-  {
     files: ['**/*.{ts,tsx}', 'apps/**/*.{ts,tsx}', 'packages/**/*.{ts,tsx}'],
     languageOptions: {
       parser: tsParser,
