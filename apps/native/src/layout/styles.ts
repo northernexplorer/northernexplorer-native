@@ -1,4 +1,4 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   content: {
@@ -25,29 +25,7 @@ export const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
-    resizeMode: 'cover',
-  },
-  darkOverlay: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    pointerEvents: 'none',
-  },
-  page: {
-    flex: 1,
-    flexDirection: Platform.OS === 'web' ? 'row' : 'column',
-  },
-  main: {
-    flex: 1,
-    paddingTop: 60,
-    paddingHorizontal: 20,
-  },
-  sidebar: {
-    width: 320,
-    paddingLeft: 24,
-    paddingTop: 20,
-    borderLeftWidth: 1,
-    borderLeftColor: 'rgba(255,255,255,0.08)',
-    backgroundColor: 'rgba(15,20,30,0.15)',
+    minHeight: '100%',
   },
   title: {
     fontSize: 26,
@@ -58,16 +36,16 @@ export const styles = StyleSheet.create({
   },
   navbarContainer: {
     width: '100%',
-    backgroundColor: 'rgba(15,20,30,0.45)',
+    backgroundColor: '#1a1a1a',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.08)',
+    borderBottomColor: '#333333',
   },
   navbar: {
     width: '100%',
     paddingHorizontal: 20,
     zIndex: 100,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: '#333333',
   },
   desktopNavbar: {
     flexDirection: 'row',
@@ -129,9 +107,9 @@ export const styles = StyleSheet.create({
   drawerContainer: {
     width: 300,
     height: '100%',
-    backgroundColor: 'rgba(15,20,30,0.8)',
+    backgroundColor: '#1a1a1a',
     borderRightWidth: 1,
-    borderRightColor: 'rgba(255,255,255,0.08)',
+    borderRightColor: '#333333',
     paddingHorizontal: 24,
     gap: 28,
   },
@@ -140,7 +118,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: '#333333',
     paddingBottom: 16,
     marginTop: 12,
   },
@@ -170,5 +148,29 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  darkOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  page: {
+    flexGrow: 1,
+    alignItems: 'stretch',
+  },
+  sidebar: {
+    paddingLeft: 24,
+    paddingTop: 20,
+    backgroundColor: '#1a1a1a',
+  },
+  sidebarDesktop: {
+    width: 320,
+    borderLeftWidth: 1,
+    borderLeftColor: '#333333',
+  },
+  sidebarMobile: {
+    width: '100%',
+    borderTopWidth: 1,
+    borderTopColor: '#333333',
+    paddingRight: 24,
   },
 });
