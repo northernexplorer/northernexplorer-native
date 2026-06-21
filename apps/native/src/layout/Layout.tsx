@@ -9,42 +9,54 @@ import { getImagePath } from '~/lib/getImagePath';
 import { Navigation } from '~/layout/components/Navigation';
 
 interface Props {
-  Content: ComponentType;
-  components?: ComponentType[];
-  title?: string;
+    Content: ComponentType;
+    components?: ComponentType[];
+    title?: string;
+    fullPage?: boolean
 }
 
-export function Layout({ Content, components, title }: Props) {
-  const { width } = useWindowDimensions();
-  const isMobileView = width < 1000;
+export function Layout({ Content, components, title, fullPage }: Props) {
+    const { width } = useWindowDimensions();
+    const isMobileView = width < 1000;
 
-  const weather = useWeather();
-  const theme = weather ? getWeatherTheme(weather.current.condition.code) : null;
+    const weather = useWeather();
+    const theme = weather ? getWeatherTheme(weather.current.condition.code) : null;
 
-  return (
-    <ImageBackground
-      style={styles.background}
-      source={theme?.image ? { uri: getImagePath(theme.image) } : undefined}
-    >
-      <View style={styles.darkOverlay} />
-      <Navigation />
+    return (
+        <View style={{ flex: 1 }}>
+            <Navigation />
 
-      <ScrollView
-        contentContainerStyle={[
-          styles.page,
-          {
-            flexDirection: isMobileView ? 'column' : 'row',
-          },
-        ]}
-      >
-        <View style={styles.main}>
-          {title && <Text style={styles.title}>{title}</Text>}
-          <Content />
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={[
+                    styles.page,
+                    {
+                        flexDirection: isMobileView ? 'column' : 'row',
+                    },
+                ]}
+            >
+                <View style={isMobileView ? { width: '100%' } : { flex: 1, alignSelf: 'stretch' }}>
+                    <ImageBackground
+                        style={[styles.background, { alignSelf: 'stretch' }]}
+                        source={theme?.image ? { uri: getImagePath(theme.image) } : undefined}
+                    >
+                        <View pointerEvents="none" style={styles.darkOverlay} />
+                        <View style={{ flex: 1, padding: fullPage ? 0 : 10 }}>
+                            {title && <Text style={styles.title}>{title}</Text>}
+                            <Content />
+                        </View>
+                    </ImageBackground>
+                </View>
+
+                <View
+                    style={[
+                        styles.sidebar,
+                        isMobileView ? styles.sidebarMobile : [styles.sidebarDesktop, { alignSelf: 'stretch' }],
+                    ]}
+                >
+                    <Sidebar components={components} />
+                </View>
+            </ScrollView>
         </View>
-        <View style={styles.sidebar}>
-          <Sidebar components={components} />
-        </View>
-      </ScrollView>
-    </ImageBackground>
-  );
+    );
 }
