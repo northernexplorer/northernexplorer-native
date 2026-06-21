@@ -10,6 +10,10 @@
     "ios": {
       "supportsTablet": true
     },
+    "packagerOpts": {
+      "config": "metro.config.js",
+      "projectRoot": "../.."
+    },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -36,7 +40,8 @@
         {
           "locationWhenInUsePermission": "Allow Northern Explorer to access your location."
         }
-      ]
+      ],
+      "@maplibre/maplibre-react-native",
     ]
   }
 }
