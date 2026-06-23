@@ -6,7 +6,6 @@ import { config } from '../../config.js';
 export class CityController {
   public static async getCityData(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Coordinates were validated and attached by your validateCoords.ts
       const lat = res.locals.lat;
       const lon = res.locals.lon;
 
