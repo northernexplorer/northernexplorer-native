@@ -3,11 +3,9 @@ import { defineConfig } from '@mikro-orm/postgresql';
 import { ReflectMetadataProvider } from '@mikro-orm/decorators/legacy';
 import dotenv from 'dotenv';
 
-import { CityCache } from './City';
-import { ForecastCache } from './Forecast';
-import { HistoricSite } from './HistoricSite';
-import { Migrations } from './System';
-import { WeatherCache } from './Weather';
+import { CityCache, HistoricSite} from './location';
+import { Migrations } from './system';
+import { ForecastCache, WeatherCache } from './environment';
 
 dotenv.config();
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { RequestContext } from '@mikro-orm/core';
 import { CityCache } from '../entities/CityCache';
-import { config } from '../../config.js';
+import { config } from '../../config';
 
 export class CityController {
   public static async getCityData(req: Request, res: Response, next: NextFunction): Promise<void> {

@@ -5,10 +5,10 @@ import { MikroORM, RequestContext } from '@mikro-orm/core';
 import ormConfig from './mikro-orm.config';
 import { config } from './config';
 
-import { CityController } from './City';
+import { CityController } from './location';
 import { WeatherController } from './Weather';
 import { ForecastController } from './Forecast';
-import { FieldNoteController } from './FieldNote';
+import { FieldNoteController } from './environment';
 import { HistoricSiteController } from './HistoricSite';
 import { LunarController } from './Lunar';
 import { validateCoords } from './validateCoords';
