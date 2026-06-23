@@ -3,7 +3,7 @@ import { defineConfig } from '@mikro-orm/postgresql';
 import { ReflectMetadataProvider } from '@mikro-orm/decorators/legacy';
 import dotenv from 'dotenv';
 
-import { CityCache, HistoricSite} from './location';
+import { CityCache, HistoricSite } from './location';
 import { Migrations } from './system';
 import { ForecastCache, WeatherCache } from './environment';
 
