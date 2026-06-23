@@ -4,7 +4,7 @@ import { useRouter, usePathname, Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '~/layout/styles';
-import { getImagePath } from '~/lib/getImagePath';
+import logo from '../../../assets/images/logo.png';
 
 const MENU_ITEMS = [
   { label: 'Dashboard', route: '/', icon: 'grid-outline' as const },
@@ -63,10 +63,7 @@ export function Navigation() {
   const Branding = ({ isDrawer = false }) => (
     <Link href="/" asChild>
       <Pressable onPress={() => setIsMenuOpen(false)} style={styles.brandContainer}>
-        <Image
-          source={{ uri: getImagePath('/images/logo.png') }}
-          style={isDrawer ? styles.drawerLogo : styles.logo}
-        />
+        <Image source={logo} style={isDrawer ? styles.drawerLogo : styles.logo} />
         <Text style={styles.brandText}>Northern Explorer</Text>
       </Pressable>
     </Link>

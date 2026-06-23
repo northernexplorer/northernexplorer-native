@@ -1,7 +1,15 @@
+import clearImage from '../../assets/images/weather/clear.png';
+import cloudsImage from '../../assets/images/weather/clouds.png';
+import fogImage from '../../assets/images/weather/fog.png';
+import thunderstormImage from '../../assets/images/weather/thunderstorm.png';
+import drizzleImage from '../../assets/images/weather/drizzle.png';
+import rainImage from '../../assets/images/weather/rain.png';
+import snowImage from '../../assets/images/weather/snow.png';
+
 export interface WeatherTheme {
   overlay: string;
   tint: string;
-  image: string;
+  image: number;
 }
 
 export function getWeatherTheme(code: number): WeatherTheme {
@@ -10,7 +18,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
     return {
       overlay: 'rgba(0,0,0,0.25)',
       tint: '#f6c453',
-      image: '/images/weather/clear.png',
+      image: clearImage,
     };
   }
 
@@ -19,7 +27,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
     return {
       overlay: 'rgba(0,0,0,0.45)',
       tint: '#6b7c8f',
-      image: '/images/weather/clouds.png',
+      image: cloudsImage,
     };
   }
 
@@ -28,7 +36,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
     return {
       overlay: 'rgba(0,0,0,0.45)',
       tint: '#7f8c8d',
-      image: '/images/weather/fog.png',
+      image: fogImage,
     };
   }
 
@@ -37,7 +45,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
     return {
       overlay: 'rgba(0,0,0,0.45)',
       tint: '#7f8c8d',
-      image: '/images/weather/thunderstorm.png',
+      image: thunderstormImage,
     };
   }
 
@@ -46,7 +54,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
     return {
       overlay: 'rgba(0,0,40,0.55)',
       tint: '#4a6fa5',
-      image: '/images/weather/drizzle.png',
+      image: drizzleImage,
     };
   }
 
@@ -55,7 +63,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
     return {
       overlay: 'rgba(0,0,0,0.45)',
       tint: '#7f8c8d',
-      image: '/images/weather/rain.png',
+      image: rainImage,
     };
   }
 
@@ -69,7 +77,7 @@ export function getWeatherTheme(code: number): WeatherTheme {
     return {
       overlay: 'rgba(0,0,0,0.35)',
       tint: '#e8f0ff',
-      image: '/images/weather/snow.png',
+      image: snowImage,
     };
   }
 
@@ -77,6 +85,6 @@ export function getWeatherTheme(code: number): WeatherTheme {
   return {
     overlay: 'rgba(0,0,0,0.5)',
     tint: '#999',
-    image: '/images/weather/clear.png',
+    image: clearImage,
   };
 }

@@ -4,7 +4,6 @@ import cors from 'cors';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import ormConfig from './mikro-orm.config';
 import { config } from './config';
-
 import { CityController } from './City';
 import { WeatherController } from './Weather';
 import { ForecastController } from './Forecast';
@@ -13,12 +12,15 @@ import { HistoricSiteController } from './HistoricSite';
 import { LunarController } from './Lunar';
 import { validateCoords } from './validateCoords';
 import { EndpointType } from '@northernexplorer/types';
+import path from 'node:path';
 
 const app = express();
 const PORT = config.PORT;
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 async function bootstrap() {
   try {
