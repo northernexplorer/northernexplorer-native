@@ -39,6 +39,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+/apps/native/ios
+/apps/native/android
 
 # dev
 .idea
