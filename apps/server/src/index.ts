@@ -4,13 +4,13 @@ import cors from 'cors';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import ormConfig from './mikro-orm.config';
 import { config } from './config';
-
-import { CityController } from './location';
-import { WeatherController } from './Weather';
-import { ForecastController } from './Forecast';
-import { FieldNoteController } from './environment';
-import { HistoricSiteController } from './HistoricSite';
-import { LunarController } from './Lunar';
+import {
+  ForecastController,
+  FieldNoteController,
+  LunarController,
+  WeatherController,
+} from './environment';
+import { CityController, HistoricSiteController } from './location';
 import { validateCoords } from './validateCoords';
 import { EndpointType } from '@northernexplorer/types';
 

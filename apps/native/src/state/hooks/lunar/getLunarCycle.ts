@@ -1,7 +1,7 @@
 import { config } from '~/config';
-import { EndpointType, LunarCycleResponse } from '@northernexplorer/types';
+import { EndpointType, LunarCycleType } from '@northernexplorer/types';
 
-export async function getLunarCycle(): Promise<LunarCycleResponse> {
+export async function getLunarCycle(): Promise<LunarCycleType> {
   const serverUrl = config.SERVER_URL;
 
   const url = new URL(`${serverUrl}/api/${EndpointType.Lunar}`);
@@ -12,5 +12,5 @@ export async function getLunarCycle(): Promise<LunarCycleResponse> {
     throw new Error(`Lunar fetch failed: ${res.status}`);
   }
 
-  return res.json() as Promise<LunarCycleResponse>;
+  return res.json() as Promise<LunarCycleType>;
 }

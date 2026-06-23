@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { CityType } from '~/state/hooks/city/getCity';
+import { CityType } from '@northernexplorer/types';
 
 type CityState = {
   data: CityType | null;
