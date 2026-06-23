@@ -9,7 +9,7 @@ import { HistoricSite } from './HistoricSite';
 import { Migrations } from './System';
 import { WeatherCache } from './Weather';
 
-dotenv.config({path:'.env.default'});
+dotenv.config({ path: '.env.default' });
 
 export default defineConfig({
   host: process.env.DB_HOST || 'localhost',

@@ -6,13 +6,11 @@ import { config } from '../../config.js';
 export class CityController {
   public static async getCityData(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Coordinates were validated and attached by your validateCoords.ts
       const lat = res.locals.lat;
       const lon = res.locals.lon;
 
       const em = RequestContext.getEntityManager()!;
 
- console.log('DB_PASS:', config.WEATHER_API_KEY);
       const query = `
           SELECT city_data as "cityData", updated_at as "updatedAt", distance_meters as "distanceMeters"
           FROM (
