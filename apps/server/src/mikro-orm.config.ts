@@ -16,7 +16,7 @@ export default defineConfig({
   port: parseInt(process.env.DB_PORT || '5432', 10),
   dbName: process.env.DB_NAME || 'northernexplorer',
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASS || 'BladeRunner1984',
+  password: process.env.DB_PASS || 'password',
   metadataProvider: ReflectMetadataProvider,
   entities: [CityCache, ForecastCache, HistoricSite, Migrations, WeatherCache],
   debug: process.env.NODE_ENV !== 'production',

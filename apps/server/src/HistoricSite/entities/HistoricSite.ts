@@ -30,7 +30,7 @@ export class HistoricSite {
 
   @Property({ type: 'datetime', columnType: 'timestamp', defaultRaw: 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
-  @Property({type:'number', version:true})
+  @Property({type:'number', version:true,default:1})
   version!:number;
 
   @Property({
