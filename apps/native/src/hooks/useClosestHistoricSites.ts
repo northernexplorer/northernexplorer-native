@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { getHistoricSites, HistoricSiteType } from '~/hooks/getClosestHistoricSites';
+import { getHistoricSites } from '~/hooks/getClosestHistoricSites';
 import { useAppSelector } from '~/state/storeHooks';
+import { HistoricSiteType } from '@northernexplorer/types';
 
 export function useClosestHistoricSites() {
   const [sites, setSites] = useState<HistoricSiteType[]>([]);

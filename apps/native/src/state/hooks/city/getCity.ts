@@ -1,22 +1,5 @@
 import { config } from '~/config';
-import { EndpointType } from '@northernexplorer/types';
-
-export type CityType = {
-  id: number;
-  name: string;
-  region: string;
-  country: string;
-  lat: number;
-  lon: number;
-  url: string;
-};
-
-interface CityResponse {
-  source: 'database_cache' | 'weatherapi_data';
-  distance_offset?: string;
-  cached_at?: string;
-  data: CityType[];
-}
+import { CityResponse, CityType, EndpointType } from '@northernexplorer/types';
 
 export async function getCity(lat: number, lon: number): Promise<CityType> {
   const serverUrl = config.SERVER_URL;

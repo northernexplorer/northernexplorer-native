@@ -1,25 +1,9 @@
 import { config } from '~/config';
-import { EndpointType } from '@northernexplorer/types';
-
-export type HistoricSiteType = {
-  id: number;
-  name: string;
-  description: string;
-  image: string;
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
-  distance_offset_meters: number;
-  country: string;
-  region: string;
-};
-
-export interface HistoricSiteResponse {
-  source: 'database_records';
-  count: number;
-  sites: HistoricSiteType[];
-}
+import {
+  ClosestHistoricSiteResponse,
+  EndpointType,
+  HistoricSiteType,
+} from '@northernexplorer/types';
 
 export async function getHistoricSites(lat: number, lon: number): Promise<HistoricSiteType[]> {
   const serverUrl = config.SERVER_URL;
@@ -34,7 +18,7 @@ export async function getHistoricSites(lat: number, lon: number): Promise<Histor
     throw new Error(`Historic sites lookup fetch failed: ${res.status}`);
   }
 
-  const json: HistoricSiteResponse = await res.json();
+  const json: ClosestHistoricSiteResponse = await res.json();
 
   // Return the full array of nearby sites directly
   return json.sites || [];

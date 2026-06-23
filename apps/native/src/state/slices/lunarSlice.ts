@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { LunarCycleType } from '~/state/hooks/lunar/getLunarCycle';
+import { LunarCycleType } from '@northernexplorer/types';
 
 type LunarState = {
   data: LunarCycleType | null;
