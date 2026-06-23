@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Image, useWindowDimensions, Modal } from 'react-native';
-import { useRouter, usePathname } from 'expo-router';
+import { View, Text, Pressable, Image, useWindowDimensions, Modal, StyleSheet } from 'react-native';
+import { useRouter, usePathname, Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '~/layout/styles';
@@ -30,33 +30,46 @@ export function Navigation() {
         const isActive = currentPath === item.route;
 
         return (
-          <Pressable
-            key={item.route}
-            onPress={() => handleNavigate(item.route)}
-            style={[
-              styles.menuItem,
-              isActive && styles.activeItem,
-              isMobileDrawer && styles.drawerMenuItem,
-            ]}
-          >
-            <Ionicons
-              name={item.icon}
-              size={isMobileDrawer ? 20 : 18}
-              color={isActive ? 'white' : 'rgba(255,255,255,0.6)'}
-            />
-            <Text
-              style={[
-                styles.menuText,
-                isActive && styles.activeText,
-                isMobileDrawer && styles.drawerMenuText,
-              ]}
+          <Link key={item.route} href={item.route} asChild>
+            <Pressable
+              onPress={() => handleNavigate(item.route)}
+              style={StyleSheet.flatten([
+                styles.menuItem,
+                isActive && styles.activeItem,
+                isMobileDrawer && styles.drawerMenuItem,
+              ])}
             >
-              {item.label}
-            </Text>
-          </Pressable>
+              <Ionicons
+                name={item.icon}
+                size={isMobileDrawer ? 20 : 18}
+                color={isActive ? 'white' : 'rgba(255,255,255,0.6)'}
+              />
+              <Text
+                style={StyleSheet.flatten([
+                  styles.menuText,
+                  isActive && styles.activeText,
+                  isMobileDrawer && styles.drawerMenuText,
+                ])}
+              >
+                {item.label}
+              </Text>
+            </Pressable>
+          </Link>
         );
       })}
     </View>
+  );
+
+  const Branding = ({ isDrawer = false }) => (
+    <Link href="/" asChild>
+      <Pressable onPress={() => setIsMenuOpen(false)} style={styles.brandContainer}>
+        <Image
+          source={{ uri: getImagePath('/images/logo.png') }}
+          style={isDrawer ? styles.drawerLogo : styles.logo}
+        />
+        <Text style={styles.brandText}>Northern Explorer</Text>
+      </Pressable>
+    </Link>
   );
 
   const MainContainer = isMobile ? SafeAreaView : View;
@@ -71,11 +84,7 @@ export function Navigation() {
               <Ionicons name="menu-outline" size={28} color="white" />
             </Pressable>
 
-            {/* Inline Side-by-side branding container */}
-            <View style={styles.brandContainer}>
-              <Image source={{ uri: getImagePath('/images/logo.png') }} style={styles.logo} />
-              <Text style={styles.brandText}>Northern Explorer</Text>
-            </View>
+            <Branding />
 
             {/* Balance spacer for perfect centering layout alignments */}
             <View style={{ width: 28 }} />
@@ -83,10 +92,7 @@ export function Navigation() {
         ) : (
           <>
             {/* --- DESKTOP NAVBAR --- */}
-            <View style={styles.brandContainer}>
-              <Image source={{ uri: getImagePath('/images/logo.png') }} style={styles.logo} />
-              <Text style={styles.brandText}>Northern Explorer</Text>
-            </View>
+            <Branding />
             {renderLinks(false)}
           </>
         )}
@@ -101,15 +107,9 @@ export function Navigation() {
           >
             <Pressable style={styles.backdrop} onPress={() => setIsMenuOpen(false)}>
               <SafeAreaView edges={['top']} style={styles.drawerContainer}>
-                {/* Drawer Header with Logo + Text aligned side by side */}
+                {/* Drawer Header */}
                 <View style={styles.drawerHeader}>
-                  <View style={styles.brandContainer}>
-                    <Image
-                      source={{ uri: getImagePath('/images/logo.png') }}
-                      style={styles.drawerLogo}
-                    />
-                    <Text style={styles.brandText}>Northern Explorer</Text>
-                  </View>
+                  <Branding isDrawer={true} />
 
                   <Pressable onPress={() => setIsMenuOpen(false)}>
                     <Ionicons name="close-outline" size={28} color="white" />
