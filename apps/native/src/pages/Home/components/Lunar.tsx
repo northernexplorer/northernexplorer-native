@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { styles } from '~/pages/Home/styles';
-import { LunarCycleType } from '~/state/hooks/lunar/getLunarCycle';
+import { LunarCycleType } from '@northernexplorer/types';
 
 function getMoonIcon(data: LunarCycleType) {
   const illum = data.illumination_percentage;

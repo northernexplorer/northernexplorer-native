@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getHistoricSiteDetails, HistoricSiteType } from '~/hooks/getHistoricSiteDetails';
+import { getHistoricSiteDetails } from '~/hooks/getHistoricSiteDetails';
+import { HistoricSiteType } from '@northernexplorer/types';
 
 export function useGetHistoricSiteDetails(id: string | number | undefined) {
   const [site, setSite] = useState<HistoricSiteType | null>(null);

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { RequestContext } from '@mikro-orm/core';
-import { HistoricSite } from '../entities/HistoricSite.js';
+import { HistoricSite } from '../entities/HistoricSite';
 
 interface HistoricSiteRawRow {
   id: number;

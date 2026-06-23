@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { RequestContext } from '@mikro-orm/core';
-import { WeatherCache } from '../entities/WeatherCache.js';
-import { config } from '../../config.js';
+import { WeatherCache } from '../entities/WeatherCache';
+import { config } from '../../config';
 
 interface RawInternalWeatherRow {
   weatherData: string | Record<string, unknown>;

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { WeatherType } from '~/state/hooks/weather/getWeather';
+import { WeatherType } from '@northernexplorer/types';
 
 export type WeatherState = {
   data: WeatherType | null;

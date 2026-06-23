@@ -3,7 +3,7 @@ import ScrollView = Animated.ScrollView;
 import { styles } from '~/pages/Home/styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getWeatherIcon } from '~/lib/getWeatherIcon';
-import { ForecastType } from '~/state/hooks/forecast/getForecast';
+import { ForecastType } from '@northernexplorer/types';
 
 type ForecastProps = {
   data: ForecastType;

@@ -1,9 +1,4 @@
-export enum EndpointType {
-  Weather = 'weather',
-  Forecast = 'forecast',
-  City = 'city',
-  Lunar = 'lunar',
-  FieldNote = 'fieldNote',
-  HistoricSites = 'historicSites',
-  HistoricSiteDetails = 'historicSiteDetails',
-}
+export * from './Endpoints';
+export * from './environment';
+export * from './location';
+export * from './system';
