@@ -13,12 +13,15 @@ import {
 import { CityController, HistoricSiteController } from './location';
 import { validateCoords } from './validateCoords';
 import { EndpointType } from '@northernexplorer/types';
+import path from 'node:path';
 
 const app = express();
 const PORT = config.PORT;
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 async function bootstrap() {
   try {
