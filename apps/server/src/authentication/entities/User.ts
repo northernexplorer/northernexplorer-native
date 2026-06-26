@@ -3,7 +3,7 @@ import { Entity,Property,PrimaryKey,Index } from "@mikro-orm/decorators/legacy";
 
 @Entity()
 
-@Index({name:'user_auth'})
+@Index({name:'idx_user', properties:['email','userName']})
 
 export class User {
 
