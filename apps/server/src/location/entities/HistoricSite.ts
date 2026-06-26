@@ -33,9 +33,6 @@ export class HistoricSite {
   @Property({type:'number', version:true,default:1})
   version!:number;
 
-  @Property({ type: 'number', version: true, default: 1 })
-  version!: number;
-
   @Property({
     type: 'datetime',
     columnType: 'timestamp',
