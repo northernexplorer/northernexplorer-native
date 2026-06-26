@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { WeatherController } from '../../Weather';
+import { WeatherController } from './WeatherController';
 
-interface WeatherApiPayload {
+interface FieldNoteDataPayload {
   current?: {
     temp_c?: string | number;
     wind_kph?: number;
@@ -28,7 +28,7 @@ export class FieldNoteController {
       const weather = (await WeatherController.getInternalWeatherData(
         lat,
         lon,
-      )) as unknown as WeatherApiPayload;
+      )) as unknown as FieldNoteDataPayload;
 
       if (!weather || !weather.current) {
         res.json({

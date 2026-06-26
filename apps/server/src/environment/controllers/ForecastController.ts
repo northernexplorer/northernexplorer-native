@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { RequestContext } from '@mikro-orm/core';
 import { ForecastCache } from '../entities/ForecastCache'; // Verify your exact entity name
-import { config } from '../../config.js';
+import { config } from '../../config';
 
 export class ForecastController {
   public static async getForecastData(

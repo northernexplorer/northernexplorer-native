@@ -1,18 +1,5 @@
 import { config } from '~/config';
-import { EndpointType } from '@northernexplorer/types';
-
-export type HistoricSiteType = {
-  id: number;
-  name: string;
-  description: string;
-  image: string;
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
-  country: string;
-  region: string;
-};
+import { EndpointType, HistoricSiteType } from '@northernexplorer/types';
 
 export async function getHistoricSiteDetails(id: string | number): Promise<HistoricSiteType> {
   const serverUrl = config.SERVER_URL;

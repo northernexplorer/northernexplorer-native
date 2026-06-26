@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { RequestContext } from '@mikro-orm/core';
-import { WeatherCache } from '../entities/WeatherCache.js';
-import { config } from '../../config.js';
+import { WeatherCache } from '../entities/WeatherCache';
+import { config } from '../../config';
 
 interface RawInternalWeatherRow {
   weatherData: string | Record<string, unknown>;
@@ -21,16 +21,17 @@ export class WeatherController {
 
 
     const query = `
-        SELECT weather_data as "weatherData"
-        FROM (
-                 SELECT weather_data, updated_at,
-                        (6371000 * acos( cos(radians(${lat})) * cos(radians(lat)) * cos(radians(lon) - radians(${lon})) + sin(radians(${lat})) * sin(radians(lat)) )) AS distance_meters
-                 FROM weather_cache
-                 WHERE updated_at >= NOW() - INTERVAL '15 minutes'
-             ) AS spatial_search
-        WHERE distance_meters <= 2000
-        ORDER BY distance_meters ASC
-            LIMIT 1
+
+      SELECT weather_data as "weatherData"
+      FROM (
+             SELECT weather_data, updated_at,
+                    (6371000 * acos( cos(radians(${lat})) * cos(radians(lat)) * cos(radians(lon) - radians(${lon})) + sin(radians(${lat})) * sin(radians(lat)) )) AS distance_meters
+             FROM weather_cache
+             WHERE updated_at >= NOW() - INTERVAL '15 minutes'
+           ) AS spatial_search
+      WHERE distance_meters <= 2000
+      ORDER BY distance_meters ASC
+        LIMIT 1
     `;
 
     const rawResults = (await em

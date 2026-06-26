@@ -5,7 +5,6 @@ import { styles } from './styles';
 import { getWeatherTheme } from '~/layout/getWeatherTheme';
 import { useWeather } from '~/state/hooks/weather/useWeather';
 import { Sidebar } from '~/layout/components/Sidebar';
-import { getImagePath } from '~/lib/getImagePath';
 import { Navigation } from '~/layout/components/Navigation';
 
 interface Props {
@@ -38,7 +37,7 @@ export function Layout({ Content, components, title, fullPage }: Props) {
         <View style={{ flex: 1, width: '100%', alignSelf: 'stretch' }}>
           <ImageBackground
             style={[styles.background, { alignSelf: 'stretch' }]}
-            source={theme?.image ? { uri: getImagePath(theme.image) } : undefined}
+            source={theme?.image}
           >
             <View pointerEvents="none" style={styles.darkOverlay} />
 
