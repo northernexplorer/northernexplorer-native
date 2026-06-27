@@ -4,10 +4,10 @@
   "private": true,
   "main": "src/index.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
     "schema": "yarn run mikro-orm schema:update -d",
+    "start": "node dist/index.js",
     "test:deps": "depcheck --specials=typescript --ignores=\"@mikro-orm/cli\""
   },
   "dependencies": {
