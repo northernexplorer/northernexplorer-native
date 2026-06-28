@@ -7,7 +7,7 @@ import { CityCache, HistoricSite } from './location';
 import { Migrations } from './system';
 import { ForecastCache, WeatherCache } from './environment';
 
-dotenv.config({path:'.env.default'});
+dotenv.config();
 
 export default defineConfig({
   host: process.env.DB_HOST || 'localhost',

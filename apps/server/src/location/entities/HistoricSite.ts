@@ -3,7 +3,6 @@ import { Entity, PrimaryKey, Property, Index } from '@mikro-orm/decorators/legac
 @Entity()
 @Index({ name: 'idx_site_location', properties: ['lat', 'lon'] })
 export class HistoricSite {
-
   @PrimaryKey({ type: 'number' })
   id!: number;
 
@@ -30,16 +29,10 @@ export class HistoricSite {
 
   @Property({ type: 'datetime', columnType: 'timestamp', defaultRaw: 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
-  @Property({type:'number', version:true,default:1})
-  version!:number;
 
-  @Property({
-    type: 'datetime',
-    columnType: 'timestamp',
-    defaultRaw: 'CURRENT_TIMESTAMP',
-    extra: 'on update CURRENT_TIMESTAMP',
-  })
+  @Property({ type: 'number', version: true, default: 1 })
+  version!: number;
 
-  
+  @Property({ type: 'datetime', columnType: 'timestamp', defaultRaw: 'CURRENT_TIMESTAMP' })
   updatedAt!: Date;
 }

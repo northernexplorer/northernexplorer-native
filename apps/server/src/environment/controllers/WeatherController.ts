@@ -14,11 +14,8 @@ interface RawWeatherCacheRow {
 }
 
 export class WeatherController {
-
   public static async getInternalWeatherData(lat: number, lon: number): Promise<any | null> {
     const em = RequestContext.getEntityManager()!;
-
-
 
     const query = `
 
