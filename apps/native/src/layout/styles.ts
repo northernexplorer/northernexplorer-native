@@ -26,6 +26,7 @@ export const styles = StyleSheet.create({
   background: {
     flex: 1,
     minHeight: '100%',
+    width: '100%',
   },
   title: {
     fontSize: 26,
