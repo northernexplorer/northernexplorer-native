@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import { migrationsRegistry } from './migrations';
 
 dotenv.config();
-console.log(process.env.DB_NAME);
 
 const pool = new Pool({
   database: process.env.DB_NAME || 'northernexplorer',

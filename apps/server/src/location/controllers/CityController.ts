@@ -11,7 +11,6 @@ export class CityController {
 
       const em = RequestContext.getEntityManager()!;
 
- console.log('DB_PASS:', config.WEATHER_API_KEY);
       const query = `
           SELECT city_data as "cityData", updated_at as "updatedAt", distance_meters as "distanceMeters"
           FROM (
