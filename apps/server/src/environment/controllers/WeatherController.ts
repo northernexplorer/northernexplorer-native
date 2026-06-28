@@ -18,7 +18,6 @@ export class WeatherController {
     const em = RequestContext.getEntityManager()!;
 
     const query = `
-
       SELECT weather_data as "weatherData"
       FROM (
              SELECT weather_data, updated_at,
