@@ -7,6 +7,8 @@
     "packages/*"
   ],
   "scripts": {
+    "build:server": "yarn workspace northernexplorer-server: build",
+    "build:web": "yarn workspace northernexplorer-native build:web",
     "dev.organize": "dev/organize.sh",
     "dev.setup": "dev/setup.sh",
     "dev.start": "dev/start.sh",
