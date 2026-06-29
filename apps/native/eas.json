@@ -12,11 +12,7 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "env": {
-        "EXPO_PUBLIC_SERVER_URL_WEB": "https://api.northernexplorer.org",
-        "EXPO_PUBLIC_SERVER_URL_APP": "https://api.northernexplorer.org"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {
