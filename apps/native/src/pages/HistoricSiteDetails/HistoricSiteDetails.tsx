@@ -19,7 +19,7 @@ export function HistoricSiteDetails() {
       </Text>
     );
   }
-  console.log('site.image =', site.image);
+
   return (
     <View>
       <Image
