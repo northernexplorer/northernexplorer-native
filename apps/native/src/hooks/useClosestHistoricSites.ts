@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { getHistoricSites } from '~/hooks/getClosestHistoricSites';
-import { useAppSelector } from '~/state/storeHooks';
 import { HistoricSiteType } from '@northernexplorer/types';
 
-export function useClosestHistoricSites() {
+export function useClosestHistoricSites(coords: { lat: number; lon: number } | null) {
   const [sites, setSites] = useState<HistoricSiteType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const coords = useAppSelector((s) => s.location.data);
 
   useEffect(() => {
     if (!coords) return;

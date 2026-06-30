@@ -11,13 +11,15 @@ import { useFieldNote } from '~/state/hooks/fieldNote/useFieldNote';
 import { styles } from '~/pages/Home/styles';
 import { HistoricSitePreview } from '~/pages/Home/components/HistoricSitePreview';
 import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
+import { useAppSelector } from '~/state/storeHooks';
 
 export function Home() {
   const weather = useWeather();
   const forecast = useForecast();
   const lunar = useLunar();
   const fieldNote = useFieldNote();
-  const historicSites = useClosestHistoricSites();
+  const coords = useAppSelector((s) => s.location.data);
+  const historicSites = useClosestHistoricSites(coords);
   const { width } = useWindowDimensions();
   const isMobileView = width < 1000;
 
