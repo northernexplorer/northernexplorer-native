@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { getWeatherIcon } from '~/lib/getWeatherIcon';
+import { getWeatherIcon } from '~/layout/getWeatherIcon';
 import { styles } from '~/pages/Home/styles';
 import { WeatherType } from '@northernexplorer/types';
 

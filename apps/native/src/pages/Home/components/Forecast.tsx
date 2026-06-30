@@ -2,7 +2,7 @@ import { Animated, Text, View } from 'react-native';
 import ScrollView = Animated.ScrollView;
 import { styles } from '~/pages/Home/styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { getWeatherIcon } from '~/lib/getWeatherIcon';
+import { getWeatherIcon } from '~/layout/getWeatherIcon';
 import { ForecastType } from '@northernexplorer/types';
 
 type ForecastProps = {

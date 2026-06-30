@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build:server": "yarn workspace northernexplorer-server build",
+    "build:tools": "yarn workspace @northernexplorer/tools build",
     "build:types": "yarn workspace @northernexplorer/types build",
     "build:web": "yarn workspace northernexplorer-native build:web",
     "dev.organize": "dev/organize.sh",
