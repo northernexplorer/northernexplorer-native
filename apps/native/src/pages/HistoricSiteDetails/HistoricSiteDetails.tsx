@@ -3,7 +3,8 @@ import { View, Text, Image, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useGetHistoricSiteDetails } from '~/hooks/useGetHistoricSiteDetails';
 import { styles } from '~/pages/HistoricSiteDetails/styles';
-import { getImagePath } from '~/lib/getImagePath';
+import { getUrl } from '@northernexplorer/tools';
+import { config } from '~/config';
 
 export function HistoricSiteDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -23,9 +24,7 @@ export function HistoricSiteDetails() {
   return (
     <View>
       <Image
-        source={{
-          uri: getImagePath(site.image),
-        }}
+        source={{ uri: getUrl({ path: site.image, serverUrl: config.SERVER_URL }) }}
         style={styles.banner}
         onLoad={() => console.log('loaded')}
         onError={(e) => console.log('error', e.nativeEvent)}

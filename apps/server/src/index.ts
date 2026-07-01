@@ -11,9 +11,9 @@ import {
   WeatherController,
 } from './environment';
 import { CityController, HistoricSiteController } from './location';
-import { validateCoords } from './validateCoords';
 import { EndpointType } from '@northernexplorer/types';
 import path from 'node:path';
+import { validateCoordinates } from '@northernexplorer/tools';
 
 const app = express();
 const PORT = config.PORT;
@@ -32,13 +32,21 @@ async function bootstrap() {
     app.use((req, res, next) => RequestContext.create(orm.em, next));
 
     // Router setup
-    app.get(`/api/${EndpointType.City}`, validateCoords, CityController.getCityData);
-    app.get(`/api/${EndpointType.Weather}`, validateCoords, WeatherController.getWeatherData);
-    app.get(`/api/${EndpointType.Forecast}`, validateCoords, ForecastController.getForecastData);
-    app.get(`/api/${EndpointType.FieldNote}`, validateCoords, FieldNoteController.getFieldNoteData);
+    app.get(`/api/${EndpointType.City}`, validateCoordinates, CityController.getCityData);
+    app.get(`/api/${EndpointType.Weather}`, validateCoordinates, WeatherController.getWeatherData);
+    app.get(
+      `/api/${EndpointType.Forecast}`,
+      validateCoordinates,
+      ForecastController.getForecastData,
+    );
+    app.get(
+      `/api/${EndpointType.FieldNote}`,
+      validateCoordinates,
+      FieldNoteController.getFieldNoteData,
+    );
     app.get(
       `/api/${EndpointType.HistoricSites}`,
-      validateCoords,
+      validateCoordinates,
       HistoricSiteController.getNearbyHistoricSites,
     );
     app.get(`/api/${EndpointType.HistoricSiteDetails}`, HistoricSiteController.getHistoricSiteById);

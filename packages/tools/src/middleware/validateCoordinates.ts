@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-export const validateCoords = (req: Request, res: Response, next: NextFunction): void => {
+export const validateCoordinates = (req: Request, res: Response, next: NextFunction): void => {
   const { lat, lon } = req.query;
 
   // Ensure both parameters are present
