@@ -5,20 +5,14 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useLocation } from '~/state/hooks/location/useLocation';
 import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { Link } from 'expo-router';
-import { getUrlSafeString } from '~/lib/getUrlSafeString';
-
-interface SelectedSite {
-  longitude: number;
-  latitude: number;
-  name: string;
-  description: string;
-}
+import { getUrlSafeString } from '@northernexplorer/tools/dist/src';
+import { HistoricSiteType } from '@northernexplorer/types';
 
 export function Map() {
   const coords = useLocation();
   const { sites } = useClosestHistoricSites(coords);
 
-  const [selectedSite, setSelectedSite] = useState<SelectedSite | null>(null);
+  const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
   if (!coords) return null;
 

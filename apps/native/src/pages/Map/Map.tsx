@@ -9,15 +9,16 @@ import {
 } from '@maplibre/maplibre-react-native';
 import { useLocation } from '~/state/hooks/location/useLocation';
 import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
-import { getUrlSafeString } from '~/lib/getUrlSafeString';
 import { Link } from 'expo-router';
+import { getUrlSafeString } from '@northernexplorer/tools/dist/src';
+import { HistoricSiteType } from '@northernexplorer/types';
 
 export function Map() {
   const coords = useLocation();
   const { sites } = useClosestHistoricSites(coords);
 
   // State to track the active selected site details
-  const [selectedSite, setSelectedSite] = useState<HistoricSite | null>(null);
+  const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
   if (!coords) return null;
 
