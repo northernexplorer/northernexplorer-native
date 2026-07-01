@@ -1,0 +1,13 @@
+{
+  "name": "@northernexplorer/tools",
+  "version": "1.0.0",
+  "private": true,
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test:deps": "depcheck --specials=typescript"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}

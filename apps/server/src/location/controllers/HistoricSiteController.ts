@@ -24,7 +24,7 @@ export class HistoricSiteController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      // Coordinates safely populated by your validateCoords validation validateCoords.ts
+      // Coordinates safely populated by your validateCoords validation validateCoordinates.ts
       const lat = res.locals.lat;
       const lon = res.locals.lon;
 

@@ -14,6 +14,7 @@
     "@mikro-orm/core": "^7.1.4",
     "@mikro-orm/decorators": "^7.1.4",
     "@mikro-orm/postgresql": "^7.1.4",
+    "@northernexplorer/tools": "*",
     "@northernexplorer/types": "*",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",

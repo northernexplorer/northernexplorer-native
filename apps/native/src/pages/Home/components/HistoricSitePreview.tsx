@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
 import { Link } from 'expo-router';
-import { getImagePath } from '~/lib/getImagePath';
-import { getUrlSafeString } from '~/lib/getUrlSafeString';
 import { styles } from '~/pages/Home/styles';
+import { getUrl, getUrlSafeString } from '@northernexplorer/tools';
+import { config } from '~/config';
 
 type Props = {
   id: number;
@@ -31,7 +31,7 @@ export function HistoricSitePreview({ id, name, description, image, country, reg
       <Pressable>
         <View style={[styles.tile, { width: 160 }]}>
           <Image
-            source={{ uri: getImagePath(image) }}
+            source={{ uri: getUrl({ path: image, serverUrl: config.SERVER_URL }) }}
             style={{
               width: '100%',
               height: 90,
