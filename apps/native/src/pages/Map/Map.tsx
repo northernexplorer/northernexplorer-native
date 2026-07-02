@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import {
-  Map as NativeMap,
-  Camera,
-  Marker,
-} from '@maplibre/maplibre-react-native';
+import { Map as NativeMap, Camera, Marker } from '@maplibre/maplibre-react-native';
 import { useLocation } from '~/state/hooks/location/useLocation';
 import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { Link } from 'expo-router';

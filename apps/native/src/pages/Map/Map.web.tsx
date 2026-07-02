@@ -9,7 +9,6 @@ import { getUrl, getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '~/config';
-import { View } from 'react-native';
 
 export function Map() {
   const coords = useLocation();
