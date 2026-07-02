@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, NativeSyntheticEvent } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import {
   Map as NativeMap,
   Camera,
-  GeoJSONSource,
-  Layer,
   Marker,
-  PressEventWithFeatures,
 } from '@maplibre/maplibre-react-native';
 import { useLocation } from '~/state/hooks/location/useLocation';
 import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
@@ -28,6 +25,11 @@ export function Map() {
       <NativeMap
         style={{ width: '100%', height: '100%' }}
         mapStyle="https://tiles.openfreemap.org/styles/bright"
+        onPress={() => {
+          if (selectedSite) {
+            setSelectedSite(null);
+          }
+        }}
       >
         <Camera zoom={10} center={[coords.lon, coords.lat]} />
 
