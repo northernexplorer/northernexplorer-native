@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
   },
   banner: {
     width: '100%',
-    height: 250,
+    height: 300,
   },
   content: {
     padding: 24,
@@ -20,24 +20,23 @@ export const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   title: {
-    color: '#ffffff',
+    color: '#1a1a1a',
     fontSize: 26,
     fontWeight: '700',
     marginTop: 8,
   },
   coordinatesLabel: {
-    color: 'rgba(255, 255, 255, 0.4)',
+    color: '#1a1a1a',
     fontSize: 13,
     marginTop: 6,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#333333',
     marginVertical: 20,
   },
   body: {
-    color: 'rgba(255, 255, 255, 0.75)',
     fontSize: 16,
     lineHeight: 26,
   },

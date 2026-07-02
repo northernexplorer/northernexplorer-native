@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import MapGL, { Source, Layer, Popup } from 'react-map-gl/maplibre';
+import MapGL, { Marker } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useLocation } from '~/state/hooks/location/useLocation';
 import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { Link } from 'expo-router';
-import { getUrlSafeString } from '@northernexplorer/tools';
+import { getUrl, getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
-import { FeatureCollection, Point } from 'geojson';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { config } from '~/config';
 
 export function Map() {
   const coords = useLocation();
@@ -16,37 +17,6 @@ export function Map() {
   const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
   if (!coords) return null;
-
-  const geoJsonFeatures: FeatureCollection<Point, HistoricSiteType> = {
-    type: 'FeatureCollection',
-    features: (sites || []).map((site) => ({
-      type: 'Feature',
-      id: site.id,
-      properties: site,
-      geometry: {
-        type: 'Point',
-        coordinates: [site.coordinates.longitude, site.coordinates.latitude],
-      },
-    })),
-  };
-
-  // Typing the click event with MapLayerMouseEvent from react-map-gl
-  const onMapClick = (event: FeatureCollection<Point, HistoricSiteType>) => {
-    const feature = event.features?.[0];
-
-    if (feature && feature.geometry.type === 'Point') {
-      const props = feature.properties;
-      const [longitude, latitude] = (feature.geometry as Point).coordinates;
-
-      setSelectedSite({
-        ...props,
-        coordinates: {
-          longitude,
-          latitude,
-        },
-      });
-    }
-  };
 
   return (
     <div style={{ width: '100%', height: '100vh', minHeight: '400px' }}>
@@ -58,54 +28,112 @@ export function Map() {
           zoom: 10,
         }}
         mapStyle="https://tiles.openfreemap.org/styles/bright"
-        onClick={onMapClick}
+        onClick={() => setSelectedSite(null)}
         interactiveLayerIds={['historicSitesLayer']}
         cursor={selectedSite ? 'pointer' : 'default'}
       >
-        {sites && sites.length > 0 && (
-          <Source id="historicSitesSource" type="geojson" data={geoJsonFeatures}>
-            <Layer
-              id="historicSitesLayer"
-              type="circle"
-              paint={{
-                'circle-radius': 8,
-                'circle-color': '#FFB85A',
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#ffffff',
-              }}
-            />
-          </Source>
-        )}
+        {sites?.map((site) => (
+          <Marker
+            key={site.id}
+            longitude={site.coordinates.longitude}
+            latitude={site.coordinates.latitude}
+            anchor="bottom"
+            onClick={(e) => {
+              e.originalEvent.stopPropagation(); // Prevent map click
+              setSelectedSite(site);
+            }}
+          >
+            <div style={styles.iconCircle}>
+              <MaterialCommunityIcons name="bank" size={36} color="#1e1e1e" cursor="pointer" />
+            </div>
+          </Marker>
+        ))}
 
         {selectedSite && (
-          <Popup
+          <Marker
             longitude={selectedSite.coordinates.longitude}
             latitude={selectedSite.coordinates.latitude}
             anchor="bottom"
-            onClose={() => setSelectedSite(null)}
-            closeOnClick={false}
           >
-            <Link
-              href={{
-                pathname: '/[country]/[region]/[name]/[id]',
-                params: {
-                  country: getUrlSafeString(selectedSite.country),
-                  region: getUrlSafeString(selectedSite.region),
-                  id: getUrlSafeString(selectedSite.id),
-                  name: getUrlSafeString(selectedSite.name),
-                },
-              }}
-            >
-              <h3 style={{ margin: '0 0 5px 0', fontSize: '16px', fontWeight: 'bold' }}>
-                {selectedSite.name}
-              </h3>
-              <p style={{ margin: 0, fontSize: '14px', lineHeight: '1.4' }}>
-                {selectedSite.description}
-              </p>
-            </Link>
-          </Popup>
+            <div style={styles.popupContainer}>
+              <Link
+                href={{
+                  pathname: '/[country]/[region]/[name]/[id]',
+                  params: {
+                    country: getUrlSafeString(selectedSite.country),
+                    region: getUrlSafeString(selectedSite.region),
+                    id: getUrlSafeString(selectedSite.id),
+                    name: getUrlSafeString(selectedSite.name),
+                  },
+                }}
+              >
+                {selectedSite.image && (
+                  <img
+                    alt={selectedSite.name}
+                    src={getUrl({ path: selectedSite.image, serverUrl: config.SERVER_URL })}
+                    style={{
+                      width: '100%',
+                      height: 120,
+                      objectFit: 'cover',
+                      marginBottom: 8,
+                    }}
+                  />
+                )}
+
+                <h3 style={styles.popupTitle}>{selectedSite.name}</h3>
+                <p style={styles.popupDescription}>{selectedSite.description}</p>
+              </Link>
+
+              <div style={styles.popupArrow} />
+            </div>
+          </Marker>
         )}
       </MapGL>
     </div>
   );
 }
+
+const styles = {
+  popupContainer: {
+    background: '#fff',
+    padding: 12,
+    boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
+    maxWidth: 220,
+    textAlign: 'center' as const,
+    position: 'relative' as const,
+    cursor: 'pointer',
+  },
+  popupTitle: {
+    margin: '0 0 4px',
+    fontSize: 14,
+    fontWeight: 700,
+    color: '#333',
+  },
+  popupDescription: {
+    margin: 0,
+    fontSize: 12,
+    color: '#666',
+  },
+  popupArrow: {
+    position: 'absolute' as const,
+    bottom: -6,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 0,
+    height: 0,
+    borderLeft: '6px solid transparent',
+    borderRight: '6px solid transparent',
+    borderTop: '6px solid white',
+  },
+  iconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: '50%',
+    backgroundColor: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+    cursor: 'pointer',
+  },
+};
