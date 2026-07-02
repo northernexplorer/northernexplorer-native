@@ -11,7 +11,7 @@ import {
 import { useLocation } from '~/state/hooks/location/useLocation';
 import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { Link } from 'expo-router';
-import { getUrlSafeString } from '@northernexplorer/tools/dist/src';
+import { getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
 import { FeatureCollection, Point } from 'geojson';
 
