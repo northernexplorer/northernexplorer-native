@@ -7,6 +7,7 @@ import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { Link } from 'expo-router';
 import { getUrlSafeString } from '@northernexplorer/tools/dist/src';
 import { HistoricSiteType } from '@northernexplorer/types';
+import { FeatureCollection, Point } from 'geojson';
 
 export function Map() {
   const coords = useLocation();
@@ -16,32 +17,33 @@ export function Map() {
 
   if (!coords) return null;
 
-  const geoJsonFeatures = {
-    type: 'FeatureCollection' as const,
+  const geoJsonFeatures: FeatureCollection<Point, HistoricSiteType> = {
+    type: 'FeatureCollection',
     features: (sites || []).map((site) => ({
-      type: 'Feature' as const,
+      type: 'Feature',
       id: site.id,
-      properties: {
-        name: site.name,
-        description: site.description || 'No description available.', // Assuming your data has a description
-      },
+      properties: site,
       geometry: {
-        type: 'Point' as const,
+        type: 'Point',
         coordinates: [site.coordinates.longitude, site.coordinates.latitude],
       },
     })),
   };
 
-  const onMapClick = (event: any) => {
-    const feature = event.features && event.features[0];
+  // Typing the click event with MapLayerMouseEvent from react-map-gl
+  const onMapClick = (event: FeatureCollection<Point, HistoricSiteType>) => {
+    const feature = event.features?.[0];
 
-    if (feature) {
-      const [longitude, latitude] = feature.geometry.coordinates;
+    if (feature && feature.geometry.type === 'Point') {
+      const props = feature.properties;
+      const [longitude, latitude] = (feature.geometry as Point).coordinates;
+
       setSelectedSite({
-        longitude,
-        latitude,
-        name: feature.properties.name,
-        description: feature.properties.description,
+        ...props,
+        coordinates: {
+          longitude,
+          latitude,
+        },
       });
     }
   };
@@ -64,12 +66,11 @@ export function Map() {
           <Source id="historicSitesSource" type="geojson" data={geoJsonFeatures}>
             <Layer
               id="historicSitesLayer"
-              type="circle"
-              paint={{
-                'circle-radius': 8,
-                'circle-color': '#FFB85AFF',
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#ffffff',
+              type="symbol"
+              layout={{
+                'icon-image': 'castle',
+                'icon-size': 1.2,
+                'icon-allow-overlap': true,
               }}
             />
           </Source>
@@ -77,8 +78,8 @@ export function Map() {
 
         {selectedSite && (
           <Popup
-            longitude={selectedSite.longitude}
-            latitude={selectedSite.latitude}
+            longitude={selectedSite.coordinates.longitude}
+            latitude={selectedSite.coordinates.latitude}
             anchor="bottom"
             onClose={() => setSelectedSite(null)}
             closeOnClick={false}
@@ -94,23 +95,10 @@ export function Map() {
                 },
               }}
             >
-              <h3
-                style={{
-                  margin: '0 0 5px 0',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                }}
-              >
+              <h3 style={{ margin: '0 0 5px 0', fontSize: '16px', fontWeight: 'bold' }}>
                 {selectedSite.name}
               </h3>
-
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: '14px',
-                  lineHeight: '1.4',
-                }}
-              >
+              <p style={{ margin: 0, fontSize: '14px', lineHeight: '1.4' }}>
                 {selectedSite.description}
               </p>
             </Link>

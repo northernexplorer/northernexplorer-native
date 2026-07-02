@@ -7,9 +7,11 @@ export function useClosestHistoricSites(coords: { lat: number; lon: number } | n
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const lat = coords?.lat;
+  const lon = coords?.lon;
+
   useEffect(() => {
-    if (!coords) return;
-    const { lat, lon } = coords;
+    if (lat === undefined || lon === undefined) return;
 
     let isMounted = true;
     setLoading(true);
@@ -36,7 +38,7 @@ export function useClosestHistoricSites(coords: { lat: number; lon: number } | n
     return () => {
       isMounted = false;
     };
-  }, [coords]);
+  }, [lat, lon]);
 
   return { sites, loading, error };
 }

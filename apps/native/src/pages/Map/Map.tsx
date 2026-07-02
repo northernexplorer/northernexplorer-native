@@ -1,63 +1,60 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, NativeSyntheticEvent } from 'react-native';
 import {
   Map as NativeMap,
   Camera,
   GeoJSONSource,
   Layer,
   Marker,
+  PressEventWithFeatures,
 } from '@maplibre/maplibre-react-native';
 import { useLocation } from '~/state/hooks/location/useLocation';
 import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { Link } from 'expo-router';
 import { getUrlSafeString } from '@northernexplorer/tools/dist/src';
 import { HistoricSiteType } from '@northernexplorer/types';
+import { FeatureCollection, Point } from 'geojson';
 
 export function Map() {
   const coords = useLocation();
   const { sites } = useClosestHistoricSites(coords);
 
-  // State to track the active selected site details
   const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
   if (!coords) return null;
 
-  const geoJsonFeatures = {
-    type: 'FeatureCollection' as const,
+  const geoJsonFeatures: FeatureCollection<Point, HistoricSiteType> = {
+    type: 'FeatureCollection',
     features: (sites || []).map((site) => ({
-      type: 'Feature' as const,
+      type: 'Feature',
       id: site.id,
-      properties: {
-        name: site.name,
-        // Make sure to forward the description into properties
-        description: site.description || 'No description available.',
-      },
+      properties: site,
       geometry: {
-        type: 'Point' as const,
+        type: 'Point',
         coordinates: [site.coordinates.longitude, site.coordinates.latitude],
       },
     })),
   };
 
-  const onSourcePress = (event: any) => {
-    if (event.stopPropagation) {
-      event.stopPropagation();
-    }
+  const onSourcePress = (event: NativeSyntheticEvent<PressEventWithFeatures>) => {
+    const feature = event.nativeEvent.features?.[0];
 
-    const features = event.features || event.nativeEvent?.features;
-    const feature = features?.[0];
+    if (feature && feature.geometry.type === 'Point') {
+      let props = feature.properties as HistoricSiteType;
+      const [longitude, latitude] = (feature.geometry as Point).coordinates;
 
-    if (feature) {
       setSelectedSite({
-        coordinates: feature.geometry.coordinates,
-        name: feature.properties.name,
-        description: feature.properties.description,
+        ...props,
+        coordinates: {
+          longitude,
+          latitude,
+        },
       });
     }
   };
 
   return (
-    <View style={{ width: '100%', height: '100%' }}>
+    <View style={{ flex: 1 }}>
       <NativeMap
         style={{ width: '100%', height: '100%' }}
         mapStyle="https://tiles.openfreemap.org/styles/bright"
@@ -69,34 +66,38 @@ export function Map() {
           <GeoJSONSource id="historicSitesSource" data={geoJsonFeatures} onPress={onSourcePress}>
             <Layer
               id="historicSitesLayer"
-              type="circle"
-              paint={{
-                'circle-radius': 8,
-                'circle-color': '#FFB85AFF',
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#ffffff',
+              type="symbol"
+              layout={{
+                'icon-image': 'castle',
+                'icon-size': 1.2,
+                'icon-allow-overlap': true,
               }}
             />
           </GeoJSONSource>
         )}
 
         {selectedSite && (
-          <Marker lngLat={selectedSite.coordinates} anchor={'bottom'}>
-            <Link
-              href={{
-                pathname: '/[country]/[region]/[name]/[id]',
-                params: {
-                  country: getUrlSafeString(selectedSite.country),
-                  region: getUrlSafeString(selectedSite.region),
-                  id: getUrlSafeString(selectedSite.id),
-                  name: getUrlSafeString(selectedSite.name),
-                },
-              }}
-            >
-              <Text style={styles.popupTitle}>{selectedSite.name}</Text>
-              <Text style={styles.popupDescription}>{selectedSite.description}</Text>
+          <Marker
+            lngLat={[selectedSite.coordinates.longitude, selectedSite.coordinates.latitude]}
+            anchor={'bottom'}
+          >
+            <View style={styles.popupContainer}>
+              <Link
+                href={{
+                  pathname: '/[country]/[region]/[name]/[id]',
+                  params: {
+                    country: getUrlSafeString(selectedSite.country),
+                    region: getUrlSafeString(selectedSite.region),
+                    id: getUrlSafeString(selectedSite.id),
+                    name: getUrlSafeString(selectedSite.name),
+                  },
+                }}
+              >
+                <Text style={styles.popupTitle}>{selectedSite.name}</Text>
+                <Text style={styles.popupDescription}>{selectedSite.description}</Text>
+              </Link>
               <View style={styles.popupArrow} />
-            </Link>
+            </View>
           </Marker>
         )}
       </NativeMap>

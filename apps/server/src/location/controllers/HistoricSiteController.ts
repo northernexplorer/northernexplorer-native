@@ -42,7 +42,7 @@ export class HistoricSiteController {
                          FROM historic_site
                      ) AS spatial_search
                 ORDER BY distanceMeters ASC
-                    LIMIT 3
+                    LIMIT 5
             `;
 
       // Cast raw rows through unknown to enforce compile-time types
