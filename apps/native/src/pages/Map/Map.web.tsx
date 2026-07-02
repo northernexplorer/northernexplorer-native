@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MapGL, { Source, Layer, Popup } from 'react-map-gl/maplibre';
+import MapGL, { Marker, Popup } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useLocation } from '~/state/hooks/location/useLocation';
@@ -8,6 +8,7 @@ import { Link } from 'expo-router';
 import { getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
 import { FeatureCollection, Point } from 'geojson';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export function Map() {
   const coords = useLocation();
@@ -16,19 +17,6 @@ export function Map() {
   const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
   if (!coords) return null;
-
-  const geoJsonFeatures: FeatureCollection<Point, HistoricSiteType> = {
-    type: 'FeatureCollection',
-    features: (sites || []).map((site) => ({
-      type: 'Feature',
-      id: site.id,
-      properties: site,
-      geometry: {
-        type: 'Point',
-        coordinates: [site.coordinates.longitude, site.coordinates.latitude],
-      },
-    })),
-  };
 
   // Typing the click event with MapLayerMouseEvent from react-map-gl
   const onMapClick = (event: FeatureCollection<Point, HistoricSiteType>) => {
@@ -62,20 +50,25 @@ export function Map() {
         interactiveLayerIds={['historicSitesLayer']}
         cursor={selectedSite ? 'pointer' : 'default'}
       >
-        {sites && sites.length > 0 && (
-          <Source id="historicSitesSource" type="geojson" data={geoJsonFeatures}>
-            <Layer
-              id="historicSitesLayer"
-              type="circle"
-              paint={{
-                'circle-radius': 8,
-                'circle-color': '#FFB85A',
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#ffffff',
-              }}
+        {sites?.map((site) => (
+          <Marker
+            key={site.id}
+            longitude={site.coordinates.longitude}
+            latitude={site.coordinates.latitude}
+            anchor="bottom"
+            onClick={(e) => {
+              e.originalEvent.stopPropagation(); // Prevent map click
+              setSelectedSite(site);
+            }}
+          >
+            <MaterialCommunityIcons
+              name="bank"
+              size={36}
+              color="#FFB85A"
+              style={{ cursor: 'pointer' }}
             />
-          </Source>
-        )}
+          </Marker>
+        ))}
 
         {selectedSite && (
           <Popup

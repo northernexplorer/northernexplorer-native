@@ -13,7 +13,7 @@ import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { Link } from 'expo-router';
 import { getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
-import { FeatureCollection, Point } from 'geojson';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export function Map() {
   const coords = useLocation();
@@ -23,36 +23,6 @@ export function Map() {
 
   if (!coords) return null;
 
-  const geoJsonFeatures: FeatureCollection<Point, HistoricSiteType> = {
-    type: 'FeatureCollection',
-    features: (sites || []).map((site) => ({
-      type: 'Feature',
-      id: site.id,
-      properties: site,
-      geometry: {
-        type: 'Point',
-        coordinates: [site.coordinates.longitude, site.coordinates.latitude],
-      },
-    })),
-  };
-
-  const onSourcePress = (event: NativeSyntheticEvent<PressEventWithFeatures>) => {
-    const feature = event.nativeEvent.features?.[0];
-
-    if (feature && feature.geometry.type === 'Point') {
-      let props = feature.properties as HistoricSiteType;
-      const [longitude, latitude] = (feature.geometry as Point).coordinates;
-
-      setSelectedSite({
-        ...props,
-        coordinates: {
-          longitude,
-          latitude,
-        },
-      });
-    }
-  };
-
   return (
     <View style={{ flex: 1 }}>
       <NativeMap
@@ -61,20 +31,16 @@ export function Map() {
       >
         <Camera zoom={10} center={[coords.lon, coords.lat]} />
 
-        {sites && sites.length > 0 && (
-          <GeoJSONSource id="historicSitesSource" data={geoJsonFeatures} onPress={onSourcePress}>
-            <Layer
-              id="historicSitesLayer"
-              type="circle"
-              paint={{
-                'circle-radius': 8,
-                'circle-color': '#FFB85A',
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#ffffff',
-              }}
-            />
-          </GeoJSONSource>
-        )}
+        {sites?.map((site) => (
+          <Marker
+            key={site.id}
+            lngLat={[site.coordinates.longitude, site.coordinates.latitude]}
+            anchor="bottom"
+            onPress={() => setSelectedSite(site)}
+          >
+            <MaterialCommunityIcons name="bank" size={36} color="#FFB85A" />
+          </Marker>
+        ))}
 
         {selectedSite && (
           <Marker
