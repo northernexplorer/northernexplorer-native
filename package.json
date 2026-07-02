@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build:migrate": "yarn workspace northernexplorer-server build",
+    "build:migrate": "yarn workspace northernexplorer-migrate build",
     "build:server": "yarn workspace northernexplorer-server build",
     "build:tools": "yarn workspace @northernexplorer/tools build",
     "build:types": "yarn workspace @northernexplorer/types build",
