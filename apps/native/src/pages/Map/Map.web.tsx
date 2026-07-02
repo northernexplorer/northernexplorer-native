@@ -5,9 +5,11 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useLocation } from '~/state/hooks/location/useLocation';
 import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { Link } from 'expo-router';
-import { getUrlSafeString } from '@northernexplorer/tools';
+import { getUrl, getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { config } from '~/config';
+import { View } from 'react-native';
 
 export function Map() {
   const coords = useLocation();
@@ -42,12 +44,9 @@ export function Map() {
               setSelectedSite(site);
             }}
           >
-            <MaterialCommunityIcons
-              name="bank"
-              size={36}
-              color="#FFB85A"
-              style={{ cursor: 'pointer' }}
-            />
+            <div style={styles.iconCircle}>
+              <MaterialCommunityIcons name="bank" size={36} color="#1e1e1e" cursor="pointer" />
+            </div>
           </Marker>
         ))}
 
@@ -69,6 +68,19 @@ export function Map() {
                   },
                 }}
               >
+                {selectedSite.image && (
+                  <img
+                    alt={selectedSite.name}
+                    src={getUrl({ path: selectedSite.image, serverUrl: config.SERVER_URL })}
+                    style={{
+                      width: '100%',
+                      height: 120,
+                      objectFit: 'cover',
+                      marginBottom: 8,
+                    }}
+                  />
+                )}
+
                 <h3 style={styles.popupTitle}>{selectedSite.name}</h3>
                 <p style={styles.popupDescription}>{selectedSite.description}</p>
               </Link>
@@ -86,7 +98,6 @@ const styles = {
   popupContainer: {
     background: '#fff',
     padding: 12,
-    borderRadius: 8,
     boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
     maxWidth: 220,
     textAlign: 'center' as const,
@@ -114,5 +125,16 @@ const styles = {
     borderLeft: '6px solid transparent',
     borderRight: '6px solid transparent',
     borderTop: '6px solid white',
+  },
+  iconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: '50%',
+    backgroundColor: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+    cursor: 'pointer',
   },
 };
