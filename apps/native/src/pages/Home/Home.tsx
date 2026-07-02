@@ -3,7 +3,6 @@ import { Weather } from './components/Weather';
 import { Forecast } from './components/Forecast';
 import { Lunar } from './components/Lunar';
 import { FieldNote } from './components/FieldNote';
-
 import { useWeather } from '~/state/hooks/weather/useWeather';
 import { useForecast } from '~/state/hooks/forecast/useForecast';
 import { useLunar } from '~/state/hooks/lunar/useLunar';
@@ -11,13 +10,15 @@ import { useFieldNote } from '~/state/hooks/fieldNote/useFieldNote';
 import { styles } from '~/pages/Home/styles';
 import { HistoricSitePreview } from '~/pages/Home/components/HistoricSitePreview';
 import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
+import { useLocation } from '~/state/hooks/location/useLocation';
 
 export function Home() {
   const weather = useWeather();
   const forecast = useForecast();
   const lunar = useLunar();
   const fieldNote = useFieldNote();
-  const historicSites = useClosestHistoricSites();
+  const coords = useLocation();
+  const historicSites = useClosestHistoricSites(coords);
   const { width } = useWindowDimensions();
   const isMobileView = width < 1000;
 
