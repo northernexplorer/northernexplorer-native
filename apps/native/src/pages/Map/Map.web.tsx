@@ -66,11 +66,12 @@ export function Map() {
           <Source id="historicSitesSource" type="geojson" data={geoJsonFeatures}>
             <Layer
               id="historicSitesLayer"
-              type="symbol"
-              layout={{
-                'icon-image': 'castle',
-                'icon-size': 1.2,
-                'icon-allow-overlap': true,
+              type="circle"
+              paint={{
+                'circle-radius': 8,
+                'circle-color': '#FFB85A',
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#ffffff',
               }}
             />
           </Source>
