@@ -58,7 +58,6 @@ export function Map() {
       <NativeMap
         style={{ width: '100%', height: '100%' }}
         mapStyle="https://tiles.openfreemap.org/styles/bright"
-        onPress={() => setSelectedSite(null)}
       >
         <Camera zoom={10} center={[coords.lon, coords.lat]} />
 
