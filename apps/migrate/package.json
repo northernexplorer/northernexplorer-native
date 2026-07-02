@@ -4,6 +4,7 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
     "start": "tsx src/index.ts",
     "test:deps": "depcheck --specials=typescript"
   },
