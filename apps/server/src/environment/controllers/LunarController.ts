@@ -57,13 +57,12 @@ export class LunarController {
       phaseName = 'New Moon';
     }
 
-    // Format response payload matching your Expo client contracts exactly
-    res.json({
+    return {
       phase_fraction: parseFloat(currentPhaseFraction.toFixed(4)),
       moon_age_days: parseFloat(moonAgeDays.toFixed(2)),
       illumination_percentage: parseFloat((illumination * 100).toFixed(1)),
       phase_name: phaseName,
       is_waxing: currentPhaseFraction < 0.5,
-    });
+    };
   }
 }
