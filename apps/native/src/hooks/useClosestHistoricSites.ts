@@ -14,29 +14,38 @@ export function useClosestHistoricSites(coords: { lat: number; lon: number } | n
     if (lat === undefined || lon === undefined) return;
 
     let isMounted = true;
-    setLoading(true);
-    setError(null);
 
-    apiClient('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
-      lat,
-      lon,
-    })
-      .then((data) => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await apiClient(
+          'location',
+          'HistoricSiteController',
+          'getNearbyHistoricSites',
+          {
+            lat,
+            lon,
+          },
+        );
+
         if (isMounted) {
           setSites(data);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         if (isMounted) {
           console.error('Failed to load historic sites:', err);
-          setError(err);
+          setError(err instanceof Error ? err : new Error('Unknown error'));
         }
-      })
-      .finally(() => {
+      } finally {
         if (isMounted) {
           setLoading(false);
         }
-      });
+      }
+    };
+
+    fetchData();
 
     return () => {
       isMounted = false;

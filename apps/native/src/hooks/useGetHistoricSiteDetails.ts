@@ -14,26 +14,32 @@ export function useGetHistoricSiteDetails(id: number) {
     }
 
     let isMounted = true;
-    setLoading(true);
-    setError(null);
 
-    apiClient('location', 'HistoricSiteController', 'getHistoricSiteById', { id })
-      .then((data) => {
+    const fetchSiteDetails = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await apiClient('location', 'HistoricSiteController', 'getHistoricSiteById', {
+          id,
+        });
+
         if (isMounted) {
           setSite(data);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         if (isMounted) {
           console.error(`Failed to load historic site detail record for ID ${id}:`, err);
-          setError(err);
+          setError(err instanceof Error ? err : new Error('An unknown error occurred'));
         }
-      })
-      .finally(() => {
+      } finally {
         if (isMounted) {
           setLoading(false);
         }
-      });
+      }
+    };
+
+    fetchSiteDetails();
 
     return () => {
       isMounted = false;
