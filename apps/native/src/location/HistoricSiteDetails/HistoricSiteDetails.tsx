@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { styles } from '~/location/HistoricSiteDetails/styles';
-import { getUrl } from '@northernexplorer/tools/dist/src';
+import { getUrl } from '@northernexplorer/tools';
 import { config } from '~/config';
 import { useApiClient } from '~/core/useApiClient';
 
