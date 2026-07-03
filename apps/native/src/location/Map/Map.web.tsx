@@ -4,7 +4,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useLocation } from '~/location/state/location/useLocation';
 import { Link } from 'expo-router';
-import { getUrl, getUrlSafeString } from '@northernexplorer/tools/dist/src';
+import { getUrl, getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '~/config';

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import { Map as NativeMap, Camera, Marker } from '@maplibre/maplibre-react-native';
 import { useLocation } from '~/location/state/location/useLocation';
 import { Link } from 'expo-router';
-import { getUrl, getUrlSafeString } from '@northernexplorer/tools/dist/src';
+import { getUrl, getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '~/config';
