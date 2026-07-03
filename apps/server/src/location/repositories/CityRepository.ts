@@ -34,11 +34,11 @@ export class CityRepository extends EntityRepository<CityCache> {
 
     const parsedJson = await apiResponse.json();
 
-    await this.creatCache(lat, lon, parsedJson);
+    await this.createCache(lat, lon, parsedJson);
     return parsedJson;
   }
 
-  async creatCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
+  async createCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
     const newCacheEntry = this.em.create(CityCache, {
       lat: Number(lat),
       lon: Number(lon),

@@ -8,6 +8,6 @@ export class ForecastController {
     const lat = res.locals.lat;
     const lon = res.locals.lon;
 
-    return this.repos.forecast.getForecastCache(lat, lon);
+    return this.repos.forecast.getForecastCache(Number(lat), Number(lon));
   }
 }
