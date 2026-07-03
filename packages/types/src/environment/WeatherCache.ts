@@ -39,10 +39,3 @@ export type WeatherType = {
     gust_kph: number;
   };
 };
-
-export interface WeatherResponse {
-  source: 'database_cache' | 'weatherapi_data';
-  distance_offset?: string;
-  cached_at?: string;
-  data: WeatherType;
-}

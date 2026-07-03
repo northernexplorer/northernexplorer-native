@@ -1,5 +1,5 @@
 import { config } from '~/config';
-import { EndpointType, ForecastResponse, ForecastType } from '@northernexplorer/types';
+import { EndpointType, ForecastType } from '@northernexplorer/types';
 
 export async function getForecast(lat: number, lon: number): Promise<ForecastType> {
   const serverUrl = config.SERVER_URL;
@@ -14,7 +14,5 @@ export async function getForecast(lat: number, lon: number): Promise<ForecastTyp
     throw new Error(`Forecast fetch failed: ${res.status}`);
   }
 
-  const json: ForecastResponse = await res.json();
-
-  return json.data;
+  return await res.json();
 }

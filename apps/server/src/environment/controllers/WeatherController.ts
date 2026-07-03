@@ -8,11 +8,6 @@ export class WeatherController {
     const lat = res.locals.lat;
     const lon = res.locals.lon;
 
-    const weatherData = await this.repos.weather.getWeatherCache(Number(lat), Number(lon));
-
-    res.json({
-      source: 'weather_service_pipeline',
-      data: weatherData,
-    });
+    return this.repos.weather.getWeatherCache(Number(lat), Number(lon));
   }
 }

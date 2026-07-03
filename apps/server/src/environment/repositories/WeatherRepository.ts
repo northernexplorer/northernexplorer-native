@@ -6,21 +6,8 @@ interface RawInternalWeatherRow {
   weatherData: string | Record<string, unknown>;
 }
 
-interface FieldNoteDataPayload {
-  current?: {
-    temp_c?: string | number;
-    wind_kph?: number;
-    cloud?: number;
-    humidity?: number;
-    vis_km?: number;
-    condition?: {
-      text?: string;
-    };
-  };
-}
-
 export class WeatherRepository extends EntityRepository<WeatherCache> {
-  async getWeatherCache(lat: number, lon: number): Promise<FieldNoteDataPayload> {
+  async getWeatherCache(lat: number, lon: number) {
     const query = `
       SELECT weather_data as "weatherData"
       FROM (

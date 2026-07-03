@@ -11,9 +11,3 @@ export type HistoricSiteType = {
   country: string;
   region: string;
 };
-
-export interface ClosestHistoricSiteResponse {
-  source: 'database_records';
-  count: number;
-  sites: HistoricSiteType[];
-}
