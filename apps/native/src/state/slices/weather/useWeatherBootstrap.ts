@@ -1,11 +1,11 @@
 import { useAppSelector } from '~/state/storeHooks';
+import { setWeather, setWeatherLoading, setWeatherError } from '~/state/slices/weather/weatherSlice';
 import { useApiClient } from '~/hooks/useApiClient';
-import { setForecast, setForecastError, setForecastLoading } from '~/state/slices/forecastSlice';
-import { useSyncToRedux } from '~/state/hooks/useSyncToRedux';
+import { useSyncToRedux } from '~/state/slices/useSyncToRedux';
 
-export function useForecastBootstrap() {
+export function useWeatherBootstrap() {
   const coords = useAppSelector((s) => s.location.data);
-  const { data, lastUpdated } = useAppSelector((s) => s.forecast);
+  const { data, lastUpdated } = useAppSelector((s) => s.weather);
 
   const isStale = !lastUpdated || Date.now() - lastUpdated > 1000 * 60 * 30;
   const shouldFetch = !!coords && (!data || isStale);
@@ -16,14 +16,14 @@ export function useForecastBootstrap() {
     error,
   } = useApiClient(
     'environment',
-    'ForecastController',
-    'getForecastData',
+    'WeatherController',
+    'getWeatherData',
     shouldFetch ? { lat: coords!.lat, lon: coords!.lon } : null,
   );
 
   useSyncToRedux(fetchedData, loading, error, {
-    set: setForecast,
-    setLoading: setForecastLoading,
-    setError: setForecastError,
+    set: setWeather,
+    setLoading: setWeatherLoading,
+    setError: setWeatherError,
   });
 }

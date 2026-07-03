@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useAppSelector } from '~/state/storeHooks';
-import { setLocation, setLocationError, setLocationLoading } from '~/state/slices/locationSlice';
+import { setLocation, setLocationError, setLocationLoading } from '~/state/slices/location/locationSlice';
 import {
   Accuracy,
   getForegroundPermissionsAsync,
@@ -9,7 +9,7 @@ import {
   getLastKnownPositionAsync,
   getCurrentPositionAsync,
 } from 'expo-location';
-import { useSyncToRedux } from '~/state/hooks/useSyncToRedux';
+import { useSyncToRedux } from '~/state/slices/useSyncToRedux';
 
 export function useLocationBootstrap() {
   const coords = useAppSelector((s) => s.location.data);

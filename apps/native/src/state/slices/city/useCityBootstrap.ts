@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
-import { setCity, setCityLoading, setCityError } from '~/state/slices/citySlice';
+import { setCity, setCityLoading, setCityError } from '~/state/slices/city/citySlice';
 import { useApiClient } from '~/hooks/useApiClient';
 
 export function useCityBootstrap() {

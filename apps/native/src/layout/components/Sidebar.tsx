@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
-import { useCity } from '~/state/hooks/city/useCity';
-import { useLocation } from '~/state/hooks/location/useLocation';
+import { useCity } from '~/state/slices/city/useCity';
+import { useLocation } from '~/state/slices/location/useLocation';
 import { ComponentType } from 'react';
 
 interface Props {

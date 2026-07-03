@@ -3,13 +3,13 @@ import { Weather } from './components/Weather';
 import { Forecast } from './components/Forecast';
 import { Lunar } from './components/Lunar';
 import { FieldNote } from './components/FieldNote';
-import { useWeather } from '~/state/hooks/weather/useWeather';
-import { useForecast } from '~/state/hooks/forecast/useForecast';
-import { useLunar } from '~/state/hooks/lunar/useLunar';
-import { useFieldNote } from '~/state/hooks/fieldNote/useFieldNote';
+import { useWeather } from '~/state/slices/weather/useWeather';
+import { useForecast } from '~/state/slices/forecast/useForecast';
+import { useLunar } from '~/state/slices/lunar/useLunar';
+import { useFieldNote } from '~/state/slices/fieldNote/useFieldNote';
 import { styles } from '~/pages/Home/styles';
 import { HistoricSitePreview } from '~/pages/Home/components/HistoricSitePreview';
-import { useLocation } from '~/state/hooks/location/useLocation';
+import { useLocation } from '~/state/slices/location/useLocation';
 import { useApiClient } from '~/hooks/useApiClient';
 
 export function Home() {

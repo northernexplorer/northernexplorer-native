@@ -1,6 +1,6 @@
 import { useAppSelector } from '~/state/storeHooks';
-import { setLunar, setLunarLoading, setLunarError } from '~/state/slices/lunarSlice';
-import { useSyncToRedux } from '~/state/hooks/useSyncToRedux';
+import { setLunar, setLunarLoading, setLunarError } from '~/state/slices/lunar/lunarSlice';
+import { useSyncToRedux } from '~/state/slices/useSyncToRedux';
 import { useApiClient } from '~/hooks/useApiClient';
 
 export function useLunarBootstrap() {

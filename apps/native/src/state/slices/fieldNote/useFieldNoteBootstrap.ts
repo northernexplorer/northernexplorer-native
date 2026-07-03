@@ -1,11 +1,11 @@
 import { useApiClient } from '~/hooks/useApiClient';
 import { useAppSelector } from '~/state/storeHooks';
-import { useSyncToRedux } from '~/state/hooks/useSyncToRedux';
+import { useSyncToRedux } from '~/state/slices/useSyncToRedux';
 import {
   setFieldNote,
   setFieldNoteError,
   setFieldNoteLoading,
-} from '~/state/slices/fieldNoteSlice';
+} from '~/state/slices/fieldNote/fieldNoteSlice';
 
 export function useFieldNoteBootstrap() {
   const coords = useAppSelector((s) => s.location.data);

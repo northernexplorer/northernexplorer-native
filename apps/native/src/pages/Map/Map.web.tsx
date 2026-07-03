@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import MapGL, { Marker } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { useLocation } from '~/state/hooks/location/useLocation';
+import { useLocation } from '~/state/slices/location/useLocation';
 import { Link } from 'expo-router';
 import { getUrl, getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';

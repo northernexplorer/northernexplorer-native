@@ -12,12 +12,12 @@ import {
 // This adapter handles Android, iOS, and Web fallback transparently
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import locationReducer from './slices/locationSlice';
-import weatherReducer from './slices/weatherSlice';
-import forecastReducer from './slices/forecastSlice';
-import fieldNoteReducer from './slices/fieldNoteSlice';
-import lunarReducer from './slices/lunarSlice';
-import cityReducer from './slices/citySlice';
+import locationReducer from './slices/location/locationSlice';
+import weatherReducer from './slices/weather/weatherSlice';
+import forecastReducer from './slices/forecast/forecastSlice';
+import fieldNoteReducer from './slices/fieldNote/fieldNoteSlice';
+import lunarReducer from './slices/lunar/lunarSlice';
+import cityReducer from './slices/city/citySlice';
 
 const rootReducer = combineReducers({
   location: locationReducer,

@@ -3,7 +3,7 @@ import { ImageBackground, ScrollView, Text, useWindowDimensions, View } from 're
 
 import { styles } from './styles';
 import { getWeatherTheme } from '~/layout/getWeatherTheme';
-import { useWeather } from '~/state/hooks/weather/useWeather';
+import { useWeather } from '~/state/slices/weather/useWeather';
 import { Sidebar } from '~/layout/components/Sidebar';
 import { Navigation } from '~/layout/components/Navigation';
 

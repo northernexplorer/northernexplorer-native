@@ -1,9 +1,9 @@
-import { useWeatherBootstrap } from '~/state/hooks/weather/useWeatherBootstrap';
-import { useLocationBootstrap } from '~/state/hooks/location/useLocationBootstrap';
-import { useForecastBootstrap } from '~/state/hooks/forecast/useForecastBootstrap';
-import { useFieldNoteBootstrap } from '~/state/hooks/fieldNote/useFieldNoteBootstrap';
-import { useLunarBootstrap } from '~/state/hooks/lunar/useLunarBootstrap';
-import { useCityBootstrap } from '~/state/hooks/city/useCityBootstrap';
+import { useWeatherBootstrap } from '~/state/slices/weather/useWeatherBootstrap';
+import { useLocationBootstrap } from '~/state/slices/location/useLocationBootstrap';
+import { useForecastBootstrap } from '~/state/slices/forecast/useForecastBootstrap';
+import { useFieldNoteBootstrap } from '~/state/slices/fieldNote/useFieldNoteBootstrap';
+import { useLunarBootstrap } from '~/state/slices/lunar/useLunarBootstrap';
+import { useCityBootstrap } from '~/state/slices/city/useCityBootstrap';
 
 export function AppBootstrap() {
   useLocationBootstrap();
