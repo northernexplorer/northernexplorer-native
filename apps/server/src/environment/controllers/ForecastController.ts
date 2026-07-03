@@ -1,5 +1,5 @@
-import { Repositories } from '../../core/typeHelpers';
 import { ROUTES } from '@northernexplorer/types';
+import { Repositories } from '../../core/repositories';
 
 export class ForecastController {
   constructor(private repos: Repositories) {}

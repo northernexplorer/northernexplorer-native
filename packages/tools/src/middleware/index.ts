@@ -1,1 +1,0 @@
-export { validateCoordinates } from './validateCoordinates';

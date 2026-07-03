@@ -1,4 +1,4 @@
-import { Repositories } from '../../core/typeHelpers';
+import { Repositories } from '../../core/repositories';;
 import { ROUTES } from '@northernexplorer/types';
 
 export class LunarController {
