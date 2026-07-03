@@ -6,8 +6,5 @@
   "scripts": {
     "build": "tsc",
     "test:deps": "depcheck --specials=typescript"
-  },
-  "dependencies": {
-    "express": "^4.21.0"
   }
 }
