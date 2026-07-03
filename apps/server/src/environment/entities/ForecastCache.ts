@@ -1,9 +1,11 @@
 import { Entity, PrimaryKey, Property, Index } from '@mikro-orm/decorators/legacy';
-import { Opt } from '@mikro-orm/postgresql';
+import { EntityRepositoryType, Opt } from '@mikro-orm/postgresql';
+import { ForecastRepository } from '../repositories/ForecastRepository';
 
-@Entity({ tableName: 'forecast_cache' })
+@Entity({ repository: () => ForecastRepository })
 @Index({ name: 'idx_forecast_location', properties: ['lat', 'lon'] })
 export class ForecastCache {
+  [EntityRepositoryType]?: ForecastRepository;
   @PrimaryKey({ type: 'number' })
   id!: number;
 

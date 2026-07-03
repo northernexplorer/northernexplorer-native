@@ -1,9 +1,11 @@
 import { Entity, PrimaryKey, Property, Index } from '@mikro-orm/decorators/legacy';
-import { Opt } from '@mikro-orm/postgresql';
+import { EntityRepositoryType, Opt } from '@mikro-orm/postgresql';
+import { CityRepository } from '../repositories/CityRepository';
 
-@Entity()
+@Entity({ repository: () => CityRepository })
 @Index({ name: 'idx_city_location', properties: ['lat', 'lon'] })
 export class CityCache {
+  [EntityRepositoryType]?: CityRepository;
   @PrimaryKey({ type: 'number' })
   id!: number;
 

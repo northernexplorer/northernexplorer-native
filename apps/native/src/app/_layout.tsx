@@ -1,8 +1,8 @@
 import { Stack } from 'expo-router';
 import { Provider } from 'react-redux';
-import { store, persistor } from '~/state';
+import { store, persistor } from '~/core/store';
 import { PersistGate } from 'redux-persist/integration/react';
-import { AppBootstrap } from '~/layout/components/Boostrap';
+import { AppBootstrap } from '~/layout/Layout/components/Boostrap';
 
 export default function Layout() {
   return (

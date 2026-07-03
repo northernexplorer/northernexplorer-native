@@ -5,3 +5,6 @@ export { WeatherController } from './controllers/WeatherController';
 
 export { ForecastCache } from './entities/ForecastCache';
 export { WeatherCache } from './entities/WeatherCache';
+
+export { ForecastRepository } from './repositories/ForecastRepository';
+export { WeatherRepository } from './repositories/WeatherRepository';

@@ -1,4 +1,4 @@
-export function getUrlSafeString(str?: string | number) {
+export function getUrlSafeString(str?: string | number | null) {
   const forceString = str?.toString() || '';
   const formattedString = forceString.toLowerCase().trim();
   return (

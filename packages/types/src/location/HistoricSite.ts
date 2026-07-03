@@ -7,13 +7,6 @@ export type HistoricSiteType = {
     latitude: number;
     longitude: number;
   };
-  distance_offset_meters: number;
   country: string;
-  region: string;
+  region?: string | null;
 };
-
-export interface ClosestHistoricSiteResponse {
-  source: 'database_records';
-  count: number;
-  sites: HistoricSiteType[];
-}
