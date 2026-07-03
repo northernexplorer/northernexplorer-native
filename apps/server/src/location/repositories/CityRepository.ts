@@ -48,7 +48,7 @@ export class CityRepository extends EntityRepository<CityCache> {
     this.em.persist(newCacheEntry);
     await this.em.flush();
 
-    const cleanupQuery = `DELETE FROM city_cache WHERE updated_at < NOW() - INTERVAL 90 DAY`;
+    const cleanupQuery = `DELETE FROM city_cache WHERE updated_at < NOW() - INTERVAL '90 DAY'`;
     await this.em.getConnection().execute(cleanupQuery);
   }
 }
