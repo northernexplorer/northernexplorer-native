@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
 import { Repositories } from '../../core/typeHelpers';
+import { ROUTES } from '@northernexplorer/types';
 
 export class LunarController {
   constructor(private repos: Repositories) {}
 
-  public async getLunarData(req: Request, res: Response) {
+  public async getLunarData({}: ROUTES['environment']['LunarController']['getLunarData']['params']) {
     // Known reference New Moon date (January 6, 2000, 18:14 UTC) in milliseconds
     const referenceTimeMs = Date.UTC(2000, 0, 6, 18, 14, 0);
 

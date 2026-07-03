@@ -1,22 +1,22 @@
-import { Request, Response } from 'express';
 import { Repositories } from '../../core/typeHelpers';
+import { ROUTES } from '@northernexplorer/types';
 
 export class HistoricSiteController {
   constructor(private repos: Repositories) {}
 
-  public async getNearbyHistoricSites(req: Request, res: Response) {
-    const lat = res.locals.lat;
-    const lon = res.locals.lon;
-
+  public async getNearbyHistoricSites({
+    lat,
+    lon,
+  }: ROUTES['location']['HistoricSiteController']['getNearbyHistoricSites']['params']) {
     return this.repos.historicSite.getClosestHistoricSites(lat, lon);
   }
 
   /**
    * Fetches a single specific historic site by its unique ID record identifier.
    */
-  public async getHistoricSiteById(req: Request, res: Response) {
-    const id = (req.query.id as string) || (req.params.id as string);
-
+  public async getHistoricSiteById({
+    id,
+  }: ROUTES['location']['HistoricSiteController']['getHistoricSiteById']['params']) {
     if (!id) throw new Error('Historic site ID is required.');
 
     return this.repos.historicSite.getHistoricSiteDetails(id);

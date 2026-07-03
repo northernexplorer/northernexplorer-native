@@ -1,13 +1,13 @@
-import { Request, Response } from 'express';
 import { Repositories } from '../../core/typeHelpers';
+import { ROUTES } from '@northernexplorer/types';
 
 export class FieldNoteController {
   constructor(private repos: Repositories) {}
 
-  public async getFieldNoteData(req: Request, res: Response) {
-    const lat = res.locals.lat;
-    const lon = res.locals.lon;
-
+  public async getFieldNoteData({
+    lat,
+    lon,
+  }: ROUTES['environment']['FieldNoteController']['getFieldNoteData']['params']) {
     const weather = await this.repos.weather.getWeatherCache(lat, lon);
     if (!weather.current) throw new Error('Weather data not found');
 

@@ -1,13 +1,13 @@
-import { Request, Response } from 'express';
 import { Repositories } from '../../core/typeHelpers';
+import { ROUTES } from '@northernexplorer/types';
 
 export class WeatherController {
   constructor(private repos: Repositories) {}
 
-  public async getWeatherData(req: Request, res: Response) {
-    const lat = res.locals.lat;
-    const lon = res.locals.lon;
-
+  public async getWeatherData({
+    lat,
+    lon,
+  }: ROUTES['environment']['WeatherController']['getWeatherData']['params']) {
     return this.repos.weather.getWeatherCache(Number(lat), Number(lon));
   }
 }

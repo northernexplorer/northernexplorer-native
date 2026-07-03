@@ -25,15 +25,9 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), 'public')));
 
-type DataReturningMethod = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => unknown | Promise<unknown>;
-
-export function handle<T extends Record<K, DataReturningMethod>, K extends keyof T>(
+export function handle<T extends Record<string, any>>(
   ControllerClass: new (repos: Repositories) => T,
-  method: K,
+  methodName: keyof T & string, // This ensures the method exists on the class
 ) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -41,7 +35,8 @@ export function handle<T extends Record<K, DataReturningMethod>, K extends keyof
       const repos = createRepositories(em);
       const controller = new ControllerClass(repos);
 
-      const result = await controller[method](req, res, next);
+      const params = { ...req.query, ...req.params };
+      const result = await controller[methodName](params);
 
       if (result !== undefined && !res.headersSent) {
         res.json(result);
