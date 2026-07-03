@@ -43,6 +43,7 @@ export class CityRepository extends EntityRepository<CityCache> {
       lat: Number(lat),
       lon: Number(lon),
       cityData: parsedJson,
+      updatedAt: new Date(),
     });
 
     this.em.persist(newCacheEntry);

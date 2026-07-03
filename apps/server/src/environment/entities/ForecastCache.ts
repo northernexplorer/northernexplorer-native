@@ -1,9 +1,8 @@
-import { Entity, PrimaryKey, Property, Index } from '@mikro-orm/decorators/legacy';
-import { EntityRepositoryType, Opt } from '@mikro-orm/postgresql';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
+import { EntityRepositoryType } from '@mikro-orm/postgresql';
 import { ForecastRepository } from '../repositories/ForecastRepository';
 
 @Entity({ repository: () => ForecastRepository })
-@Index({ name: 'idx_forecast_location', properties: ['lat', 'lon'] })
 export class ForecastCache {
   [EntityRepositoryType]?: ForecastRepository;
   @PrimaryKey({ type: 'number' })
@@ -18,11 +17,6 @@ export class ForecastCache {
   @Property({ type: 'json', columnType: 'text' })
   forecastData!: unknown;
 
-  @Property({
-    type: 'datetime',
-    columnType: 'timestamp',
-    defaultRaw: 'CURRENT_TIMESTAMP',
-    extra: 'on update CURRENT_TIMESTAMP',
-  })
-  updatedAt!: Date & Opt;
+  @Property({ type: 'datetime', columnType: 'timestamp' })
+  updatedAt = new Date();
 }
