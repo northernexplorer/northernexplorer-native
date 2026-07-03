@@ -102,10 +102,3 @@ export type ForecastHour = {
   gust_kph: number;
   uv: number;
 };
-
-export interface ForecastResponse {
-  source: 'database_cache' | 'weatherapi_data';
-  distance_offset?: string;
-  cached_at?: string;
-  data: ForecastType;
-}

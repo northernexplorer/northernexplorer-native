@@ -1,8 +1,11 @@
 import { Entity, PrimaryKey, Property, Index } from '@mikro-orm/decorators/legacy';
+import { HistoricSiteRepository } from '../repositories/HistoricSiteRepository';
+import { EntityRepositoryType } from '@mikro-orm/postgresql';
 
-@Entity()
+@Entity({ repository: () => HistoricSiteRepository })
 @Index({ name: 'idx_site_location', properties: ['lat', 'lon'] })
 export class HistoricSite {
+  [EntityRepositoryType]?: HistoricSiteRepository;
   @PrimaryKey({ type: 'number' })
   id!: number;
 
