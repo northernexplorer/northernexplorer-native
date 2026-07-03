@@ -1,46 +1,32 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
 import { setCity, setCityLoading, setCityError } from '~/state/slices/citySlice';
-import { apiClient } from '~/hooks/apiClient';
+import { useApiClient } from '~/hooks/useApiClient';
 
 export function useCityBootstrap() {
   const dispatch = useAppDispatch();
   const coords = useAppSelector((s) => s.location.data);
 
+  const { data, loading, error } = useApiClient(
+    'location',
+    'CityController',
+    'getCityData',
+    coords ? { lat: coords.lat, lon: coords.lon } : null,
+  );
+
   useEffect(() => {
-    if (!coords) return;
+    dispatch(setCityLoading(loading));
+  }, [dispatch, loading]);
 
-    let cancelled = false;
-
-    const { lat, lon } = coords;
-
-    async function run() {
-      try {
-        dispatch(setCityLoading(true));
-
-        const location = await apiClient('location', 'CityController', 'getCityData', {
-          lat,
-          lon,
-        });
-
-        if (cancelled) return;
-
-        dispatch(setCity(location));
-      } catch {
-        if (!cancelled) {
-          dispatch(setCityError('Failed to resolve city'));
-        }
-      } finally {
-        if (!cancelled) {
-          dispatch(setCityLoading(false));
-        }
-      }
+  useEffect(() => {
+    if (error) {
+      dispatch(setCityError('Failed to resolve city'));
     }
+  }, [dispatch, error]);
 
-    run();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [coords, dispatch]);
+  useEffect(() => {
+    if (data) {
+      dispatch(setCity(data));
+    }
+  }, [dispatch, data]);
 }

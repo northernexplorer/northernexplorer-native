@@ -1,5 +1,6 @@
-import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
+import { useAppSelector } from '~/state/storeHooks';
 import { setLocation, setLocationError, setLocationLoading } from '~/state/slices/locationSlice';
 import {
   Accuracy,
@@ -8,101 +9,65 @@ import {
   getLastKnownPositionAsync,
   getCurrentPositionAsync,
 } from 'expo-location';
-import { Platform } from 'react-native';
+import { useSyncToRedux } from '~/state/hooks/useSyncToRedux';
 
 export function useLocationBootstrap() {
-  const dispatch = useAppDispatch();
   const coords = useAppSelector((s) => s.location.data);
+
+  const [data, setData] = useState<{ lat: number; lon: number } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (coords) return;
 
     let cancelled = false;
 
-    async function fetchIPFallback() {
+    const resolve = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        const response = await fetch('https://ipapi.co/json/');
-        const data = await response.json();
-
-        if (cancelled) return;
-
-        if (typeof data.latitude === 'number' && typeof data.longitude === 'number') {
-          dispatch(
-            setLocation({
-              lat: data.latitude,
-              lon: data.longitude,
-            }),
-          );
-        } else {
-          dispatch(setLocationError('Invalid IP geolocation response'));
-        }
-      } catch {
-        if (!cancelled) {
-          dispatch(setLocationError('Location resolution completely failed'));
-        }
-      }
-    }
-
-    async function resolvePosition() {
-      try {
-        dispatch(setLocationLoading(true));
-
-        // Check existing permission status
+        // --- Core Location Logic ---
         const permissions = await getForegroundPermissionsAsync();
         let granted = permissions.granted;
-
-        // Only request if not granted AND the OS allows us to ask again
         if (!granted && permissions.canAskAgain) {
           const requested = await requestForegroundPermissionsAsync();
           granted = requested.granted;
         }
 
-        // If we have permission, hunt for coordinates
         if (granted) {
-          // Fast cache check (instant on emulator/device reloads)
-          const cachedLoc = await getLastKnownPositionAsync();
-          if (cachedLoc && !cancelled) {
-            dispatch(
-              setLocation({
-                lat: cachedLoc.coords.latitude,
-                lon: cachedLoc.coords.longitude,
-              }),
-            );
+          const cached = await getLastKnownPositionAsync();
+          if (cached) {
+            if (!cancelled) setData({ lat: cached.coords.latitude, lon: cached.coords.longitude });
             return;
           }
-
-          // Active hardware poll if cache is empty
           const loc = await getCurrentPositionAsync({
             accuracy: Platform.OS === 'android' ? Accuracy.Balanced : Accuracy.High,
           });
-
-          if (cancelled) return;
-
-          dispatch(
-            setLocation({
-              lat: loc.coords.latitude,
-              lon: loc.coords.longitude,
-            }),
-          );
-          return;
+          if (!cancelled) setData({ lat: loc.coords.latitude, lon: loc.coords.longitude });
+        } else {
+          // --- IP Fallback ---
+          const res = await fetch('https://ipapi.co/json/');
+          const ipData = await res.json();
+          if (!cancelled) setData({ lat: ipData.latitude, lon: ipData.longitude });
         }
-
-        // If permissions are denied or can't ask again, pivot to IP fallback
-        await fetchIPFallback();
-      } catch {
-        // If native hardware polling timed out or failed, fall back to IP as a safety net
-        await fetchIPFallback();
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err : new Error('Location failed'));
       } finally {
-        if (!cancelled) {
-          dispatch(setLocationLoading(false));
-        }
+        if (!cancelled) setLoading(false);
       }
-    }
+    };
 
-    resolvePosition();
-
+    resolve();
     return () => {
       cancelled = true;
     };
-  }, [dispatch, coords]);
+  }, [coords]);
+
+  useSyncToRedux(data, loading, error, {
+    set: setLocation,
+    setLoading: setLocationLoading,
+    setError: setLocationError,
+  });
 }

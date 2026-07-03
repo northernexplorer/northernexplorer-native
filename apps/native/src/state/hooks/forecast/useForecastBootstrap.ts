@@ -1,54 +1,29 @@
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
+import { useAppSelector } from '~/state/storeHooks';
+import { useApiClient } from '~/hooks/useApiClient';
 import { setForecast, setForecastError, setForecastLoading } from '~/state/slices/forecastSlice';
-import { apiClient } from '~/hooks/apiClient';
-
-const STALE_TIME = 1000 * 60 * 30;
+import { useSyncToRedux } from '~/state/hooks/useSyncToRedux';
 
 export function useForecastBootstrap() {
-  const dispatch = useAppDispatch();
-
   const coords = useAppSelector((s) => s.location.data);
   const { data, lastUpdated } = useAppSelector((s) => s.forecast);
 
-  useEffect(() => {
-    if (!coords) return;
+  const isStale = !lastUpdated || Date.now() - lastUpdated > 1000 * 60 * 30;
+  const shouldFetch = !!coords && (!data || isStale);
 
-    const isStale = !lastUpdated || Date.now() - lastUpdated > STALE_TIME;
+  const {
+    data: fetchedData,
+    loading,
+    error,
+  } = useApiClient(
+    'environment',
+    'ForecastController',
+    'getForecastData',
+    shouldFetch ? { lat: coords!.lat, lon: coords!.lon } : null,
+  );
 
-    if (data && !isStale) return;
-
-    let cancelled = false;
-
-    const { lat, lon } = coords;
-
-    async function run() {
-      try {
-        dispatch(setForecastLoading(true));
-
-        const result = await apiClient('environment', 'ForecastController', 'getForecastData', {
-          lat,
-          lon,
-        });
-
-        if (cancelled) return;
-
-        dispatch(setForecast(result));
-      } catch {
-        if (!cancelled) {
-          dispatch(setForecastError('Failed to fetch forecast'));
-        }
-      } finally {
-        if (!cancelled) {
-          dispatch(setForecastLoading(false));
-        }
-      }
-    }
-
-    run();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [coords, lastUpdated, dispatch]);
+  useSyncToRedux(fetchedData, loading, error, {
+    set: setForecast,
+    setLoading: setForecastLoading,
+    setError: setForecastError,
+  });
 }

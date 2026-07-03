@@ -1,7 +1,7 @@
 import { ROUTES } from './routes';
 
 export type NonEmptyCategory = {
-  [K in keyof ROUTES]: ROUTES[K] extends Record<string, any>
+  [K in keyof ROUTES]: ROUTES[K] extends Record<string, unknown>
     ? keyof ROUTES[K] extends never
       ? never
       : K

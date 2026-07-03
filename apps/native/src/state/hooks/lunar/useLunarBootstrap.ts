@@ -1,45 +1,23 @@
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
+import { useAppSelector } from '~/state/storeHooks';
 import { setLunar, setLunarLoading, setLunarError } from '~/state/slices/lunarSlice';
-import { apiClient } from '~/hooks/apiClient';
-
-const STALE_TIME = 1000 * 60 * 60 * 6; // lunar data changes rarely
+import { useSyncToRedux } from '~/state/hooks/useSyncToRedux';
+import { useApiClient } from '~/hooks/useApiClient';
 
 export function useLunarBootstrap() {
-  const dispatch = useAppDispatch();
   const { data, lastUpdated } = useAppSelector((s) => s.lunar);
 
-  useEffect(() => {
-    const isStale = !lastUpdated || Date.now() - lastUpdated > STALE_TIME;
+  const isStale = !lastUpdated || Date.now() - lastUpdated > 1000 * 60 * 60 * 6;
+  const shouldFetch = !data || isStale;
 
-    if (data && !isStale) return;
+  const {
+    data: fetchedData,
+    loading,
+    error,
+  } = useApiClient('environment', 'LunarController', 'getLunarData', shouldFetch ? {} : null);
 
-    let cancelled = false;
-
-    async function run() {
-      try {
-        dispatch(setLunarLoading(true));
-
-        const result = await apiClient('environment', 'LunarController', 'getLunarData', {});
-
-        if (cancelled) return;
-
-        dispatch(setLunar(result));
-      } catch {
-        if (!cancelled) {
-          dispatch(setLunarError('Failed to fetch lunar data'));
-        }
-      } finally {
-        if (!cancelled) {
-          dispatch(setLunarLoading(false));
-        }
-      }
-    }
-
-    run();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [lastUpdated, dispatch]);
+  useSyncToRedux(fetchedData, loading, error, {
+    set: setLunar,
+    setLoading: setLunarLoading,
+    setError: setLunarError,
+  });
 }

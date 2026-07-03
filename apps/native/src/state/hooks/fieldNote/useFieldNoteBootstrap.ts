@@ -1,58 +1,33 @@
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
+import { useApiClient } from '~/hooks/useApiClient';
+import { useAppSelector } from '~/state/storeHooks';
+import { useSyncToRedux } from '~/state/hooks/useSyncToRedux';
 import {
   setFieldNote,
-  setFieldNoteLoading,
   setFieldNoteError,
+  setFieldNoteLoading,
 } from '~/state/slices/fieldNoteSlice';
-import { apiClient } from '~/hooks/apiClient';
-
-const STALE_TIME = 1000 * 60 * 60; // 1 hour
 
 export function useFieldNoteBootstrap() {
-  const dispatch = useAppDispatch();
-
-  const { data, lastUpdated } = useAppSelector((s) => s.fieldNote);
   const coords = useAppSelector((s) => s.location.data);
+  const { data, lastUpdated } = useAppSelector((s) => s.fieldNote);
 
-  useEffect(() => {
-    if (!coords) return;
+  const isStale = !lastUpdated || Date.now() - lastUpdated > 1000 * 60 * 60;
+  const shouldFetch = !!coords && (!data || isStale);
 
-    const isStale = !lastUpdated || Date.now() - lastUpdated > STALE_TIME;
+  const {
+    data: fetchedData,
+    loading,
+    error,
+  } = useApiClient(
+    'environment',
+    'FieldNoteController',
+    'getFieldNoteData',
+    shouldFetch ? { lat: coords!.lat, lon: coords!.lon } : null,
+  );
 
-    if (data && !isStale) return;
-
-    let cancelled = false;
-
-    const { lat, lon } = coords;
-
-    async function run() {
-      try {
-        dispatch(setFieldNoteLoading(true));
-
-        const result = await apiClient('environment', 'FieldNoteController', 'getFieldNoteData', {
-          lat,
-          lon,
-        });
-
-        if (cancelled) return;
-
-        dispatch(setFieldNote(result));
-      } catch {
-        if (!cancelled) {
-          dispatch(setFieldNoteError('Failed to fetch field note'));
-        }
-      } finally {
-        if (!cancelled) {
-          dispatch(setFieldNoteLoading(false));
-        }
-      }
-    }
-
-    run();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [coords, lastUpdated, dispatch]);
+  useSyncToRedux(fetchedData, loading, error, {
+    set: setFieldNote,
+    setLoading: setFieldNoteLoading,
+    setError: setFieldNoteError,
+  });
 }

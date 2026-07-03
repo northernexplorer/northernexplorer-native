@@ -1,53 +1,29 @@
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
+import { useAppSelector } from '~/state/storeHooks';
 import { setWeather, setWeatherLoading, setWeatherError } from '~/state/slices/weatherSlice';
-import { apiClient } from '~/hooks/apiClient';
+import { useApiClient } from '~/hooks/useApiClient';
+import { useSyncToRedux } from '~/state/hooks/useSyncToRedux';
 
 export function useWeatherBootstrap() {
-  const dispatch = useAppDispatch();
   const coords = useAppSelector((s) => s.location.data);
   const { data, lastUpdated } = useAppSelector((s) => s.weather);
 
-  useEffect(() => {
-    if (!coords) return;
+  const isStale = !lastUpdated || Date.now() - lastUpdated > 1000 * 60 * 30;
+  const shouldFetch = !!coords && (!data || isStale);
 
-    const STALE_TIME = 1000 * 60 * 30;
+  const {
+    data: fetchedData,
+    loading,
+    error,
+  } = useApiClient(
+    'environment',
+    'WeatherController',
+    'getWeatherData',
+    shouldFetch ? { lat: coords!.lat, lon: coords!.lon } : null,
+  );
 
-    const isStale = !lastUpdated || Date.now() - lastUpdated > STALE_TIME;
-
-    if (data && !isStale) return;
-
-    let cancelled = false;
-
-    const { lat, lon } = coords;
-
-    async function run() {
-      try {
-        dispatch(setWeatherLoading(true));
-
-        const result = await apiClient('environment', 'WeatherController', 'getWeatherData', {
-          lat,
-          lon,
-        });
-
-        if (cancelled) return;
-
-        dispatch(setWeather(result));
-      } catch {
-        if (!cancelled) {
-          dispatch(setWeatherError('Failed to fetch weather'));
-        }
-      } finally {
-        if (!cancelled) {
-          dispatch(setWeatherLoading(false));
-        }
-      }
-    }
-
-    run();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [coords, lastUpdated, dispatch]);
+  useSyncToRedux(fetchedData, loading, error, {
+    set: setWeather,
+    setLoading: setWeatherLoading,
+    setError: setWeatherError,
+  });
 }

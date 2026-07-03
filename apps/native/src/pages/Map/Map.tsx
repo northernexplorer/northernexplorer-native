@@ -2,16 +2,21 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Map as NativeMap, Camera, Marker } from '@maplibre/maplibre-react-native';
 import { useLocation } from '~/state/hooks/location/useLocation';
-import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { Link } from 'expo-router';
 import { getUrl, getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '~/config';
+import { useApiClient } from '~/hooks/useApiClient';
 
 export function Map() {
   const coords = useLocation();
-  const { sites } = useClosestHistoricSites(coords);
+  const { data } = useApiClient(
+    'location',
+    'HistoricSiteController',
+    'getNearbyHistoricSites',
+    coords,
+  );
 
   const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
@@ -30,7 +35,7 @@ export function Map() {
       >
         <Camera zoom={10} center={[coords.lon, coords.lat]} />
 
-        {sites?.map((site) => (
+        {data?.map((site) => (
           <Marker
             key={site.id}
             lngLat={[site.coordinates.longitude, site.coordinates.latitude]}

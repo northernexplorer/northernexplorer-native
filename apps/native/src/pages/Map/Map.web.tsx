@@ -3,16 +3,21 @@ import MapGL, { Marker } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useLocation } from '~/state/hooks/location/useLocation';
-import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { Link } from 'expo-router';
 import { getUrl, getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '~/config';
+import { useApiClient } from '~/hooks/useApiClient';
 
 export function Map() {
   const coords = useLocation();
-  const { sites } = useClosestHistoricSites(coords);
+  const { data } = useApiClient(
+    'location',
+    'HistoricSiteController',
+    'getNearbyHistoricSites',
+    coords,
+  );
 
   const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
@@ -32,7 +37,7 @@ export function Map() {
         interactiveLayerIds={['historicSitesLayer']}
         cursor={selectedSite ? 'pointer' : 'default'}
       >
-        {sites?.map((site) => (
+        {data?.map((site) => (
           <Marker
             key={site.id}
             longitude={site.coordinates.longitude}

@@ -9,8 +9,8 @@ import { useLunar } from '~/state/hooks/lunar/useLunar';
 import { useFieldNote } from '~/state/hooks/fieldNote/useFieldNote';
 import { styles } from '~/pages/Home/styles';
 import { HistoricSitePreview } from '~/pages/Home/components/HistoricSitePreview';
-import { useClosestHistoricSites } from '~/hooks/useClosestHistoricSites';
 import { useLocation } from '~/state/hooks/location/useLocation';
+import { useApiClient } from '~/hooks/useApiClient';
 
 export function Home() {
   const weather = useWeather();
@@ -18,7 +18,12 @@ export function Home() {
   const lunar = useLunar();
   const fieldNote = useFieldNote();
   const coords = useLocation();
-  const historicSites = useClosestHistoricSites(coords);
+  const historicSites = useApiClient(
+    'location',
+    'HistoricSiteController',
+    'getNearbyHistoricSites',
+    coords,
+  );
   const { width } = useWindowDimensions();
   const isMobileView = width < 1000;
 
@@ -72,7 +77,7 @@ export function Home() {
       <Text style={styles.exploreHeader}>Start Exploring...</Text>
       <View style={styles.historicSitesSection}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {historicSites.sites.map((site) => (
+          {historicSites.data?.map((site) => (
             <HistoricSitePreview
               key={site.name}
               name={site.name}
