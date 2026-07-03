@@ -56,8 +56,10 @@ async function runIncrementalMigrations() {
         }
 
         // Log this key so it skips next time (using standard $1 token placeholder for pg)
-        await client.query('INSERT INTO migrations (migration_key) VALUES ($1)', [key]);
-
+        await client.query(
+          'INSERT INTO migrations (migration_key, executed_at) VALUES ($1, CURRENT_TIMESTAMP)',
+          [key],
+        );
         await client.query('COMMIT');
         console.log(`✅ Completed and recorded migration: [${key}]`);
       } catch (txError) {

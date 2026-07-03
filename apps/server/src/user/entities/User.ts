@@ -1,13 +1,12 @@
-import { Entity, Property, PrimaryKey, Index } from '@mikro-orm/decorators/legacy';
+import { Entity, Property, PrimaryKey } from '@mikro-orm/decorators/legacy';
 
 @Entity()
-@Index({ name: 'idx_user', properties: ['email', 'userName'] })
 export class User {
   @PrimaryKey({ type: 'string' })
-  id!: string;
+  id!: number;
 
-  @Property({ type: 'number', version: true, default: 1 })
-  version!: number;
+  @Property({ type: 'number', version: true })
+  version = 1;
 
   @Property({ type: 'text', length: 100, columnType: 'text' })
   firstName!: string;
@@ -24,6 +23,6 @@ export class User {
   @Property({ type: 'text', length: 100, columnType: 'text' })
   emailActivatedAt!: string;
 
-  @Property({ type: 'datetime', columnType: 'timestamp', default: 'CURRENT_TIMESTAMP' })
-  createdAt!: Date;
+  @Property({ type: 'datetime', columnType: 'timestamp' })
+  createdAt = new Date();
 }

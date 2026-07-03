@@ -1,9 +1,8 @@
-import { Entity, PrimaryKey, Property, Index } from '@mikro-orm/decorators/legacy';
-import { EntityRepositoryType, Opt } from '@mikro-orm/postgresql';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
+import { EntityRepositoryType } from '@mikro-orm/postgresql';
 import { CityRepository } from '../repositories/CityRepository';
 
 @Entity({ repository: () => CityRepository })
-@Index({ name: 'idx_city_location', properties: ['lat', 'lon'] })
 export class CityCache {
   [EntityRepositoryType]?: CityRepository;
   @PrimaryKey({ type: 'number' })
@@ -18,11 +17,6 @@ export class CityCache {
   @Property({ type: 'json', columnType: 'text' })
   cityData!: unknown;
 
-  @Property({
-    type: 'datetime',
-    columnType: 'timestamp',
-    defaultRaw: 'CURRENT_TIMESTAMP',
-    extra: 'on update CURRENT_TIMESTAMP',
-  })
-  updatedAt!: Date & Opt;
+  @Property({ type: 'datetime', columnType: 'timestamp' })
+  updatedAt = new Date();
 }

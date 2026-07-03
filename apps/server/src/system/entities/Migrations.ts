@@ -5,10 +5,6 @@ export class Migrations {
   @PrimaryKey({ type: 'string', length: 255 })
   migrationKey!: string;
 
-  @Property({
-    type: 'datetime',
-    columnType: 'timestamp with time zone',
-    defaultRaw: 'CURRENT_TIMESTAMP',
-  })
+  @Property({ type: 'datetime', columnType: 'timestamp' })
   executedAt: Date = new Date();
 }

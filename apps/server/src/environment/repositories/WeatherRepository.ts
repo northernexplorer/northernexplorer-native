@@ -54,6 +54,7 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
       lat,
       lon,
       weatherData: parsedJson,
+      updatedAt: new Date(),
     });
     this.em.persist(freshCacheEntry);
 
