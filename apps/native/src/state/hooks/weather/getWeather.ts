@@ -1,5 +1,5 @@
 import { config } from '~/config';
-import { EndpointType, WeatherResponse, WeatherType } from '@northernexplorer/types';
+import { EndpointType, WeatherType } from '@northernexplorer/types';
 
 export async function getWeather(lat: number, lon: number): Promise<WeatherType> {
   const serverUrl = config.SERVER_URL;
@@ -14,7 +14,5 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherType>
     throw new Error(`Weather fetch failed: ${res.status}`);
   }
 
-  const json: WeatherResponse = await res.json();
-
-  return json.data;
+  return await res.json();
 }
