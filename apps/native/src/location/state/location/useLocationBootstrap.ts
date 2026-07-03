@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useAppSelector } from '~/core/storeHooks';
-import { setLocation, setLocationError, setLocationLoading } from '~/location/state/location/locationSlice';
+import {
+  setLocation,
+  setLocationError,
+  setLocationLoading,
+} from '~/location/state/location/locationSlice';
 import {
   Accuracy,
   getForegroundPermissionsAsync,

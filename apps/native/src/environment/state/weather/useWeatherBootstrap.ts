@@ -1,5 +1,9 @@
 import { useAppSelector } from '~/core/storeHooks';
-import { setWeather, setWeatherLoading, setWeatherError } from '~/environment/state/weather/weatherSlice';
+import {
+  setWeather,
+  setWeatherLoading,
+  setWeatherError,
+} from '~/environment/state/weather/weatherSlice';
 import { useApiClient } from '~/core/useApiClient';
 import { useSyncToRedux } from '~/core/useSyncToRedux';
 

@@ -1,6 +1,10 @@
 import { useAppSelector } from '~/core/storeHooks';
 import { useApiClient } from '~/core/useApiClient';
-import { setForecast, setForecastError, setForecastLoading } from '~/environment/state/forecast/forecastSlice';
+import {
+  setForecast,
+  setForecastError,
+  setForecastLoading,
+} from '~/environment/state/forecast/forecastSlice';
 import { useSyncToRedux } from '~/core/useSyncToRedux';
 
 export function useForecastBootstrap() {
