@@ -25,9 +25,9 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), 'public')));
 
-export function handle<T extends Record<string, any>>(
+export function handle<T extends object>(
   ControllerClass: new (repos: Repositories) => T,
-  methodName: keyof T & string, // This ensures the method exists on the class
+  methodName: keyof T & string,
 ) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -35,8 +35,16 @@ export function handle<T extends Record<string, any>>(
       const repos = createRepositories(em);
       const controller = new ControllerClass(repos);
 
+      // Access the method
+      const method = (controller as Record<string, unknown>)[methodName];
+
+      if (typeof method !== 'function') {
+        throw new Error(`Method ${methodName} is not a function.`);
+      }
+
       const params = { ...req.query, ...req.params };
-      const result = await controller[methodName](params);
+
+      const result = await (method as (p: unknown) => Promise<unknown>).call(controller, params);
 
       if (result !== undefined && !res.headersSent) {
         res.json(result);
