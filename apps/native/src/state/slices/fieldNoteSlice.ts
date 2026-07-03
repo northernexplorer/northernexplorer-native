@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FieldNoteType } from '~/state/hooks/fieldNote/getFieldNote';
+import { FieldNoteType } from '@northernexplorer/types';
 
 type FieldNoteState = {
   data: FieldNoteType | null;

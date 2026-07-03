@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import express, { NextFunction, Request, Response } from 'express';
+import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 import cors from 'cors';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
@@ -12,7 +12,7 @@ import {
   WeatherController,
 } from './environment';
 import { CityController, HistoricSiteController } from './location';
-import { EndpointType } from '@northernexplorer/types';
+import { ROUTES } from '@northernexplorer/types';
 import path from 'node:path';
 import { validateCoordinates } from '@northernexplorer/tools';
 import { createRepositories } from './core/createRepositories';
@@ -58,45 +58,55 @@ export function handle<T extends object>(
 async function bootstrap() {
   try {
     const orm = await MikroORM.init(ormConfig);
-
     app.use((req, res, next) => RequestContext.create(orm.em, next));
 
-    app.get(
-      `/api/${EndpointType.City}`,
-      validateCoordinates,
+    const register = (
+      route: string,
+      middleware: RequestHandler[],
+      handler: ReturnType<typeof handle>,
+    ) => app.get(route, ...middleware, handler);
+
+    register(
+      ROUTES.location.CityController.getCityData.endpoint,
+      [validateCoordinates],
       handle(CityController, 'getCityData'),
     );
-    app.get(
-      `/api/${EndpointType.Weather}`,
-      validateCoordinates,
+    register(
+      ROUTES.environment.WeatherController.getWeatherData.endpoint,
+      [validateCoordinates],
       handle(WeatherController, 'getWeatherData'),
     );
-    app.get(
-      `/api/${EndpointType.Forecast}`,
-      validateCoordinates,
+    register(
+      ROUTES.environment.ForecastController.getForecastData.endpoint,
+      [validateCoordinates],
       handle(ForecastController, 'getForecastData'),
     );
-    app.get(
-      `/api/${EndpointType.FieldNote}`,
-      validateCoordinates,
+    register(
+      ROUTES.environment.FieldNoteController.getFieldNoteData.endpoint,
+      [validateCoordinates],
       handle(FieldNoteController, 'getFieldNoteData'),
     );
-    app.get(
-      `/api/${EndpointType.HistoricSites}`,
-      validateCoordinates,
+    register(
+      ROUTES.location.HistoricSiteController.getNearbyHistoricSites.endpoint,
+      [validateCoordinates],
       handle(HistoricSiteController, 'getNearbyHistoricSites'),
     );
-    app.get(
-      `/api/${EndpointType.HistoricSiteDetails}`,
+    register(
+      ROUTES.location.HistoricSiteController.getHistoricSiteById.endpoint,
+      [],
       handle(HistoricSiteController, 'getHistoricSiteById'),
     );
-    app.get(`/api/${EndpointType.Lunar}`, handle(LunarController, 'getLunarData'));
+    register(
+      ROUTES.environment.LunarController.getLunarData.endpoint,
+      [],
+      handle(LunarController, 'getLunarData'),
+    );
 
     app.listen(PORT, () => {
       console.log(`🚀 Northern Explorer API running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('❌ Failed to initialize application data pool:', error);
+    console.error('❌ Failed to initialize:', error);
     process.exit(1);
   }
 }

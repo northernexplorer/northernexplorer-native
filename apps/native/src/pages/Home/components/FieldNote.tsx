@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { FieldNoteType } from '~/state/hooks/fieldNote/getFieldNote';
+import { FieldNoteType } from '@northernexplorer/types';
 
 export function FieldNote({ data }: { data: FieldNoteType }) {
   return (

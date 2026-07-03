@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
 import { setCity, setCityLoading, setCityError } from '~/state/slices/citySlice';
-import { getCity } from './getCity';
+import { apiClient } from '~/hooks/apiClient';
 
 export function useCityBootstrap() {
   const dispatch = useAppDispatch();
@@ -18,7 +18,10 @@ export function useCityBootstrap() {
       try {
         dispatch(setCityLoading(true));
 
-        const location = await getCity(lat, lon);
+        const location = await apiClient('location', 'CityController', 'getCityData', {
+          lat,
+          lon,
+        });
 
         if (cancelled) return;
 

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
-import { getForecast } from './getForecast';
 import { setForecast, setForecastError, setForecastLoading } from '~/state/slices/forecastSlice';
+import { apiClient } from '~/hooks/apiClient';
 
 const STALE_TIME = 1000 * 60 * 30;
 
@@ -26,7 +26,10 @@ export function useForecastBootstrap() {
       try {
         dispatch(setForecastLoading(true));
 
-        const result = await getForecast(lat, lon);
+        const result = await apiClient('environment', 'ForecastController', 'getForecastData', {
+          lat,
+          lon,
+        });
 
         if (cancelled) return;
 

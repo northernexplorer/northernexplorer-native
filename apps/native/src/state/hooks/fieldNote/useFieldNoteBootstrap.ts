@@ -5,7 +5,7 @@ import {
   setFieldNoteLoading,
   setFieldNoteError,
 } from '~/state/slices/fieldNoteSlice';
-import { getFieldNote } from './getFieldNote';
+import { apiClient } from '~/hooks/apiClient';
 
 const STALE_TIME = 1000 * 60 * 60; // 1 hour
 
@@ -30,7 +30,10 @@ export function useFieldNoteBootstrap() {
       try {
         dispatch(setFieldNoteLoading(true));
 
-        const result = await getFieldNote(lat, lon);
+        const result = await apiClient('environment', 'FieldNoteController', 'getFieldNoteData', {
+          lat,
+          lon,
+        });
 
         if (cancelled) return;
 

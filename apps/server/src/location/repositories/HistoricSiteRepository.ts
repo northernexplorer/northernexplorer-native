@@ -14,7 +14,7 @@ interface HistoricSiteRawRow {
 }
 
 export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
-  async getHistoricSiteDetails(id: string) {
+  async getHistoricSiteDetails(id: number) {
     const site = await this.em.findOne(HistoricSite, { id: Number(id) });
 
     if (!site) throw new Error('Historic site not found.');

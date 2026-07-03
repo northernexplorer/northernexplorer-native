@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getHistoricSites } from '~/hooks/getClosestHistoricSites';
 import { HistoricSiteType } from '@northernexplorer/types';
+import { apiClient } from '~/hooks/apiClient';
 
 export function useClosestHistoricSites(coords: { lat: number; lon: number } | null) {
   const [sites, setSites] = useState<HistoricSiteType[]>([]);
@@ -17,7 +17,10 @@ export function useClosestHistoricSites(coords: { lat: number; lon: number } | n
     setLoading(true);
     setError(null);
 
-    getHistoricSites(lat, lon)
+    apiClient('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
+      lat,
+      lon,
+    })
       .then((data) => {
         if (isMounted) {
           setSites(data);

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
 import { setLunar, setLunarLoading, setLunarError } from '~/state/slices/lunarSlice';
-import { getLunarCycle } from './getLunarCycle';
+import { apiClient } from '~/hooks/apiClient';
 
 const STALE_TIME = 1000 * 60 * 60 * 6; // lunar data changes rarely
 
@@ -20,7 +20,7 @@ export function useLunarBootstrap() {
       try {
         dispatch(setLunarLoading(true));
 
-        const result = await getLunarCycle();
+        const result = await apiClient('environment', 'LunarController', 'getLunarData', {});
 
         if (cancelled) return;
 

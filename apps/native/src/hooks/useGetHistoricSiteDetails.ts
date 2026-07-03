@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { getHistoricSiteDetails } from '~/hooks/getHistoricSiteDetails';
 import { HistoricSiteType } from '@northernexplorer/types';
+import { apiClient } from '~/hooks/apiClient';
 
-export function useGetHistoricSiteDetails(id: string | number | undefined) {
+export function useGetHistoricSiteDetails(id: number) {
   const [site, setSite] = useState<HistoricSiteType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -17,7 +17,7 @@ export function useGetHistoricSiteDetails(id: string | number | undefined) {
     setLoading(true);
     setError(null);
 
-    getHistoricSiteDetails(id)
+    apiClient('location', 'HistoricSiteController', 'getHistoricSiteById', { id })
       .then((data) => {
         if (isMounted) {
           setSite(data);

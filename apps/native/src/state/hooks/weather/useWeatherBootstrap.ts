@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '~/state/storeHooks';
 import { setWeather, setWeatherLoading, setWeatherError } from '~/state/slices/weatherSlice';
-import { getWeather } from './getWeather';
+import { apiClient } from '~/hooks/apiClient';
 
 export function useWeatherBootstrap() {
   const dispatch = useAppDispatch();
@@ -25,7 +25,10 @@ export function useWeatherBootstrap() {
       try {
         dispatch(setWeatherLoading(true));
 
-        const result = await getWeather(lat, lon);
+        const result = await apiClient('environment', 'WeatherController', 'getWeatherData', {
+          lat,
+          lon,
+        });
 
         if (cancelled) return;
 
