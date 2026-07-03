@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import 'reflect-metadata';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
@@ -20,7 +21,7 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 type ControllerConstructor<T> = new (repos: Repositories) => T;
 
 export function handle<T extends object>(
-  ControllerClass: ControllerConstructor<T>,
+  ControllerClass: ControllerConstructor<any>,
   methodName: keyof T & string,
 ) {
   return async (req: Request, res: Response): Promise<void> => {

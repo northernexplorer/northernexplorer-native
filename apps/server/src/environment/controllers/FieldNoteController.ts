@@ -1,13 +1,18 @@
-import { Repositories } from '../../core/repositories';;
-import { ROUTES } from '@northernexplorer/types';
+import { Repositories } from '../../core/repositories';
+import { Params, Response, RouteDefinition, ROUTES } from '@northernexplorer/types';
+
+type Route<M extends keyof ROUTES['environment']['FieldNoteController']> = RouteDefinition<
+  'environment',
+  'FieldNoteController'
+>[M];
 
 export class FieldNoteController {
   constructor(private repos: Repositories) {}
 
-  public async getFieldNoteData({
-    lat,
-    lon,
-  }: ROUTES['environment']['FieldNoteController']['getFieldNoteData']['params']) {
+  public async getFieldNoteData(
+    params: Params<Route<'getFieldNoteData'>>,
+  ): Promise<Response<Route<'getFieldNoteData'>>> {
+    const { lat, lon } = params;
     const weather = await this.repos.weather.getWeatherCache(lat, lon);
     if (!weather.current) throw new Error('Weather data not found');
 

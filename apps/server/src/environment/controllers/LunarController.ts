@@ -1,10 +1,15 @@
-import { Repositories } from '../../core/repositories';;
-import { ROUTES } from '@northernexplorer/types';
+import { Repositories } from '../../core/repositories';
+import { Response, RouteDefinition, ROUTES } from '@northernexplorer/types';
+
+type Route<M extends keyof ROUTES['environment']['LunarController']> = RouteDefinition<
+  'environment',
+  'LunarController'
+>[M];
 
 export class LunarController {
   constructor(private repos: Repositories) {}
 
-  public async getLunarData({}: ROUTES['environment']['LunarController']['getLunarData']['params']) {
+  public async getLunarData(): Promise<Response<Route<'getLunarData'>>> {
     // Known reference New Moon date (January 6, 2000, 18:14 UTC) in milliseconds
     const referenceTimeMs = Date.UTC(2000, 0, 6, 18, 14, 0);
 

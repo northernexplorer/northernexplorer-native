@@ -11,7 +11,7 @@ type Props = {
   description: string;
   image: string;
   country: string;
-  region: string;
+  region?: string | null;
 };
 
 export function HistoricSitePreview({ id, name, description, image, country, region }: Props) {

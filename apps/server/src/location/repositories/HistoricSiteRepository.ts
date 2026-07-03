@@ -5,7 +5,7 @@ interface HistoricSiteRawRow {
   id: number;
   name: string;
   description: string;
-  image: string | null;
+  image: string;
   lat: string | number;
   lon: string | number;
   country: string;

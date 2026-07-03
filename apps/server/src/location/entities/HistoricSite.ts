@@ -24,8 +24,8 @@ export class HistoricSite {
   @Property({ type: 'double', columnType: 'decimal(10,6)' })
   lon!: number;
 
-  @Property({ type: 'string', length: 100, nullable: true })
-  country?: string;
+  @Property({ type: 'string', length: 100 })
+  country!: string;
 
   @Property({ type: 'string', length: 100, nullable: true })
   region?: string;
