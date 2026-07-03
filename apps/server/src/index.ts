@@ -64,7 +64,7 @@ async function bootstrap() {
       route: string,
       middleware: RequestHandler[],
       handler: ReturnType<typeof handle>,
-    ) => app.get(route, ...middleware, handler);
+    ) => app.get(`/api/${route}`, ...middleware, handler);
 
     register(
       ROUTES.location.CityController.getCityData.endpoint,

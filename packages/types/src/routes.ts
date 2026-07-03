@@ -23,28 +23,28 @@ export const ROUTES = {
       getFieldNoteData: {
         params: { lat: 0, lon: 0 } as { lat: number; lon: number },
         response: null as unknown as FieldNoteType,
-        endpoint: '/api/field-note',
+        endpoint: 'field-note',
       },
     },
     ForecastController: {
       getForecastData: {
         params: { lat: 0, lon: 0 } as { lat: number; lon: number },
         response: null as unknown as ForecastType,
-        endpoint: '/api/forecast',
+        endpoint: 'forecast',
       },
     },
     LunarController: {
       getLunarData: {
         params: {} as Record<string, never>,
         response: null as unknown as LunarCycleType,
-        endpoint: '/api/lunar',
+        endpoint: 'lunar',
       },
     },
     WeatherController: {
       getWeatherData: {
         params: { lat: 0, lon: 0 } as { lat: number; lon: number },
         response: null as unknown as WeatherType,
-        endpoint: '/api/weather',
+        endpoint: 'weather',
       },
     },
   },
@@ -53,19 +53,19 @@ export const ROUTES = {
       getCityData: {
         params: { lat: 0, lon: 0 } as { lat: number; lon: number },
         response: null as unknown as CityType,
-        endpoint: '/api/city',
+        endpoint: 'city',
       },
     },
     HistoricSiteController: {
       getNearbyHistoricSites: {
         params: { lat: 0, lon: 0 } as { lat: number; lon: number },
         response: null as unknown as HistoricSiteType[],
-        endpoint: '/api/nearby-sites',
+        endpoint: 'nearby-sites',
       },
       getHistoricSiteById: {
         params: { id: 0 } as { id: number },
         response: null as unknown as HistoricSiteType,
-        endpoint: '/api/site',
+        endpoint: 'site',
       },
     },
   },

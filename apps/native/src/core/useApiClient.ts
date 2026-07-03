@@ -21,7 +21,7 @@ export async function apiClient<
   const route = ROUTES[category][controller][method] as unknown as ApiMethod;
   const endpoint = route.endpoint;
 
-  const url = new URL(`${config.SERVER_URL}${endpoint}`);
+  const url = new URL(`${config.SERVER_URL}/api/${endpoint}`);
 
   if (params && typeof params === 'object') {
     Object.entries(params).forEach(([key, value]) => {
