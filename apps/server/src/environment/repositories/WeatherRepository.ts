@@ -56,9 +56,10 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
       weatherData: parsedJson,
     });
     this.em.persist(freshCacheEntry);
-    await this.em.flush();
 
-    const cleanupQuery = `DELETE FROM weather_cache WHERE updated_at < NOW() - INTERVAL '24 hours'`;
-    await this.em.getConnection().execute(cleanupQuery);
+    await this.em.nativeDelete(WeatherCache, {
+      updatedAt: { $lte: new Date(Date.now() - 1000 * 60 * 60 * 3) },
+    });
+    await this.em.flush();
   }
 }

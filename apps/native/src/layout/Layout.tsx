@@ -39,6 +39,10 @@ export function Layout({ Content, components, title, fullPage, home }: Props) {
           <ImageBackground
             style={[styles.background, { alignSelf: 'stretch' }]}
             source={home ? theme?.image : undefined}
+            imageStyle={{
+              width: '100%',
+              height: '100%',
+            }}
           >
             {home && <View pointerEvents="none" style={styles.darkOverlay} />}
 
