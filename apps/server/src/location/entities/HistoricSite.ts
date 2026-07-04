@@ -1,10 +1,7 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
-import { HistoricSiteRepository } from '../repositories/HistoricSiteRepository';
-import { EntityRepositoryType } from '@mikro-orm/postgresql';
 
-@Entity({ repository: () => HistoricSiteRepository })
+@Entity()
 export class HistoricSite {
-  [EntityRepositoryType]?: HistoricSiteRepository;
   @PrimaryKey({ type: 'number' })
   id!: number;
 

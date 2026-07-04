@@ -1,10 +1,7 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
-import { EntityRepositoryType } from '@mikro-orm/postgresql';
-import { WeatherRepository } from '../repositories/WeatherRepository';
 
-@Entity({ repository: () => WeatherRepository })
+@Entity()
 export class WeatherCache {
-  [EntityRepositoryType]?: WeatherRepository;
   @PrimaryKey({ type: 'number' })
   id!: number;
 
