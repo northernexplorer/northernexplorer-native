@@ -17,16 +17,28 @@ async function runIncrementalMigrations() {
   const client = await pool.connect();
 
   try {
+    const renameCheck = await client.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_name = 'migrations'
+      );
+    `);
+
+    if (renameCheck.rows[0].exists) {
+      console.log('🔄 Renaming tracking table from "migrations" to "migration"...');
+      await client.query('ALTER TABLE "migrations" RENAME TO "migration"');
+    }
+
     // Ensure tracking table exists
     await client.query(`
-        CREATE TABLE IF NOT EXISTS "migrations" (
+        CREATE TABLE IF NOT EXISTS "migration" (
                                                            "migration_key" VARCHAR(255) PRIMARY KEY,
             "executed_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
                                         );
     `);
 
     // Query already executed migrations
-    const { rows } = await client.query('SELECT migration_key FROM migrations');
+    const { rows } = await client.query('SELECT migration_key FROM migration');
     const executedKeys = new Set(rows.map((row) => row.migration_key));
 
     const pendingKeys = Object.keys(migrationsRegistry).filter((key) => !executedKeys.has(key));
@@ -57,7 +69,7 @@ async function runIncrementalMigrations() {
 
         // Log this key so it skips next time (using standard $1 token placeholder for pg)
         await client.query(
-          'INSERT INTO migrations (migration_key, executed_at) VALUES ($1, CURRENT_TIMESTAMP)',
+          'INSERT INTO migration (migration_key, executed_at) VALUES ($1, CURRENT_TIMESTAMP)',
           [key],
         );
         await client.query('COMMIT');

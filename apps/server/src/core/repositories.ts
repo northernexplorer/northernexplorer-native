@@ -1,6 +1,8 @@
 import { ForecastCache, WeatherCache } from '../environment';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { CityCache, HistoricSite } from '../location';
+import { User } from '../user';
+import { Migration } from '../system';
 
 export type Repositories = ReturnType<typeof repositories>;
 
@@ -10,5 +12,7 @@ export function repositories(em: EntityManager) {
     forecast: em.getRepository(ForecastCache),
     historicSite: em.getRepository(HistoricSite),
     weather: em.getRepository(WeatherCache),
+    user: em.getRepository(User),
+    migration: em.getRepository(Migration),
   };
 }
