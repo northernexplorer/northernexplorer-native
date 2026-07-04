@@ -1,7 +1,6 @@
 import { Entity, Property, PrimaryKey } from '@mikro-orm/decorators/legacy';
-import { UserRepository } from '../repositories/UserRepository';
 
-@Entity({ repository: () => UserRepository })
+@Entity()
 export class User {
   @PrimaryKey({ type: 'string' })
   id!: number;
