@@ -4,3 +4,4 @@ dist/
 build/
 yarn.lock
 docs/
+README.md
