@@ -44,7 +44,7 @@ export function Layout({ Content, components, title, fullPage, home }: Props) {
               height: '100%',
             }}
           >
-            {home && <View pointerEvents="none" style={styles.darkOverlay} />}
+            {home && <View style={styles.darkOverlay} />}
 
             <View
               style={{

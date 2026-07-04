@@ -63,7 +63,11 @@ export function Navigation() {
   const Branding = ({ isDrawer = false }) => (
     <Link href="/" asChild>
       <Pressable onPress={() => setIsMenuOpen(false)} style={styles.brandContainer}>
-        <Image source={logo} style={isDrawer ? styles.drawerLogo : styles.logo} />
+        <Image
+          source={logo}
+          style={isDrawer ? styles.drawerLogo : styles.logo}
+          resizeMode="contain"
+        />
         <Text style={styles.brandText}>Northern Explorer</Text>
       </Pressable>
     </Link>

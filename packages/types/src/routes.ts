@@ -69,7 +69,12 @@ export const ROUTES = {
       },
     },
   },
-  system: {},
+  system: {
+    MigrationController: {},
+  },
+  user: {
+    UserController: {},
+  },
 } as const satisfies RouteSchema;
 
 export type ROUTES = typeof ROUTES;

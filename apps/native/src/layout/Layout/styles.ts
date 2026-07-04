@@ -146,12 +146,10 @@ export const styles = StyleSheet.create({
   logo: {
     width: 40,
     height: 40,
-    resizeMode: 'contain',
   },
   drawerLogo: {
     width: 36,
     height: 36,
-    resizeMode: 'contain',
   },
   brandContainer: {
     flexDirection: 'row',
@@ -161,6 +159,7 @@ export const styles = StyleSheet.create({
   darkOverlay: {
     ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(0,0,0,0.35)',
+    pointerEvents: 'none',
   },
   page: {
     flexGrow: 1,

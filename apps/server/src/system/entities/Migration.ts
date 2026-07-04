@@ -1,7 +1,7 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
 
 @Entity()
-export class Migrations {
+export class Migration {
   @PrimaryKey({ type: 'string', length: 255 })
   migrationKey!: string;
 
