@@ -5,46 +5,46 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { ComponentProps } from 'react';
 
 interface Props {
-  route: string;
-  icon: ComponentProps<typeof Ionicons>['name'];
-  label: string;
-  isMobileDrawer: boolean;
-  setIsMenuOpen: (isOpen: boolean) => void;
+    route: string;
+    icon: ComponentProps<typeof Ionicons>['name'];
+    label: string;
+    isMobileDrawer: boolean;
+    setIsMenuOpen: (isOpen: boolean) => void;
 }
 
 export function MenuItemDefault({ route, icon, isMobileDrawer, label, setIsMenuOpen }: Props) {
-  const currentPath = usePathname();
-  const isActive = currentPath === route;
-  const handleNavigate = (route: string) => {
-    setIsMenuOpen(false);
-    router.push(route);
-  };
+    const currentPath = usePathname();
+    const isActive = currentPath === route;
+    const handleNavigate = (route: string) => {
+        setIsMenuOpen(false);
+        router.push(route);
+    };
 
-  return (
-    <Link key={route} href={route} asChild>
-      <Pressable
-        onPress={() => handleNavigate(route)}
-        style={StyleSheet.flatten([
-          styles.menuItem,
-          isActive && styles.activeItem,
-          isMobileDrawer && styles.drawerMenuItem,
-        ])}
-      >
-        <Ionicons
-          name={icon}
-          size={isMobileDrawer ? 20 : 18}
-          color={isActive ? 'white' : 'rgba(255,255,255,0.6)'}
-        />
-        <Text
-          style={StyleSheet.flatten([
-            styles.menuText,
-            isActive && styles.activeText,
-            isMobileDrawer && styles.drawerMenuText,
-          ])}
-        >
-          {label}
-        </Text>
-      </Pressable>
-    </Link>
-  );
+    return (
+        <Link key={route} href={route} asChild>
+            <Pressable
+                onPress={() => handleNavigate(route)}
+                style={StyleSheet.flatten([
+                    styles.menuItem,
+                    isActive && styles.activeItem,
+                    isMobileDrawer && styles.drawerMenuItem,
+                ])}
+            >
+                <Ionicons
+                    name={icon}
+                    size={isMobileDrawer ? 20 : 18}
+                    color={isActive ? 'white' : 'rgba(255,255,255,0.6)'}
+                />
+                <Text
+                    style={StyleSheet.flatten([
+                        styles.menuText,
+                        isActive && styles.activeText,
+                        isMobileDrawer && styles.drawerMenuText,
+                    ])}
+                >
+                    {label}
+                </Text>
+            </Pressable>
+        </Link>
+    );
 }

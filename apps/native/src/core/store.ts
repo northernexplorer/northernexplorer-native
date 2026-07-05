@@ -1,13 +1,13 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
+    persistStore,
+    persistReducer,
+    FLUSH,
+    REHYDRATE,
+    PAUSE,
+    PERSIST,
+    PURGE,
+    REGISTER,
 } from 'redux-persist';
 // This adapter handles Android, iOS, and Web fallback transparently
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,33 +20,33 @@ import lunarReducer from '~/environment/state/lunar/lunarSlice';
 import cityReducer from '~/location/state/city/citySlice';
 
 const rootReducer = combineReducers({
-  location: locationReducer,
-  weather: weatherReducer,
-  forecast: forecastReducer,
-  fieldNote: fieldNoteReducer,
-  lunar: lunarReducer,
-  city: cityReducer,
+    location: locationReducer,
+    weather: weatherReducer,
+    forecast: forecastReducer,
+    fieldNote: fieldNoteReducer,
+    lunar: lunarReducer,
+    city: cityReducer,
 });
 
 const persistConfig = {
-  key: 'root',
-  storage: AsyncStorage,
-  whitelist: ['fieldNote', 'city', 'weather', 'forecast'],
+    key: 'root',
+    storage: AsyncStorage,
+    whitelist: ['fieldNote', 'city', 'weather', 'forecast'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      immutableCheck: {
-        warnAfter: 64,
-      },
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }),
+    reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            immutableCheck: {
+                warnAfter: 64,
+            },
+            serializableCheck: {
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+        }),
 });
 
 export const persistor = persistStore(store);

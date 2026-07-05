@@ -1,53 +1,53 @@
 name: Test
 
 on:
-  pull_request:
+    pull_request:
 
 jobs:
-  dependencies:
-    name: Dependencies
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-          cache: yarn
-      - run: yarn install
-      - run: yarn test:deps
+    dependencies:
+        name: Dependencies
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 24
+                  cache: yarn
+            - run: yarn install
+            - run: yarn test:deps
 
-  typescript:
-    name: TypeScript
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-          cache: yarn
-      - run: yarn install
-      - run: yarn test:types
+    typescript:
+        name: TypeScript
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 24
+                  cache: yarn
+            - run: yarn install
+            - run: yarn test:types
 
-  lint:
-    name: Linting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-          cache: yarn
-      - run: yarn install
-      - run: yarn test:lint
+    lint:
+        name: Linting
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 24
+                  cache: yarn
+            - run: yarn install
+            - run: yarn test:lint
 
-  format:
-    name: Formatting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-          cache: yarn
-      - run: yarn install
-      - run: yarn test:format
+    format:
+        name: Formatting
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 24
+                  cache: yarn
+            - run: yarn install
+            - run: yarn test:format

@@ -9,12 +9,12 @@ import { MigrationRepository } from '../system/repositories/MigrationRepository'
 export type Repositories = ReturnType<typeof repositories>;
 
 export function repositories(em: EntityManager) {
-  return {
-    city: new CityRepository(em, CityCache),
-    forecast: new ForecastRepository(em, ForecastCache),
-    historicSite: new HistoricSiteRepository(em, HistoricSite),
-    weather: new WeatherRepository(em, WeatherCache),
-    user: new UserRepository(em, User),
-    migration: new MigrationRepository(em, Migration),
-  };
+    return {
+        city: new CityRepository(em, CityCache),
+        forecast: new ForecastRepository(em, ForecastCache),
+        historicSite: new HistoricSiteRepository(em, HistoricSite),
+        weather: new WeatherRepository(em, WeatherCache),
+        user: new UserRepository(em, User),
+        migration: new MigrationRepository(em, Migration),
+    };
 }
