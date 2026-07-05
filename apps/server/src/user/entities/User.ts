@@ -2,27 +2,33 @@ import { Entity, Property, PrimaryKey } from '@mikro-orm/decorators/legacy';
 
 @Entity()
 export class User {
-  @PrimaryKey({ type: 'string' })
-  id!: number;
+    @PrimaryKey({ type: 'integer' })
+    id!: number;
 
-  @Property({ type: 'number', version: true })
-  version = 1;
+    @Property({ type: 'integer', version: true })
+    version = 1;
 
-  @Property({ type: 'text', length: 100, columnType: 'text' })
-  firstName!: string;
+    @Property({ type: 'text' })
+    firstName!: string;
 
-  @Property({ type: 'text', length: 100, columnType: 'text' })
-  lastName!: string;
+    @Property({ type: 'text' })
+    lastName!: string;
 
-  @Property({ type: 'text', length: 100, columnType: 'text' })
-  userName!: string;
+    @Property({ type: 'text', unique: true })
+    userName!: string;
 
-  @Property({ type: 'text', length: 100, columnType: 'text' })
-  email!: string;
+    @Property({ type: 'text', unique: true })
+    email!: string;
 
-  @Property({ type: 'text', length: 100, columnType: 'text' })
-  emailActivatedAt!: string;
+    @Property({ type: 'datetime' })
+    createdAt = new Date();
 
-  @Property({ type: 'datetime', columnType: 'timestamp' })
-  createdAt = new Date();
+    @Property({ type: 'datetime', nullable: true })
+    lastLoginAt?: Date | null;
+
+    @Property({ type: 'text' })
+    passwordHash!: string;
+
+    @Property({ type: 'boolean' })
+    isActive!: boolean;
 }

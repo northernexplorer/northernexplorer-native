@@ -4,20 +4,20 @@ import { useSyncToRedux } from '~/core/useSyncToRedux';
 import { useApiClient } from '~/core/useApiClient';
 
 export function useLunarBootstrap() {
-  const { data, lastUpdated } = useAppSelector((s) => s.lunar);
+    const { data, lastUpdated } = useAppSelector((s) => s.lunar);
 
-  const isStale = !lastUpdated || Date.now() - lastUpdated > 1000 * 60 * 60 * 6;
-  const shouldFetch = !data || isStale;
+    const isStale = !lastUpdated || Date.now() - lastUpdated > 1000 * 60 * 60 * 6;
+    const shouldFetch = !data || isStale;
 
-  const {
-    data: fetchedData,
-    loading,
-    error,
-  } = useApiClient('environment', 'LunarController', 'getLunarData', shouldFetch ? {} : null);
+    const {
+        data: fetchedData,
+        loading,
+        error,
+    } = useApiClient('environment', 'LunarController', 'getLunarData', shouldFetch ? {} : null);
 
-  useSyncToRedux(fetchedData, loading, error, {
-    set: setLunar,
-    setLoading: setLunarLoading,
-    setError: setLunarError,
-  });
+    useSyncToRedux(fetchedData, loading, error, {
+        set: setLunar,
+        setLoading: setLunarLoading,
+        setError: setLunarError,
+    });
 }

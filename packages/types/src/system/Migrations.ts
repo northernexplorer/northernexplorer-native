@@ -1,4 +1,4 @@
 export type MigrationType = {
-  migrationKey: string;
-  executedAt: Date;
+    migrationKey: string;
+    executedAt: Date;
 };

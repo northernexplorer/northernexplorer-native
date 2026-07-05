@@ -6,12 +6,12 @@ import { useLunarBootstrap } from '~/environment/state/lunar/useLunarBootstrap';
 import { useCityBootstrap } from '~/location/state/city/useCityBootstrap';
 
 export function AppBootstrap() {
-  useLocationBootstrap();
-  useWeatherBootstrap();
-  useForecastBootstrap();
-  useFieldNoteBootstrap();
-  useLunarBootstrap();
-  useCityBootstrap();
+    useLocationBootstrap();
+    useWeatherBootstrap();
+    useForecastBootstrap();
+    useFieldNoteBootstrap();
+    useLunarBootstrap();
+    useCityBootstrap();
 
-  return null;
+    return null;
 }

@@ -6,18 +6,18 @@ import { AppBootstrap } from '~/layout/Layout/components/Boostrap';
 import { ConnectivityProvider } from '~/core/ConnectivityProvider';
 
 export default function Layout() {
-  return (
-    <Provider store={store}>
-      <ConnectivityProvider>
-        <PersistGate loading={null} persistor={persistor}>
-          <AppBootstrap />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}
-          />
-        </PersistGate>
-      </ConnectivityProvider>
-    </Provider>
-  );
+    return (
+        <Provider store={store}>
+            <ConnectivityProvider>
+                <PersistGate loading={null} persistor={persistor}>
+                    <AppBootstrap />
+                    <Stack
+                        screenOptions={{
+                            headerShown: false,
+                        }}
+                    />
+                </PersistGate>
+            </ConnectivityProvider>
+        </Provider>
+    );
 }

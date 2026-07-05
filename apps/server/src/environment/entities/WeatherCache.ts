@@ -2,18 +2,18 @@ import { Entity, PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
 
 @Entity()
 export class WeatherCache {
-  @PrimaryKey({ type: 'number' })
-  id!: number;
+    @PrimaryKey({ type: 'integer' })
+    id!: number;
 
-  @Property({ type: 'double', columnType: 'decimal(10,6)' })
-  lat!: number;
+    @Property({ type: 'double' })
+    lat!: number;
 
-  @Property({ type: 'double', columnType: 'decimal(10,6)' })
-  lon!: number;
+    @Property({ type: 'double' })
+    lon!: number;
 
-  @Property({ type: 'json', columnType: 'text' })
-  weatherData!: unknown;
+    @Property({ type: 'json' })
+    weatherData!: unknown;
 
-  @Property({ type: 'datetime', columnType: 'timestamp' })
-  updatedAt = new Date();
+    @Property({ type: 'datetime' })
+    updatedAt = new Date();
 }
