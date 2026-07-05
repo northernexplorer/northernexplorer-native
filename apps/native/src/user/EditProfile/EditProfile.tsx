@@ -1,34 +1,32 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Switch } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 
-export function Register() {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [userName, setUserName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [acceptTerms, setAcceptTerms] = useState(false);
+export function EditProfile() {
+    const user = {
+        firstName: 'Shayne',
+        lastName: 'Thiessen',
+        userName: 'shayne',
+        email: 'shayne@example.com',
+    };
 
-    const handleRegister = () => {
-        if (password !== confirmPassword) {
-            console.error('Passwords do not match');
-            return;
-        }
+    const [firstName, setFirstName] = useState(user.firstName);
+    const [lastName, setLastName] = useState(user.lastName);
+    const [userName, setUserName] = useState(user.userName);
+    const [email, setEmail] = useState(user.email);
 
+    const handleSave = () => {
+        // TODO: Call update profile API
         console.log({
             firstName,
             lastName,
             userName,
             email,
-            password,
-            acceptTerms,
         });
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Create Account</Text>
+            <Text style={styles.title}>Edit Profile</Text>
 
             <View style={styles.field}>
                 <Text style={styles.label}>First Name</Text>
@@ -75,49 +73,12 @@ export function Register() {
                 />
             </View>
 
-            <View style={styles.field}>
-                <Text style={styles.label}>Password</Text>
-                <TextInput
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    placeholder="Password"
-                    style={styles.input}
-                />
-            </View>
-
-            <View style={styles.field}>
-                <Text style={styles.label}>Confirm Password</Text>
-                <TextInput
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry
-                    placeholder="Confirm Password"
-                    style={styles.input}
-                />
-            </View>
-
-            <View style={styles.switchRow}>
-                <Text style={styles.label}>I accept the Terms of Service</Text>
-                <Switch
-                    value={acceptTerms}
-                    onValueChange={setAcceptTerms}
-                />
-            </View>
-
-            <Pressable
-                style={[
-                    styles.button,
-                    !acceptTerms && styles.buttonDisabled,
-                ]}
-                onPress={handleRegister}
-                disabled={!acceptTerms}
-            >
-                <Text style={styles.buttonText}>Create Account</Text>
+            <Pressable style={styles.button} onPress={handleSave}>
+                <Text style={styles.buttonText}>Save Changes</Text>
             </Pressable>
 
-            <Pressable>
-                <Text style={styles.link}>Already have an account? Sign In</Text>
+            <Pressable style={styles.secondaryButton}>
+                <Text style={styles.secondaryButtonText}>Cancel</Text>
             </Pressable>
         </View>
     );
@@ -151,29 +112,27 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         fontSize: 16,
     },
-    switchRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: 16,
-    },
     button: {
         backgroundColor: '#2563eb',
         borderRadius: 8,
         paddingVertical: 14,
         alignItems: 'center',
     },
-    buttonDisabled: {
-        opacity: 0.5,
-    },
     buttonText: {
         color: '#fff',
         fontSize: 16,
         fontWeight: '600',
     },
-    link: {
+    secondaryButton: {
+        borderWidth: 1,
+        borderColor: '#2563eb',
+        borderRadius: 8,
+        paddingVertical: 14,
+        alignItems: 'center',
+    },
+    secondaryButtonText: {
         color: '#2563eb',
-        textAlign: 'center',
-        fontSize: 15,
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
