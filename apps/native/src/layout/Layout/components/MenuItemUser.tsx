@@ -11,14 +11,14 @@ interface Props {
 
 export function MenuItemUser({ isMobileDrawer, setIsMenuOpen }: Props) {
     const currentPath = usePathname();
-    const isActive = currentPath === '/user';
+    const isActive = currentPath === '/profile';
     const handleNavigate = () => {
         setIsMenuOpen(false);
-        router.push('/user');
+        router.push('/profile');
     };
 
     return (
-        <Link key={'/user'} href={'/user'} asChild>
+        <Link key={'/profile'} href={'/profile'} asChild>
             <Pressable
                 onPress={() => handleNavigate()}
                 style={StyleSheet.flatten([
