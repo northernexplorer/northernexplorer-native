@@ -23,28 +23,28 @@ export const ROUTES = {
       getFieldNoteData: {
         params: { lat: 0, lon: 0 } as { lat: number; lon: number },
         response: null as unknown as FieldNoteType,
-        endpoint: 'field-note',
+        endpoint: 'getFieldNoteData',
       },
     },
     ForecastController: {
       getForecastData: {
         params: { lat: 0, lon: 0 } as { lat: number; lon: number },
         response: null as unknown as ForecastType,
-        endpoint: 'forecast',
+        endpoint: 'getForecastData',
       },
     },
     LunarController: {
       getLunarData: {
         params: {} as Record<string, never>,
         response: null as unknown as LunarCycleType,
-        endpoint: 'lunar',
+        endpoint: 'getLunarData',
       },
     },
     WeatherController: {
       getWeatherData: {
         params: { lat: 0, lon: 0 } as { lat: number; lon: number },
         response: null as unknown as WeatherType,
-        endpoint: 'weather',
+        endpoint: 'getWeatherData',
       },
     },
   },
@@ -53,23 +53,30 @@ export const ROUTES = {
       getCityData: {
         params: { lat: 0, lon: 0 } as { lat: number; lon: number },
         response: null as unknown as CityType,
-        endpoint: 'city',
+        endpoint: 'getCityData',
       },
     },
     HistoricSiteController: {
       getNearbyHistoricSites: {
         params: { lat: 0, lon: 0 } as { lat: number; lon: number },
         response: null as unknown as HistoricSiteType[],
-        endpoint: 'nearby-sites',
+        endpoint: 'getNearbyHistoricSites',
       },
       getHistoricSiteById: {
         params: { id: 0 } as { id: number },
         response: null as unknown as HistoricSiteType,
-        endpoint: 'site',
+        endpoint: 'getHistoricSiteById',
       },
     },
   },
   system: {
+    StatusController: {
+      getOnlineStatus: {
+        params: { tick: 0 } as { tick: number },
+        response: null as unknown as boolean,
+        endpoint: 'getOnlineStatus',
+      },
+    },
     MigrationController: {},
   },
   user: {

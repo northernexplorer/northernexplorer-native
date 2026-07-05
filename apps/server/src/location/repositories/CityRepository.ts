@@ -17,11 +17,15 @@ export class CityRepository extends EntityRepository<CityCache> {
               LIMIT 1
       `;
 
-    const rawResults = await this.em.getConnection().execute(query, [lat, lon, lat]);
-    const cachedResult = rawResults[0];
+    const [cachedResult] = await this.em.getConnection().execute(query, [lat, lon, lat]);
 
     if (cachedResult) {
-      return cachedResult;
+      const parsedData =
+        typeof cachedResult.cityData === 'string'
+          ? JSON.parse(cachedResult.cityData)
+          : cachedResult.cityData;
+
+      return parsedData[0];
     }
 
     const apiUrl = `https://api.weatherapi.com/v1/search.json?key=${config.WEATHER_API_KEY}&q=${lat},${lon}`;
@@ -39,7 +43,7 @@ export class CityRepository extends EntityRepository<CityCache> {
   }
 
   async createCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
-    const newCacheEntry = this.em.create(CityCache, {
+    const newCacheEntry = this.create({
       lat: Number(lat),
       lon: Number(lon),
       cityData: parsedJson,
@@ -48,7 +52,7 @@ export class CityRepository extends EntityRepository<CityCache> {
 
     this.em.persist(newCacheEntry);
 
-    await this.em.nativeDelete(CityCache, {
+    await this.nativeDelete({
       updatedAt: { $lte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90) },
     });
     await this.em.flush();

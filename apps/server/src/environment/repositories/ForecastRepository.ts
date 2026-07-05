@@ -51,7 +51,7 @@ export class ForecastRepository extends EntityRepository<ForecastCache> {
   }
 
   async createCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
-    const freshCacheEntry = this.em.create(ForecastCache, {
+    const freshCacheEntry = this.create({
       lat,
       lon,
       forecastData: parsedJson,
@@ -59,7 +59,7 @@ export class ForecastRepository extends EntityRepository<ForecastCache> {
     });
     this.em.persist(freshCacheEntry);
 
-    await this.em.nativeDelete(ForecastCache, {
+    await this.nativeDelete({
       updatedAt: { $lte: new Date(Date.now() - 1000 * 60 * 60 * 24) },
     });
     await this.em.flush();
