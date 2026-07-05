@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { styles } from '~/user/styles';
+import { Link } from 'expo-router';
 
 export function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -12,12 +13,10 @@ export function ForgotPassword() {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Forgot Password</Text>
-
             <Text style={styles.description}>
                 Enter the email address associated with your account and we'll send you instructions
                 to reset your password.
             </Text>
-
             <View style={styles.field}>
                 <Text style={styles.label}>Email Address</Text>
                 <TextInput
@@ -30,14 +29,16 @@ export function ForgotPassword() {
                     style={styles.input}
                 />
             </View>
-
-            <Pressable style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Send Reset Link</Text>
-            </Pressable>
-
-            <Pressable>
-                <Text style={styles.link}>Back to Sign In</Text>
-            </Pressable>
+            <Link href="/profile" asChild>
+                <Pressable style={styles.button} onPress={handleSubmit}>
+                    <Text style={styles.buttonText}>Send Reset Link</Text>
+                </Pressable>
+            </Link>
+            <Link href="/profile/login" asChild>
+                <Pressable>
+                    <Text style={styles.link}>Back to Sign In</Text>
+                </Pressable>
+            </Link>
         </View>
     );
 }

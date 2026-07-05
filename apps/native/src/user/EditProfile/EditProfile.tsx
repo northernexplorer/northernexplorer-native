@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Pressable } from 'react-native';
 import { styles } from '~/user/styles';
+import { Link } from 'expo-router';
 
 export function EditProfile() {
     const user = {
@@ -27,7 +28,6 @@ export function EditProfile() {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Edit Profile</Text>
-
             <View style={styles.field}>
                 <Text style={styles.label}>First Name</Text>
                 <TextInput
@@ -37,7 +37,6 @@ export function EditProfile() {
                     style={styles.input}
                 />
             </View>
-
             <View style={styles.field}>
                 <Text style={styles.label}>Last Name</Text>
                 <TextInput
@@ -47,7 +46,6 @@ export function EditProfile() {
                     style={styles.input}
                 />
             </View>
-
             <View style={styles.field}>
                 <Text style={styles.label}>Username</Text>
                 <TextInput
@@ -59,7 +57,6 @@ export function EditProfile() {
                     style={styles.input}
                 />
             </View>
-
             <View style={styles.field}>
                 <Text style={styles.label}>Email Address</Text>
                 <TextInput
@@ -72,14 +69,16 @@ export function EditProfile() {
                     style={styles.input}
                 />
             </View>
-
-            <Pressable style={styles.button} onPress={handleSave}>
-                <Text style={styles.buttonText}>Save Changes</Text>
-            </Pressable>
-
-            <Pressable style={styles.secondaryButton}>
-                <Text style={styles.secondaryButtonText}>Cancel</Text>
-            </Pressable>
+            <Link href="/profile" asChild>
+                <Pressable style={styles.button} onPress={handleSave}>
+                    <Text style={styles.buttonText}>Save Changes</Text>
+                </Pressable>
+            </Link>
+            <Link href="/profile" asChild>
+                <Pressable style={styles.secondaryButton}>
+                    <Text style={styles.secondaryButtonText}>Cancel</Text>
+                </Pressable>
+            </Link>
         </View>
     );
 }

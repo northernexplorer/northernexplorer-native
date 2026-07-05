@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Alert, Pressable, Text } from 'react-native';
 import { styles } from '~/user/styles';
+import { Link } from 'expo-router';
 
 export function ChangePassword() {
     const [currentPassword, setCurrentPassword] = useState('');
@@ -23,30 +24,41 @@ export function ChangePassword() {
 
     return (
         <View style={styles.container}>
-            <TextInput
-                style={styles.input}
-                placeholder="Current Password"
-                secureTextEntry
-                value={currentPassword}
-                onChangeText={setCurrentPassword}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="New Password"
-                secureTextEntry
-                value={newPassword}
-                onChangeText={setNewPassword}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Confirm New Password"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-            />
-            <Pressable style={styles.button} onPress={handleChangePassword}>
-                <Text style={styles.buttonText}>Change Password</Text>
-            </Pressable>
+            <View style={styles.field}>
+                <Text style={styles.label}>Current Password</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Current Password"
+                    secureTextEntry
+                    value={currentPassword}
+                    onChangeText={setCurrentPassword}
+                />
+            </View>
+            <View style={styles.field}>
+                <Text style={styles.label}>New Password</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="New Password"
+                    secureTextEntry
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                />
+            </View>
+            <View style={styles.field}>
+                <Text style={styles.label}>Confirm New Password</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Confirm New Password"
+                    secureTextEntry
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                />
+            </View>
+            <Link href="/profile" asChild>
+                <Pressable style={styles.button} onPress={handleChangePassword}>
+                    <Text style={styles.buttonText}>Change Password</Text>
+                </Pressable>
+            </Link>
         </View>
     );
 }

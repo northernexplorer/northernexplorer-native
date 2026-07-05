@@ -1,4 +1,4 @@
-import { Link, router, usePathname } from 'expo-router';
+import { Link, usePathname } from 'expo-router';
 import { Pressable, StyleSheet } from 'react-native';
 import { styles } from '~/layout/Layout/styles';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,15 +12,11 @@ interface Props {
 export function MenuItemUser({ isMobileDrawer, setIsMenuOpen }: Props) {
     const currentPath = usePathname();
     const isActive = currentPath === '/profile';
-    const handleNavigate = () => {
-        setIsMenuOpen(false);
-        router.push('/profile');
-    };
 
     return (
-        <Link key={'/profile'} href={'/profile'} asChild>
+        <Link href={'/profile'} asChild>
             <Pressable
-                onPress={() => handleNavigate()}
+                onPress={() => setIsMenuOpen(false)}
                 style={StyleSheet.flatten([
                     styles.menuItem,
                     isActive && styles.activeItem,

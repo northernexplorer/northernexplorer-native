@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Switch } from 'react-native';
 import { styles } from '~/user/styles';
+import { Link } from 'expo-router';
 
 export function Register() {
     const [firstName, setFirstName] = useState('');
@@ -30,7 +31,6 @@ export function Register() {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Create Account</Text>
-
             <View style={styles.field}>
                 <Text style={styles.label}>First Name</Text>
                 <TextInput
@@ -40,7 +40,6 @@ export function Register() {
                     style={styles.input}
                 />
             </View>
-
             <View style={styles.field}>
                 <Text style={styles.label}>Last Name</Text>
                 <TextInput
@@ -50,7 +49,6 @@ export function Register() {
                     style={styles.input}
                 />
             </View>
-
             <View style={styles.field}>
                 <Text style={styles.label}>Username</Text>
                 <TextInput
@@ -62,7 +60,6 @@ export function Register() {
                     style={styles.input}
                 />
             </View>
-
             <View style={styles.field}>
                 <Text style={styles.label}>Email Address</Text>
                 <TextInput
@@ -75,7 +72,6 @@ export function Register() {
                     style={styles.input}
                 />
             </View>
-
             <View style={styles.field}>
                 <Text style={styles.label}>Password</Text>
                 <TextInput
@@ -86,7 +82,6 @@ export function Register() {
                     style={styles.input}
                 />
             </View>
-
             <View style={styles.field}>
                 <Text style={styles.label}>Confirm Password</Text>
                 <TextInput
@@ -97,23 +92,20 @@ export function Register() {
                     style={styles.input}
                 />
             </View>
-
             <View style={styles.switchRow}>
                 <Text style={styles.label}>I accept the Terms of Service</Text>
                 <Switch value={acceptTerms} onValueChange={setAcceptTerms} />
             </View>
-
-            <Pressable
-                style={[styles.button, !acceptTerms && styles.buttonDisabled]}
-                onPress={handleRegister}
-                disabled={!acceptTerms}
-            >
-                <Text style={styles.buttonText}>Create Account</Text>
-            </Pressable>
-
-            <Pressable>
-                <Text style={styles.link}>Already have an account? Sign In</Text>
-            </Pressable>
+            <Link href="/profile" asChild>
+                <Pressable style={styles.button} onPress={handleRegister}>
+                    <Text style={styles.buttonText}>Create Account</Text>
+                </Pressable>
+            </Link>
+            <Link href="/profile/login" asChild>
+                <Pressable>
+                    <Text style={styles.link}>Already have an account? Sign In</Text>
+                </Pressable>
+            </Link>
         </View>
     );
 }

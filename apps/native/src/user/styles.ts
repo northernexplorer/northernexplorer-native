@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
         fontSize: 16,
     },
     button: {
-        backgroundColor: '#2563eb',
+        backgroundColor: '#0088cc',
         borderRadius: 8,
         paddingVertical: 14,
         alignItems: 'center',
@@ -41,13 +41,13 @@ export const styles = StyleSheet.create({
     },
     secondaryButton: {
         borderWidth: 1,
-        borderColor: '#2563eb',
+        borderColor: '#0088cc',
         borderRadius: 8,
         paddingVertical: 14,
         alignItems: 'center',
     },
     secondaryButtonText: {
-        color: '#2563eb',
+        color: '#0088cc',
         fontSize: 16,
         fontWeight: '600',
     },
@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
         lineHeight: 22,
     },
     link: {
-        color: '#2563eb',
+        color: '#0088cc',
         textAlign: 'center',
         fontSize: 15,
     },

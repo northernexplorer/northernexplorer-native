@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Switch } from 'react-native';
 import { styles } from '~/user/styles';
+import { Link } from 'expo-router';
 
 export function Login() {
     const [identifier, setIdentifier] = useState('');
@@ -47,18 +48,21 @@ export function Login() {
                 <Text style={styles.label}>Remember Me</Text>
                 <Switch value={rememberMe} onValueChange={setRememberMe} />
             </View>
-
-            <Pressable style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Sign In</Text>
-            </Pressable>
-
-            <Pressable>
-                <Text style={styles.link}>Forgot Password?</Text>
-            </Pressable>
-
-            <Pressable>
-                <Text style={styles.link}>Create Account</Text>
-            </Pressable>
+            <Link href="/profile" asChild>
+                <Pressable style={styles.button} onPress={handleLogin}>
+                    <Text style={styles.buttonText}>Sign In</Text>
+                </Pressable>
+            </Link>
+            <Link href="/profile/forgot-password" asChild>
+                <Pressable>
+                    <Text style={styles.link}>Forgot Password?</Text>
+                </Pressable>
+            </Link>
+            <Link href="/profile/register" asChild>
+                <Pressable>
+                    <Text style={styles.link}>Create Account</Text>
+                </Pressable>
+            </Link>
         </View>
     );
 }
