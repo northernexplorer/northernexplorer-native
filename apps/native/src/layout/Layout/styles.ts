@@ -181,4 +181,9 @@ export const styles = StyleSheet.create({
     borderTopColor: '#333333',
     paddingRight: 24,
   },
+  desktopNavGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
 });
