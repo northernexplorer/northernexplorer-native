@@ -5,29 +5,31 @@ import { useApiClient } from '~/core/useApiClient';
 const ConnectivityContext = createContext(false);
 
 export function ConnectivityProvider({ children }: { children: React.ReactNode }) {
-  const [tick, setTick] = useState(0);
-  const [isDeviceConnected, setIsDeviceConnected] = useState(true);
+    const [tick, setTick] = useState(0);
+    const [isDeviceConnected, setIsDeviceConnected] = useState(true);
 
-  const { data, error } = useApiClient('system', 'StatusController', 'getOnlineStatus', {
-    tick,
-  });
-
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener((state) => {
-      setIsDeviceConnected(state.isConnected ?? true);
+    const { data, error } = useApiClient('system', 'StatusController', 'getOnlineStatus', {
+        tick,
     });
 
-    const interval = setInterval(() => setTick((prev) => prev + 1), 10000);
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener((state) => {
+            setIsDeviceConnected(state.isConnected ?? true);
+        });
 
-    return () => {
-      unsubscribe();
-      clearInterval(interval);
-    };
-  }, []);
+        const interval = setInterval(() => setTick((prev) => prev + 1), 10000);
 
-  const isOffline = !isDeviceConnected || !!error || data === false;
+        return () => {
+            unsubscribe();
+            clearInterval(interval);
+        };
+    }, []);
 
-  return <ConnectivityContext.Provider value={isOffline}>{children}</ConnectivityContext.Provider>;
+    const isOffline = !isDeviceConnected || !!error || data === false;
+
+    return (
+        <ConnectivityContext.Provider value={isOffline}>{children}</ConnectivityContext.Provider>
+    );
 }
 
 // Hook for components to use
