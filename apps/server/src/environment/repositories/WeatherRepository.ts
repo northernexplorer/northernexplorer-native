@@ -50,7 +50,7 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
   }
 
   async createCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
-    const freshCacheEntry = this.em.create(WeatherCache, {
+    const freshCacheEntry = this.create({
       lat,
       lon,
       weatherData: parsedJson,
@@ -58,7 +58,7 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
     });
     this.em.persist(freshCacheEntry);
 
-    await this.em.nativeDelete(WeatherCache, {
+    await this.nativeDelete({
       updatedAt: { $lte: new Date(Date.now() - 1000 * 60 * 60 * 3) },
     });
     await this.em.flush();
