@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { styles } from '~/user/styles';
 
 export function EditProfile() {
     const user = {
@@ -15,7 +16,6 @@ export function EditProfile() {
     const [email, setEmail] = useState(user.email);
 
     const handleSave = () => {
-        // TODO: Call update profile API
         console.log({
             firstName,
             lastName,
@@ -83,56 +83,3 @@ export function EditProfile() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        maxWidth: 420,
-        alignSelf: 'center',
-        padding: 24,
-        gap: 20,
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: '700',
-        textAlign: 'center',
-    },
-    field: {
-        gap: 6,
-    },
-    label: {
-        fontSize: 15,
-        fontWeight: '600',
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        paddingHorizontal: 14,
-        paddingVertical: 12,
-        fontSize: 16,
-    },
-    button: {
-        backgroundColor: '#2563eb',
-        borderRadius: 8,
-        paddingVertical: 14,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    secondaryButton: {
-        borderWidth: 1,
-        borderColor: '#2563eb',
-        borderRadius: 8,
-        paddingVertical: 14,
-        alignItems: 'center',
-    },
-    secondaryButtonText: {
-        color: '#2563eb',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-});
