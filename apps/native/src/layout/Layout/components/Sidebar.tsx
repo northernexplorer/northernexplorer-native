@@ -2,7 +2,7 @@ import { View, Text } from 'react-native';
 import { useCity } from '~/location/state/city/useCity';
 import { useLocation } from '~/location/state/location/useLocation';
 import { ComponentType } from 'react';
-import { useServerConnectivity } from '~/core/useServerConnectivity';
+import { useIsOffline } from '~/core/ConnectivityProvider';
 
 interface Props {
   components?: ComponentType[];
@@ -11,7 +11,7 @@ interface Props {
 export function Sidebar({ components }: Props) {
   const coords = useLocation();
   const city = useCity();
-  const isOffline = useServerConnectivity();
+  const isOffline = useIsOffline();
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
