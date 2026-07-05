@@ -1,41 +1,42 @@
 {
-    "name": "northernexplorer-native",
-    "version": "1.0.0",
-    "private": true,
-    "scripts": {
-        "android": "expo run:android",
-        "build:android": "eas build --platform android --profile production",
-        "build:ios": "eas build --platform ios --profile production",
-        "build:web": "expo export --platform web",
-        "ios": "expo run:ios",
-        "start": "expo start",
-        "test:deps": "depcheck --specials=typescript --ignores=\"~\"",
-        "web": "expo start --web"
-    },
-    "dependencies": {
-        "@expo/vector-icons": "^15.0.2",
-        "@maplibre/maplibre-react-native": "^11.3.4",
-        "@northernexplorer/tools": "*",
-        "@northernexplorer/types": "*",
-        "@react-native-async-storage/async-storage": "2.2.0",
-        "@reduxjs/toolkit": "^2.12.0",
-        "expo": "~56.0.12",
-        "expo-linking": "~56.0.14",
-        "expo-location": "~56.0.18",
-        "expo-router": "~56.2.11",
-        "maplibre-gl": "^5.24.0",
-        "react": "19.2.3",
-        "react-dom": "19.2.3",
-        "react-map-gl": "^8.1.1",
-        "react-native": "0.85.3",
-        "react-native-markdown-display": "^7.0.2",
-        "react-native-safe-area-context": "~5.7.0",
-        "react-native-screens": "4.25.2",
-        "react-native-web": "^0.21.2",
-        "react-redux": "^9.3.0",
-        "redux-persist": "^6.0.0"
-    },
-    "devDependencies": {
-        "@types/react": "~19.2.2"
-    }
+  "name": "northernexplorer-native",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "android": "expo run:android",
+    "build:android": "eas build --platform android --profile production",
+    "build:ios": "eas build --platform ios --profile production",
+    "build:web": "expo export --platform web",
+    "ios": "expo run:ios",
+    "start": "expo start",
+    "test:deps": "depcheck --specials=typescript --ignores=\"~\"",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "@maplibre/maplibre-react-native": "^11.3.4",
+    "@northernexplorer/tools": "*",
+    "@northernexplorer/types": "*",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/netinfo": "12.0.1",
+    "@reduxjs/toolkit": "^2.12.0",
+    "expo": "~56.0.12",
+    "expo-linking": "~56.0.14",
+    "expo-location": "~56.0.18",
+    "expo-router": "~56.2.11",
+    "maplibre-gl": "^5.24.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-map-gl": "^8.1.1",
+    "react-native": "0.85.3",
+    "react-native-markdown-display": "^7.0.2",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "4.25.2",
+    "react-native-web": "^0.21.2",
+    "react-redux": "^9.3.0",
+    "redux-persist": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2"
+  }
 }
