@@ -1,8 +1,12 @@
 import { View, Text, Pressable } from 'react-native';
 import { styles } from '~/user/styles';
-import { Link } from 'expo-router';
+import { Link, Redirect } from 'expo-router';
+import { useAuthentication } from '~/user/state/authentication/useAuthentication';
 
 export function Profile() {
+    const authentication = useAuthentication();
+    if (!authentication) return <Redirect href="/profile/login" />;
+
     const user = {
         firstName: '',
         lastName: '',

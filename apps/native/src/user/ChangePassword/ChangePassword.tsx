@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { View, TextInput, Alert, Pressable, Text } from 'react-native';
 import { styles } from '~/user/styles';
-import { Link } from 'expo-router';
+import { Link, Redirect } from 'expo-router';
+import { useAuthentication } from '~/user/state/authentication/useAuthentication';
 
 export function ChangePassword() {
+    const authentication = useAuthentication();
+    if (!authentication) return <Redirect href="/profile/login" />;
+
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
