@@ -3,10 +3,10 @@ export type HistoricSiteType = {
     name: string;
     description: string;
     image: string;
-    coordinates: {
-        latitude: number;
-        longitude: number;
-    };
+    lat: number;
+    lon: number;
     country: string;
-    region?: string | null;
+    region: string;
+    startDate: number;
+    endDate: number;
 };

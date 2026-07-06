@@ -42,8 +42,8 @@ export function HistoricSiteDetails() {
                 <Text style={styles.title}>{data.name}</Text>
 
                 <Text style={styles.coordinatesLabel}>
-                    Coordinates: {data.coordinates.latitude.toFixed(4)}°,{' '}
-                    {data.coordinates.longitude.toFixed(4)}°
+                    Coordinates: {data.lat.toFixed(4)}°, {data.lon.toFixed(4)}° Dates:{' '}
+                    {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
                 </Text>
 
                 <View style={styles.divider} />

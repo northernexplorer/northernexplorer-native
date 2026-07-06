@@ -8,6 +8,8 @@ interface HistoricSiteRawRow {
     image: string;
     lat: string | number;
     lon: string | number;
+    startDate: string | number;
+    endDate: string | number;
     country: string;
     region: string;
     distanceMeters: number;
@@ -26,10 +28,10 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
             image: site.image,
             country: site.country,
             region: site.region,
-            coordinates: {
-                latitude: Number(site.lat),
-                longitude: Number(site.lon),
-            },
+            lat: Number(site.lat),
+            lon: Number(site.lon),
+            startDate: Number(site.startDate),
+            endDate: Number(site.endDate),
         };
     }
 
@@ -59,10 +61,10 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
             image: site.image,
             country: site.country,
             region: site.region,
-            coordinates: {
-                latitude: Number(site.lat),
-                longitude: Number(site.lon),
-            },
+            lat: Number(site.lat),
+            lon: Number(site.lon),
+            startDate: Number(site.startDate),
+            endDate: Number(site.endDate),
         }));
     }
 }

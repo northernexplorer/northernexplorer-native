@@ -16,6 +16,4 @@ export const m20260705: string[] = [
     `alter table "weather_cache" alter column "weather_data" type jsonb using ("weather_data"::jsonb);`,
     `create sequence if not exists "user_id_seq";`,
     `alter table "user" alter column "id" set default nextval('user_id_seq');`,
-    `create sequence if not exists "user_id_seq";`,
-    `alter table "user" alter column "id" set default nextval('user_id_seq');`,
 ];
