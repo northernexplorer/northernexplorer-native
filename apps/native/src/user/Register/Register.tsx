@@ -37,6 +37,8 @@ export function Register() {
         if (!formData.email.includes('@')) newErrors.email = 'Invalid email address';
         if (formData.password.length < 8)
             newErrors.password = 'Password must be at least 8 characters';
+        if (formData.confirmPassword.length < 8)
+            newErrors.confirmPassword = 'Password must be at least 8 characters';
         if (formData.password !== formData.confirmPassword) {
             newErrors.confirmPassword = 'Passwords do not match';
         }
