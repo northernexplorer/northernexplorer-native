@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Alert, Pressable, Text } from 'react-native';
+import { View, TextInput, Pressable, Text } from 'react-native';
 import { styles } from '~/user/styles';
 import { Link, Redirect } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
@@ -8,19 +8,36 @@ export function ChangePassword() {
     const authentication = useAuthentication();
     if (!authentication) return <Redirect href="/profile/login" />;
 
-    const [passwords, setPasswords] = useState({
+    const [formData, setFormData] = useState({
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const updatePassword = (key: keyof typeof passwords, value: string) => {
-        setPasswords((prev) => ({ ...prev, [key]: value }));
+    const updateField = (key: keyof typeof formData, value: string | boolean) => {
+        setFormData((prev) => ({ ...prev, [key]: value }));
+        if (errors[key]) {
+            setErrors((prev) => {
+                const next = { ...prev };
+                delete next[key];
+                return next;
+            });
+        }
     };
 
     const validateForm = () => {
         let newErrors: Record<string, string> = {};
+
+        if (!formData.currentPassword) {
+            newErrors.currentPassword = 'Current password is required';
+        }
+        if (formData.newPassword.length < 8) {
+            newErrors.newPassword = 'New password must be at least 8 characters';
+        }
+        if (formData.newPassword !== formData.confirmPassword) {
+            newErrors.confirmPassword = 'New passwords do not match';
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -34,8 +51,8 @@ export function ChangePassword() {
                     style={styles.input}
                     placeholder="Current Password"
                     secureTextEntry
-                    value={passwords.currentPassword}
-                    onChangeText={(val) => updatePassword('currentPassword', val)}
+                    value={formData.currentPassword}
+                    onChangeText={(val) => updateField('currentPassword', val)}
                 />
                 {errors.currentPassword && (
                     <Text style={styles.errorText}>{errors.currentPassword}</Text>
@@ -47,8 +64,8 @@ export function ChangePassword() {
                     style={styles.input}
                     placeholder="New Password"
                     secureTextEntry
-                    value={passwords.newPassword}
-                    onChangeText={(val) => updatePassword('newPassword', val)}
+                    value={formData.newPassword}
+                    onChangeText={(val) => updateField('newPassword', val)}
                 />
                 {errors.newPassword && <Text style={styles.errorText}>{errors.newPassword}</Text>}
             </View>
@@ -58,8 +75,8 @@ export function ChangePassword() {
                     style={styles.input}
                     placeholder="Confirm New Password"
                     secureTextEntry
-                    value={passwords.confirmPassword}
-                    onChangeText={(val) => updatePassword('confirmPassword', val)}
+                    value={formData.confirmPassword}
+                    onChangeText={(val) => updateField('confirmPassword', val)}
                 />
                 {errors.confirmPassword && (
                     <Text style={styles.errorText}>{errors.confirmPassword}</Text>

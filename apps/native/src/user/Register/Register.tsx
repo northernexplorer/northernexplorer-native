@@ -18,22 +18,29 @@ export function Register() {
 
     const updateField = (key: keyof typeof formData, value: string | boolean) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
+        if (errors[key]) {
+            setErrors((prev) => {
+                const next = { ...prev };
+                delete next[key];
+                return next;
+            });
+        }
     };
 
     const validateForm = () => {
         let newErrors: Record<string, string> = {};
 
         if (formData.firstName.length < 2) newErrors.firstName = 'First name is too short';
-        if (formData.lastName.length < 2) newErrors.firstName = 'Last name is too short';
+        if (formData.lastName.length < 2) newErrors.lastName = 'Last name is too short';
+        if (formData.userName.length < 6) newErrors.userName = 'Username is too short';
         if (!formData.email.includes('@')) newErrors.email = 'Invalid email address';
         if (formData.password.length < 8)
             newErrors.password = 'Password must be at least 8 characters';
         if (formData.password !== formData.confirmPassword) {
             newErrors.confirmPassword = 'Passwords do not match';
         }
-        if (!formData.acceptTerms || !formData.acceptPrivacy) {
-            newErrors.legal = 'You must accept the terms and privacy policy';
-        }
+        if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the terms of service';
+        if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'You must accept the privacy policy';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -127,8 +134,8 @@ export function Register() {
                     value={formData.acceptTerms}
                     onValueChange={(val) => updateField('acceptTerms', val)}
                 />
-                {errors.acceptTerms && <Text style={styles.errorText}>{errors.acceptTerms}</Text>}
             </View>
+            {errors.acceptTerms && <Text style={styles.errorText}>{errors.acceptTerms}</Text>}
             <View style={styles.switchRow}>
                 <Text style={styles.label}>
                     I accept the{' '}
@@ -145,18 +152,13 @@ export function Register() {
                     value={formData.acceptPrivacy}
                     onValueChange={(val) => updateField('acceptPrivacy', val)}
                 />
-                {errors.acceptPrivacy && (
-                    <Text style={styles.errorText}>{errors.acceptPrivacy}</Text>
-                )}
             </View>
-
-            <Pressable
-                style={styles.button}
-                onPress={validateForm}
-            >
+            {errors.acceptPrivacy && (
+                <Text style={styles.errorText}>{errors.acceptPrivacy}</Text>
+            )}
+            <Pressable style={styles.button} onPress={validateForm}>
                 <Text style={styles.buttonText}>Create Account</Text>
             </Pressable>
-
             <Link href="/profile/login" asChild>
                 <Pressable>
                     <Text style={styles.link}>Already have an account? Sign In</Text>

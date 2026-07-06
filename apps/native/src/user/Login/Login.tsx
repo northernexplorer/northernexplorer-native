@@ -4,19 +4,33 @@ import { styles } from '~/user/styles';
 import { Link } from 'expo-router';
 
 export function Login() {
-    const [loginData, setLoginData] = useState({
+    const [formData, setFormData] = useState({
         identifier: '',
         password: '',
         rememberMe: false,
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const updateLoginField = (key: keyof typeof loginData, value: string | boolean) => {
-        setLoginData((prev) => ({ ...prev, [key]: value }));
+    const updateField = (key: keyof typeof formData, value: string | boolean) => {
+        setFormData((prev) => ({ ...prev, [key]: value }));
+        if (errors[key]) {
+            setErrors((prev) => {
+                const next = { ...prev };
+                delete next[key];
+                return next;
+            });
+        }
     };
 
     const validateForm = () => {
         let newErrors: Record<string, string> = {};
+
+        if (!formData.identifier) {
+            newErrors.identifier = 'Identifier is required';
+        }
+        if (formData.password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters';
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -29,8 +43,8 @@ export function Login() {
             <View style={styles.field}>
                 <Text style={styles.label}>Username or Email</Text>
                 <TextInput
-                    value={loginData.identifier}
-                    onChangeText={(val) => updateLoginField('identifier', val)}
+                    value={formData.identifier}
+                    onChangeText={(val) => updateField('identifier', val)}
                     autoCapitalize="none"
                     autoCorrect={false}
                     keyboardType="email-address"
@@ -43,8 +57,8 @@ export function Login() {
             <View style={styles.field}>
                 <Text style={styles.label}>Password</Text>
                 <TextInput
-                    value={loginData.password}
-                    onChangeText={(val) => updateLoginField('password', val)}
+                    value={formData.password}
+                    onChangeText={(val) => updateField('password', val)}
                     secureTextEntry
                     placeholder="Password"
                     style={styles.input}
@@ -55,8 +69,8 @@ export function Login() {
             <View style={styles.rememberRow}>
                 <Text style={styles.label}>Remember Me</Text>
                 <Switch
-                    value={loginData.rememberMe}
-                    onValueChange={(val) => updateLoginField('rememberMe', val)}
+                    value={formData.rememberMe}
+                    onValueChange={(val) => updateField('rememberMe', val)}
                 />
             </View>
             <Link href="/profile" asChild>
