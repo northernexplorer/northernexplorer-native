@@ -17,19 +17,6 @@ async function runIncrementalMigrations() {
     const client = await pool.connect();
 
     try {
-        const renameCheck = await client.query(`
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_name = 'migrations'
-      );
-    `);
-
-        if (renameCheck.rows[0].exists) {
-            console.log('🔄 Renaming tracking table from "migrations" to "migration"...');
-            await client.query('ALTER TABLE "migrations" RENAME TO "migration"');
-        }
-
-        // Ensure tracking table exists
         await client.query(`
         CREATE TABLE IF NOT EXISTS "migration" (
                                                            "migration_key" VARCHAR(255) PRIMARY KEY,

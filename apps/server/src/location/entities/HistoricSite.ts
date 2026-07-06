@@ -23,11 +23,17 @@ export class HistoricSite {
     @Property({ type: 'double' })
     lon!: number;
 
+    @Property({ type: 'double', nullable: true })
+    startDate?: number | null;
+
+    @Property({ type: 'double', nullable: true })
+    endDate?: number | null;
+
     @Property({ type: 'string', length: 100 })
     country!: string;
 
-    @Property({ type: 'string', length: 100, nullable: true })
-    region?: string;
+    @Property({ type: 'string', length: 100 })
+    region!: string;
 
     @Property({ type: 'datetime' })
     createdAt = new Date();
