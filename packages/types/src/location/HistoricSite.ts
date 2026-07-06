@@ -7,6 +7,6 @@ export type HistoricSiteType = {
     lon: number;
     country: string;
     region: string;
-    startDate: number;
-    endDate: number;
+    startDate?: number | null;
+    endDate?: number | null;
 };
