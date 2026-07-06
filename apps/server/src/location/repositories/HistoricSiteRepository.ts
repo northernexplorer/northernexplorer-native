@@ -35,24 +35,25 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
         };
     }
 
-    async getClosestHistoricSites(lat: number, lon: number) {
+    async getClosestHistoricSites(lat: number, lon: number, limit: number) {
         const query = `
-                SELECT id, name, description, image, lat, lon, country, region, distance_meters as distanceMeters
-                FROM (
-                         SELECT id, name, description, image, lat, lon, country, region,
-                                (6371000 * acos(
-                                        cos(radians(?)) * cos(radians(lat)) * cos(radians(lon) - radians(?)) +
-                                        sin(radians(?)) * sin(radians(lat))
-                                           )) AS distance_meters
-                         FROM historic_site
-                     ) AS spatial_search
-                ORDER BY distanceMeters ASC
-                    LIMIT 5
-            `;
+            SELECT id, name, description, image, lat, lon, country, region,
+                   start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
+            FROM (
+                     SELECT id, name, description, image, lat, lon, country, region, start_date, end_date,
+                            (6371000 * acos(
+                                cos(radians(?)) * cos(radians(lat)) * cos(radians(lon) - radians(?)) +
+                                sin(radians(?)) * sin(radians(lat))
+                                       )) AS distance_meters
+                     FROM historic_site
+                 ) AS spatial_search
+            ORDER BY distanceMeters ASC
+                LIMIT ?
+        `;
 
         const rawResults = (await this.em
             .getConnection()
-            .execute(query, [lat, lon, lat])) as unknown as HistoricSiteRawRow[];
+            .execute(query, [lat, lon, lat, limit])) as unknown as HistoricSiteRawRow[];
 
         return rawResults.map((site) => ({
             id: site.id,
@@ -63,8 +64,8 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
             region: site.region,
             lat: Number(site.lat),
             lon: Number(site.lon),
-            startDate: Number(site.startDate),
-            endDate: Number(site.endDate),
+            startDate: site.startDate ? Number(site.startDate) : null,
+            endDate: site.endDate ? Number(site.endDate) : null,
         }));
     }
 }

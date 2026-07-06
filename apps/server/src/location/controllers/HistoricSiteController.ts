@@ -12,8 +12,8 @@ export class HistoricSiteController {
     public async getNearbyHistoricSites(
         params: Params<Route<'getNearbyHistoricSites'>>,
     ): Promise<Response<Route<'getNearbyHistoricSites'>>> {
-        const { lat, lon } = params;
-        return this.repos.historicSite.getClosestHistoricSites(lat, lon);
+        const { lat, lon, limit } = params;
+        return this.repos.historicSite.getClosestHistoricSites(lat, lon, limit);
     }
 
     public async getHistoricSiteById(
