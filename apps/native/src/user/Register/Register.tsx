@@ -11,6 +11,7 @@ export function Register() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [acceptTerms, setAcceptTerms] = useState(false);
+    const [acceptPrivacy, setAcceptPrivacy] = useState(false);
 
     const handleRegister = () => {
         if (password !== confirmPassword) {
@@ -93,8 +94,22 @@ export function Register() {
                 />
             </View>
             <View style={styles.switchRow}>
-                <Text style={styles.label}>I accept the Terms of Service</Text>
+                <Text style={styles.label}>
+                    I accept the{' '}
+                    <Link href="/terms-of-service" target="_blank" rel="noreferrer">
+                        <Text style={styles.linkText}>Terms of Service</Text>
+                    </Link>
+                </Text>
                 <Switch value={acceptTerms} onValueChange={setAcceptTerms} />
+            </View>
+            <View style={styles.switchRow}>
+                <Text style={styles.label}>
+                    I accept the{' '}
+                    <Link href="/privacy-policy" target="_blank" rel="noreferrer">
+                        <Text style={styles.linkText}>Privacy Policy</Text>
+                    </Link>
+                </Text>
+                <Switch value={acceptPrivacy} onValueChange={setAcceptPrivacy} />
             </View>
             <Link href="/profile" asChild>
                 <Pressable style={styles.button} onPress={handleRegister}>

@@ -80,4 +80,9 @@ export const styles = StyleSheet.create({
     buttonDisabled: {
         opacity: 0.5,
     },
+    linkText: {
+        color: '#0088cc',
+        textDecorationLine: 'underline',
+        fontWeight: 'bold',
+    },
 });
