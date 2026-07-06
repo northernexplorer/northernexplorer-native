@@ -12,12 +12,11 @@ import { useApiClient } from '~/core/useApiClient';
 
 export function Map() {
     const coords = useLocation();
-    const { data } = useApiClient(
-        'location',
-        'HistoricSiteController',
-        'getNearbyHistoricSites',
-        coords,
-    );
+    const { data } = useApiClient('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
+        lat: coords?.lat || 0,
+        lon: coords?.lon || 0,
+        limit: 500,
+    });
 
     const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
