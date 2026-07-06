@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
 import { Link, Redirect } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
@@ -14,10 +14,14 @@ export function EditProfile() {
         userName: '',
         email: '',
     });
-    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    type FormData = typeof formData;
+    type FormKeys = keyof FormData;
+
+    const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const updateField = (key: keyof typeof formData, value: string | boolean) => {
+    const updateField = (key: FormKeys, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
         if (errors[key]) {
             setErrors((prev) => {
@@ -29,15 +33,17 @@ export function EditProfile() {
     };
 
     const validateForm = async () => {
-        let newErrors: Record<string, string> = {};
+        const newErrors: Partial<Record<FormKeys, string>> = {};
 
-        if (formData.firstName.length < 2) newErrors.firstName = 'First name is too short';
-        if (formData.lastName.length < 2) newErrors.lastName = 'Last name is too short';
-        if (formData.userName.length < 6)
+        if (formData.firstName.trim().length < 2) newErrors.firstName = 'First name is too short';
+        if (formData.lastName.trim().length < 2) newErrors.lastName = 'Last name is too short';
+        if (formData.userName.trim().length < 6) {
             newErrors.userName = 'Username must be at least 6 characters';
-        if (!formData.email.includes('@')) newErrors.email = 'Invalid email address';
+        }
+        if (!formData.email.trim().includes('@')) newErrors.email = 'Invalid email address';
 
         setErrors(newErrors);
+
         if (Object.keys(newErrors).length === 0) {
             await handleSubmit();
         }
@@ -45,11 +51,20 @@ export function EditProfile() {
 
     const handleSubmit = async () => {
         setIsSubmitting(true);
+        try {
+            // Your update profile API call / state dispatch goes here
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
             <Text style={styles.title}>Edit Profile</Text>
+
+            {/* First Name */}
             <View style={styles.field}>
                 <Text style={styles.label}>First Name</Text>
                 <TextInput
@@ -57,9 +72,12 @@ export function EditProfile() {
                     onChangeText={(val) => updateField('firstName', val)}
                     placeholder="First Name"
                     style={styles.input}
+                    editable={!isSubmitting}
                 />
                 {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
             </View>
+
+            {/* Last Name */}
             <View style={styles.field}>
                 <Text style={styles.label}>Last Name</Text>
                 <TextInput
@@ -67,9 +85,12 @@ export function EditProfile() {
                     onChangeText={(val) => updateField('lastName', val)}
                     placeholder="Last Name"
                     style={styles.input}
+                    editable={!isSubmitting}
                 />
                 {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
             </View>
+
+            {/* Username */}
             <View style={styles.field}>
                 <Text style={styles.label}>Username</Text>
                 <TextInput
@@ -79,9 +100,12 @@ export function EditProfile() {
                     autoCorrect={false}
                     placeholder="Username"
                     style={styles.input}
+                    editable={!isSubmitting}
                 />
                 {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
             </View>
+
+            {/* Email Address */}
             <View style={styles.field}>
                 <Text style={styles.label}>Email Address</Text>
                 <TextInput
@@ -92,17 +116,28 @@ export function EditProfile() {
                     keyboardType="email-address"
                     placeholder="Email Address"
                     style={styles.input}
+                    editable={!isSubmitting}
                 />
                 {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
-            <Pressable style={styles.button} onPress={validateForm} disabled={isSubmitting}>
-                <Text style={styles.buttonText}>Save Changes</Text>
+
+            {/* Submit Changes */}
+            <Pressable
+                style={[styles.button, isSubmitting && { opacity: 0.6 }]}
+                onPress={validateForm}
+                disabled={isSubmitting}
+            >
+                <Text style={styles.buttonText}>
+                    {isSubmitting ? 'Saving Changes...' : 'Save Changes'}
+                </Text>
             </Pressable>
+
+            {/* Cancel Action */}
             <Link href="/profile" asChild>
                 <Pressable style={styles.secondaryButton} disabled={isSubmitting}>
                     <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>
             </Link>
-        </View>
+        </ScrollView>
     );
 }
