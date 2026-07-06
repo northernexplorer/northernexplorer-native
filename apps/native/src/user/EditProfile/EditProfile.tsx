@@ -8,26 +8,23 @@ export function EditProfile() {
     const authentication = useAuthentication();
     if (!authentication) return <Redirect href="/profile/login" />;
 
-    const user = {
-        firstName: 'Shayne',
-        lastName: 'Thiessen',
-        userName: 'shayne',
-        email: 'shayne@example.com',
-    };
-
     const [profileData, setProfileData] = useState({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        userName: user.userName,
-        email: user.email,
+        firstName: '',
+        lastName: '',
+        userName: '',
+        email: '',
     });
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const updateProfile = (key: keyof typeof profileData, value: string) => {
         setProfileData((prev) => ({ ...prev, [key]: value }));
     };
 
-    const handleSave = () => {
-        console.log(profileData);
+    const validateForm = () => {
+        let newErrors: Record<string, string> = {};
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     return (
@@ -41,6 +38,7 @@ export function EditProfile() {
                     placeholder="First Name"
                     style={styles.input}
                 />
+                {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
             </View>
             <View style={styles.field}>
                 <Text style={styles.label}>Last Name</Text>
@@ -50,6 +48,7 @@ export function EditProfile() {
                     placeholder="Last Name"
                     style={styles.input}
                 />
+                {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
             </View>
             <View style={styles.field}>
                 <Text style={styles.label}>Username</Text>
@@ -61,6 +60,7 @@ export function EditProfile() {
                     placeholder="Username"
                     style={styles.input}
                 />
+                {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
             </View>
             <View style={styles.field}>
                 <Text style={styles.label}>Email Address</Text>
@@ -73,9 +73,10 @@ export function EditProfile() {
                     placeholder="Email Address"
                     style={styles.input}
                 />
+                {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
             <Link href="/profile" asChild>
-                <Pressable style={styles.button} onPress={handleSave}>
+                <Pressable style={styles.button} onPress={validateForm}>
                     <Text style={styles.buttonText}>Save Changes</Text>
                 </Pressable>
             </Link>

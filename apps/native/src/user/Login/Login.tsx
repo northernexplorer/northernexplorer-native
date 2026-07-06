@@ -9,13 +9,17 @@ export function Login() {
         password: '',
         rememberMe: false,
     });
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const updateLoginField = (key: keyof typeof loginData, value: string | boolean) => {
         setLoginData((prev) => ({ ...prev, [key]: value }));
     };
 
-    const handleLogin = () => {
-        console.log(loginData);
+    const validateForm = () => {
+        let newErrors: Record<string, string> = {};
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     return (
@@ -33,6 +37,7 @@ export function Login() {
                     placeholder="Username or Email"
                     style={styles.input}
                 />
+                {errors.identifier && <Text style={styles.errorText}>{errors.identifier}</Text>}
             </View>
 
             <View style={styles.field}>
@@ -44,6 +49,7 @@ export function Login() {
                     placeholder="Password"
                     style={styles.input}
                 />
+                {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
             </View>
 
             <View style={styles.rememberRow}>
@@ -54,7 +60,7 @@ export function Login() {
                 />
             </View>
             <Link href="/profile" asChild>
-                <Pressable style={styles.button} onPress={handleLogin}>
+                <Pressable style={styles.button} onPress={validateForm}>
                     <Text style={styles.buttonText}>Sign In</Text>
                 </Pressable>
             </Link>

@@ -14,25 +14,34 @@ export function Register() {
         acceptTerms: false,
         acceptPrivacy: false,
     });
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const updateField = (key: keyof typeof formData, value: string | boolean) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
     };
 
-    const handleRegister = () => {
+    const validateForm = () => {
+        let newErrors: Record<string, string> = {};
+
+        if (formData.firstName.length < 2) newErrors.firstName = 'First name is too short';
+        if (formData.lastName.length < 2) newErrors.firstName = 'Last name is too short';
+        if (!formData.email.includes('@')) newErrors.email = 'Invalid email address';
+        if (formData.password.length < 8)
+            newErrors.password = 'Password must be at least 8 characters';
         if (formData.password !== formData.confirmPassword) {
-            console.error('Passwords do not match');
-            return;
+            newErrors.confirmPassword = 'Passwords do not match';
+        }
+        if (!formData.acceptTerms || !formData.acceptPrivacy) {
+            newErrors.legal = 'You must accept the terms and privacy policy';
         }
 
-        console.log(formData);
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Create Account</Text>
-
-            {/* Name Fields */}
             <View style={styles.field}>
                 <Text style={styles.label}>First Name</Text>
                 <TextInput
@@ -41,6 +50,7 @@ export function Register() {
                     placeholder="First Name"
                     style={styles.input}
                 />
+                {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
             </View>
             <View style={styles.field}>
                 <Text style={styles.label}>Last Name</Text>
@@ -50,9 +60,8 @@ export function Register() {
                     placeholder="Last Name"
                     style={styles.input}
                 />
+                {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
             </View>
-
-            {/* Account Details */}
             <View style={styles.field}>
                 <Text style={styles.label}>Username</Text>
                 <TextInput
@@ -63,6 +72,7 @@ export function Register() {
                     placeholder="Username"
                     style={styles.input}
                 />
+                {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
             </View>
             <View style={styles.field}>
                 <Text style={styles.label}>Email Address</Text>
@@ -75,9 +85,8 @@ export function Register() {
                     placeholder="Email Address"
                     style={styles.input}
                 />
+                {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
-
-            {/* Password Fields */}
             <View style={styles.field}>
                 <Text style={styles.label}>Password</Text>
                 <TextInput
@@ -87,6 +96,7 @@ export function Register() {
                     placeholder="Password"
                     style={styles.input}
                 />
+                {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
             </View>
             <View style={styles.field}>
                 <Text style={styles.label}>Confirm Password</Text>
@@ -97,9 +107,10 @@ export function Register() {
                     placeholder="Confirm Password"
                     style={styles.input}
                 />
+                {errors.confirmPassword && (
+                    <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+                )}
             </View>
-
-            {/* Legal Agreements */}
             <View style={styles.switchRow}>
                 <Text style={styles.label}>
                     I accept the{' '}
@@ -116,6 +127,7 @@ export function Register() {
                     value={formData.acceptTerms}
                     onValueChange={(val) => updateField('acceptTerms', val)}
                 />
+                {errors.acceptTerms && <Text style={styles.errorText}>{errors.acceptTerms}</Text>}
             </View>
             <View style={styles.switchRow}>
                 <Text style={styles.label}>
@@ -133,16 +145,14 @@ export function Register() {
                     value={formData.acceptPrivacy}
                     onValueChange={(val) => updateField('acceptPrivacy', val)}
                 />
+                {errors.acceptPrivacy && (
+                    <Text style={styles.errorText}>{errors.acceptPrivacy}</Text>
+                )}
             </View>
 
-            {/* Submission */}
             <Pressable
-                style={[
-                    styles.button,
-                    (!formData.acceptTerms || !formData.acceptPrivacy) && styles.disabledButton,
-                ]}
-                onPress={handleRegister}
-                disabled={!formData.acceptTerms || !formData.acceptPrivacy}
+                style={styles.button}
+                onPress={validateForm}
             >
                 <Text style={styles.buttonText}>Create Account</Text>
             </Pressable>

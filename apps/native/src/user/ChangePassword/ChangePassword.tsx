@@ -13,23 +13,17 @@ export function ChangePassword() {
         newPassword: '',
         confirmPassword: '',
     });
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const updatePassword = (key: keyof typeof passwords, value: string) => {
         setPasswords((prev) => ({ ...prev, [key]: value }));
     };
 
-    const handleChangePassword = async () => {
-        if (passwords.newPassword !== passwords.confirmPassword) {
-            Alert.alert('Error', 'New passwords do not match');
-            return;
-        }
+    const validateForm = () => {
+        let newErrors: Record<string, string> = {};
 
-        if (passwords.newPassword.length < 8) {
-            Alert.alert('Error', 'Password must be at least 8 characters');
-            return;
-        }
-
-        console.log('Updating password...');
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     return (
@@ -43,6 +37,9 @@ export function ChangePassword() {
                     value={passwords.currentPassword}
                     onChangeText={(val) => updatePassword('currentPassword', val)}
                 />
+                {errors.currentPassword && (
+                    <Text style={styles.errorText}>{errors.currentPassword}</Text>
+                )}
             </View>
             <View style={styles.field}>
                 <Text style={styles.label}>New Password</Text>
@@ -53,6 +50,7 @@ export function ChangePassword() {
                     value={passwords.newPassword}
                     onChangeText={(val) => updatePassword('newPassword', val)}
                 />
+                {errors.newPassword && <Text style={styles.errorText}>{errors.newPassword}</Text>}
             </View>
             <View style={styles.field}>
                 <Text style={styles.label}>Confirm New Password</Text>
@@ -63,9 +61,12 @@ export function ChangePassword() {
                     value={passwords.confirmPassword}
                     onChangeText={(val) => updatePassword('confirmPassword', val)}
                 />
+                {errors.confirmPassword && (
+                    <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+                )}
             </View>
             <Link href="/profile" asChild>
-                <Pressable style={styles.button} onPress={handleChangePassword}>
+                <Pressable style={styles.button} onPress={validateForm}>
                     <Text style={styles.buttonText}>Change Password</Text>
                 </Pressable>
             </Link>

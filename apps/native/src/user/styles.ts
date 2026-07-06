@@ -85,4 +85,9 @@ export const styles = StyleSheet.create({
         textDecorationLine: 'underline',
         fontWeight: 'bold',
     },
+    errorText: {
+        color: '#FF3B30',
+        fontSize: 12,
+        marginTop: 4,
+    },
 });
