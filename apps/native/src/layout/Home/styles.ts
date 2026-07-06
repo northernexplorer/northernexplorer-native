@@ -48,8 +48,6 @@ export const styles = StyleSheet.create({
         marginTop: 6,
     },
     tile: {
-        alignItems: 'center',
-        justifyContent: 'center',
         marginRight: 10,
         backgroundColor: 'rgba(255,255,255,0.2)',
         borderRadius: 12,

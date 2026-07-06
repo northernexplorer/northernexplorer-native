@@ -29,7 +29,7 @@ export function HistoricSitePreview({ id, name, description, image, country, reg
             asChild
         >
             <Pressable>
-                <View style={[styles.tile, { width: 160 }]}>
+                <View style={[styles.tile, { width: 160, height: 175, overflow: 'hidden' }]}>
                     <Image
                         source={{ uri: getUrl({ path: image, serverUrl: config.SERVER_URL }) }}
                         style={{
@@ -38,8 +38,7 @@ export function HistoricSitePreview({ id, name, description, image, country, reg
                         }}
                         resizeMode="cover"
                     />
-
-                    <View style={{ padding: 10 }}>
+                    <View style={{ padding: 10, flex: 1, justifyContent: 'flex-start' }}>
                         <Text
                             style={{
                                 color: 'rgba(255,255,255,0.9)',

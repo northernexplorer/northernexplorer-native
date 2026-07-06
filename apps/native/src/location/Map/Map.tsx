@@ -11,12 +11,11 @@ import { useApiClient } from '~/core/useApiClient';
 
 export function Map() {
     const coords = useLocation();
-    const { data } = useApiClient(
-        'location',
-        'HistoricSiteController',
-        'getNearbyHistoricSites',
-        coords,
-    );
+    const { data } = useApiClient('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
+        lat: coords?.lat || 0,
+        lon: coords?.lon || 0,
+        limit: 500,
+    });
 
     const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
@@ -38,7 +37,7 @@ export function Map() {
                 {data?.map((site) => (
                     <Marker
                         key={site.id}
-                        lngLat={[site.coordinates.longitude, site.coordinates.latitude]}
+                        lngLat={[site.lon, site.lat]}
                         anchor="bottom"
                         onPress={() => setSelectedSite(site)}
                     >
@@ -54,13 +53,7 @@ export function Map() {
                 ))}
 
                 {selectedSite && (
-                    <Marker
-                        lngLat={[
-                            selectedSite.coordinates.longitude,
-                            selectedSite.coordinates.latitude,
-                        ]}
-                        anchor={'bottom'}
-                    >
+                    <Marker lngLat={[selectedSite.lon, selectedSite.lat]} anchor={'bottom'}>
                         <View style={styles.popupContainer}>
                             <Link
                                 href={{

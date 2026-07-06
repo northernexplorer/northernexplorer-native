@@ -12,12 +12,11 @@ import { useApiClient } from '~/core/useApiClient';
 
 export function Map() {
     const coords = useLocation();
-    const { data } = useApiClient(
-        'location',
-        'HistoricSiteController',
-        'getNearbyHistoricSites',
-        coords,
-    );
+    const { data } = useApiClient('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
+        lat: coords?.lat || 0,
+        lon: coords?.lon || 0,
+        limit: 500,
+    });
 
     const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
@@ -36,12 +35,13 @@ export function Map() {
                 onClick={() => setSelectedSite(null)}
                 interactiveLayerIds={['historicSitesLayer']}
                 cursor={selectedSite ? 'pointer' : 'default'}
+                minZoom={2}
             >
                 {data?.map((site) => (
                     <Marker
                         key={site.id}
-                        longitude={site.coordinates.longitude}
-                        latitude={site.coordinates.latitude}
+                        longitude={site.lon}
+                        latitude={site.lat}
                         anchor="bottom"
                         onClick={(e) => {
                             e.originalEvent.stopPropagation(); // Prevent map click
@@ -61,8 +61,8 @@ export function Map() {
 
                 {selectedSite && (
                     <Marker
-                        longitude={selectedSite.coordinates.longitude}
-                        latitude={selectedSite.coordinates.latitude}
+                        longitude={selectedSite.lon}
+                        latitude={selectedSite.lat}
                         anchor="bottom"
                     >
                         <div style={styles.popupContainer}>

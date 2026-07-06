@@ -58,7 +58,7 @@ export const ROUTES = {
         },
         HistoricSiteController: {
             getNearbyHistoricSites: {
-                params: { lat: 0, lon: 0 } as { lat: number; lon: number },
+                params: { lat: 0, lon: 0, limit: 0 } as { lat: number; lon: number; limit: number },
                 response: null as unknown as HistoricSiteType[],
                 endpoint: 'getNearbyHistoricSites',
             },

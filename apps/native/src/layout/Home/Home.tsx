@@ -22,7 +22,7 @@ export function Home() {
         'location',
         'HistoricSiteController',
         'getNearbyHistoricSites',
-        coords,
+        { lat: coords?.lat || 0, lon: coords?.lon || 0, limit: 5 },
     );
     const { width } = useWindowDimensions();
     const isMobileView = width < 1000;
