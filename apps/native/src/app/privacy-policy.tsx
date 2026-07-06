@@ -1,6 +1,6 @@
-import { Layout } from '~/layout';
-import { PrivacyPolicy } from '~/pages/PrivacyPolicy';
+import { Layout } from '~/layout/Layout';
+import { PrivacyPolicy } from '~/system/PrivacyPolicy';
 
-export default function Page() {
-  return <Layout Content={PrivacyPolicy} title="Privacy Policy" />;
+export default function () {
+    return <Layout Content={PrivacyPolicy} title="Privacy Policy" />;
 }

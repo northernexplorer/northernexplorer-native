@@ -1,6 +1,6 @@
-import { Layout } from '~/layout';
-import { Map } from '~/pages/Map';
+import { Layout } from '~/layout/Layout';
+import { Map } from '~/location/Map';
 
-export default function Page() {
-  return <Layout Content={Map} fullPage />;
+export default function () {
+    return <Layout Content={Map} fullPage />;
 }

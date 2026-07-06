@@ -1,6 +1,6 @@
-import { Layout } from '~/layout';
-import { Home } from '~/pages/Home';
+import { Layout } from '~/layout/Layout';
+import { Home } from '~/layout/Home';
 
-export default function Page() {
-  return <Layout Content={Home} />;
+export default function () {
+    return <Layout Content={Home} home />;
 }

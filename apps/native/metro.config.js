@@ -11,8 +11,8 @@ config.watchFolders = [workspaceRoot];
 
 // Map dependency resolution to both the local app and monorepo roots
 config.resolver.nodeModulesPaths = [
-  path.resolve(projectRoot, 'node_modules'),
-  path.resolve(workspaceRoot, 'node_modules'),
+    path.resolve(projectRoot, 'node_modules'),
+    path.resolve(workspaceRoot, 'node_modules'),
 ];
 
 module.exports = config;

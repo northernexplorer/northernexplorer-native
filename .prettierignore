@@ -1,5 +1,7 @@
-node_modules
+node_modules/
 .expo
-dist
-build
+dist/
+build/
 yarn.lock
+docs/
+README.md
