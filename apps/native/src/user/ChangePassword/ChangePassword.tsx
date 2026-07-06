@@ -8,17 +8,23 @@ export function ChangePassword() {
     const authentication = useAuthentication();
     if (!authentication) return <Redirect href="/profile/login" />;
 
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwords, setPasswords] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+    });
+
+    const updatePassword = (key: keyof typeof passwords, value: string) => {
+        setPasswords((prev) => ({ ...prev, [key]: value }));
+    };
 
     const handleChangePassword = async () => {
-        if (newPassword !== confirmPassword) {
+        if (passwords.newPassword !== passwords.confirmPassword) {
             Alert.alert('Error', 'New passwords do not match');
             return;
         }
 
-        if (newPassword.length < 8) {
+        if (passwords.newPassword.length < 8) {
             Alert.alert('Error', 'Password must be at least 8 characters');
             return;
         }
@@ -34,8 +40,8 @@ export function ChangePassword() {
                     style={styles.input}
                     placeholder="Current Password"
                     secureTextEntry
-                    value={currentPassword}
-                    onChangeText={setCurrentPassword}
+                    value={passwords.currentPassword}
+                    onChangeText={(val) => updatePassword('currentPassword', val)}
                 />
             </View>
             <View style={styles.field}>
@@ -44,8 +50,8 @@ export function ChangePassword() {
                     style={styles.input}
                     placeholder="New Password"
                     secureTextEntry
-                    value={newPassword}
-                    onChangeText={setNewPassword}
+                    value={passwords.newPassword}
+                    onChangeText={(val) => updatePassword('newPassword', val)}
                 />
             </View>
             <View style={styles.field}>
@@ -54,8 +60,8 @@ export function ChangePassword() {
                     style={styles.input}
                     placeholder="Confirm New Password"
                     secureTextEntry
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
+                    value={passwords.confirmPassword}
+                    onChangeText={(val) => updatePassword('confirmPassword', val)}
                 />
             </View>
             <Link href="/profile" asChild>

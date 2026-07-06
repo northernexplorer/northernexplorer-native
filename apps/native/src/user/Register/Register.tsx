@@ -4,39 +4,40 @@ import { styles } from '~/user/styles';
 import { Link } from 'expo-router';
 
 export function Register() {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [userName, setUserName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [acceptTerms, setAcceptTerms] = useState(false);
-    const [acceptPrivacy, setAcceptPrivacy] = useState(false);
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        userName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        acceptTerms: false,
+        acceptPrivacy: false,
+    });
+
+    const updateField = (key: keyof typeof formData, value: string | boolean) => {
+        setFormData((prev) => ({ ...prev, [key]: value }));
+    };
 
     const handleRegister = () => {
-        if (password !== confirmPassword) {
+        if (formData.password !== formData.confirmPassword) {
             console.error('Passwords do not match');
             return;
         }
 
-        console.log({
-            firstName,
-            lastName,
-            userName,
-            email,
-            password,
-            acceptTerms,
-        });
+        console.log(formData);
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Create Account</Text>
+
+            {/* Name Fields */}
             <View style={styles.field}>
                 <Text style={styles.label}>First Name</Text>
                 <TextInput
-                    value={firstName}
-                    onChangeText={setFirstName}
+                    value={formData.firstName}
+                    onChangeText={(val) => updateField('firstName', val)}
                     placeholder="First Name"
                     style={styles.input}
                 />
@@ -44,17 +45,19 @@ export function Register() {
             <View style={styles.field}>
                 <Text style={styles.label}>Last Name</Text>
                 <TextInput
-                    value={lastName}
-                    onChangeText={setLastName}
+                    value={formData.lastName}
+                    onChangeText={(val) => updateField('lastName', val)}
                     placeholder="Last Name"
                     style={styles.input}
                 />
             </View>
+
+            {/* Account Details */}
             <View style={styles.field}>
                 <Text style={styles.label}>Username</Text>
                 <TextInput
-                    value={userName}
-                    onChangeText={setUserName}
+                    value={formData.userName}
+                    onChangeText={(val) => updateField('userName', val)}
                     autoCapitalize="none"
                     autoCorrect={false}
                     placeholder="Username"
@@ -64,8 +67,8 @@ export function Register() {
             <View style={styles.field}>
                 <Text style={styles.label}>Email Address</Text>
                 <TextInput
-                    value={email}
-                    onChangeText={setEmail}
+                    value={formData.email}
+                    onChangeText={(val) => updateField('email', val)}
                     autoCapitalize="none"
                     autoCorrect={false}
                     keyboardType="email-address"
@@ -73,11 +76,13 @@ export function Register() {
                     style={styles.input}
                 />
             </View>
+
+            {/* Password Fields */}
             <View style={styles.field}>
                 <Text style={styles.label}>Password</Text>
                 <TextInput
-                    value={password}
-                    onChangeText={setPassword}
+                    value={formData.password}
+                    onChangeText={(val) => updateField('password', val)}
                     secureTextEntry
                     placeholder="Password"
                     style={styles.input}
@@ -86,36 +91,62 @@ export function Register() {
             <View style={styles.field}>
                 <Text style={styles.label}>Confirm Password</Text>
                 <TextInput
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
+                    value={formData.confirmPassword}
+                    onChangeText={(val) => updateField('confirmPassword', val)}
                     secureTextEntry
                     placeholder="Confirm Password"
                     style={styles.input}
                 />
             </View>
+
+            {/* Legal Agreements */}
             <View style={styles.switchRow}>
                 <Text style={styles.label}>
                     I accept the{' '}
-                    <Link href="/terms-of-service" target="_blank" rel="noreferrer">
-                        <Text style={styles.linkText}>Terms of Service</Text>
+                    <Link
+                        href="/terms-of-service"
+                        style={styles.linkText}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        Terms of Service
                     </Link>
                 </Text>
-                <Switch value={acceptTerms} onValueChange={setAcceptTerms} />
+                <Switch
+                    value={formData.acceptTerms}
+                    onValueChange={(val) => updateField('acceptTerms', val)}
+                />
             </View>
             <View style={styles.switchRow}>
                 <Text style={styles.label}>
                     I accept the{' '}
-                    <Link href="/privacy-policy" target="_blank" rel="noreferrer">
-                        <Text style={styles.linkText}>Privacy Policy</Text>
+                    <Link
+                        href="/privacy-policy"
+                        style={styles.linkText}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        Privacy Policy
                     </Link>
                 </Text>
-                <Switch value={acceptPrivacy} onValueChange={setAcceptPrivacy} />
+                <Switch
+                    value={formData.acceptPrivacy}
+                    onValueChange={(val) => updateField('acceptPrivacy', val)}
+                />
             </View>
-            <Link href="/profile" asChild>
-                <Pressable style={styles.button} onPress={handleRegister}>
-                    <Text style={styles.buttonText}>Create Account</Text>
-                </Pressable>
-            </Link>
+
+            {/* Submission */}
+            <Pressable
+                style={[
+                    styles.button,
+                    (!formData.acceptTerms || !formData.acceptPrivacy) && styles.disabledButton,
+                ]}
+                onPress={handleRegister}
+                disabled={!formData.acceptTerms || !formData.acceptPrivacy}
+            >
+                <Text style={styles.buttonText}>Create Account</Text>
+            </Pressable>
+
             <Link href="/profile/login" asChild>
                 <Pressable>
                     <Text style={styles.link}>Already have an account? Sign In</Text>

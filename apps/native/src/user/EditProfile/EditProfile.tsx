@@ -15,18 +15,19 @@ export function EditProfile() {
         email: 'shayne@example.com',
     };
 
-    const [firstName, setFirstName] = useState(user.firstName);
-    const [lastName, setLastName] = useState(user.lastName);
-    const [userName, setUserName] = useState(user.userName);
-    const [email, setEmail] = useState(user.email);
+    const [profileData, setProfileData] = useState({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        userName: user.userName,
+        email: user.email,
+    });
+
+    const updateProfile = (key: keyof typeof profileData, value: string) => {
+        setProfileData((prev) => ({ ...prev, [key]: value }));
+    };
 
     const handleSave = () => {
-        console.log({
-            firstName,
-            lastName,
-            userName,
-            email,
-        });
+        console.log(profileData);
     };
 
     return (
@@ -35,8 +36,8 @@ export function EditProfile() {
             <View style={styles.field}>
                 <Text style={styles.label}>First Name</Text>
                 <TextInput
-                    value={firstName}
-                    onChangeText={setFirstName}
+                    value={profileData.firstName}
+                    onChangeText={(val) => updateProfile('firstName', val)}
                     placeholder="First Name"
                     style={styles.input}
                 />
@@ -44,8 +45,8 @@ export function EditProfile() {
             <View style={styles.field}>
                 <Text style={styles.label}>Last Name</Text>
                 <TextInput
-                    value={lastName}
-                    onChangeText={setLastName}
+                    value={profileData.lastName}
+                    onChangeText={(val) => updateProfile('lastName', val)}
                     placeholder="Last Name"
                     style={styles.input}
                 />
@@ -53,8 +54,8 @@ export function EditProfile() {
             <View style={styles.field}>
                 <Text style={styles.label}>Username</Text>
                 <TextInput
-                    value={userName}
-                    onChangeText={setUserName}
+                    value={profileData.userName}
+                    onChangeText={(val) => updateProfile('userName', val)}
                     autoCapitalize="none"
                     autoCorrect={false}
                     placeholder="Username"
@@ -64,8 +65,8 @@ export function EditProfile() {
             <View style={styles.field}>
                 <Text style={styles.label}>Email Address</Text>
                 <TextInput
-                    value={email}
-                    onChangeText={setEmail}
+                    value={profileData.email}
+                    onChangeText={(val) => updateProfile('email', val)}
                     autoCapitalize="none"
                     autoCorrect={false}
                     keyboardType="email-address"

@@ -4,16 +4,18 @@ import { styles } from '~/user/styles';
 import { Link } from 'expo-router';
 
 export function Login() {
-    const [identifier, setIdentifier] = useState('');
-    const [password, setPassword] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
+    const [loginData, setLoginData] = useState({
+        identifier: '',
+        password: '',
+        rememberMe: false,
+    });
+
+    const updateLoginField = (key: keyof typeof loginData, value: string | boolean) => {
+        setLoginData((prev) => ({ ...prev, [key]: value }));
+    };
 
     const handleLogin = () => {
-        console.log({
-            identifier,
-            password,
-            rememberMe,
-        });
+        console.log(loginData);
     };
 
     return (
@@ -23,8 +25,8 @@ export function Login() {
             <View style={styles.field}>
                 <Text style={styles.label}>Username or Email</Text>
                 <TextInput
-                    value={identifier}
-                    onChangeText={setIdentifier}
+                    value={loginData.identifier}
+                    onChangeText={(val) => updateLoginField('identifier', val)}
                     autoCapitalize="none"
                     autoCorrect={false}
                     keyboardType="email-address"
@@ -36,8 +38,8 @@ export function Login() {
             <View style={styles.field}>
                 <Text style={styles.label}>Password</Text>
                 <TextInput
-                    value={password}
-                    onChangeText={setPassword}
+                    value={loginData.password}
+                    onChangeText={(val) => updateLoginField('password', val)}
                     secureTextEntry
                     placeholder="Password"
                     style={styles.input}
@@ -46,7 +48,10 @@ export function Login() {
 
             <View style={styles.rememberRow}>
                 <Text style={styles.label}>Remember Me</Text>
-                <Switch value={rememberMe} onValueChange={setRememberMe} />
+                <Switch
+                    value={loginData.rememberMe}
+                    onValueChange={(val) => updateLoginField('rememberMe', val)}
+                />
             </View>
             <Link href="/profile" asChild>
                 <Pressable style={styles.button} onPress={handleLogin}>
