@@ -14,6 +14,7 @@ export function ChangePassword() {
         confirmPassword: '',
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const updateField = (key: keyof typeof formData, value: string | boolean) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -26,7 +27,7 @@ export function ChangePassword() {
         }
     };
 
-    const validateForm = () => {
+    const validateForm = async () => {
         let newErrors: Record<string, string> = {};
 
         if (!formData.currentPassword) {
@@ -40,7 +41,13 @@ export function ChangePassword() {
         }
 
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        if (Object.keys(newErrors).length === 0) {
+            await handleSubmit();
+        }
+    };
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
     };
 
     return (
@@ -82,9 +89,12 @@ export function ChangePassword() {
                     <Text style={styles.errorText}>{errors.confirmPassword}</Text>
                 )}
             </View>
+            <Pressable style={styles.button} onPress={validateForm} disabled={isSubmitting}>
+                <Text style={styles.buttonText}>Change Password</Text>
+            </Pressable>
             <Link href="/profile" asChild>
-                <Pressable style={styles.button} onPress={validateForm}>
-                    <Text style={styles.buttonText}>Change Password</Text>
+                <Pressable style={styles.secondaryButton} disabled={isSubmitting}>
+                    <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>
             </Link>
         </View>

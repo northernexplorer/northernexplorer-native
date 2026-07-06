@@ -10,6 +10,7 @@ export function Login() {
         rememberMe: false,
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const updateField = (key: keyof typeof formData, value: string | boolean) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -22,7 +23,7 @@ export function Login() {
         }
     };
 
-    const validateForm = () => {
+    const validateForm = async () => {
         let newErrors: Record<string, string> = {};
 
         if (!formData.identifier) {
@@ -33,7 +34,13 @@ export function Login() {
         }
 
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        if (Object.keys(newErrors).length === 0) {
+            await handleSubmit();
+        }
+    };
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
     };
 
     return (
@@ -73,18 +80,16 @@ export function Login() {
                     onValueChange={(val) => updateField('rememberMe', val)}
                 />
             </View>
-            <Link href="/profile" asChild>
-                <Pressable style={styles.button} onPress={validateForm}>
-                    <Text style={styles.buttonText}>Sign In</Text>
-                </Pressable>
-            </Link>
+            <Pressable style={styles.button} onPress={validateForm} disabled={isSubmitting}>
+                <Text style={styles.buttonText}>Sign In</Text>
+            </Pressable>
             <Link href="/profile/forgot-password" asChild>
-                <Pressable>
+                <Pressable disabled={isSubmitting}>
                     <Text style={styles.link}>Forgot Password?</Text>
                 </Pressable>
             </Link>
             <Link href="/profile/register" asChild>
-                <Pressable>
+                <Pressable disabled={isSubmitting}>
                     <Text style={styles.link}>Create Account</Text>
                 </Pressable>
             </Link>

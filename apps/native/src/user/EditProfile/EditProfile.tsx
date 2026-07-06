@@ -15,6 +15,7 @@ export function EditProfile() {
         email: '',
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const updateField = (key: keyof typeof formData, value: string | boolean) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -27,7 +28,7 @@ export function EditProfile() {
         }
     };
 
-    const validateForm = () => {
+    const validateForm = async () => {
         let newErrors: Record<string, string> = {};
 
         if (formData.firstName.length < 2) newErrors.firstName = 'First name is too short';
@@ -37,7 +38,13 @@ export function EditProfile() {
         if (!formData.email.includes('@')) newErrors.email = 'Invalid email address';
 
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        if (Object.keys(newErrors).length === 0) {
+            await handleSubmit();
+        }
+    };
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
     };
 
     return (
@@ -88,13 +95,11 @@ export function EditProfile() {
                 />
                 {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
+            <Pressable style={styles.button} onPress={validateForm} disabled={isSubmitting}>
+                <Text style={styles.buttonText}>Save Changes</Text>
+            </Pressable>
             <Link href="/profile" asChild>
-                <Pressable style={styles.button} onPress={validateForm}>
-                    <Text style={styles.buttonText}>Save Changes</Text>
-                </Pressable>
-            </Link>
-            <Link href="/profile" asChild>
-                <Pressable style={styles.secondaryButton}>
+                <Pressable style={styles.secondaryButton} disabled={isSubmitting}>
                     <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>
             </Link>

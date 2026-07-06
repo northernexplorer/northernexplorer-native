@@ -15,6 +15,7 @@ export function Register() {
         acceptPrivacy: false,
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const updateField = (key: keyof typeof formData, value: string | boolean) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -27,7 +28,7 @@ export function Register() {
         }
     };
 
-    const validateForm = () => {
+    const validateForm = async () => {
         let newErrors: Record<string, string> = {};
 
         if (formData.firstName.length < 2) newErrors.firstName = 'First name is too short';
@@ -43,7 +44,13 @@ export function Register() {
         if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'You must accept the privacy policy';
 
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        if (Object.keys(newErrors).length === 0) {
+            await handleSubmit();
+        }
+    };
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
     };
 
     return (
@@ -153,14 +160,12 @@ export function Register() {
                     onValueChange={(val) => updateField('acceptPrivacy', val)}
                 />
             </View>
-            {errors.acceptPrivacy && (
-                <Text style={styles.errorText}>{errors.acceptPrivacy}</Text>
-            )}
-            <Pressable style={styles.button} onPress={validateForm}>
+            {errors.acceptPrivacy && <Text style={styles.errorText}>{errors.acceptPrivacy}</Text>}
+            <Pressable style={styles.button} onPress={validateForm} disabled={isSubmitting}>
                 <Text style={styles.buttonText}>Create Account</Text>
             </Pressable>
             <Link href="/profile/login" asChild>
-                <Pressable>
+                <Pressable disabled={isSubmitting}>
                     <Text style={styles.link}>Already have an account? Sign In</Text>
                 </Pressable>
             </Link>
