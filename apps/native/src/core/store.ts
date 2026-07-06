@@ -9,7 +9,6 @@ import {
     PURGE,
     REGISTER,
 } from 'redux-persist';
-// This adapter handles Android, iOS, and Web fallback transparently
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import locationReducer from '~/location/state/location/locationSlice';
@@ -18,6 +17,7 @@ import forecastReducer from '~/environment/state/forecast/forecastSlice';
 import fieldNoteReducer from '~/environment/state/fieldNote/fieldNoteSlice';
 import lunarReducer from '~/environment/state/lunar/lunarSlice';
 import cityReducer from '~/location/state/city/citySlice';
+import authenticationReducer from '~/user/state/authentication/authenticationSlice';
 
 const rootReducer = combineReducers({
     location: locationReducer,
@@ -26,12 +26,13 @@ const rootReducer = combineReducers({
     fieldNote: fieldNoteReducer,
     lunar: lunarReducer,
     city: cityReducer,
+    authentication: authenticationReducer,
 });
 
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
-    whitelist: ['fieldNote', 'city', 'weather', 'forecast'],
+    whitelist: ['fieldNote', 'city', 'weather', 'forecast', 'authentication'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
