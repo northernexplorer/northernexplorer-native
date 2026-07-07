@@ -1,6 +1,14 @@
 import { CityType, HistoricSiteType } from './location';
 import { ForecastType, LunarCycleType, WeatherType } from './environment';
 import { FieldNoteType } from './environment/FieldNote';
+import {
+    ChangePasswordParams,
+    EditProfileParams,
+    ForgotPasswordParams,
+    GetByIdParams,
+    LoginParams,
+    RegisterParams
+} from "./user";
 
 export interface ApiMethod<P = unknown, R = unknown, E = string> {
     params: P;
@@ -80,7 +88,38 @@ export const ROUTES = {
         MigrationController: {},
     },
     user: {
-        UserController: {},
+        UserController: {
+            register: {
+                params: {} as RegisterParams,
+                response: null as null,
+                endpoint: 'register',
+            },
+            login: {
+                params: {} as LoginParams,
+                response: null as null,
+                endpoint: 'login',
+            },
+            forgotPassword: {
+                params: {} as ForgotPasswordParams,
+                response: null as null,
+                endpoint: 'forgotPassword',
+            },
+            editProfile: {
+                params: {} as EditProfileParams,
+                response: null as null,
+                endpoint: 'editProfile',
+            },
+            changePassword: {
+                params: {} as ChangePasswordParams,
+                response: null as null,
+                endpoint: 'changePassword',
+            },
+            getById: {
+                params: { id: 0 } as GetByIdParams,
+                response: {} as {},
+                endpoint: 'getById',
+            },
+        },
     },
 } as const satisfies RouteSchema;
 

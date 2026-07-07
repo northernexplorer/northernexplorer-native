@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
 import { Link } from 'expo-router';
+import { useApiMutation } from '~/core/useApiMutation';
 
 const initialFormData = {
     email: '',
@@ -13,7 +14,8 @@ type FormKeys = keyof FormData;
 export function ForgotPassword() {
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { mutate, loading } = useApiMutation('user', 'UserController', 'forgotPassword');
 
     const updateField = (key: FormKeys, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -44,13 +46,10 @@ export function ForgotPassword() {
     };
 
     const handleSubmit = async () => {
-        setIsSubmitting(true);
         try {
             // Your password reset API call goes here
         } catch (error) {
             console.error(error);
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -73,25 +72,25 @@ export function ForgotPassword() {
                     keyboardType="email-address"
                     placeholder="Email Address"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
 
             {/* Submit Button */}
             <Pressable
-                style={[styles.button, isSubmitting && { opacity: 0.6 }]}
+                style={[styles.button, loading && { opacity: 0.6 }]}
                 onPress={validateForm}
-                disabled={isSubmitting}
+                disabled={loading}
             >
                 <Text style={styles.buttonText}>
-                    {isSubmitting ? 'Sending Link...' : 'Send Reset Link'}
+                    {loading ? 'Sending Link...' : 'Send Reset Link'}
                 </Text>
             </Pressable>
 
             {/* Navigation Link */}
             <Link href="/profile/login" asChild>
-                <Pressable disabled={isSubmitting}>
+                <Pressable disabled={loading}>
                     <Text style={styles.link}>Back to Sign In</Text>
                 </Pressable>
             </Link>

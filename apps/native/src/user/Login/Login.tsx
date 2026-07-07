@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Switch, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
 import { Link } from 'expo-router';
+import { useApiMutation } from '~/core/useApiMutation';
 
 const initialFormData = {
     identifier: '',
@@ -15,7 +16,8 @@ type FormKeys = keyof FormData;
 export function Login() {
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { mutate, loading } = useApiMutation('user', 'UserController', 'login');
 
     const updateField = (key: FormKeys, value: string | boolean) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -46,13 +48,10 @@ export function Login() {
     };
 
     const handleSubmit = async () => {
-        setIsSubmitting(true);
         try {
             // Your login logic / API call goes here
         } catch (error) {
             console.error(error);
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -71,7 +70,7 @@ export function Login() {
                     keyboardType="email-address"
                     placeholder="Username or Email"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.identifier && <Text style={styles.errorText}>{errors.identifier}</Text>}
             </View>
@@ -85,7 +84,7 @@ export function Login() {
                     secureTextEntry
                     placeholder="Password"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
             </View>
@@ -96,28 +95,28 @@ export function Login() {
                 <Switch
                     value={formData.rememberMe}
                     onValueChange={(val) => updateField('rememberMe', val)}
-                    disabled={isSubmitting}
+                    disabled={loading}
                 />
             </View>
 
             {/* Submit Button */}
             <Pressable
-                style={[styles.button, isSubmitting && { opacity: 0.6 }]}
+                style={[styles.button, loading && { opacity: 0.6 }]}
                 onPress={validateForm}
-                disabled={isSubmitting}
+                disabled={loading}
             >
-                <Text style={styles.buttonText}>{isSubmitting ? 'Signing In...' : 'Sign In'}</Text>
+                <Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
             </Pressable>
 
             {/* Navigation Links */}
             <Link href="/profile/forgot-password" asChild>
-                <Pressable disabled={isSubmitting}>
+                <Pressable disabled={loading}>
                     <Text style={styles.link}>Forgot Password?</Text>
                 </Pressable>
             </Link>
 
             <Link href="/profile/register" asChild>
-                <Pressable disabled={isSubmitting}>
+                <Pressable disabled={loading}>
                     <Text style={styles.link}>Create Account</Text>
                 </Pressable>
             </Link>

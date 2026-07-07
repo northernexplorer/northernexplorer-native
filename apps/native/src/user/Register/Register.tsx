@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Switch, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
 import { Link } from 'expo-router';
+import { useApiMutation } from '~/core/useApiMutation';
 
 const initialFormData = {
     firstName: '',
@@ -20,7 +21,8 @@ type FormKeys = keyof FormData;
 export function Register() {
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { mutate, loading } = useApiMutation('user', 'UserController', 'register');
 
     const updateField = (key: FormKeys, value: string | boolean) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -60,13 +62,10 @@ export function Register() {
     };
 
     const handleSubmit = async () => {
-        setIsSubmitting(true);
         try {
             // Your submission logic / API call goes here
         } catch (error) {
             console.error(error);
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -82,7 +81,7 @@ export function Register() {
                     onChangeText={(val) => updateField('firstName', val)}
                     placeholder="First Name"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
             </View>
@@ -95,7 +94,7 @@ export function Register() {
                     onChangeText={(val) => updateField('lastName', val)}
                     placeholder="Last Name"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
             </View>
@@ -110,7 +109,7 @@ export function Register() {
                     autoCorrect={false}
                     placeholder="Username"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
             </View>
@@ -126,7 +125,7 @@ export function Register() {
                     keyboardType="email-address"
                     placeholder="Email Address"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
@@ -140,7 +139,7 @@ export function Register() {
                     secureTextEntry
                     placeholder="Password"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
             </View>
@@ -154,7 +153,7 @@ export function Register() {
                     secureTextEntry
                     placeholder="Confirm Password"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.confirmPassword && (
                     <Text style={styles.errorText}>{errors.confirmPassword}</Text>
@@ -172,7 +171,7 @@ export function Register() {
                 <Switch
                     value={formData.acceptTerms}
                     onValueChange={(val) => updateField('acceptTerms', val)}
-                    disabled={isSubmitting}
+                    disabled={loading}
                 />
             </View>
             {errors.acceptTerms && <Text style={styles.errorText}>{errors.acceptTerms}</Text>}
@@ -188,25 +187,25 @@ export function Register() {
                 <Switch
                     value={formData.acceptPrivacy}
                     onValueChange={(val) => updateField('acceptPrivacy', val)}
-                    disabled={isSubmitting}
+                    disabled={loading}
                 />
             </View>
             {errors.acceptPrivacy && <Text style={styles.errorText}>{errors.acceptPrivacy}</Text>}
 
             {/* Submit Button */}
             <Pressable
-                style={[styles.button, isSubmitting && { opacity: 0.6 }]}
+                style={[styles.button, loading && { opacity: 0.6 }]}
                 onPress={validateForm}
-                disabled={isSubmitting}
+                disabled={loading}
             >
                 <Text style={styles.buttonText}>
-                    {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                    {loading ? 'Creating Account...' : 'Create Account'}
                 </Text>
             </Pressable>
 
             {/* Sign In Link */}
             <Link href="/profile/login" asChild>
-                <Pressable disabled={isSubmitting}>
+                <Pressable disabled={loading}>
                     <Text style={styles.link}>Already have an account? Sign In</Text>
                 </Pressable>
             </Link>

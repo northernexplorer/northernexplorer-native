@@ -3,23 +3,26 @@ import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
 import { Link, Redirect } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
+import { useApiMutation } from '~/core/useApiMutation';
+
+const initialFormData = {
+    firstName: '',
+    lastName: '',
+    userName: '',
+    email: '',
+};
+type FormData = typeof initialFormData;
+type FormKeys = keyof FormData;
 
 export function EditProfile() {
     const authentication = useAuthentication();
     if (!authentication) return <Redirect href="/profile/login" />;
 
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        userName: '',
-        email: '',
-    });
-
-    type FormData = typeof formData;
-    type FormKeys = keyof FormData;
+    const [formData, setFormData] = useState(initialFormData);
 
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { mutate, loading } = useApiMutation('user', 'UserController', 'editProfile');
 
     const updateField = (key: FormKeys, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -50,13 +53,10 @@ export function EditProfile() {
     };
 
     const handleSubmit = async () => {
-        setIsSubmitting(true);
         try {
             // Your update profile API call / state dispatch goes here
         } catch (error) {
             console.error(error);
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -72,7 +72,7 @@ export function EditProfile() {
                     onChangeText={(val) => updateField('firstName', val)}
                     placeholder="First Name"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
             </View>
@@ -85,7 +85,7 @@ export function EditProfile() {
                     onChangeText={(val) => updateField('lastName', val)}
                     placeholder="Last Name"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
             </View>
@@ -100,7 +100,7 @@ export function EditProfile() {
                     autoCorrect={false}
                     placeholder="Username"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
             </View>
@@ -116,25 +116,25 @@ export function EditProfile() {
                     keyboardType="email-address"
                     placeholder="Email Address"
                     style={styles.input}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
 
             {/* Submit Changes */}
             <Pressable
-                style={[styles.button, isSubmitting && { opacity: 0.6 }]}
+                style={[styles.button, loading && { opacity: 0.6 }]}
                 onPress={validateForm}
-                disabled={isSubmitting}
+                disabled={loading}
             >
                 <Text style={styles.buttonText}>
-                    {isSubmitting ? 'Saving Changes...' : 'Save Changes'}
+                    {loading ? 'Saving Changes...' : 'Save Changes'}
                 </Text>
             </Pressable>
 
             {/* Cancel Action */}
             <Link href="/profile" asChild>
-                <Pressable style={styles.secondaryButton} disabled={isSubmitting}>
+                <Pressable style={styles.secondaryButton} disabled={loading}>
                     <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>
             </Link>

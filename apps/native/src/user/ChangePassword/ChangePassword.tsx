@@ -3,6 +3,7 @@ import { View, TextInput, Pressable, Text, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
 import { Link, Redirect } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
+import { useApiMutation } from '~/core/useApiMutation';
 
 const initialFormData = {
     currentPassword: '',
@@ -19,7 +20,8 @@ export function ChangePassword() {
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { mutate, loading } = useApiMutation('user', 'UserController', 'changePassword');
 
     const updateField = (key: FormKeys, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -53,13 +55,10 @@ export function ChangePassword() {
     };
 
     const handleSubmit = async () => {
-        setIsSubmitting(true);
         try {
             // Your password update API logic goes here
         } catch (error) {
             console.error(error);
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -76,7 +75,7 @@ export function ChangePassword() {
                     secureTextEntry
                     value={formData.currentPassword}
                     onChangeText={(val) => updateField('currentPassword', val)}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.currentPassword && (
                     <Text style={styles.errorText}>{errors.currentPassword}</Text>
@@ -92,7 +91,7 @@ export function ChangePassword() {
                     secureTextEntry
                     value={formData.newPassword}
                     onChangeText={(val) => updateField('newPassword', val)}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.newPassword && <Text style={styles.errorText}>{errors.newPassword}</Text>}
             </View>
@@ -106,7 +105,7 @@ export function ChangePassword() {
                     secureTextEntry
                     value={formData.confirmPassword}
                     onChangeText={(val) => updateField('confirmPassword', val)}
-                    editable={!isSubmitting}
+                    editable={!loading}
                 />
                 {errors.confirmPassword && (
                     <Text style={styles.errorText}>{errors.confirmPassword}</Text>
@@ -115,18 +114,18 @@ export function ChangePassword() {
 
             {/* Submit Action Button */}
             <Pressable
-                style={[styles.button, isSubmitting && { opacity: 0.6 }]}
+                style={[styles.button, loading && { opacity: 0.6 }]}
                 onPress={validateForm}
-                disabled={isSubmitting}
+                disabled={loading}
             >
                 <Text style={styles.buttonText}>
-                    {isSubmitting ? 'Updating Password...' : 'Change Password'}
+                    {loading ? 'Updating Password...' : 'Change Password'}
                 </Text>
             </Pressable>
 
             {/* Cancel Action Link */}
             <Link href="/profile" asChild>
-                <Pressable style={styles.secondaryButton} disabled={isSubmitting}>
+                <Pressable style={styles.secondaryButton} disabled={loading}>
                     <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>
             </Link>

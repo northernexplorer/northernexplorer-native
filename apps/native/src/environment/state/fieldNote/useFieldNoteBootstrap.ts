@@ -1,4 +1,4 @@
-import { useApiClient } from '~/core/useApiClient';
+import { useApiFetch } from '~/core/useApiFetch';
 import { useAppSelector } from '~/core/storeHooks';
 import { useSyncToRedux } from '~/core/useSyncToRedux';
 import {
@@ -18,7 +18,7 @@ export function useFieldNoteBootstrap() {
         data: fetchedData,
         loading,
         error,
-    } = useApiClient(
+    } = useApiFetch(
         'environment',
         'FieldNoteController',
         'getFieldNoteData',

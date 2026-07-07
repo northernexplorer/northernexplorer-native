@@ -4,11 +4,11 @@ import { useLocalSearchParams } from 'expo-router';
 import { styles } from '~/location/HistoricSiteDetails/styles';
 import { getUrl } from '@northernexplorer/tools';
 import { config } from '~/config';
-import { useApiClient } from '~/core/useApiClient';
+import { useApiFetch } from '~/core/useApiFetch';
 
 export function HistoricSiteDetails() {
     const { id } = useLocalSearchParams<{ id: string }>();
-    const { data, loading, error } = useApiClient(
+    const { data, loading, error } = useApiFetch(
         'location',
         'HistoricSiteController',
         'getHistoricSiteById',

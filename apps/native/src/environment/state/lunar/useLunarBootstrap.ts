@@ -1,7 +1,7 @@
 import { useAppSelector } from '~/core/storeHooks';
 import { setLunar, setLunarLoading, setLunarError } from '~/environment/state/lunar/lunarSlice';
 import { useSyncToRedux } from '~/core/useSyncToRedux';
-import { useApiClient } from '~/core/useApiClient';
+import { useApiFetch } from '~/core/useApiFetch';
 
 export function useLunarBootstrap() {
     const { data, lastUpdated } = useAppSelector((s) => s.lunar);
@@ -13,7 +13,7 @@ export function useLunarBootstrap() {
         data: fetchedData,
         loading,
         error,
-    } = useApiClient('environment', 'LunarController', 'getLunarData', shouldFetch ? {} : null);
+    } = useApiFetch('environment', 'LunarController', 'getLunarData', shouldFetch ? {} : null);
 
     useSyncToRedux(fetchedData, loading, error, {
         set: setLunar,

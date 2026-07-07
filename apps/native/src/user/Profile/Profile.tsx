@@ -2,10 +2,13 @@ import { View, Text, Pressable } from 'react-native';
 import { styles } from '~/user/styles';
 import { Link, Redirect } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
+import { useApiFetch } from '~/core/useApiFetch';
 
 export function Profile() {
     const authentication = useAuthentication();
     if (!authentication) return <Redirect href="/profile/login" />;
+
+    const { mutate, loading } = useApiFetch('user', 'UserController', 'getById', {id});
 
     const user = {
         firstName: '',
