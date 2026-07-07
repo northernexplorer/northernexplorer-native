@@ -106,7 +106,7 @@ export const ROUTES = {
             },
             editProfile: {
                 params: {} as EditProfileParams,
-                response: null as null,
+                response: true as boolean,
                 endpoint: 'editProfile',
             },
             changePassword: {
@@ -116,7 +116,7 @@ export const ROUTES = {
             },
             getById: {
                 params: { id: 0 } as GetByIdParams,
-                response: {} as {},
+                response: null as null,
                 endpoint: 'getById',
             },
         },

@@ -1,5 +1,5 @@
 export type UserAuthenticationType = {
-    userId: string;
+    userId: number;
     email: string;
     username: string;
     accessToken: string;
@@ -13,8 +13,8 @@ export type RegisterParams = {
     email: string;
     password: string;
     confirmPassword: string;
-    acceptTerms: false;
-    acceptPrivacy: false;
+    acceptTerms: boolean;
+    acceptPrivacy: boolean;
 };
 export type LoginParams = {
     identifier: string;
@@ -28,10 +28,10 @@ export type EditProfileParams = {
     lastName: string;
     userName: string;
     email: string;
-    userId: string;
+    userId: number;
 };
 export type ChangePasswordParams = {
-    userId: string;
+    userId: number;
     currentPassword: string;
     newPassword: string;
     confirmPassword: string;
