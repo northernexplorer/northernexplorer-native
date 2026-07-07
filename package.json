@@ -28,6 +28,7 @@
         "test:types": "tsc --build --force"
     },
     "devDependencies": {
+        "@types/bcrypt": "^6.0.0",
         "@types/node": "^22.0.0",
         "@typescript-eslint/eslint-plugin": "8.59.0",
         "@typescript-eslint/parser": "^8.61.1",

@@ -15,7 +15,7 @@ const app = express();
 const PORT = config.PORT;
 
 app.use(cors({ origin: '*' }));
-app.use(express.json());
+app.use(express.json()); // This parses the incoming JSON, but we need to extract it below
 app.use(express.static(path.join(process.cwd(), 'public')));
 
 type ControllerConstructor<T> = new (repos: Repositories) => T;
@@ -35,7 +35,7 @@ export function handle<T extends object>(
             throw new Error(`Method ${methodName} is not a function.`);
         }
 
-        const params = { ...req.query, ...req.params };
+        const params = { ...req.query, ...req.params, ...req.body };
 
         const result = await (method as (p: unknown) => Promise<unknown>).call(controller, params);
 
@@ -59,9 +59,9 @@ async function bootstrap() {
                         const { endpoint } = routeConfig as { endpoint: string };
                         const path = `/api/${endpoint}`;
 
-                        console.log(`Registering: GET ${path}`);
+                        console.log(`Registering: ANY ${path}`);
 
-                        app.get(
+                        app.all(
                             path,
                             handle(
                                 ControllerClass,

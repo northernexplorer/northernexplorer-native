@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Switch, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useApiMutation } from '~/core/useApiMutation';
 
 const initialFormData = {
@@ -62,10 +62,10 @@ export function Register() {
     };
 
     const handleSubmit = async () => {
-        try {
-            // Your submission logic / API call goes here
-        } catch (error) {
-            console.error(error);
+        const response = await mutate(formData);
+        console.log('Registration response:', response);
+        if (response.success) {
+            router.replace('/profile/login');
         }
     };
 

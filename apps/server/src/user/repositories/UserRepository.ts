@@ -1,6 +1,7 @@
 import { User } from '../entities/User';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { EditProfileParams } from '@northernexplorer/types';
+import { hash, compare } from 'bcrypt';
 
 export class UserRepository extends EntityRepository<User> {
     async findByIdentifier(identifier: string): Promise<User | null> {
@@ -28,5 +29,13 @@ export class UserRepository extends EntityRepository<User> {
             email: data.email,
         });
         await this.em.flush();
+    }
+
+    async hashPassword(userPassword: string) {
+        return hash(userPassword, 12);
+    }
+
+    async checkPassword(userInput: string, storedHash: string) {
+        return compare(userInput, storedHash);
     }
 }

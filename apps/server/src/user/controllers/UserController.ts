@@ -10,14 +10,21 @@ export class UserController {
     constructor(private repos: Repositories) {}
 
     async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
-        const user = await this.repos.user.create(params);
-        return {
-            userId: user.id,
-            email: user.email,
-            username: user.userName,
-            accessToken: '...',
-            refreshToken: '...',
-        };
+        const passwordHash = await this.repos.user.hashPassword(params.password);
+
+        this.repos.user.create({
+            email: params.email,
+            firstName: params.firstName,
+            lastLoginAt: new Date(),
+            lastName: params.lastName,
+            userName: params.userName,
+            createdAt: new Date(),
+            isActive: true,
+            passwordHash,
+            version: 1,
+        });
+        await this.repos.user.getEntityManager().flush();
+        return { success: true };
     }
 
     async login(params: Params<Route<'login'>>): Promise<Response<Route<'login'>>> {

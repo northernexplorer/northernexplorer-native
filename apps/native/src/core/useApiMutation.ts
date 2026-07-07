@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ROUTES, GetParams, NonEmptyCategory } from '@northernexplorer/types';
-import { apiClient } from '~/core/apClient';
+import { apiClient } from '~/core/apiClient';
 
 export interface ApiMethod<P = unknown, R = unknown, E = string> {
     params: P;

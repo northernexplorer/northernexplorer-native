@@ -7,8 +7,9 @@ import {
     ForgotPasswordParams,
     GetByIdParams,
     LoginParams,
-    RegisterParams
-} from "./user";
+    RegisterParams,
+} from './user';
+import { GenericResponseType } from './system/GenericResponseType';
 
 export interface ApiMethod<P = unknown, R = unknown, E = string> {
     params: P;
@@ -91,7 +92,7 @@ export const ROUTES = {
         UserController: {
             register: {
                 params: {} as RegisterParams,
-                response: null as null,
+                response: { success: true } as GenericResponseType,
                 endpoint: 'register',
             },
             login: {
