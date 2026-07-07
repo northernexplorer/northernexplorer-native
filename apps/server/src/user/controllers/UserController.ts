@@ -1,5 +1,6 @@
 import { Repositories } from '../../core/repositories';
 import { Params, Response, RouteDefinition, ROUTES } from '@northernexplorer/types';
+import { TokenService } from '../services/TokenService';
 
 type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<
     'user',
@@ -8,6 +9,8 @@ type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<
 
 export class UserController {
     constructor(private repos: Repositories) {}
+
+    private tokenService = new TokenService();
 
     async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
         const passwordHash = await this.repos.user.hashPassword(params.password);
@@ -31,12 +34,32 @@ export class UserController {
         const user = await this.repos.user.findByIdentifier(params.identifier);
         if (!user) throw new Error('User does not exist');
 
+        const isPasswordValid = await this.repos.user.checkPassword(
+            params.password,
+            user.passwordHash,
+        );
+        if (!isPasswordValid) {
+            throw new Error('Invalid identifier or password');
+        }
+
+        user.lastLoginAt = new Date();
+        await this.repos.user.getEntityManager().flush();
+
+        const accessToken = this.tokenService.generateAccessToken({
+            userId: user.id,
+            email: user.email,
+        });
+
+        const refreshToken = this.tokenService.generateRefreshToken({
+            userId: user.id,
+        });
+
         return {
             userId: user.id,
             email: user.email,
             username: user.userName,
-            accessToken: '...',
-            refreshToken: '...',
+            accessToken,
+            refreshToken,
         };
     }
 
