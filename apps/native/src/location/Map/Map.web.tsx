@@ -35,6 +35,7 @@ export function Map() {
                 onClick={() => setSelectedSite(null)}
                 interactiveLayerIds={['historicSitesLayer']}
                 cursor={selectedSite ? 'pointer' : 'default'}
+                minZoom={2}
             >
                 {data?.map((site) => (
                     <Marker
