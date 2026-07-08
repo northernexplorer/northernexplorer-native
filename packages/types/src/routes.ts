@@ -5,7 +5,7 @@ import {
     ChangePasswordParams,
     EditProfileParams,
     ForgotPasswordParams,
-    GetByIdParams,
+    GetByIdParams, GetByIdResponse,
     LoginParams,
     LoginResponse, RefreshParams,
     RegisterParams, UserAuthenticationType,
@@ -117,7 +117,7 @@ export const ROUTES = {
             },
             getById: {
                 params: { id: 0 } as GetByIdParams,
-                response: null as null,
+                response: {} as GetByIdResponse,
                 endpoint: 'getById',
             },
             refresh: {

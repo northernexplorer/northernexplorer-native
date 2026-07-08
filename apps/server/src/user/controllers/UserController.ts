@@ -1,6 +1,7 @@
 import { Repositories } from '../../core/repositories';
 import { Params, Response, RouteDefinition, ROUTES } from '@northernexplorer/types';
-import { TokenService } from '../services/TokenService';
+import { TokenPayload, TokenService } from '../services/TokenService';
+import { wrap } from '@mikro-orm/core';
 
 type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<
     'user',
@@ -13,6 +14,7 @@ export class UserController {
     private tokenService = new TokenService();
 
     async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
+        if (params.website) throw new Error('Forbidden: Bot activity detected.');
         const passwordHash = await this.repos.user.hashPassword(params.password);
 
         this.repos.user.create({
@@ -81,8 +83,25 @@ export class UserController {
         params: Params<Route<'changePassword'>>,
     ): Promise<Response<Route<'changePassword'>>> {}
 
-    async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
-        return this.repos.user.getById(params.id);
+    async getById(
+        params: Params<Route<'getById'>>,
+        auth?: TokenPayload,
+    ): Promise<Response<Route<'getById'>>> {
+        const targetId = typeof params.id === 'string' ? parseInt(params.id, 10) : params.id;
+
+        if (auth?.userId !== targetId) {
+            throw new Error('Forbidden: You do not have permission to view this user');
+        }
+
+        const user = await this.repos.user.getById(targetId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const safeUser = wrap(user).toObject();
+        delete (safeUser as Partial<typeof safeUser>).passwordHash;
+
+        return safeUser;
     }
 
     async refresh(params: Params<Route<'refresh'>>): Promise<Response<Route<'refresh'>>> {

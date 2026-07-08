@@ -13,6 +13,7 @@ const initialFormData = {
     confirmPassword: '',
     acceptTerms: false,
     acceptPrivacy: false,
+    website: '',
 };
 
 type FormData = typeof initialFormData;
@@ -72,6 +73,17 @@ export function Register() {
     return (
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
             <Text style={styles.title}>Create Account</Text>
+
+            {/* Honeypot Field - Kept completely invisible to human users */}
+            <TextInput
+                value={formData.website}
+                onChangeText={(val) => updateField('website', val)}
+                placeholder="Your Website"
+                autoCapitalize="none"
+                autoCorrect={false}
+                style={{ position: 'absolute', width: 0, height: 0, opacity: 0 }}
+                pointerEvents="none"
+            />
 
             {/* First Name */}
             <View style={styles.field}>

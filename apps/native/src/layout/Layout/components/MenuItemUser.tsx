@@ -3,6 +3,7 @@ import { Pressable, StyleSheet } from 'react-native';
 import { styles } from '~/layout/Layout/styles';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
+import { useAuthentication } from '~/user/state/authentication/useAuthentication';
 
 interface Props {
     isMobileDrawer: boolean;
@@ -11,10 +12,11 @@ interface Props {
 
 export function MenuItemUser({ isMobileDrawer, setIsMenuOpen }: Props) {
     const currentPath = usePathname();
-    const isActive = currentPath === '/profile';
+    const isActive = currentPath.includes('/profile');
+    const authentication = useAuthentication();
 
     return (
-        <Link href={'/profile'} asChild>
+        <Link href={authentication ? `profile/${authentication.userId}` : 'profile/login'} asChild>
             <Pressable
                 onPress={() => setIsMenuOpen(false)}
                 style={StyleSheet.flatten([

@@ -69,7 +69,12 @@ export function useApiFetch<
         return () => {
             isMounted = false;
         };
-    }, [category, controller, method, params ? JSON.stringify(params) : null]);
-
+    }, [
+        category,
+        controller,
+        method,
+        params ? JSON.stringify(params) : null,
+        authentication?.accessToken,
+    ]);
     return { data, loading, error };
 }

@@ -15,6 +15,7 @@ export type RegisterParams = {
     confirmPassword: string;
     acceptTerms: boolean;
     acceptPrivacy: boolean;
+    website?: string;
 };
 export type LoginParams = {
     identifier: string;
@@ -38,6 +39,18 @@ export type ChangePasswordParams = {
 };
 export type GetByIdParams = {
     id: number;
+};
+export type GetByIdResponse = {
+    id: number;
+    version: number;
+    firstName: string;
+    lastName: string;
+    userName: string;
+    email: string;
+    createdAt: Date;
+    lastLoginAt?: Date | null;
+    isActive: boolean;
+    // Note: We intentionally exclude passwordHash here for API security
 };
 export type RefreshParams = {
     refreshToken: string;

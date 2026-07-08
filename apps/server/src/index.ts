@@ -10,6 +10,7 @@ import { ROUTES } from '@northernexplorer/types';
 import path from 'node:path';
 import { repositories, Repositories } from './core/repositories';
 import { controllers } from './core/controllers';
+import { TokenService } from './user/services/TokenService';
 
 const app = express();
 const PORT = config.PORT;
@@ -19,6 +20,8 @@ app.use(express.json()); // This parses the incoming JSON, but we need to extrac
 app.use(express.static(path.join(process.cwd(), 'public')));
 
 type ControllerConstructor<T> = new (repos: Repositories) => T;
+
+const tokenService = new TokenService();
 
 export function handle<T extends object>(
     ControllerClass: ControllerConstructor<any>,
@@ -35,12 +38,45 @@ export function handle<T extends object>(
             throw new Error(`Method ${methodName} is not a function.`);
         }
 
+        let currentUser: unknown = undefined;
+        const authHeader = req.headers.authorization;
+
+        if (authHeader?.startsWith('Bearer ')) {
+            try {
+                const token = authHeader.substring(7);
+                currentUser = tokenService.verifyAccessToken(token);
+            } catch {
+                res.status(401).json({ error: 'Unauthorized: Token has expired or is invalid' });
+            }
+        }
+
         const params = { ...req.query, ...req.params, ...req.body };
 
-        const result = await (method as (p: unknown) => Promise<unknown>).call(controller, params);
+        try {
+            const result = await (method as (p: unknown, ctx: unknown) => Promise<unknown>).call(
+                controller,
+                params,
+                currentUser,
+            );
 
-        if (result !== undefined && !res.headersSent) {
-            res.json(result);
+            if (result !== undefined && !res.headersSent) {
+                res.json(result);
+            }
+        } catch (error: any) {
+            if (!res.headersSent) {
+                const message = error.message || '';
+
+                if (message.includes('Unauthorized') || message.includes('must be logged in')) {
+                    res.status(401).json({ error: message });
+                    return;
+                }
+                if (message.includes('Forbidden') || message.includes('permission to view')) {
+                    res.status(403).json({ error: message });
+                    return;
+                }
+
+                res.status(500).json({ error: message || 'Internal Server Error' });
+            }
         }
     };
 }
