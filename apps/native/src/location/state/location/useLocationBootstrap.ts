@@ -54,9 +54,18 @@ export function useLocationBootstrap() {
                         setData({ lat: loc.coords.latitude, lon: loc.coords.longitude });
                 } else {
                     // --- IP Fallback ---
-                    const res = await fetch('https://ipapi.co/json/');
-                    const ipData = await res.json();
-                    if (!cancelled) setData({ lat: ipData.latitude, lon: ipData.longitude });
+                    const res = await fetch('https://ipwho.is/');
+                    const ipData = (await res.json()) as {
+                        success: boolean;
+                        latitude: number;
+                        longitude: number;
+                    };
+
+                    if (!cancelled && ipData.success) {
+                        setData({ lat: ipData.latitude, lon: ipData.longitude });
+                    } else if (!cancelled && !ipData.success) {
+                        throw new Error('IP geolocation lookup failed');
+                    }
                 }
             } catch (err) {
                 if (!cancelled) setError(err instanceof Error ? err : new Error('Location failed'));
