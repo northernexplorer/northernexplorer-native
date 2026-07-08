@@ -16,9 +16,11 @@ export function MenuItemUser({ isMobileDrawer, setIsMenuOpen }: Props) {
     const isActiveLogout = currentPath.includes('/logout');
     const authentication = useAuthentication();
 
-    const isLoggedIn = !!(authentication?.userId && authentication?.accessToken);
-    const profileHref = isLoggedIn ? `/profile/${authentication.userId}` : '/profile/login';
-    const logoutHref = isLoggedIn ? `/profile/${authentication.userId}/logout` : '/profile/logout';
+    const isLoggedIn = !!(authentication?.username && authentication?.accessToken);
+    const profileHref = isLoggedIn ? `/profile/${authentication.username}` : '/profile/login';
+    const logoutHref = isLoggedIn
+        ? `/profile/${authentication.username}/logout`
+        : '/profile/logout';
 
     return (
         <>

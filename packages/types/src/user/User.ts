@@ -9,7 +9,7 @@ export type UserAuthenticationType = {
 export type RegisterParams = {
     firstName: string;
     lastName: string;
-    userName: string;
+    username: string;
     email: string;
     password: string;
     confirmPassword: string;
@@ -27,25 +27,25 @@ export type ForgotPasswordParams = {
 export type EditProfileParams = {
     firstName: string;
     lastName: string;
-    userName: string;
+    username: string;
     email: string;
     userId: number;
 };
 export type ChangePasswordParams = {
-    userId: number;
+    username: string;
     currentPassword: string;
     newPassword: string;
     confirmPassword: string;
 };
-export type GetByIdParams = {
-    id: number;
+export type GetByUsernameParams = {
+    username: string;
 };
 export type GetByIdResponse = {
     id: number;
     version: number;
     firstName: string;
     lastName: string;
-    userName: string;
+    username: string;
     email: string;
     createdAt: Date;
     lastLoginAt?: Date | null;

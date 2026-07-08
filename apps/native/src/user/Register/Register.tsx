@@ -7,7 +7,7 @@ import { useApiMutation } from '~/core/useApiMutation';
 const initialFormData = {
     firstName: '',
     lastName: '',
-    userName: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -42,8 +42,8 @@ export function Register() {
         // Field validations
         if (formData.firstName.trim().length < 2) newErrors.firstName = 'First name is too short';
         if (formData.lastName.trim().length < 2) newErrors.lastName = 'Last name is too short';
-        if (formData.userName.trim().length < 6)
-            newErrors.userName = 'Username must be at least 6 characters';
+        if (formData.username.trim().length < 6)
+            newErrors.username = 'Username must be at least 6 characters';
         if (!formData.email.includes('@')) newErrors.email = 'Invalid email address';
         if (formData.password.length < 8)
             newErrors.password = 'Password must be at least 8 characters';
@@ -114,15 +114,15 @@ export function Register() {
             <View style={styles.field}>
                 <Text style={styles.label}>Username</Text>
                 <TextInput
-                    value={formData.userName}
-                    onChangeText={(val) => updateField('userName', val)}
+                    value={formData.username}
+                    onChangeText={(val) => updateField('username', val)}
                     autoCapitalize="none"
                     autoCorrect={false}
                     placeholder="Username"
                     style={styles.input}
                     editable={!loading}
                 />
-                {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
+                {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
             </View>
 
             {/* Email */}

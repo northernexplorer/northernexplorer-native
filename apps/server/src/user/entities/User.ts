@@ -15,7 +15,7 @@ export class User {
     lastName!: string;
 
     @Property({ type: 'text', unique: true })
-    userName!: string;
+    username!: string;
 
     @Property({ type: 'text', unique: true })
     email!: string;
