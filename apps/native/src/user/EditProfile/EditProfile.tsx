@@ -8,15 +8,15 @@ import { useApiFetch } from '~/core/useApiFetch';
 import { Spinner } from '~/layout/Layout/components/Spiner';
 
 type RouteParams = {
-    id: string;
+    username: string;
 };
 
-// Define explicit schema structures for your layout fields
 interface ProfileFormFields {
     firstName: string;
     lastName: string;
-    userName: string;
+    username: string;
     email: string;
+    userId: number;
 }
 
 type FormKeys = keyof ProfileFormFields;
@@ -24,13 +24,13 @@ type FormKeys = keyof ProfileFormFields;
 export function EditProfile() {
     const authentication = useAuthentication();
 
-    const { id } = useLocalSearchParams<RouteParams>();
+    const { username } = useLocalSearchParams<RouteParams>();
 
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
     const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-    const { data, loading } = useApiFetch('user', 'UserController', 'getById', {
-        id: parseInt(id),
+    const { data, loading } = useApiFetch('user', 'UserController', 'getByUsername', {
+        username,
     });
 
     const { mutate, loading: mutationLoading } = useApiMutation(
@@ -42,8 +42,9 @@ export function EditProfile() {
     const [formData, setFormData] = useState<ProfileFormFields>({
         firstName: '',
         lastName: '',
-        userName: '',
+        username: '',
         email: '',
+        userId: 0,
     });
 
     useEffect(() => {
@@ -51,8 +52,9 @@ export function EditProfile() {
             setFormData({
                 firstName: data.firstName,
                 lastName: data.lastName,
-                userName: data.userName,
+                username: data.username,
                 email: data.email,
+                userId: data.id,
             });
         }
     }, [data]);
@@ -77,8 +79,8 @@ export function EditProfile() {
 
         if (formData.firstName.trim().length < 2) newErrors.firstName = 'First name is too short';
         if (formData.lastName.trim().length < 2) newErrors.lastName = 'Last name is too short';
-        if (formData.userName.trim().length < 6) {
-            newErrors.userName = 'Username must be at least 6 characters';
+        if (formData.username.trim().length < 6) {
+            newErrors.username = 'Username must be at least 6 characters';
         }
         if (!formData.email.trim().includes('@')) newErrors.email = 'Invalid email address';
 
@@ -90,13 +92,10 @@ export function EditProfile() {
     };
 
     const handleSubmit = async () => {
-        const response = await mutate({
-            userId: parseInt(id),
-            ...formData,
-        });
+        const response = await mutate(formData);
 
         if (response) {
-            router.replace(`/profile/${id}`);
+            router.replace(`/profile/${username}`);
         }
     };
 
@@ -140,15 +139,15 @@ export function EditProfile() {
             <View style={styles.field}>
                 <Text style={styles.label}>Username</Text>
                 <TextInput
-                    value={formData.userName}
-                    onChangeText={(val) => updateField('userName', val)}
+                    value={formData.username}
+                    onChangeText={(val) => updateField('username', val)}
                     autoCapitalize="none"
                     autoCorrect={false}
                     placeholder="Username"
                     style={styles.input}
                     editable={!mutationLoading}
                 />
-                {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
+                {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
             </View>
 
             {/* Email Address */}
@@ -179,7 +178,7 @@ export function EditProfile() {
             </Pressable>
 
             {/* Cancel Action */}
-            <Link href={`/profile/${id}`} asChild>
+            <Link href={`/profile/${username}`} asChild>
                 <Pressable style={styles.secondaryButton} disabled={mutationLoading}>
                     <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>
