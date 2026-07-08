@@ -55,7 +55,7 @@ export function Login() {
             const response = await mutate(formData);
             if (response) {
                 dispatch(setAuthentication(response));
-                router.replace('/profile');
+                router.replace(`/profile/${response.userId}`);
             }
         } catch (error) {
             console.error(error);

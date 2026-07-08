@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
-import { Link, Redirect } from 'expo-router';
+import { Link, Redirect, useLocalSearchParams } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
 import { useApiMutation } from '~/core/useApiMutation';
 
@@ -14,9 +14,14 @@ const initialFormData = {
 type FormData = typeof initialFormData;
 type FormKeys = keyof FormData;
 
+type RouteParams = {
+    id: string;
+};
+
 export function EditProfile() {
     const authentication = useAuthentication();
     if (!authentication) return <Redirect href="/profile/login" />;
+    const { id } = useLocalSearchParams<RouteParams>();
 
     const [formData, setFormData] = useState(initialFormData);
 
@@ -133,7 +138,7 @@ export function EditProfile() {
             </Pressable>
 
             {/* Cancel Action */}
-            <Link href="/profile" asChild>
+            <Link href={`/profile/${id}`} asChild>
                 <Pressable style={styles.secondaryButton} disabled={loading}>
                     <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>
