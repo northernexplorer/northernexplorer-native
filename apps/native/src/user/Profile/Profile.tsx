@@ -5,15 +5,15 @@ import { useAuthentication } from '~/user/state/authentication/useAuthentication
 import { useApiFetch } from '~/core/useApiFetch';
 
 type RouteParams = {
-    id: string;
+    username: string;
 };
 
 export function Profile() {
     const authentication = useAuthentication();
-    const { id } = useLocalSearchParams<RouteParams>();
+    const { username } = useLocalSearchParams<RouteParams>();
 
-    const { data, loading } = useApiFetch('user', 'UserController', 'getById', {
-        id: parseInt(id),
+    const { data, loading } = useApiFetch('user', 'UserController', 'getByUsername', {
+        username,
     });
     if (!authentication) return <Redirect href="/profile/login" />;
     if (loading || !data) return null;
@@ -29,7 +29,7 @@ export function Profile() {
             <Text style={styles.title}>My Profile</Text>
             <ProfileField label="First Name" value={data.firstName} />
             <ProfileField label="Last Name" value={data.lastName} />
-            <ProfileField label="Username" value={data.userName} />
+            <ProfileField label="Username" value={data.username} />
             <ProfileField label="Email Address" value={data.email} />
             <ProfileField label="Status" value={data.isActive ? 'Active' : 'Inactive'} />
             <ProfileField
@@ -40,12 +40,12 @@ export function Profile() {
                 label="Last Login"
                 value={data.lastLoginAt ? new Date(data.lastLoginAt).toLocaleString() : 'Never'}
             />
-            <Link href={`/profile/${id}/edit-profile`} asChild>
+            <Link href={`/profile/${username}/edit-profile`} asChild>
                 <Pressable style={styles.button}>
                     <Text style={styles.buttonText}>Edit Profile</Text>
                 </Pressable>
             </Link>
-            <Link href={`/profile/${id}/change-password`} asChild>
+            <Link href={`/profile/${username}/change-password`} asChild>
                 <Pressable style={styles.secondaryButton}>
                     <Text style={styles.secondaryButtonText}>Change Password</Text>
                 </Pressable>

@@ -41,7 +41,7 @@ export class UserController {
             firstName: params.firstName,
             lastLoginAt: new Date(),
             lastName: params.lastName,
-            userName: params.userName,
+            username: params.username,
             createdAt: new Date(),
             isActive: true,
             passwordHash,
@@ -79,7 +79,7 @@ export class UserController {
         return {
             userId: user.id,
             email: user.email,
-            username: user.userName,
+            username: user.username,
             accessToken,
             refreshToken,
         };
@@ -107,8 +107,9 @@ export class UserController {
             userId: auth?.userId,
             targetId: params.userId,
         });
+        const user = await this.repos.user.getById(targetId);
 
-        await this.repos.user.update(targetId, params);
+        await this.repos.user.update(user.id, params);
         return { success: true };
     }
 
@@ -116,13 +117,11 @@ export class UserController {
         params: Params<Route<'changePassword'>>,
         auth?: TokenPayload,
     ): Promise<Response<Route<'changePassword'>>> {
-        const { targetId } = this.permissionService.canAccessProfile({
+        const user = await this.repos.user.getByUsername(params.username);
+        this.permissionService.canAccessProfile({
             userId: auth?.userId,
-            targetId: params.userId,
+            targetId: user.id,
         });
-
-        const user = await this.repos.user.getById(targetId);
-        if (!user) throw new Error('User account not found');
 
         await this.repos.user.passwordValidation({
             password: params.newPassword,
@@ -144,19 +143,15 @@ export class UserController {
         };
     }
 
-    async getById(
-        params: Params<Route<'getById'>>,
+    async getByUsername(
+        params: Params<Route<'getByUsername'>>,
         auth?: TokenPayload,
-    ): Promise<Response<Route<'getById'>>> {
-        const { targetId } = this.permissionService.canAccessProfile({
+    ): Promise<Response<Route<'getByUsername'>>> {
+        const user = await this.repos.user.getByUsername(params.username);
+        this.permissionService.canAccessProfile({
             userId: auth?.userId,
-            targetId: params.id,
+            targetId: user.id,
         });
-
-        const user = await this.repos.user.getById(targetId);
-        if (!user) {
-            throw new Error('User not found');
-        }
 
         const safeUser = wrap(user).toObject();
         delete (safeUser as Partial<typeof safeUser>).passwordHash;
@@ -190,7 +185,7 @@ export class UserController {
         return {
             userId: user.id,
             email: user.email,
-            username: user.userName,
+            username: user.username,
             accessToken,
             refreshToken,
         };

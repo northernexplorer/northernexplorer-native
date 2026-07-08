@@ -15,12 +15,12 @@ type FormData = typeof initialFormData;
 type FormKeys = keyof FormData;
 
 type RouteParams = {
-    id: string;
+    username: string;
 };
 
 export function ChangePassword() {
     const authentication = useAuthentication();
-    const { id } = useLocalSearchParams<RouteParams>();
+    const { username } = useLocalSearchParams<RouteParams>();
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
@@ -62,8 +62,8 @@ export function ChangePassword() {
 
     const handleSubmit = async () => {
         try {
-            await mutate({ ...formData, userId: parseInt(id) });
-            router.replace(`/profile/${id}`);
+            await mutate({ ...formData, username });
+            router.replace(`/profile/${username}`);
         } catch (error) {
             console.error(error);
         }
@@ -131,7 +131,7 @@ export function ChangePassword() {
             </Pressable>
 
             {/* Cancel Action Link */}
-            <Link href={`/profile/${id}`} asChild>
+            <Link href={`/profile/${username}`} asChild>
                 <Pressable style={styles.secondaryButton} disabled={loading}>
                     <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>

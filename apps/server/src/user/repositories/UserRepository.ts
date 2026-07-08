@@ -5,7 +5,7 @@ import { hash, compare } from 'bcrypt';
 
 export class UserRepository extends EntityRepository<User> {
     async findByIdentifier(identifier: string): Promise<User | null> {
-        return this.findOne({ $or: [{ email: identifier }, { userName: identifier }] });
+        return this.findOne({ $or: [{ email: identifier }, { username: identifier }] });
     }
 
     async updateProfile(id: number, data: User): Promise<void> {
@@ -25,7 +25,7 @@ export class UserRepository extends EntityRepository<User> {
         this.assign(user, {
             firstName: data.firstName,
             lastName: data.lastName,
-            userName: data.userName,
+            username: data.username,
             email: data.email,
         });
         await this.em.flush();
@@ -40,6 +40,9 @@ export class UserRepository extends EntityRepository<User> {
     }
     async getById(id: number) {
         return this.findOneOrFail({ id });
+    }
+    async getByUsername(username: string) {
+        return this.findOneOrFail({ username });
     }
 
     async passwordValidation({

@@ -5,7 +5,7 @@ import {
     ChangePasswordParams,
     EditProfileParams,
     ForgotPasswordParams,
-    GetByIdParams,
+    GetByUsernameParams,
     GetByIdResponse,
     LoginParams,
     RefreshParams,
@@ -122,8 +122,8 @@ export const ROUTES = {
                 response: { success: true } as GenericResponseType,
                 endpoint: 'changePassword',
             },
-            getById: {
-                params: { id: 0 } as GetByIdParams,
+            getByUsername: {
+                params: { username: '' } as GetByUsernameParams,
                 response: {} as GetByIdResponse,
                 endpoint: 'getById',
             },
