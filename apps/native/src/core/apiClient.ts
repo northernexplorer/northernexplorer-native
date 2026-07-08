@@ -1,4 +1,10 @@
-import { GetParams, GetResponse, NonEmptyCategory, ROUTES } from '@northernexplorer/types';
+import {
+    GetParams,
+    GetResponse,
+    NonEmptyCategory,
+    ROUTES,
+    UserAuthenticationType,
+} from '@northernexplorer/types';
 import { config } from '~/config';
 import { ApiMethod } from '~/core/useApiFetch';
 
@@ -13,10 +19,13 @@ export async function apiClient<
     params: GetParams<C, K, M>,
     fetchMethod: 'GET' | 'POST',
     accessToken?: string,
+    refreshToken?: string,
+    onTokenRefresh?: (data: UserAuthenticationType) => void,
 ): Promise<GetResponse<C, K, M>> {
     const route = ROUTES[category][controller][method] as unknown as ApiMethod;
     const endpoint = route.endpoint;
     const url = new URL(`${config.SERVER_URL}/api/${endpoint}`);
+
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
@@ -24,6 +33,7 @@ export async function apiClient<
     if (accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`;
     }
+
     const options: RequestInit = {
         method: fetchMethod,
         headers,
@@ -39,7 +49,37 @@ export async function apiClient<
         });
     }
 
-    const res = await fetch(url.toString(), options);
+    let res = await fetch(url.toString(), options);
+
+    if (res.status === 401 && refreshToken && onTokenRefresh) {
+        try {
+            const refreshUrl = new URL(
+                `${config.SERVER_URL}/api/${ROUTES.user.UserController.refresh.endpoint}`,
+            );
+
+            const refreshRes = await fetch(refreshUrl.toString(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refreshToken }),
+            });
+
+            if (refreshRes.ok) {
+                const tokenData =
+                    (await refreshRes.json()) as ROUTES['user']['UserController']['refresh']['response'];
+
+                onTokenRefresh(tokenData);
+                options.headers = {
+                    ...options.headers,
+                    Authorization: `Bearer ${tokenData.accessToken}`,
+                };
+
+                res = await fetch(url.toString(), options);
+            }
+        } catch {
+            throw new Error('Session expired. Please log in again.');
+        }
+    }
+
     if (!res.ok) {
         throw new Error(`API fetch failed [${String(method)}]: ${res.status}`);
     }

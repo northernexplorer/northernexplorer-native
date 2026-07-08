@@ -82,7 +82,38 @@ export class UserController {
     ): Promise<Response<Route<'changePassword'>>> {}
 
     async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
-        const user = await this.repos.user.getById(params.id);
-        return user;
+        return this.repos.user.getById(params.id);
+    }
+
+    async refresh(params: Params<Route<'refresh'>>): Promise<Response<Route<'refresh'>>> {
+        const payload = this.tokenService.verifyRefreshToken(params.refreshToken);
+        if (!payload || !payload.userId) {
+            throw new Error('Invalid refresh token');
+        }
+
+        const user = await this.repos.user.getById(payload.userId);
+        if (!user) {
+            throw new Error('User associated with this token no longer exists');
+        }
+
+        user.lastLoginAt = new Date();
+        await this.repos.user.getEntityManager().flush();
+
+        const accessToken = this.tokenService.generateAccessToken({
+            userId: user.id,
+            email: user.email,
+        });
+
+        const refreshToken = this.tokenService.generateRefreshToken({
+            userId: user.id,
+        });
+
+        return {
+            userId: user.id,
+            email: user.email,
+            username: user.userName,
+            accessToken,
+            refreshToken,
+        };
     }
 }

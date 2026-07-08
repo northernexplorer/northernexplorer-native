@@ -39,3 +39,6 @@ export type ChangePasswordParams = {
 export type GetByIdParams = {
     id: number;
 };
+export type RefreshParams = {
+    refreshToken: string;
+};

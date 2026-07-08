@@ -7,7 +7,7 @@ import {
     ForgotPasswordParams,
     GetByIdParams,
     LoginParams,
-    LoginResponse,
+    LoginResponse, RefreshParams,
     RegisterParams, UserAuthenticationType,
 } from './user';
 import { GenericResponseType } from './system/GenericResponseType';
@@ -27,7 +27,6 @@ export interface RouteSchema {
 }
 
 export const ROUTES = {
-    authentication: {},
     environment: {
         FieldNoteController: {
             getFieldNoteData: {
@@ -120,6 +119,11 @@ export const ROUTES = {
                 params: { id: 0 } as GetByIdParams,
                 response: null as null,
                 endpoint: 'getById',
+            },
+            refresh: {
+                params: {} as RefreshParams,
+                response: {} as UserAuthenticationType,
+                endpoint: 'refresh',
             },
         },
     },

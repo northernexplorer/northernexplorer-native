@@ -6,6 +6,8 @@ export interface TokenPayload {
     email: string;
 }
 
+export type RefreshTokenPayload = Pick<TokenPayload, 'userId'>;
+
 export class TokenService {
     /**
      * Generates a short-lived access token (expires in 15 minutes)
@@ -30,5 +32,12 @@ export class TokenService {
      */
     verifyAccessToken(token: string): TokenPayload {
         return jwt.verify(token, config.ACCESS_SECRET) as TokenPayload;
+    }
+
+    /**
+     * Verifies a refresh token string and returns its typed payload
+     */
+    verifyRefreshToken(token: string): RefreshTokenPayload {
+        return jwt.verify(token, config.REFRESH_SECRET) as RefreshTokenPayload;
     }
 }

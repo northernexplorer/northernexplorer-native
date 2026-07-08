@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { ROUTES, GetParams, NonEmptyCategory } from '@northernexplorer/types';
 import { apiClient } from '~/core/apiClient';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
+import { setAuthentication } from '~/user/state/authentication/authenticationSlice';
+import { useDispatch } from 'react-redux';
 
 export interface ApiMethod<P = unknown, R = unknown, E = string> {
     params: P;
@@ -16,7 +18,7 @@ export function useApiMutation<
 >(category: C, controller: K, method: M) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-
+    const dispatch = useDispatch();
     const authentication = useAuthentication();
 
     const mutate = async (params: GetParams<C, K, M>) => {
@@ -30,6 +32,12 @@ export function useApiMutation<
                 params,
                 'POST',
                 authentication?.accessToken,
+                authentication?.refreshToken,
+                (response) => {
+                    if (authentication) {
+                        dispatch(setAuthentication(response));
+                    }
+                },
             );
         } catch (err) {
             const e = err instanceof Error ? err : new Error('Mutation failed');

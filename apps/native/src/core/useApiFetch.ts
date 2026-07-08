@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { ROUTES, GetParams, GetResponse, NonEmptyCategory } from '@northernexplorer/types';
 import { apiClient } from '~/core/apiClient';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
+import { setAuthentication } from '~/user/state/authentication/authenticationSlice';
+import { useDispatch } from 'react-redux';
 
 export interface ApiMethod<P = unknown, R = unknown, E = string> {
     params: P;
@@ -17,7 +19,7 @@ export function useApiFetch<
     const [data, setData] = useState<GetResponse<C, K, M> | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
-
+    const dispatch = useDispatch();
     const authentication = useAuthentication();
 
     useEffect(() => {
@@ -41,6 +43,12 @@ export function useApiFetch<
                     params,
                     'GET',
                     authentication?.accessToken,
+                    authentication?.refreshToken,
+                    (response) => {
+                        if (authentication) {
+                            dispatch(setAuthentication(response));
+                        }
+                    },
                 );
                 if (isMounted) {
                     setData(result);
