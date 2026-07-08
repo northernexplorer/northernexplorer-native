@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ROUTES, GetParams, GetResponse, NonEmptyCategory } from '@northernexplorer/types';
-import { config } from '~/config';
+import { apiClient } from '~/core/apiClient';
+import { useAuthentication } from '~/user/state/authentication/useAuthentication';
+import { setAuthentication } from '~/user/state/authentication/authenticationSlice';
+import { useDispatch } from 'react-redux';
 
 export interface ApiMethod<P = unknown, R = unknown, E = string> {
     params: P;
@@ -8,37 +11,7 @@ export interface ApiMethod<P = unknown, R = unknown, E = string> {
     endpoint: E;
 }
 
-export async function apiClient<
-    C extends NonEmptyCategory,
-    K extends keyof ROUTES[C],
-    M extends keyof ROUTES[C][K],
->(
-    category: C,
-    controller: K,
-    method: M,
-    params: GetParams<C, K, M>,
-): Promise<GetResponse<C, K, M>> {
-    const route = ROUTES[category][controller][method] as unknown as ApiMethod;
-    const endpoint = route.endpoint;
-
-    const url = new URL(`${config.SERVER_URL}/api/${endpoint}`);
-
-    if (params && typeof params === 'object') {
-        Object.entries(params).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                url.searchParams.set(key, String(value));
-            }
-        });
-    }
-
-    const res = await fetch(url.toString());
-    if (!res.ok) {
-        throw new Error(`API fetch failed [${String(method)}]: ${res.status}`);
-    }
-    return res.json() as Promise<GetResponse<C, K, M>>;
-}
-
-export function useApiClient<
+export function useApiFetch<
     C extends NonEmptyCategory,
     K extends keyof ROUTES[C],
     M extends keyof ROUTES[C][K],
@@ -46,6 +19,8 @@ export function useApiClient<
     const [data, setData] = useState<GetResponse<C, K, M> | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
+    const dispatch = useDispatch();
+    const authentication = useAuthentication();
 
     useEffect(() => {
         if (!params) {
@@ -61,7 +36,20 @@ export function useApiClient<
             setError(null);
 
             try {
-                const result = await apiClient(category, controller, method, params);
+                const result = await apiClient(
+                    category,
+                    controller,
+                    method,
+                    params,
+                    'GET',
+                    authentication?.accessToken,
+                    authentication?.refreshToken,
+                    (response) => {
+                        if (authentication) {
+                            dispatch(setAuthentication(response));
+                        }
+                    },
+                );
                 if (isMounted) {
                     setData(result);
                 }
@@ -81,7 +69,12 @@ export function useApiClient<
         return () => {
             isMounted = false;
         };
-    }, [category, controller, method, params ? JSON.stringify(params) : null]);
-
+    }, [
+        category,
+        controller,
+        method,
+        params ? JSON.stringify(params) : null,
+        authentication?.accessToken,
+    ]);
     return { data, loading, error };
 }

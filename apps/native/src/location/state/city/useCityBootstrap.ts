@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '~/core/storeHooks';
 import { setCity, setCityLoading, setCityError } from '~/location/state/city/citySlice';
-import { useApiClient } from '~/core/useApiClient';
+import { useApiFetch } from '~/core/useApiFetch';
 
 export function useCityBootstrap() {
     const dispatch = useAppDispatch();
     const coords = useAppSelector((s) => s.location.data);
 
-    const { data, loading, error } = useApiClient(
+    const { data, loading, error } = useApiFetch(
         'location',
         'CityController',
         'getCityData',

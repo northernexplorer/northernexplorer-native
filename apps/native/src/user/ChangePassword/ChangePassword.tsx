@@ -1,22 +1,35 @@
 import React, { useState } from 'react';
-import { View, TextInput, Pressable, Text } from 'react-native';
+import { View, TextInput, Pressable, Text, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
-import { Link, Redirect } from 'expo-router';
+import { Link, Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
+import { useApiMutation } from '~/core/useApiMutation';
+
+const initialFormData = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+};
+
+type FormData = typeof initialFormData;
+type FormKeys = keyof FormData;
+
+type RouteParams = {
+    id: string;
+};
 
 export function ChangePassword() {
     const authentication = useAuthentication();
+    const { id } = useLocalSearchParams<RouteParams>();
+
+    const [formData, setFormData] = useState<FormData>(initialFormData);
+    const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
+
+    const { mutate, loading } = useApiMutation('user', 'UserController', 'changePassword');
+
     if (!authentication) return <Redirect href="/profile/login" />;
 
-    const [formData, setFormData] = useState({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-    });
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const updateField = (key: keyof typeof formData, value: string | boolean) => {
+    const updateField = (key: FormKeys, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
         if (errors[key]) {
             setErrors((prev) => {
@@ -28,7 +41,7 @@ export function ChangePassword() {
     };
 
     const validateForm = async () => {
-        let newErrors: Record<string, string> = {};
+        const newErrors: Partial<Record<FormKeys, string>> = {};
 
         if (!formData.currentPassword) {
             newErrors.currentPassword = 'Current password is required';
@@ -41,17 +54,26 @@ export function ChangePassword() {
         }
 
         setErrors(newErrors);
+
         if (Object.keys(newErrors).length === 0) {
             await handleSubmit();
         }
     };
 
     const handleSubmit = async () => {
-        setIsSubmitting(true);
+        try {
+            await mutate({ ...formData, userId: parseInt(id) });
+            router.replace(`/profile/${id}`);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+            <Text style={styles.title}>Change Password</Text>
+
+            {/* Current Password */}
             <View style={styles.field}>
                 <Text style={styles.label}>Current Password</Text>
                 <TextInput
@@ -60,11 +82,14 @@ export function ChangePassword() {
                     secureTextEntry
                     value={formData.currentPassword}
                     onChangeText={(val) => updateField('currentPassword', val)}
+                    editable={!loading}
                 />
                 {errors.currentPassword && (
                     <Text style={styles.errorText}>{errors.currentPassword}</Text>
                 )}
             </View>
+
+            {/* New Password */}
             <View style={styles.field}>
                 <Text style={styles.label}>New Password</Text>
                 <TextInput
@@ -73,9 +98,12 @@ export function ChangePassword() {
                     secureTextEntry
                     value={formData.newPassword}
                     onChangeText={(val) => updateField('newPassword', val)}
+                    editable={!loading}
                 />
                 {errors.newPassword && <Text style={styles.errorText}>{errors.newPassword}</Text>}
             </View>
+
+            {/* Confirm New Password */}
             <View style={styles.field}>
                 <Text style={styles.label}>Confirm New Password</Text>
                 <TextInput
@@ -84,19 +112,30 @@ export function ChangePassword() {
                     secureTextEntry
                     value={formData.confirmPassword}
                     onChangeText={(val) => updateField('confirmPassword', val)}
+                    editable={!loading}
                 />
                 {errors.confirmPassword && (
                     <Text style={styles.errorText}>{errors.confirmPassword}</Text>
                 )}
             </View>
-            <Pressable style={styles.button} onPress={validateForm} disabled={isSubmitting}>
-                <Text style={styles.buttonText}>Change Password</Text>
+
+            {/* Submit Action Button */}
+            <Pressable
+                style={[styles.button, loading && { opacity: 0.6 }]}
+                onPress={validateForm}
+                disabled={loading}
+            >
+                <Text style={styles.buttonText}>
+                    {loading ? 'Updating Password...' : 'Change Password'}
+                </Text>
             </Pressable>
-            <Link href="/profile" asChild>
-                <Pressable style={styles.secondaryButton} disabled={isSubmitting}>
+
+            {/* Cancel Action Link */}
+            <Link href={`/profile/${id}`} asChild>
+                <Pressable style={styles.secondaryButton} disabled={loading}>
                     <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>
             </Link>
-        </View>
+        </ScrollView>
     );
 }

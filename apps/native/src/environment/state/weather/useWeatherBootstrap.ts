@@ -4,7 +4,7 @@ import {
     setWeatherLoading,
     setWeatherError,
 } from '~/environment/state/weather/weatherSlice';
-import { useApiClient } from '~/core/useApiClient';
+import { useApiFetch } from '~/core/useApiFetch';
 import { useSyncToRedux } from '~/core/useSyncToRedux';
 
 export function useWeatherBootstrap() {
@@ -18,7 +18,7 @@ export function useWeatherBootstrap() {
         data: fetchedData,
         loading,
         error,
-    } = useApiClient(
+    } = useApiFetch(
         'environment',
         'WeatherController',
         'getWeatherData',

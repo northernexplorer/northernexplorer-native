@@ -7,11 +7,11 @@ import { getUrl, getUrlSafeString } from '@northernexplorer/tools';
 import { HistoricSiteType } from '@northernexplorer/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '~/config';
-import { useApiClient } from '~/core/useApiClient';
+import { useApiFetch } from '~/core/useApiFetch';
 
 export function Map() {
     const coords = useLocation();
-    const { data } = useApiClient('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
+    const { data } = useApiFetch('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
         lat: coords?.lat || 0,
         lon: coords?.lon || 0,
         limit: 500,

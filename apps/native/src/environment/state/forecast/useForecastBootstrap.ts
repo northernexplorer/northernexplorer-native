@@ -1,5 +1,5 @@
 import { useAppSelector } from '~/core/storeHooks';
-import { useApiClient } from '~/core/useApiClient';
+import { useApiFetch } from '~/core/useApiFetch';
 import {
     setForecast,
     setForecastError,
@@ -18,7 +18,7 @@ export function useForecastBootstrap() {
         data: fetchedData,
         loading,
         error,
-    } = useApiClient(
+    } = useApiFetch(
         'environment',
         'ForecastController',
         'getForecastData',

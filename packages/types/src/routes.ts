@@ -1,6 +1,18 @@
 import { CityType, HistoricSiteType } from './location';
 import { ForecastType, LunarCycleType, WeatherType } from './environment';
 import { FieldNoteType } from './environment/FieldNote';
+import {
+    ChangePasswordParams,
+    EditProfileParams,
+    ForgotPasswordParams,
+    GetByIdParams,
+    GetByIdResponse,
+    LoginParams,
+    RefreshParams,
+    RegisterParams,
+    UserAuthenticationType,
+} from './user';
+import { GenericResponseType } from './system/GenericResponseType';
 
 export interface ApiMethod<P = unknown, R = unknown, E = string> {
     params: P;
@@ -17,7 +29,6 @@ export interface RouteSchema {
 }
 
 export const ROUTES = {
-    authentication: {},
     environment: {
         FieldNoteController: {
             getFieldNoteData: {
@@ -80,7 +91,48 @@ export const ROUTES = {
         MigrationController: {},
     },
     user: {
-        UserController: {},
+        UserController: {
+            register: {
+                params: {} as RegisterParams,
+                response: { success: true } as GenericResponseType,
+                endpoint: 'register',
+            },
+            login: {
+                params: {} as LoginParams,
+                response: {} as UserAuthenticationType,
+                endpoint: 'login',
+            },
+            logout: {
+                params: {} as Record<string, never>,
+                response: {} as GenericResponseType,
+                endpoint: 'logout',
+            },
+            forgotPassword: {
+                params: {} as ForgotPasswordParams,
+                response: { success: true } as GenericResponseType,
+                endpoint: 'forgotPassword',
+            },
+            editProfile: {
+                params: {} as EditProfileParams,
+                response: { success: true } as GenericResponseType,
+                endpoint: 'editProfile',
+            },
+            changePassword: {
+                params: {} as ChangePasswordParams,
+                response: { success: true } as GenericResponseType,
+                endpoint: 'changePassword',
+            },
+            getById: {
+                params: { id: 0 } as GetByIdParams,
+                response: {} as GetByIdResponse,
+                endpoint: 'getById',
+            },
+            refresh: {
+                params: {} as RefreshParams,
+                response: {} as UserAuthenticationType,
+                endpoint: 'refresh',
+            },
+        },
     },
 } as const satisfies RouteSchema;
 

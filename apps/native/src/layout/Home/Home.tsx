@@ -10,7 +10,7 @@ import { useFieldNote } from '~/environment/state/fieldNote/useFieldNote';
 import { styles } from '~/layout/Home/styles';
 import { HistoricSitePreview } from '~/layout/Home/components/HistoricSitePreview';
 import { useLocation } from '~/location/state/location/useLocation';
-import { useApiClient } from '~/core/useApiClient';
+import { useApiFetch } from '~/core/useApiFetch';
 
 export function Home() {
     const weather = useWeather();
@@ -18,7 +18,7 @@ export function Home() {
     const lunar = useLunar();
     const fieldNote = useFieldNote();
     const coords = useLocation();
-    const historicSites = useApiClient(
+    const historicSites = useApiFetch(
         'location',
         'HistoricSiteController',
         'getNearbyHistoricSites',
