@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Pressable, Text, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
-import { Link, Redirect, useLocalSearchParams } from 'expo-router';
+import { Link, Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
 import { useApiMutation } from '~/core/useApiMutation';
 
@@ -20,13 +20,14 @@ type RouteParams = {
 
 export function ChangePassword() {
     const authentication = useAuthentication();
-    if (!authentication) return <Redirect href="/profile/login" />;
     const { id } = useLocalSearchParams<RouteParams>();
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 
     const { mutate, loading } = useApiMutation('user', 'UserController', 'changePassword');
+
+    if (!authentication) return <Redirect href="/profile/login" />;
 
     const updateField = (key: FormKeys, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -61,7 +62,8 @@ export function ChangePassword() {
 
     const handleSubmit = async () => {
         try {
-            // Your password update API logic goes here
+            await mutate({ ...formData, userId: parseInt(id) });
+            router.replace(`/profile/${id}`);
         } catch (error) {
             console.error(error);
         }

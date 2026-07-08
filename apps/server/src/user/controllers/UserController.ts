@@ -2,6 +2,7 @@ import { Repositories } from '../../core/repositories';
 import { Params, Response, RouteDefinition, ROUTES } from '@northernexplorer/types';
 import { TokenPayload, TokenService } from '../services/TokenService';
 import { wrap } from '@mikro-orm/core';
+import { PermissionService } from '../services/PermisionService';
 
 type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<
     'user',
@@ -12,9 +13,14 @@ export class UserController {
     constructor(private repos: Repositories) {}
 
     private tokenService = new TokenService();
+    private permissionService = new PermissionService();
 
     async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
         if (params.website) throw new Error('Forbidden: Bot activity detected.');
+        await this.repos.user.passwordValidation({
+            password: params.password,
+            confirmPassword: params.confirmPassword,
+        });
         const passwordHash = await this.repos.user.hashPassword(params.password);
 
         this.repos.user.create({
@@ -65,33 +71,73 @@ export class UserController {
         };
     }
 
+    async logout(params: Params<Route<'logout'>>): Promise<Response<Route<'logout'>>> {
+        //todo clear refresh token
+        console.log('Logout', params);
+        return { success: true };
+    }
+
     async forgotPassword(
         params: Params<Route<'forgotPassword'>>,
     ): Promise<Response<Route<'forgotPassword'>>> {
-        await this.repos.user.requestPasswordReset(params.email);
+        console.log('Forgot password', params);
+        throw new Error('Not implemented');
         return { success: true };
     }
 
     async editProfile(
         params: Params<Route<'editProfile'>>,
+        auth?: TokenPayload,
     ): Promise<Response<Route<'editProfile'>>> {
-        await this.repos.user.update(params.userId, params);
-        return true;
+        const { targetId } = this.permissionService.canAccessProfile({
+            userId: auth?.userId,
+            targetId: params.userId,
+        });
+
+        await this.repos.user.update(targetId, params);
+        return { success: true };
     }
 
     async changePassword(
         params: Params<Route<'changePassword'>>,
-    ): Promise<Response<Route<'changePassword'>>> {}
+        auth?: TokenPayload,
+    ): Promise<Response<Route<'changePassword'>>> {
+        const { targetId } = this.permissionService.canAccessProfile({
+            userId: auth?.userId,
+            targetId: params.userId,
+        });
+
+        const user = await this.repos.user.getById(targetId);
+        if (!user) throw new Error('User account not found');
+
+        await this.repos.user.passwordValidation({
+            password: params.newPassword,
+            confirmPassword: params.confirmPassword,
+            oldPassword: params.currentPassword,
+            currentHash: user.passwordHash,
+        });
+
+        const passwordHash = await this.repos.user.hashPassword(params.newPassword);
+
+        wrap(user).assign({
+            passwordHash,
+        });
+
+        await this.repos.user.getEntityManager().flush();
+
+        return {
+            success: true,
+        };
+    }
 
     async getById(
         params: Params<Route<'getById'>>,
         auth?: TokenPayload,
     ): Promise<Response<Route<'getById'>>> {
-        const targetId = typeof params.id === 'string' ? parseInt(params.id, 10) : params.id;
-
-        if (auth?.userId !== targetId) {
-            throw new Error('Forbidden: You do not have permission to view this user');
-        }
+        const { targetId } = this.permissionService.canAccessProfile({
+            userId: auth?.userId,
+            targetId: params.id,
+        });
 
         const user = await this.repos.user.getById(targetId);
         if (!user) {

@@ -41,4 +41,45 @@ export class UserRepository extends EntityRepository<User> {
     async getById(id: number) {
         return this.findOneOrFail({ id });
     }
+
+    async passwordValidation({
+        password,
+        confirmPassword,
+        oldPassword,
+        currentHash,
+    }: {
+        password: string;
+        confirmPassword: string;
+        oldPassword?: string;
+        currentHash?: string;
+    }) {
+        const isContextChange = oldPassword !== undefined;
+
+        if (password !== confirmPassword) {
+            throw new Error(
+                isContextChange
+                    ? 'New password and confirmation password do not match'
+                    : 'Passwords do not match',
+            );
+        }
+
+        if (password.length < 8) {
+            throw new Error(
+                isContextChange
+                    ? 'New password must be at least 8 characters long'
+                    : 'Password must be at least 8 characters long',
+            );
+        }
+
+        if (isContextChange && oldPassword === password) {
+            throw new Error('New password cannot be identical to your current password');
+        }
+
+        if (isContextChange && currentHash) {
+            const isValid = await this.checkPassword(oldPassword, currentHash);
+            if (!isValid) {
+                throw new Error('The current password you entered is incorrect');
+            }
+        }
+    }
 }

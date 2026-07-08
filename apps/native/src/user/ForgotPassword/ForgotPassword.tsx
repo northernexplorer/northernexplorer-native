@@ -16,6 +16,7 @@ export function ForgotPassword() {
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 
     const { mutate, loading } = useApiMutation('user', 'UserController', 'forgotPassword');
+    console.log(mutate);
 
     const updateField = (key: FormKeys, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));

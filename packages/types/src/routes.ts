@@ -5,10 +5,12 @@ import {
     ChangePasswordParams,
     EditProfileParams,
     ForgotPasswordParams,
-    GetByIdParams, GetByIdResponse,
+    GetByIdParams,
+    GetByIdResponse,
     LoginParams,
-    LoginResponse, RefreshParams,
-    RegisterParams, UserAuthenticationType,
+    RefreshParams,
+    RegisterParams,
+    UserAuthenticationType,
 } from './user';
 import { GenericResponseType } from './system/GenericResponseType';
 
@@ -100,19 +102,24 @@ export const ROUTES = {
                 response: {} as UserAuthenticationType,
                 endpoint: 'login',
             },
+            logout: {
+                params: {} as Record<string, never>,
+                response: {} as GenericResponseType,
+                endpoint: 'logout',
+            },
             forgotPassword: {
                 params: {} as ForgotPasswordParams,
-                response: null as null,
+                response: { success: true } as GenericResponseType,
                 endpoint: 'forgotPassword',
             },
             editProfile: {
                 params: {} as EditProfileParams,
-                response: true as boolean,
+                response: { success: true } as GenericResponseType,
                 endpoint: 'editProfile',
             },
             changePassword: {
                 params: {} as ChangePasswordParams,
-                response: null as null,
+                response: { success: true } as GenericResponseType,
                 endpoint: 'changePassword',
             },
             getById: {

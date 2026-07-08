@@ -31,8 +31,6 @@ export function HistoricSiteDetails() {
             <Image
                 source={{ uri: getUrl({ path: data.image, serverUrl: config.SERVER_URL }) }}
                 style={styles.banner}
-                onLoad={() => console.log('loaded')}
-                onError={(e) => console.log('error', e.nativeEvent)}
             />
             <View style={styles.content}>
                 <Text style={styles.breadcrumbs}>

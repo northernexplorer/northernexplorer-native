@@ -10,12 +10,12 @@ type RouteParams = {
 
 export function Profile() {
     const authentication = useAuthentication();
-    if (!authentication) return <Redirect href="/profile/login" />;
     const { id } = useLocalSearchParams<RouteParams>();
 
     const { data, loading } = useApiFetch('user', 'UserController', 'getById', {
         id: parseInt(id),
     });
+    if (!authentication) return <Redirect href="/profile/login" />;
     if (loading || !data) return null;
 
     const ProfileField = ({ label, value }: { label: string; value: string }) => (

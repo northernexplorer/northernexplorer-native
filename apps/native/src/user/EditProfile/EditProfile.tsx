@@ -1,33 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
-import { Link, Redirect, useLocalSearchParams } from 'expo-router';
+import { Link, Redirect, useLocalSearchParams, router } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
 import { useApiMutation } from '~/core/useApiMutation';
-
-const initialFormData = {
-    firstName: '',
-    lastName: '',
-    userName: '',
-    email: '',
-};
-type FormData = typeof initialFormData;
-type FormKeys = keyof FormData;
+import { useApiFetch } from '~/core/useApiFetch';
 
 type RouteParams = {
     id: string;
 };
 
+// Define explicit schema structures for your layout fields
+interface ProfileFormFields {
+    firstName: string;
+    lastName: string;
+    userName: string;
+    email: string;
+}
+
+type FormKeys = keyof ProfileFormFields;
+
 export function EditProfile() {
     const authentication = useAuthentication();
-    if (!authentication) return <Redirect href="/profile/login" />;
+
     const { id } = useLocalSearchParams<RouteParams>();
 
-    const [formData, setFormData] = useState(initialFormData);
-
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
+    const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-    const { mutate, loading } = useApiMutation('user', 'UserController', 'editProfile');
+    const { data, loading } = useApiFetch('user', 'UserController', 'getById', {
+        id: parseInt(id),
+    });
+
+    const { mutate, loading: mutationLoading } = useApiMutation(
+        'user',
+        'UserController',
+        'editProfile',
+    );
+
+    const [formData, setFormData] = useState<ProfileFormFields>({
+        firstName: '',
+        lastName: '',
+        userName: '',
+        email: '',
+    });
+
+    useEffect(() => {
+        if (data) {
+            setFormData({
+                firstName: data.firstName,
+                lastName: data.lastName,
+                userName: data.userName,
+                email: data.email,
+            });
+        }
+    }, [data]);
+
+    if (!authentication) return <Redirect href="/profile/login" />;
+    if (loading || !data) return null;
 
     const updateField = (key: FormKeys, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -42,6 +72,7 @@ export function EditProfile() {
 
     const validateForm = async () => {
         const newErrors: Partial<Record<FormKeys, string>> = {};
+        setSubmissionError(null);
 
         if (formData.firstName.trim().length < 2) newErrors.firstName = 'First name is too short';
         if (formData.lastName.trim().length < 2) newErrors.lastName = 'Last name is too short';
@@ -58,16 +89,25 @@ export function EditProfile() {
     };
 
     const handleSubmit = async () => {
-        try {
-            // Your update profile API call / state dispatch goes here
-        } catch (error) {
-            console.error(error);
+        const response = await mutate({
+            userId: parseInt(id),
+            ...formData,
+        });
+
+        if (response) {
+            router.replace(`/profile/${id}`);
         }
     };
 
     return (
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
             <Text style={styles.title}>Edit Profile</Text>
+
+            {submissionError && (
+                <Text style={[styles.errorText, { textAlign: 'center', marginVertical: 10 }]}>
+                    {submissionError}
+                </Text>
+            )}
 
             {/* First Name */}
             <View style={styles.field}>
@@ -77,7 +117,7 @@ export function EditProfile() {
                     onChangeText={(val) => updateField('firstName', val)}
                     placeholder="First Name"
                     style={styles.input}
-                    editable={!loading}
+                    editable={!mutationLoading}
                 />
                 {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
             </View>
@@ -90,7 +130,7 @@ export function EditProfile() {
                     onChangeText={(val) => updateField('lastName', val)}
                     placeholder="Last Name"
                     style={styles.input}
-                    editable={!loading}
+                    editable={!mutationLoading}
                 />
                 {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
             </View>
@@ -105,7 +145,7 @@ export function EditProfile() {
                     autoCorrect={false}
                     placeholder="Username"
                     style={styles.input}
-                    editable={!loading}
+                    editable={!mutationLoading}
                 />
                 {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
             </View>
@@ -121,25 +161,25 @@ export function EditProfile() {
                     keyboardType="email-address"
                     placeholder="Email Address"
                     style={styles.input}
-                    editable={!loading}
+                    editable={!mutationLoading}
                 />
                 {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
 
             {/* Submit Changes */}
             <Pressable
-                style={[styles.button, loading && { opacity: 0.6 }]}
+                style={[styles.button, mutationLoading && { opacity: 0.6 }]}
                 onPress={validateForm}
-                disabled={loading}
+                disabled={mutationLoading}
             >
                 <Text style={styles.buttonText}>
-                    {loading ? 'Saving Changes...' : 'Save Changes'}
+                    {mutationLoading ? 'Saving Changes...' : 'Save Changes'}
                 </Text>
             </Pressable>
 
             {/* Cancel Action */}
             <Link href={`/profile/${id}`} asChild>
-                <Pressable style={styles.secondaryButton} disabled={loading}>
+                <Pressable style={styles.secondaryButton} disabled={mutationLoading}>
                     <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>
             </Link>

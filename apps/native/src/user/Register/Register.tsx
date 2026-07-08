@@ -64,7 +64,6 @@ export function Register() {
 
     const handleSubmit = async () => {
         const response = await mutate(formData);
-        console.log('Registration response:', response);
         if (response.success) {
             router.replace('/profile/login');
         }
