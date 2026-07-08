@@ -40,12 +40,12 @@ export function Profile() {
                 label="Last Login"
                 value={data.lastLoginAt ? new Date(data.lastLoginAt).toLocaleString() : 'Never'}
             />
-            <Link href="/profile/edit-profile" asChild>
+            <Link href={`/profile/${id}/edit-profile`} asChild>
                 <Pressable style={styles.button}>
                     <Text style={styles.buttonText}>Edit Profile</Text>
                 </Pressable>
             </Link>
-            <Link href="/profile/change-password" asChild>
+            <Link href={`/profile/${id}/change-password`} asChild>
                 <Pressable style={styles.secondaryButton}>
                     <Text style={styles.secondaryButtonText}>Change Password</Text>
                 </Pressable>
