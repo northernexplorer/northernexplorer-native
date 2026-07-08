@@ -12,14 +12,21 @@ export async function apiClient<
     method: M,
     params: GetParams<C, K, M>,
     fetchMethod: 'GET' | 'POST',
+    accessToken?: string,
 ): Promise<GetResponse<C, K, M>> {
     const route = ROUTES[category][controller][method] as unknown as ApiMethod;
     const endpoint = route.endpoint;
     const url = new URL(`${config.SERVER_URL}/api/${endpoint}`);
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
 
+    if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+    }
     const options: RequestInit = {
         method: fetchMethod,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
     };
 
     if (fetchMethod === 'POST') {

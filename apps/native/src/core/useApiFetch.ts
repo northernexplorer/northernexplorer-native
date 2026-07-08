@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ROUTES, GetParams, GetResponse, NonEmptyCategory } from '@northernexplorer/types';
 import { apiClient } from '~/core/apiClient';
+import { useAuthentication } from '~/user/state/authentication/useAuthentication';
 
 export interface ApiMethod<P = unknown, R = unknown, E = string> {
     params: P;
@@ -17,6 +18,8 @@ export function useApiFetch<
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
+    const authentication = useAuthentication();
+
     useEffect(() => {
         if (!params) {
             setLoading(false);
@@ -31,7 +34,14 @@ export function useApiFetch<
             setError(null);
 
             try {
-                const result = await apiClient(category, controller, method, params, 'GET');
+                const result = await apiClient(
+                    category,
+                    controller,
+                    method,
+                    params,
+                    'GET',
+                    authentication?.accessToken,
+                );
                 if (isMounted) {
                     setData(result);
                 }

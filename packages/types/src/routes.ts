@@ -7,7 +7,8 @@ import {
     ForgotPasswordParams,
     GetByIdParams,
     LoginParams,
-    RegisterParams,
+    LoginResponse,
+    RegisterParams, UserAuthenticationType,
 } from './user';
 import { GenericResponseType } from './system/GenericResponseType';
 
@@ -97,7 +98,7 @@ export const ROUTES = {
             },
             login: {
                 params: {} as LoginParams,
-                response: null as null,
+                response: {} as UserAuthenticationType,
                 endpoint: 'login',
             },
             forgotPassword: {

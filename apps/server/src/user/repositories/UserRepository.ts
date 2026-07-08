@@ -38,4 +38,7 @@ export class UserRepository extends EntityRepository<User> {
     async checkPassword(userInput: string, storedHash: string) {
         return compare(userInput, storedHash);
     }
+    async getById(id: number) {
+        return this.findOneOrFail({ id });
+    }
 }

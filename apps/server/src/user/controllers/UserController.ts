@@ -83,6 +83,6 @@ export class UserController {
 
     async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
         const user = await this.repos.user.getById(params.id);
-        return { user };
+        return user;
     }
 }

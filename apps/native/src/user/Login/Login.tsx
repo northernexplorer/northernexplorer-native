@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Switch, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useApiMutation } from '~/core/useApiMutation';
+import { setAuthentication } from '~/user/state/authentication/authenticationSlice';
+import { useDispatch } from 'react-redux';
 
 const initialFormData = {
     identifier: '',
@@ -16,6 +18,7 @@ type FormKeys = keyof FormData;
 export function Login() {
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
+    const dispatch = useDispatch();
 
     const { mutate, loading } = useApiMutation('user', 'UserController', 'login');
 
@@ -49,7 +52,11 @@ export function Login() {
 
     const handleSubmit = async () => {
         try {
-            // Your login logic / API call goes here
+            const response = await mutate(formData);
+            if (response) {
+                dispatch(setAuthentication(response));
+                router.replace('/profile');
+            }
         } catch (error) {
             console.error(error);
         }
