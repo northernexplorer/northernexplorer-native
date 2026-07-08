@@ -1,4 +1,5 @@
-import { Entity, Property, PrimaryKey } from '@mikro-orm/decorators/legacy';
+import { Entity, Property, PrimaryKey, OneToOne } from '@mikro-orm/decorators/legacy';
+import { Membership } from './Membership';
 
 @Entity()
 export class User {
@@ -31,4 +32,7 @@ export class User {
 
     @Property({ type: 'boolean' })
     isActive!: boolean;
+
+    @OneToOne(() => Membership)
+    membership!: Membership;
 }

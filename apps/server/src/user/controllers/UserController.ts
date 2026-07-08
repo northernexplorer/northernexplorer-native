@@ -23,6 +23,19 @@ export class UserController {
         });
         const passwordHash = await this.repos.user.hashPassword(params.password);
 
+        const membershipLevel = await this.repos.membershipLevel.getById(1);
+
+        const startDate = new Date();
+        const renewalDate = new Date();
+        renewalDate.setMonth(startDate.getMonth() + 1);
+
+        const membership = this.repos.membership.create({
+            membershipLevel,
+            version: 1,
+            startDate,
+            renewalDate,
+        });
+
         this.repos.user.create({
             email: params.email,
             firstName: params.firstName,
@@ -33,6 +46,7 @@ export class UserController {
             isActive: true,
             passwordHash,
             version: 1,
+            membership,
         });
         await this.repos.user.getEntityManager().flush();
         return { success: true };
