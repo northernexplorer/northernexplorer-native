@@ -3,6 +3,8 @@ import { styles } from '~/user/styles';
 import { Link, Redirect, useLocalSearchParams } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
 import { useApiFetch } from '~/core/useApiFetch';
+import { Spinner } from '~/layout/Layout/components/Spiner';
+import React from 'react';
 
 type RouteParams = {
     id: string;
@@ -16,7 +18,7 @@ export function Profile() {
         id: parseInt(id),
     });
     if (!authentication) return <Redirect href="/profile/login" />;
-    if (loading || !data) return null;
+    if (loading || !data) return <Spinner />;
 
     const ProfileField = ({ label, value }: { label: string; value: string }) => (
         <View style={styles.field}>
