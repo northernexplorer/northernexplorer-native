@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, Image, ActivityIndicator } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { styles } from '~/location/HistoricSiteDetails/styles';
 import { getUrl } from '@northernexplorer/tools';
 import { config } from '~/config';
 import { useApiFetch } from '~/core/useApiFetch';
+import { Spinner } from '~/layout/Layout/components/Spiner';
 
 export function HistoricSiteDetails() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -14,9 +15,7 @@ export function HistoricSiteDetails() {
         'getHistoricSiteById',
         { id: parseInt(id) },
     );
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0088cc" style={styles.centerSpinner} />;
-    }
+    if (loading) return <Spinner />;
 
     if (error || !data) {
         return (
