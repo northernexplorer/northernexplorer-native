@@ -25,11 +25,17 @@ export const styles = StyleSheet.create({
         fontWeight: '700',
         marginTop: 8,
     },
-    coordinatesLabel: {
+    metaContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+    },
+    metaLabel: {
         color: '#1a1a1a',
         fontSize: 13,
         marginTop: 6,
         fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        paddingRight: 20,
     },
     divider: {
         height: 1,
