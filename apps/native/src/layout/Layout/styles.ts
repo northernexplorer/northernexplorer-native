@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
     },
     navbar: {
         width: '100%',
-        paddingHorizontal: 20,
+        paddingHorizontal: 12,
         zIndex: 100,
         borderBottomWidth: 1,
         borderBottomColor: '#333333',
