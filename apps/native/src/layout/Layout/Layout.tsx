@@ -27,17 +27,19 @@ export function Layout({ Content, components, title, fullPage, home }: Props) {
             <Navigation />
 
             <ScrollView
+                scrollEnabled={!fullPage}
                 style={{ flex: 1 }}
                 contentContainerStyle={[
                     styles.page,
                     {
                         flexDirection: isMobileView ? 'column' : 'row',
+                        height: fullPage ? '100%' : 'auto',
                     },
                 ]}
             >
                 <View style={{ flex: 1, width: '100%', alignSelf: 'stretch' }}>
                     <ImageBackground
-                        style={[styles.background, { alignSelf: 'stretch' }]}
+                        style={[styles.background, { alignSelf: 'stretch', flex: 1 }]}
                         source={home ? theme?.image : undefined}
                         imageStyle={{
                             width: '100%',
@@ -65,7 +67,7 @@ export function Layout({ Content, components, title, fullPage, home }: Props) {
                                 </Text>
                             )}
 
-                            <View style={{ flexGrow: 1, display: 'flex', width: '100%' }}>
+                            <View style={{ flex: 1, display: 'flex', width: '100%' }}>
                                 <Content />
                             </View>
                         </View>
