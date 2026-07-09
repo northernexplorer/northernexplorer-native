@@ -5,6 +5,7 @@ import { Link, Redirect, useLocalSearchParams, router } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
 import { useApiMutation } from '~/core/useApiMutation';
 import { useApiFetch } from '~/core/useApiFetch';
+import { Spinner } from '~/layout/Layout/components/Spiner';
 
 type RouteParams = {
     username: string;
@@ -59,7 +60,7 @@ export function EditProfile() {
     }, [data]);
 
     if (!authentication) return <Redirect href="/profile/login" />;
-    if (loading || !data) return null;
+    if (loading || !data) return <Spinner />;
 
     const updateField = (key: FormKeys, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));

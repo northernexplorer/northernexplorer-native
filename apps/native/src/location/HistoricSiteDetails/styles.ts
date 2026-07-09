@@ -1,10 +1,6 @@
 import { StyleSheet, Platform } from 'react-native';
 
 export const styles = StyleSheet.create({
-    centerSpinner: {
-        marginTop: 40,
-        alignSelf: 'center',
-    },
     banner: {
         width: '100%',
         height: 300,
