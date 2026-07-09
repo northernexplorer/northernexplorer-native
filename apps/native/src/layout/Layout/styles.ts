@@ -44,14 +44,12 @@ export const styles = StyleSheet.create({
         letterSpacing: 0.5,
     },
     navbarContainer: {
-        width: '100%',
         backgroundColor: '#1a1a1a',
         borderBottomWidth: 1,
         borderBottomColor: '#333333',
     },
     navbar: {
-        width: '100%',
-        paddingHorizontal: 20,
+        paddingHorizontal: 12,
         zIndex: 100,
         borderBottomWidth: 1,
         borderBottomColor: '#333333',
@@ -170,16 +168,16 @@ export const styles = StyleSheet.create({
         paddingTop: 20,
         backgroundColor: '#1a1a1a',
     },
-    sidebarDesktop: {
-        width: 320,
-        borderLeftWidth: 1,
-        borderLeftColor: '#333333',
-    },
     sidebarMobile: {
         width: '100%',
         borderTopWidth: 1,
         borderTopColor: '#333333',
         paddingRight: 24,
+    },
+    sidebarDesktop: {
+        width: 320,
+        borderLeftWidth: 1,
+        borderLeftColor: '#333333',
     },
     desktopNavGroup: {
         flexDirection: 'row',

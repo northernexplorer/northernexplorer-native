@@ -1,5 +1,5 @@
 import { Link, usePathname } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { styles } from '~/layout/Layout/styles';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
@@ -23,7 +23,12 @@ export function MenuItemUser({ isMobileDrawer, setIsMenuOpen }: Props) {
         : '/profile/logout';
 
     return (
-        <>
+        <View
+            style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+            }}
+        >
             <Link href={profileHref} asChild>
                 <Pressable
                     onPress={() => setIsMenuOpen(false)}
@@ -59,6 +64,6 @@ export function MenuItemUser({ isMobileDrawer, setIsMenuOpen }: Props) {
                     </Pressable>
                 </Link>
             )}
-        </>
+        </View>
     );
 }
