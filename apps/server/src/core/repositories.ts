@@ -1,9 +1,15 @@
 import { ForecastCache, ForecastRepository, WeatherCache, WeatherRepository } from '../environment';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { CityCache, CityRepository, HistoricSite, HistoricSiteRepository } from '../location';
-import { User } from '../user';
+import {
+    Membership,
+    MembershipLevel,
+    MembershipLevelRepository,
+    MembershipRepository,
+    User,
+    UserRepository,
+} from '../user';
 import { Migration } from '../system';
-import { UserRepository } from '../user/repositories/UserRepository';
 import { MigrationRepository } from '../system/repositories/MigrationRepository';
 
 export type Repositories = ReturnType<typeof repositories>;
@@ -16,5 +22,7 @@ export function repositories(em: EntityManager) {
         weather: new WeatherRepository(em, WeatherCache),
         user: new UserRepository(em, User),
         migration: new MigrationRepository(em, Migration),
+        membership: new MembershipRepository(em, Membership),
+        membershipLevel: new MembershipLevelRepository(em, MembershipLevel),
     };
 }

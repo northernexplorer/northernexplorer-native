@@ -38,10 +38,14 @@ export function HistoricSiteDetails() {
 
                 <Text style={styles.title}>{data.name}</Text>
 
-                <Text style={styles.coordinatesLabel}>
-                    Coordinates: {data.lat.toFixed(4)}°, {data.lon.toFixed(4)}° Dates:{' '}
-                    {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
-                </Text>
+                <View style={styles.metaContainer}>
+                    <Text style={styles.metaLabel}>
+                        Coordinates: {data.lat.toFixed(4)}°, {data.lon.toFixed(4)}°
+                    </Text>
+                    <Text style={styles.metaLabel}>
+                        Dates: {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
+                    </Text>
+                </View>
 
                 <View style={styles.divider} />
 

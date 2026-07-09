@@ -23,7 +23,7 @@ export class TokenService {
      */
     generateRefreshToken(payload: Pick<TokenPayload, 'userId'>): string {
         return jwt.sign(payload, config.REFRESH_SECRET, {
-            expiresIn: '7d',
+            expiresIn: '30d',
         });
     }
 
