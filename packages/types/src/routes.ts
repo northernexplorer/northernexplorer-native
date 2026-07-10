@@ -13,7 +13,6 @@ import {
     GetByUsernameResponse,
 } from './user';
 import { GenericResponseType } from './system/GenericResponseType';
-import { Subscription } from 'northernexplorer-server/dist/user';
 import { SubscriptionParams, SubscriptionResponse } from './user/Subscription';
 
 export interface ApiMethod<P = unknown, R = unknown> {
