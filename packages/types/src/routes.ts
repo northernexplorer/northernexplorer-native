@@ -6,13 +6,15 @@ import {
     EditProfileParams,
     ForgotPasswordParams,
     GetByUsernameParams,
-    GetByIdResponse,
     LoginParams,
     RefreshParams,
     RegisterParams,
     UserAuthenticationType,
+    GetByUsernameResponse,
 } from './user';
 import { GenericResponseType } from './system/GenericResponseType';
+import { Subscription } from 'northernexplorer-server/dist/user';
+import { SubscriptionParams, SubscriptionResponse } from './user/Subscription';
 
 export interface ApiMethod<P = unknown, R = unknown> {
     params: P;
@@ -82,6 +84,12 @@ export const ROUTES = {
         MigrationController: {},
     },
     user: {
+        SubscriptionController: {
+            getByUsername: {
+                params: {} as SubscriptionParams,
+                response: {} as SubscriptionResponse,
+            },
+        },
         UserController: {
             register: {
                 params: {} as RegisterParams,
@@ -109,7 +117,7 @@ export const ROUTES = {
             },
             getByUsername: {
                 params: { username: '' } as GetByUsernameParams,
-                response: {} as GetByIdResponse,
+                response: {} as GetByUsernameResponse,
             },
             refresh: {
                 params: {} as RefreshParams,

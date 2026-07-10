@@ -38,6 +38,7 @@ export async function apiClient<
     };
 
     if (fetchMethod === 'POST') {
+        options.cache = 'no-store';
         options.body = JSON.stringify(params);
     } else if (params && typeof params === 'object') {
         Object.entries(params).forEach(([key, value]) => {

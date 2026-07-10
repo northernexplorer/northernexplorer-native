@@ -5,9 +5,8 @@ import {
     WeatherController,
 } from '../environment';
 import { CityController, HistoricSiteController } from '../location';
-import { UserController } from '../user/controllers/UserController';
-import { MigrationController } from '../system/controllers/MigrationController';
-import { StatusController } from '../system';
+import { StatusController, MigrationController } from '../system';
+import { SubscriptionController, UserController } from '../user';
 
 export const controllers = [
     ForecastController,
@@ -19,4 +18,5 @@ export const controllers = [
     UserController,
     MigrationController,
     StatusController,
+    SubscriptionController,
 ];

@@ -1,9 +1,10 @@
+export { SubscriptionController } from './controllers/SubscriptionController';
 export { UserController } from './controllers/UserController';
 
-export { Membership } from './entities/Membership';
-export { MembershipLevel } from './entities/MembershipLevel';
+export { Subscription } from './entities/Subscription';
+export { SubscriptionLevel } from './entities/SubscriptionLevel';
 export { User } from './entities/User';
 
-export { MembershipRepository } from './repositories/MembershipRepository';
-export { MembershipLevelRepository } from './repositories/MembershipLevelRepository';
+export { SubscriptionRepository } from './repositories/SubscriptionRepository';
+export { SubscriptionLevelRepository } from './repositories/SubscriptionLevelRepository';
 export { UserRepository } from './repositories/UserRepository';

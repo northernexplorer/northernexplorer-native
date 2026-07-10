@@ -90,4 +90,21 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: 4,
     },
+    tabButton: {
+        flex: 1,
+        paddingVertical: 10,
+        alignItems: 'center',
+        borderBottomWidth: 2,
+        borderBottomColor: '#ccc',
+    },
+    activeTabButton: {
+        borderBottomColor: '#0088cc',
+    },
+    tabText: {
+        color: '#666',
+    },
+    activeTabText: {
+        color: '#0088cc',
+        fontWeight: 'bold',
+    },
 });

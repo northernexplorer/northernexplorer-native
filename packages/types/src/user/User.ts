@@ -40,7 +40,7 @@ export type ChangePasswordParams = {
 export type GetByUsernameParams = {
     username: string;
 };
-export type GetByIdResponse = {
+export type GetByUsernameResponse = {
     id: number;
     version: number;
     firstName: string;

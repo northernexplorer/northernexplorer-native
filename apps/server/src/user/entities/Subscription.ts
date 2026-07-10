@@ -1,16 +1,16 @@
 import { Entity, Property, PrimaryKey, ManyToOne } from '@mikro-orm/decorators/legacy';
-import { MembershipLevel } from './MembershipLevel';
+import { SubscriptionLevel } from './SubscriptionLevel';
 
 @Entity()
-export class Membership {
+export class Subscription {
     @PrimaryKey({ type: 'integer' })
     id!: number;
 
     @Property({ type: 'integer', version: true })
     version = 1;
 
-    @ManyToOne(() => MembershipLevel)
-    membershipLevel!: MembershipLevel;
+    @ManyToOne(() => SubscriptionLevel)
+    subscriptionLevel!: SubscriptionLevel;
 
     @Property({ type: 'datetime' })
     startDate = new Date();

@@ -23,14 +23,14 @@ export class UserController {
         });
         const passwordHash = await this.repos.user.hashPassword(params.password);
 
-        const membershipLevel = await this.repos.membershipLevel.getById(1);
+        const subscriptionLevel = await this.repos.subscriptionLevel.getById(1);
 
         const startDate = new Date();
         const renewalDate = new Date();
         renewalDate.setMonth(startDate.getMonth() + 1);
 
-        const membership = this.repos.membership.create({
-            membershipLevel,
+        const subscription = this.repos.subscription.create({
+            subscriptionLevel,
             version: 1,
             startDate,
             renewalDate,
@@ -46,7 +46,7 @@ export class UserController {
             isActive: true,
             passwordHash,
             version: 1,
-            membership,
+            subscription,
         });
         await this.repos.user.getEntityManager().flush();
         return { success: true };
