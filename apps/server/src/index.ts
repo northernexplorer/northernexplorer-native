@@ -91,9 +91,8 @@ async function bootstrap() {
                 const ControllerClass = controllers.find((c) => c.name === controllerName);
 
                 if (ControllerClass) {
-                    Object.entries(methods).forEach(([methodName, routeConfig]) => {
-                        const { endpoint } = routeConfig as { endpoint: string };
-                        const path = `/api/${endpoint}`;
+                    Object.entries(methods).forEach(([methodName]) => {
+                        const path = `/api/${ControllerClass.name}/${methodName}`;
 
                         console.log(`Registering: ANY ${path}`);
 

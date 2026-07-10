@@ -5,12 +5,6 @@ import { useAuthentication } from '~/user/state/authentication/useAuthentication
 import { setAuthentication } from '~/user/state/authentication/authenticationSlice';
 import { useDispatch } from 'react-redux';
 
-export interface ApiMethod<P = unknown, R = unknown, E = string> {
-    params: P;
-    response: R;
-    endpoint: E;
-}
-
 export function useApiFetch<
     C extends NonEmptyCategory,
     K extends keyof ROUTES[C],

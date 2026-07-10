@@ -14,10 +14,9 @@ import {
 } from './user';
 import { GenericResponseType } from './system/GenericResponseType';
 
-export interface ApiMethod<P = unknown, R = unknown, E = string> {
+export interface ApiMethod<P = unknown, R = unknown> {
     params: P;
     response: R;
-    endpoint: E;
 }
 
 export type ControllerDefinition = Record<string, ApiMethod>;
@@ -34,28 +33,24 @@ export const ROUTES = {
             getFieldNoteData: {
                 params: { lat: 0, lon: 0 } as { lat: number; lon: number },
                 response: null as unknown as FieldNoteType,
-                endpoint: 'getFieldNoteData',
             },
         },
         ForecastController: {
             getForecastData: {
                 params: { lat: 0, lon: 0 } as { lat: number; lon: number },
                 response: null as unknown as ForecastType,
-                endpoint: 'getForecastData',
             },
         },
         LunarController: {
             getLunarData: {
                 params: {} as Record<string, never>,
                 response: null as unknown as LunarCycleType,
-                endpoint: 'getLunarData',
             },
         },
         WeatherController: {
             getWeatherData: {
                 params: { lat: 0, lon: 0 } as { lat: number; lon: number },
                 response: null as unknown as WeatherType,
-                endpoint: 'getWeatherData',
             },
         },
     },
@@ -64,19 +59,16 @@ export const ROUTES = {
             getCityData: {
                 params: { lat: 0, lon: 0 } as { lat: number; lon: number },
                 response: null as unknown as CityType,
-                endpoint: 'getCityData',
             },
         },
         HistoricSiteController: {
             getNearbyHistoricSites: {
                 params: { lat: 0, lon: 0, limit: 0 } as { lat: number; lon: number; limit: number },
                 response: null as unknown as HistoricSiteType[],
-                endpoint: 'getNearbyHistoricSites',
             },
             getHistoricSiteById: {
                 params: { id: 0 } as { id: number },
                 response: null as unknown as HistoricSiteType,
-                endpoint: 'getHistoricSiteById',
             },
         },
     },
@@ -85,7 +77,6 @@ export const ROUTES = {
             getOnlineStatus: {
                 params: { tick: 0 } as { tick: number },
                 response: null as unknown as boolean,
-                endpoint: 'getOnlineStatus',
             },
         },
         MigrationController: {},
@@ -95,42 +86,34 @@ export const ROUTES = {
             register: {
                 params: {} as RegisterParams,
                 response: { success: true } as GenericResponseType,
-                endpoint: 'register',
             },
             login: {
                 params: {} as LoginParams,
                 response: {} as UserAuthenticationType,
-                endpoint: 'login',
             },
             logout: {
                 params: {} as Record<string, never>,
                 response: {} as GenericResponseType,
-                endpoint: 'logout',
             },
             forgotPassword: {
                 params: {} as ForgotPasswordParams,
                 response: { success: true } as GenericResponseType,
-                endpoint: 'forgotPassword',
             },
             editProfile: {
                 params: {} as EditProfileParams,
                 response: { success: true } as GenericResponseType,
-                endpoint: 'editProfile',
             },
             changePassword: {
                 params: {} as ChangePasswordParams,
                 response: { success: true } as GenericResponseType,
-                endpoint: 'changePassword',
             },
             getByUsername: {
                 params: { username: '' } as GetByUsernameParams,
                 response: {} as GetByIdResponse,
-                endpoint: 'getById',
             },
             refresh: {
                 params: {} as RefreshParams,
                 response: {} as UserAuthenticationType,
-                endpoint: 'refresh',
             },
         },
     },

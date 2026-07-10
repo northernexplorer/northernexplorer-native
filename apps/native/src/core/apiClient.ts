@@ -6,7 +6,6 @@ import {
     UserAuthenticationType,
 } from '@northernexplorer/types';
 import { config } from '~/config';
-import { ApiMethod } from '~/core/useApiFetch';
 
 export async function apiClient<
     C extends NonEmptyCategory,
@@ -22,9 +21,8 @@ export async function apiClient<
     refreshToken?: string,
     onTokenRefresh?: (data: UserAuthenticationType) => void,
 ): Promise<GetResponse<C, K, M>> {
-    const route = ROUTES[category][controller][method] as unknown as ApiMethod;
-    const endpoint = route.endpoint;
-    const url = new URL(`${config.SERVER_URL}/api/${endpoint}`);
+    const url = new URL(`${config.SERVER_URL}/api/${String(controller)}/${String(method)}`);
+    console.log(url.toString());
 
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -53,9 +51,7 @@ export async function apiClient<
 
     if (res.status === 401 && refreshToken && onTokenRefresh) {
         try {
-            const refreshUrl = new URL(
-                `${config.SERVER_URL}/api/${ROUTES.user.UserController.refresh.endpoint}`,
-            );
+            const refreshUrl = new URL(`${config.SERVER_URL}/api/UserController/refresh`);
 
             const refreshRes = await fetch(refreshUrl.toString(), {
                 method: 'POST',
