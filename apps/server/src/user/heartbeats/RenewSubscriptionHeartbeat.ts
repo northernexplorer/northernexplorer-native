@@ -1,28 +1,18 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { repositories } from '../../core/repositories';
 import { Subscription } from '../entities/Subscription';
-import { boss } from '../../index';
 
 export class RenewSubscriptionHeartbeat {
     public static readonly queueName = 'process-subscription-renewal';
+    public static readonly queueSchedule = '0 */12 * * *';
 
     /**
      * Phase 1: Gathers all database context needed for the worker.
      * Sweeps only for active subscriptions whose renewal date is due right now or overdue.
      */
-    public async getData(
-        em: EntityManager,
-        data?: { subscriptionId: number },
-    ): Promise<Subscription[] | null> {
+    public async getData(em: EntityManager): Promise<Subscription[] | null> {
         const repos = repositories(em);
         const now = new Date();
-
-        if (data?.subscriptionId) {
-            const sub = await repos.subscription.findOne(data.subscriptionId, {
-                populate: ['subscriptionLevel'],
-            });
-            return sub ? [sub] : null;
-        }
 
         const subscriptions = await repos.subscription.find(
             {
@@ -52,7 +42,11 @@ export class RenewSubscriptionHeartbeat {
             }
 
             try {
-                subscription.renewalDate = new Date(subscription.renewalDate.getMonth() + 1);
+                // Correctly clone the current renewalDate and increment the month value
+                const nextRenewalDate = new Date(subscription.renewalDate);
+                nextRenewalDate.setMonth(nextRenewalDate.getMonth() + 1);
+
+                subscription.renewalDate = nextRenewalDate;
 
                 ctx.persist(subscription);
                 await ctx.flush();

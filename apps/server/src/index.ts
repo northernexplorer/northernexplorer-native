@@ -83,25 +83,31 @@ export function handle<T extends object>(
     };
 }
 
-export let boss: PgBoss;
-
 async function bootstrap() {
     try {
         const orm = await MikroORM.init(ormConfig);
         app.use((req, res, next) => RequestContext.create(orm.em, next));
 
         console.log('Initializing background job queue...');
-        boss = new PgBoss(ormConfig.clientUrl || '');
+
+        const boss = new PgBoss({
+            host: process.env.DB_HOST || 'localhost',
+            port: parseInt(process.env.DB_PORT || '5432', 10),
+            database: process.env.DB_NAME || 'northernexplorer',
+            user: process.env.DB_USER || 'postgres',
+            password: process.env.DB_PASS || 'password',
+        });
         await boss.start();
 
         console.log('Registering heartbeat background workers...');
         for (const HeartbeatClass of heartbeats) {
             const workerInstance = new HeartbeatClass();
             const queueName = (HeartbeatClass as any).queueName;
+            const cronSchedule = (HeartbeatClass as any).queueSchedule || '0 */12 * * *';
 
             if (!queueName) {
                 console.warn(
-                    ` Skipping registration: ${HeartbeatClass.name} is missing a static "queueName" property.`,
+                    `Skipping registration: ${HeartbeatClass.name} is missing a static "queueName" property.`,
                 );
                 continue;
             }
@@ -111,7 +117,6 @@ async function bootstrap() {
             await boss.work(queueName, async () => {
                 const forkEm = orm.em.fork() as EntityManager;
 
-                // Only pass the EntityManager as requested
                 const context = await workerInstance.getData(forkEm);
 
                 if (context && Array.isArray(context)) {
@@ -127,6 +132,11 @@ async function bootstrap() {
                     }
                 }
             });
+
+            await boss.createQueue(queueName);
+
+            console.log(`Scheduling queue ${queueName} with cron: ${cronSchedule}`);
+            await boss.schedule(queueName, cronSchedule);
         }
 
         Object.entries(ROUTES).forEach(([, controllersObj]) => {
