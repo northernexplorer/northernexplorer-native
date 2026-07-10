@@ -11,12 +11,14 @@ import path from 'node:path';
 import { repositories, Repositories } from './core/repositories';
 import { controllers } from './core/controllers';
 import { TokenService } from './user/services/TokenService';
+import { PgBoss } from 'pg-boss';
+import { heartbeats } from './core/heartbeats';
 
 const app = express();
 const PORT = config.PORT;
 
 app.use(cors({ origin: '*' }));
-app.use(express.json()); // This parses the incoming JSON, but we need to extract it below
+app.use(express.json());
 app.use(express.static(path.join(process.cwd(), 'public')));
 
 type ControllerConstructor<T> = new (repos: Repositories) => T;
@@ -81,10 +83,51 @@ export function handle<T extends object>(
     };
 }
 
+export let boss: PgBoss;
+
 async function bootstrap() {
     try {
         const orm = await MikroORM.init(ormConfig);
         app.use((req, res, next) => RequestContext.create(orm.em, next));
+
+        console.log('Initializing background job queue...');
+        boss = new PgBoss(ormConfig.clientUrl || '');
+        await boss.start();
+
+        console.log('Registering heartbeat background workers...');
+        for (const HeartbeatClass of heartbeats) {
+            const workerInstance = new HeartbeatClass();
+            const queueName = (HeartbeatClass as any).queueName;
+
+            if (!queueName) {
+                console.warn(
+                    ` Skipping registration: ${HeartbeatClass.name} is missing a static "queueName" property.`,
+                );
+                continue;
+            }
+
+            console.log(`Worker listening to queue: ${queueName}`);
+
+            await boss.work(queueName, async () => {
+                const forkEm = orm.em.fork() as EntityManager;
+
+                // Only pass the EntityManager as requested
+                const context = await workerInstance.getData(forkEm);
+
+                if (context && Array.isArray(context)) {
+                    for (const contextItem of context) {
+                        try {
+                            await workerInstance.execute(forkEm, contextItem);
+                        } catch (entityError) {
+                            console.error(
+                                `[Queue: ${queueName}] Error processing individual item:`,
+                                entityError,
+                            );
+                        }
+                    }
+                }
+            });
+        }
 
         Object.entries(ROUTES).forEach(([, controllersObj]) => {
             Object.entries(controllersObj).forEach(([controllerName, methods]) => {
@@ -109,10 +152,10 @@ async function bootstrap() {
         });
 
         app.listen(PORT, () => {
-            console.log(`🚀 API running on http://localhost:${PORT}`);
+            console.log(`API running on http://localhost:${PORT}`);
         });
     } catch (error) {
-        console.error('❌ Failed to initialize:', error);
+        console.error('Failed to initialize:', error);
         process.exit(1);
     }
 }

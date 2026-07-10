@@ -8,3 +8,5 @@ export { User } from './entities/User';
 export { SubscriptionRepository } from './repositories/SubscriptionRepository';
 export { SubscriptionLevelRepository } from './repositories/SubscriptionLevelRepository';
 export { UserRepository } from './repositories/UserRepository';
+
+export { RenewSubscriptionHeartbeat } from './heartbeats/RenewSubscriptionHeartbeat';
