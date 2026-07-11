@@ -34,5 +34,4 @@ export const migrationsRegistry: Record<string, string[]> = {
     m20260710bc,
     m20260710d,
     m20260710e,
-
 };

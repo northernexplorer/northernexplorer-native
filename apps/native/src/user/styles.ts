@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 14,
         paddingVertical: 12,
         fontSize: 16,
-        opacity:0.5
+        opacity: 0.5,
     },
     button: {
         backgroundColor: '#0088cc',

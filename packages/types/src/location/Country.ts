@@ -1,7 +1,7 @@
-import { RegionType } from "./Region"
+import { RegionType } from './Region';
 
 export type CountryType = {
-    id: string,
-name: string
-regions: RegionType[];
-}
+    id: string;
+    name: string;
+    regions: RegionType[];
+};

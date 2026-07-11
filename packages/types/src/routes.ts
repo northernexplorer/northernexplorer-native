@@ -20,7 +20,6 @@ import { GenericResponseType } from './system/GenericResponseType';
 import { SubscriptionParams, SubscriptionResponse } from './user/Subscription';
 
 export interface ApiMethod<P = unknown, R = unknown> {
-
     params: P;
     response: R;
 }
@@ -77,20 +76,18 @@ export const ROUTES = {
                 response: null as unknown as HistoricSiteType,
             },
         },
-        CountryController:{
-            getCountryById:{
-                params:{id:''} as {id:string},
-            response:null as unknown as CountryType,
-            }
-           
+        CountryController: {
+            getCountryById: {
+                params: { id: '' } as { id: string },
+                response: null as unknown as CountryType,
+            },
         },
-        RegionController:{
-            getRegionById:{
-                params:{id:''} as {id:string},
-            response:null as unknown as RegionType,
-            }
-        }
-
+        RegionController: {
+            getRegionById: {
+                params: { id: '' } as { id: string },
+                response: null as unknown as RegionType,
+            },
+        },
     },
     system: {
         StatusController: {

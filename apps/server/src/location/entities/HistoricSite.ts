@@ -38,8 +38,6 @@ export class HistoricSite {
     @Property({ type: 'datetime' })
     createdAt = new Date();
 
-
     @Property({ type: 'datetime' })
     updatedAt = new Date();
-
 }

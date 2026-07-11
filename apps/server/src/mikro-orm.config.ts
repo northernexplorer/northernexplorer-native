@@ -8,7 +8,6 @@ import { entities } from './core/entities';
 dotenv.config();
 
 export default defineConfig({
-
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432', 10),
     dbName: process.env.DB_NAME || 'northernexplorer',
@@ -17,5 +16,4 @@ export default defineConfig({
     metadataProvider: ReflectMetadataProvider,
     entities,
     debug: process.env.NODE_ENV !== 'production',
-
 });

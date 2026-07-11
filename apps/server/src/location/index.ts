@@ -1,12 +1,12 @@
 export { CityController } from './controllers/CityController';
 export { HistoricSiteController } from './controllers/HistoricSiteController';
-export {CountryController} from './controllers/CountryController'
-export {RegionController} from './controllers/RegionController'
+export { CountryController } from './controllers/CountryController';
+export { RegionController } from './controllers/RegionController';
 export { CityCache } from './entities/CityCache';
 export { HistoricSite } from './entities/HistoricSite';
-export {Country} from './entities/Country'
-export {Region} from './entities/Region'
+export { Country } from './entities/Country';
+export { Region } from './entities/Region';
 export { CityRepository } from './repositories/CityRepository';
 export { HistoricSiteRepository } from './repositories/HistoricSiteRepository';
-export {CountryRepository} from './repositories/CountryRepository'
-export {RegionRepository} from './repositories/RegionRepository'
+export { CountryRepository } from './repositories/CountryRepository';
+export { RegionRepository } from './repositories/RegionRepository';

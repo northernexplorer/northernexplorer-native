@@ -8,7 +8,7 @@ type Route<M extends keyof ROUTES['location']['HistoricSiteController']> = Route
 
 export class HistoricSiteController {
     constructor(private repos: Repositories) {}
- 
+
     public async getNearbyHistoricSites(
         params: Params<Route<'getNearbyHistoricSites'>>,
     ): Promise<Response<Route<'getNearbyHistoricSites'>>> {

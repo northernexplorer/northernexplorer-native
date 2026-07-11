@@ -1,26 +1,17 @@
-
-import { Entity,PrimaryKey,Index,Property, ManyToOne } from "@mikro-orm/decorators/legacy";
-import { Country } from "./Country";
-
-
+import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/decorators/legacy';
+import { Country } from './Country';
 
 @Entity()
-// @Index({ name: 'idx_site_location', properties: ['name'] })
-export class Region{
+export class Region {
+    @PrimaryKey({ type: 'string' })
+    id!: string;
 
-@PrimaryKey({type:'string'})
-id!:string
+    @Property({ type: 'number', version: true, default: 1 })
+    version!: number;
 
+    @Property({ type: 'string' })
+    name!: string;
 
-@Property({type:'number',version:true,default:1})
-version!:number
-
-
-@Property({type:'string',length:255})
-name!:string
-
-@ManyToOne(() => Country)
-country!:Country
-
-
+    @ManyToOne(() => Country)
+    country!: Country;
 }
