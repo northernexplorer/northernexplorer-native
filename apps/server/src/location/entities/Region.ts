@@ -1,10 +1,11 @@
-import { Collection } from "@mikro-orm/core";
-import { Entity,PrimaryKey,Index,Property } from "@mikro-orm/decorators/legacy";
+
+import { Entity,PrimaryKey,Index,Property, ManyToOne } from "@mikro-orm/decorators/legacy";
 import { Country } from "./Country";
 
 
+
 @Entity()
-@Index({ name: 'idx_site_location', properties: ['name'] })
+// @Index({ name: 'idx_site_location', properties: ['name'] })
 export class Region{
 
 @PrimaryKey({type:'string'})
@@ -18,9 +19,8 @@ version!:number
 @Property({type:'string',length:255})
 name!:string
 
-
-country = new Collection<Country>(this)
-
+@ManyToOne(() => Country)
+country!:Country
 
 
 }

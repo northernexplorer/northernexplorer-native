@@ -1,7 +1,8 @@
 import { CityType, HistoricSiteType } from './location';
 import { ForecastType, LunarCycleType, WeatherType } from './environment';
 import { FieldNoteType } from './environment/FieldNote';
-
+import { CountryType } from './location/Country';
+import { RegionType } from './location/Region';
 export interface ApiMethod<P = unknown, R = unknown, E = string> {
     params: P;
     response: R;
@@ -68,6 +69,22 @@ export const ROUTES = {
                 endpoint: 'getHistoricSiteById',
             },
         },
+        CountryController:{
+            getCountryById:{
+                params:{id:''} as {id:string},
+            response:null as unknown as CountryType,
+            endpoint: 'getCountryById'
+            }
+           
+        },
+        RegionController:{
+            getRegionById:{
+                params:{id:''} as {id:string},
+            response:null as unknown as RegionType,
+            endpoint: 'getRegionById'
+            }
+        }
+
     },
     system: {
         StatusController: {
