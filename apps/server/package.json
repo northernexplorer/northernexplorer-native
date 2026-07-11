@@ -15,9 +15,12 @@
         "@mikro-orm/decorators": "^7.1.4",
         "@mikro-orm/postgresql": "^7.1.4",
         "@northernexplorer/types": "*",
+        "bcrypt": "^6.0.0",
         "cors": "^2.8.5",
         "dotenv": "^17.4.2",
         "express": "^4.21.0",
+        "jsonwebtoken": "^9.0.3",
+        "pg-boss": "^12.25.1",
         "reflect-metadata": "^0.2.2"
     },
     "devDependencies": {

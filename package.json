@@ -22,12 +22,14 @@
         "start:migrate": "yarn workspace northernexplorer-migrate start",
         "start:server": "yarn workspace northernexplorer-server dev",
         "start:web": "yarn workspace northernexplorer-native web",
-        "test:deps": "depcheck --specials=typescript --ignores=\"sort-package-json,eslint-plugin-prettier,prettier,depcheck,@types/node,tsx,eslint-plugin-jsonc\" && yarn workspaces run test:deps",
+        "test:deps": "depcheck --specials=typescript --ignores=\"sort-package-json,eslint-plugin-prettier,prettier,depcheck,@types/node,tsx,eslint-plugin-jsonc,@types/bcrypt,@types/jsonwebtoken\" && yarn workspaces run test:deps",
         "test:format": "prettier . --check",
         "test:lint": "eslint .",
         "test:types": "tsc --build --force"
     },
     "devDependencies": {
+        "@types/bcrypt": "^6.0.0",
+        "@types/jsonwebtoken": "~9.0.10",
         "@types/node": "^22.0.0",
         "@typescript-eslint/eslint-plugin": "8.59.0",
         "@typescript-eslint/parser": "^8.61.1",

@@ -1,4 +1,5 @@
-import { Entity, Property, PrimaryKey } from '@mikro-orm/decorators/legacy';
+import { Entity, Property, PrimaryKey, OneToOne } from '@mikro-orm/decorators/legacy';
+import { Subscription } from './Subscription';
 
 @Entity()
 export class User {
@@ -15,7 +16,7 @@ export class User {
     lastName!: string;
 
     @Property({ type: 'text', unique: true })
-    userName!: string;
+    username!: string;
 
     @Property({ type: 'text', unique: true })
     email!: string;
@@ -31,4 +32,7 @@ export class User {
 
     @Property({ type: 'boolean' })
     isActive!: boolean;
+
+    @OneToOne(() => Subscription)
+    subscription!: Subscription;
 }

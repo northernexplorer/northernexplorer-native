@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import { useApiClient } from '~/core/useApiClient';
+import { useApiFetch } from '~/core/useApiFetch';
 
 const ConnectivityContext = createContext(false);
 
@@ -8,7 +8,7 @@ export function ConnectivityProvider({ children }: { children: React.ReactNode }
     const [tick, setTick] = useState(0);
     const [isDeviceConnected, setIsDeviceConnected] = useState(true);
 
-    const { data, error } = useApiClient('system', 'StatusController', 'getOnlineStatus', {
+    const { data, error } = useApiFetch('system', 'StatusController', 'getOnlineStatus', {
         tick,
     });
 

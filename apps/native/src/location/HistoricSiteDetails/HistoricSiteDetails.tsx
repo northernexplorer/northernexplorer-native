@@ -1,22 +1,21 @@
 import React from 'react';
-import { View, Text, Image, ActivityIndicator } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { styles } from '~/location/HistoricSiteDetails/styles';
 import { getUrl } from '@northernexplorer/tools';
 import { config } from '~/config';
-import { useApiClient } from '~/core/useApiClient';
+import { useApiFetch } from '~/core/useApiFetch';
+import { Spinner } from '~/layout/Layout/components/Spiner';
 
 export function HistoricSiteDetails() {
     const { id } = useLocalSearchParams<{ id: string }>();
-    const { data, loading, error } = useApiClient(
+    const { data, loading, error } = useApiFetch(
         'location',
         'HistoricSiteController',
         'getHistoricSiteById',
         { id: parseInt(id) },
     );
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0088cc" style={styles.centerSpinner} />;
-    }
+    if (loading) return <Spinner />;
 
     if (error || !data) {
         return (
@@ -31,8 +30,6 @@ export function HistoricSiteDetails() {
             <Image
                 source={{ uri: getUrl({ path: data.image, serverUrl: config.SERVER_URL }) }}
                 style={styles.banner}
-                onLoad={() => console.log('loaded')}
-                onError={(e) => console.log('error', e.nativeEvent)}
             />
             <View style={styles.content}>
                 <Text style={styles.breadcrumbs}>
@@ -41,10 +38,14 @@ export function HistoricSiteDetails() {
 
                 <Text style={styles.title}>{data.name}</Text>
 
-                <Text style={styles.coordinatesLabel}>
-                    Coordinates: {data.lat.toFixed(4)}°, {data.lon.toFixed(4)}° Dates:{' '}
-                    {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
-                </Text>
+                <View style={styles.metaContainer}>
+                    <Text style={styles.metaLabel}>
+                        Coordinates: {data.lat.toFixed(4)}°, {data.lon.toFixed(4)}°
+                    </Text>
+                    <Text style={styles.metaLabel}>
+                        Dates: {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
+                    </Text>
+                </View>
 
                 <View style={styles.divider} />
 

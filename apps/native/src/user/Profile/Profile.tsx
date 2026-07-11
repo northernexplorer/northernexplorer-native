@@ -1,51 +1,60 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { styles } from '~/user/styles';
-import { Link, Redirect } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useAuthentication } from '~/user/state/authentication/useAuthentication';
+import React, { useState } from 'react';
+import { ProfileDetails } from '~/user/Profile/components/ProfileDetails';
+import { Subscription } from '~/user/Profile/components/Subscription';
+
+type RouteParams = {
+    username: string;
+};
+
+// Define a type for our active tab
+type ActiveTab = 'details' | 'subscription';
 
 export function Profile() {
     const authentication = useAuthentication();
+    const { username } = useLocalSearchParams<RouteParams>();
+
+    const [activeTab, setActiveTab] = useState<ActiveTab>('details');
+
     if (!authentication) return <Redirect href="/profile/login" />;
 
-    const user = {
-        firstName: '',
-        lastName: '',
-        userName: '',
-        email: '',
-        createdAt: new Date(),
-        lastLoginAt: new Date(),
-        isActive: false,
-    };
-
-    const ProfileField = ({ label, value }: { label: string; value: string }) => (
-        <View style={styles.field}>
-            <Text style={styles.label}>{label}</Text>
-            <Text style={styles.value}>{value}</Text>
-        </View>
-    );
     return (
         <View style={styles.container}>
             <Text style={styles.title}>My Profile</Text>
-            <ProfileField label="First Name" value={user.firstName} />
-            <ProfileField label="Last Name" value={user.lastName} />
-            <ProfileField label="Username" value={user.userName} />
-            <ProfileField label="Email Address" value={user.email} />
-            <ProfileField label="Status" value={user.isActive ? 'Active' : 'Inactive'} />
-            <ProfileField label="Member Since" value={user.createdAt.toLocaleDateString()} />
-            <ProfileField
-                label="Last Login"
-                value={user.lastLoginAt ? user.lastLoginAt.toLocaleString() : 'Never'}
-            />
-            <Link href="/profile/edit-profile" asChild>
-                <Pressable style={styles.button}>
-                    <Text style={styles.buttonText}>Edit Profile</Text>
-                </Pressable>
-            </Link>
-            <Link href="/profile/change-password" asChild>
-                <Pressable style={styles.secondaryButton}>
-                    <Text style={styles.secondaryButtonText}>Change Password</Text>
-                </Pressable>
-            </Link>
+
+            <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+                <TouchableOpacity
+                    style={[styles.tabButton, activeTab === 'details' && styles.activeTabButton]}
+                    onPress={() => setActiveTab('details')}
+                >
+                    <Text style={activeTab === 'details' ? styles.activeTabText : styles.tabText}>
+                        Details
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[
+                        styles.tabButton,
+                        activeTab === 'subscription' && styles.activeTabButton,
+                    ]}
+                    onPress={() => setActiveTab('subscription')}
+                >
+                    <Text
+                        style={activeTab === 'subscription' ? styles.activeTabText : styles.tabText}
+                    >
+                        Subscription
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            {activeTab === 'details' ? (
+                <ProfileDetails username={username} />
+            ) : (
+                <Subscription username={username} />
+            )}
         </View>
     );
 }

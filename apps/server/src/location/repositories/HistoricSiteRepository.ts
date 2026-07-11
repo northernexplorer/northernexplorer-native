@@ -17,22 +17,11 @@ interface HistoricSiteRawRow {
 
 export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
     async getHistoricSiteDetails(id: number) {
-        const site = await this.em.findOne(HistoricSite, { id: Number(id) });
+        const site = await this.findOne({ id: Number(id) });
 
         if (!site) throw new Error('Historic site not found.');
 
-        return {
-            id: site.id,
-            name: site.name,
-            description: site.description,
-            image: site.image,
-            country: site.country,
-            region: site.region,
-            lat: Number(site.lat),
-            lon: Number(site.lon),
-            startDate: Number(site.startDate),
-            endDate: Number(site.endDate),
-        };
+        return site;
     }
 
     async getClosestHistoricSites(lat: number, lon: number, limit: number) {

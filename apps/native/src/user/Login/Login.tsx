@@ -1,18 +1,28 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Switch } from 'react-native';
+import { View, Text, TextInput, Pressable, Switch, ScrollView } from 'react-native';
 import { styles } from '~/user/styles';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { useApiMutation } from '~/core/useApiMutation';
+import { setAuthentication } from '~/user/state/authentication/authenticationSlice';
+import { useDispatch } from 'react-redux';
+
+const initialFormData = {
+    identifier: '',
+    password: '',
+    rememberMe: false,
+};
+
+type FormData = typeof initialFormData;
+type FormKeys = keyof FormData;
 
 export function Login() {
-    const [formData, setFormData] = useState({
-        identifier: '',
-        password: '',
-        rememberMe: false,
-    });
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formData, setFormData] = useState<FormData>(initialFormData);
+    const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
+    const dispatch = useDispatch();
 
-    const updateField = (key: keyof typeof formData, value: string | boolean) => {
+    const { mutate, loading } = useApiMutation('user', 'UserController', 'login');
+
+    const updateField = (key: FormKeys, value: string | boolean) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
         if (errors[key]) {
             setErrors((prev) => {
@@ -24,29 +34,39 @@ export function Login() {
     };
 
     const validateForm = async () => {
-        let newErrors: Record<string, string> = {};
+        const newErrors: Partial<Record<FormKeys, string>> = {};
 
-        if (!formData.identifier) {
-            newErrors.identifier = 'Identifier is required';
+        if (!formData.identifier.trim()) {
+            newErrors.identifier = 'Username or email is required';
         }
         if (formData.password.length < 8) {
             newErrors.password = 'Password must be at least 8 characters';
         }
 
         setErrors(newErrors);
+
         if (Object.keys(newErrors).length === 0) {
             await handleSubmit();
         }
     };
 
     const handleSubmit = async () => {
-        setIsSubmitting(true);
+        try {
+            const response = await mutate(formData);
+            if (response) {
+                dispatch(setAuthentication(response));
+                router.replace(`/profile/${response.username}`);
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
             <Text style={styles.title}>Sign In</Text>
 
+            {/* Username or Email Field */}
             <View style={styles.field}>
                 <Text style={styles.label}>Username or Email</Text>
                 <TextInput
@@ -57,10 +77,12 @@ export function Login() {
                     keyboardType="email-address"
                     placeholder="Username or Email"
                     style={styles.input}
+                    editable={!loading}
                 />
                 {errors.identifier && <Text style={styles.errorText}>{errors.identifier}</Text>}
             </View>
 
+            {/* Password Field */}
             <View style={styles.field}>
                 <Text style={styles.label}>Password</Text>
                 <TextInput
@@ -69,30 +91,42 @@ export function Login() {
                     secureTextEntry
                     placeholder="Password"
                     style={styles.input}
+                    editable={!loading}
                 />
                 {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
             </View>
 
+            {/* Remember Me Switch Row */}
             <View style={styles.rememberRow}>
                 <Text style={styles.label}>Remember Me</Text>
                 <Switch
                     value={formData.rememberMe}
                     onValueChange={(val) => updateField('rememberMe', val)}
+                    disabled={loading}
                 />
             </View>
-            <Pressable style={styles.button} onPress={validateForm} disabled={isSubmitting}>
-                <Text style={styles.buttonText}>Sign In</Text>
+
+            {/* Submit Button */}
+            <Pressable
+                style={[styles.button, loading && { opacity: 0.6 }]}
+                onPress={validateForm}
+                disabled={loading}
+            >
+                <Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
             </Pressable>
+
+            {/* Navigation Links */}
             <Link href="/profile/forgot-password" asChild>
-                <Pressable disabled={isSubmitting}>
+                <Pressable disabled={loading}>
                     <Text style={styles.link}>Forgot Password?</Text>
                 </Pressable>
             </Link>
+
             <Link href="/profile/register" asChild>
-                <Pressable disabled={isSubmitting}>
+                <Pressable disabled={loading}>
                     <Text style={styles.link}>Create Account</Text>
                 </Pressable>
             </Link>
-        </View>
+        </ScrollView>
     );
 }
