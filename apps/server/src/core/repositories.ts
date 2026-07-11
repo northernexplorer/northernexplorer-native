@@ -2,10 +2,10 @@ import { ForecastCache, ForecastRepository, WeatherCache, WeatherRepository } fr
 import { EntityManager } from '@mikro-orm/postgresql';
 import { CityCache, CityRepository, HistoricSite, HistoricSiteRepository } from '../location';
 import {
-    Membership,
-    MembershipLevel,
-    MembershipLevelRepository,
-    MembershipRepository,
+    Subscription,
+    SubscriptionLevel,
+    SubscriptionLevelRepository,
+    SubscriptionRepository,
     User,
     UserRepository,
 } from '../user';
@@ -22,7 +22,7 @@ export function repositories(em: EntityManager) {
         weather: new WeatherRepository(em, WeatherCache),
         user: new UserRepository(em, User),
         migration: new MigrationRepository(em, Migration),
-        membership: new MembershipRepository(em, Membership),
-        membershipLevel: new MembershipLevelRepository(em, MembershipLevel),
+        subscription: new SubscriptionRepository(em, Subscription),
+        subscriptionLevel: new SubscriptionLevelRepository(em, SubscriptionLevel),
     };
 }
