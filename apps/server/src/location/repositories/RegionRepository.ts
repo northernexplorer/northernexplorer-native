@@ -11,6 +11,7 @@ export class RegionRepository extends EntityRepository<Region> {
 
         return{
             id:region.id,
+            version:region.version,
             name:region.name,
             countryId: region.country.id
         }
