@@ -1,4 +1,4 @@
 export type GenericResponseType = {
-    success: boolean;
-    error?: string;
+	success: boolean;
+	error?: string;
 };

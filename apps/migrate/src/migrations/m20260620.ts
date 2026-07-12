@@ -1,5 +1,5 @@
 export const m20260620: string[] = [
-    `INSERT INTO historic_site (
+	`INSERT INTO historic_site (
     name,
     description,
     image,

@@ -1,5 +1,5 @@
-import { useAppSelector } from '~/core/storeHooks';
+import {useAppSelector} from '~/core/storeHooks';
 
 export function useWeather() {
-    return useAppSelector((s) => s.weather.data);
+	return useAppSelector(s => s.weather.data);
 }

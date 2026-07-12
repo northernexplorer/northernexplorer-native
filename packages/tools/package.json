@@ -1,14 +1,15 @@
 {
-    "name": "@northernexplorer/tools",
-    "version": "1.0.0",
-    "private": true,
-    "exports": {
-        ".": "./src/index.ts"
-    },
-    "main": "./src/index.ts",
-    "types": "./src/index.ts",
-    "scripts": {
-        "build": "tsc",
-        "test:deps": "depcheck --specials=typescript"
-    }
+	"name": "@northernexplorer/tools",
+	"version": "1.0.0",
+	"private": true,
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"test:deps": "depcheck --specials=typescript"
+	}
 }

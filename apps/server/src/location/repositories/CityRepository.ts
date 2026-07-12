@@ -1,10 +1,10 @@
-import { CityCache } from '../entities/CityCache';
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { config } from '../../config';
+import {CityCache} from '../entities/CityCache';
+import {EntityRepository} from '@mikro-orm/postgresql';
+import {config} from '../../config';
 
 export class CityRepository extends EntityRepository<CityCache> {
-    async getCityCache(lat: number, lon: number) {
-        const query = `
+	async getCityCache(lat: number, lon: number) {
+		const query = `
           SELECT city_data as "cityData", updated_at as "updatedAt", distance_meters as "distanceMeters"
           FROM (
                    SELECT city_data, updated_at,
@@ -17,44 +17,41 @@ export class CityRepository extends EntityRepository<CityCache> {
               LIMIT 1
       `;
 
-        const [cachedResult] = await this.em.getConnection().execute(query, [lat, lon, lat]);
+		const [cachedResult] = await this.em.getConnection().execute(query, [lat, lon, lat]);
 
-        if (cachedResult) {
-            const parsedData =
-                typeof cachedResult.cityData === 'string'
-                    ? JSON.parse(cachedResult.cityData)
-                    : cachedResult.cityData;
+		if (cachedResult) {
+			const parsedData = typeof cachedResult.cityData === 'string' ? JSON.parse(cachedResult.cityData) : cachedResult.cityData;
 
-            return parsedData[0];
-        }
+			return parsedData[0];
+		}
 
-        const apiUrl = `https://api.weatherapi.com/v1/search.json?key=${config.WEATHER_API_KEY}&q=${lat},${lon}`;
+		const apiUrl = `https://api.weatherapi.com/v1/search.json?key=${config.WEATHER_API_KEY}&q=${lat},${lon}`;
 
-        const apiResponse = await fetch(apiUrl);
+		const apiResponse = await fetch(apiUrl);
 
-        if (!apiResponse.ok) {
-            throw new Error(`WeatherAPI Geocoding API responded with code ${apiResponse.status}`);
-        }
+		if (!apiResponse.ok) {
+			throw new Error(`WeatherAPI Geocoding API responded with code ${apiResponse.status}`);
+		}
 
-        const parsedJson = await apiResponse.json();
+		const parsedJson = await apiResponse.json();
 
-        await this.createCache(lat, lon, parsedJson);
-        return parsedJson;
-    }
+		await this.createCache(lat, lon, parsedJson);
+		return parsedJson;
+	}
 
-    async createCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
-        const newCacheEntry = this.create({
-            lat: Number(lat),
-            lon: Number(lon),
-            cityData: parsedJson,
-            updatedAt: new Date(),
-        });
+	async createCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
+		const newCacheEntry = this.create({
+			lat: Number(lat),
+			lon: Number(lon),
+			cityData: parsedJson,
+			updatedAt: new Date(),
+		});
 
-        this.em.persist(newCacheEntry);
+		this.em.persist(newCacheEntry);
 
-        await this.nativeDelete({
-            updatedAt: { $lte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90) },
-        });
-        await this.em.flush();
-    }
+		await this.nativeDelete({
+			updatedAt: {$lte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90)},
+		});
+		await this.em.flush();
+	}
 }

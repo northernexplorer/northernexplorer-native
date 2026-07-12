@@ -1,1 +1,1 @@
-export type FieldNoteType = { title: string; body: string };
+export type FieldNoteType = {title: string; body: string};

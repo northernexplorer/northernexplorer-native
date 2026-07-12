@@ -1,18 +1,19 @@
 {
-    "name": "northernexplorer-migrate",
-    "version": "1.0.0",
-    "private": true,
-    "main": "dist/index.js",
-    "scripts": {
-        "build": "tsc",
-        "start": "tsx src/index.ts",
-        "test:deps": "depcheck --specials=typescript"
-    },
-    "dependencies": {
-        "dotenv": "^16.4.5",
-        "pg": "^8.22.0"
-    },
-    "devDependencies": {
-        "@types/pg": "^8.20.0"
-    }
+	"name": "northernexplorer-migrate",
+	"version": "1.0.0",
+	"private": true,
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"start": "tsx src/index.ts",
+		"test:deps": "depcheck --specials=typescript"
+	},
+	"dependencies": {
+		"dotenv": "^16.4.5",
+		"pg": "^8.22.0"
+	},
+	"devDependencies": {
+		"@types/pg": "^8.20.0"
+	}
 }

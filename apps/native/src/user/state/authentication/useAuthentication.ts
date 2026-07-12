@@ -1,5 +1,5 @@
-import { useAppSelector } from '~/core/storeHooks';
+import {useAppSelector} from '~/core/storeHooks';
 
 export function useAuthentication() {
-    return useAppSelector((s) => s.authentication.data);
+	return useAppSelector(s => s.authentication.data);
 }

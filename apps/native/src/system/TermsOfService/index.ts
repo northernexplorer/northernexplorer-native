@@ -1,1 +1,1 @@
-export { TermsOfService } from './TermsOfService';
+export {TermsOfService} from './TermsOfService';
