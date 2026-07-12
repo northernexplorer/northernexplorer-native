@@ -1,9 +1,9 @@
 {
-    "extends": ["expo/tsconfig.base", "../../tsconfig.base.json"],
-    "compilerOptions": {
-        "paths": {
-            "~/*": ["./src/*"]
-        }
-    },
-    "include": ["src/**/*", "index.ts", "global.d.ts"]
+	"extends": ["expo/tsconfig.base", "../../tsconfig.base.json"],
+	"compilerOptions": {
+		"paths": {
+			"~/*": ["./src/*"]
+		}
+	},
+	"include": ["src/**/*", "index.ts", "global.d.ts"]
 }

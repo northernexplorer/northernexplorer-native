@@ -1,5 +1,5 @@
 export type RegionType = {
-    id: string;
-    name: string;
-    countryId: string;
+	id: string;
+	name: string;
+	countryId: string;
 };

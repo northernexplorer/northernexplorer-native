@@ -1,14 +1,14 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { Region } from '../entities/Region';
+import {EntityRepository} from '@mikro-orm/postgresql';
+import {Region} from '../entities/Region';
 export class RegionRepository extends EntityRepository<Region> {
-    async getRegionById(id: string) {
-        const region = await this.em.findOneOrFail(Region, { id: id });
+	async getRegionById(id: string) {
+		const region = await this.em.findOneOrFail(Region, {id: id});
 
-        return {
-            id: region.id,
-            version: region.version,
-            name: region.name,
-            countryId: region.country.id,
-        };
-    }
+		return {
+			id: region.id,
+			version: region.version,
+			name: region.name,
+			countryId: region.country.id,
+		};
+	}
 }

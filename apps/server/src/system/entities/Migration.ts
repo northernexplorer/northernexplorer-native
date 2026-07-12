@@ -1,10 +1,10 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
+import {Entity, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
 
 @Entity()
 export class Migration {
-    @PrimaryKey({ type: 'string', length: 255 })
-    migrationKey!: string;
+	@PrimaryKey({type: 'string', length: 255})
+	migrationKey!: string;
 
-    @Property({ type: 'datetime' })
-    executedAt: Date = new Date();
+	@Property({type: 'datetime'})
+	executedAt: Date = new Date();
 }

@@ -1,4 +1,4 @@
-export { Migration } from './entities/Migration';
+export {Migration} from './entities/Migration';
 
-export { MigrationController } from './controllers/MigrationController';
-export { StatusController } from './controllers/StatusController';
+export {MigrationController} from './controllers/MigrationController';
+export {StatusController} from './controllers/StatusController';

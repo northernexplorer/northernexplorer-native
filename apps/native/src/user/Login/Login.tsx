@@ -1,132 +1,124 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Switch, ScrollView } from 'react-native';
-import { styles } from '~/user/styles';
-import { Link, router } from 'expo-router';
-import { useApiMutation } from '~/core/useApiMutation';
-import { setAuthentication } from '~/user/state/authentication/authenticationSlice';
-import { useDispatch } from 'react-redux';
+import React, {useState} from 'react';
+import {View, Text, TextInput, Pressable, Switch, ScrollView} from 'react-native';
+import {styles} from '~/user/styles';
+import {Link, router} from 'expo-router';
+import {useApiMutation} from '~/core/useApiMutation';
+import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
+import {useDispatch} from 'react-redux';
 
 const initialFormData = {
-    identifier: '',
-    password: '',
-    rememberMe: false,
+	identifier: '',
+	password: '',
+	rememberMe: false,
 };
 
 type FormData = typeof initialFormData;
 type FormKeys = keyof FormData;
 
 export function Login() {
-    const [formData, setFormData] = useState<FormData>(initialFormData);
-    const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
-    const dispatch = useDispatch();
+	const [formData, setFormData] = useState<FormData>(initialFormData);
+	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
+	const dispatch = useDispatch();
 
-    const { mutate, loading } = useApiMutation('user', 'UserController', 'login');
+	const {mutate, loading} = useApiMutation('user', 'UserController', 'login');
 
-    const updateField = (key: FormKeys, value: string | boolean) => {
-        setFormData((prev) => ({ ...prev, [key]: value }));
-        if (errors[key]) {
-            setErrors((prev) => {
-                const next = { ...prev };
-                delete next[key];
-                return next;
-            });
-        }
-    };
+	const updateField = (key: FormKeys, value: string | boolean) => {
+		setFormData(prev => ({...prev, [key]: value}));
+		if (errors[key]) {
+			setErrors(prev => {
+				const next = {...prev};
+				delete next[key];
+				return next;
+			});
+		}
+	};
 
-    const validateForm = async () => {
-        const newErrors: Partial<Record<FormKeys, string>> = {};
+	const validateForm = async () => {
+		const newErrors: Partial<Record<FormKeys, string>> = {};
 
-        if (!formData.identifier.trim()) {
-            newErrors.identifier = 'Username or email is required';
-        }
-        if (formData.password.length < 8) {
-            newErrors.password = 'Password must be at least 8 characters';
-        }
+		if (!formData.identifier.trim()) {
+			newErrors.identifier = 'Username or email is required';
+		}
+		if (formData.password.length < 8) {
+			newErrors.password = 'Password must be at least 8 characters';
+		}
 
-        setErrors(newErrors);
+		setErrors(newErrors);
 
-        if (Object.keys(newErrors).length === 0) {
-            await handleSubmit();
-        }
-    };
+		if (Object.keys(newErrors).length === 0) {
+			await handleSubmit();
+		}
+	};
 
-    const handleSubmit = async () => {
-        try {
-            const response = await mutate(formData);
-            if (response) {
-                dispatch(setAuthentication(response));
-                router.replace(`/profile/${response.username}`);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
+	const handleSubmit = async () => {
+		try {
+			const response = await mutate(formData);
+			if (response) {
+				dispatch(setAuthentication(response));
+				router.replace(`/profile/${response.username}`);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
-    return (
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-            <Text style={styles.title}>Sign In</Text>
+	return (
+		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+			<Text style={styles.title}>Sign In</Text>
 
-            {/* Username or Email Field */}
-            <View style={styles.field}>
-                <Text style={styles.label}>Username or Email</Text>
-                <TextInput
-                    value={formData.identifier}
-                    onChangeText={(val) => updateField('identifier', val)}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    keyboardType="email-address"
-                    placeholder="Username or Email"
-                    style={styles.input}
-                    editable={!loading}
-                />
-                {errors.identifier && <Text style={styles.errorText}>{errors.identifier}</Text>}
-            </View>
+			{/* Username or Email Field */}
+			<View style={styles.field}>
+				<Text style={styles.label}>Username or Email</Text>
+				<TextInput
+					value={formData.identifier}
+					onChangeText={val => updateField('identifier', val)}
+					autoCapitalize="none"
+					autoCorrect={false}
+					keyboardType="email-address"
+					placeholder="Username or Email"
+					style={styles.input}
+					editable={!loading}
+				/>
+				{errors.identifier && <Text style={styles.errorText}>{errors.identifier}</Text>}
+			</View>
 
-            {/* Password Field */}
-            <View style={styles.field}>
-                <Text style={styles.label}>Password</Text>
-                <TextInput
-                    value={formData.password}
-                    onChangeText={(val) => updateField('password', val)}
-                    secureTextEntry
-                    placeholder="Password"
-                    style={styles.input}
-                    editable={!loading}
-                />
-                {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-            </View>
+			{/* Password Field */}
+			<View style={styles.field}>
+				<Text style={styles.label}>Password</Text>
+				<TextInput
+					value={formData.password}
+					onChangeText={val => updateField('password', val)}
+					secureTextEntry
+					placeholder="Password"
+					style={styles.input}
+					editable={!loading}
+				/>
+				{errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+			</View>
 
-            {/* Remember Me Switch Row */}
-            <View style={styles.rememberRow}>
-                <Text style={styles.label}>Remember Me</Text>
-                <Switch
-                    value={formData.rememberMe}
-                    onValueChange={(val) => updateField('rememberMe', val)}
-                    disabled={loading}
-                />
-            </View>
+			{/* Remember Me Switch Row */}
+			<View style={styles.rememberRow}>
+				<Text style={styles.label}>Remember Me</Text>
+				<Switch value={formData.rememberMe} onValueChange={val => updateField('rememberMe', val)} disabled={loading} />
+			</View>
 
-            {/* Submit Button */}
-            <Pressable
-                style={[styles.button, loading && { opacity: 0.6 }]}
-                onPress={validateForm}
-                disabled={loading}
-            >
-                <Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
-            </Pressable>
+			{/* Submit Button */}
+			<Pressable style={[styles.button, loading && {opacity: 0.6}]} onPress={validateForm} disabled={loading}>
+				<Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
+			</Pressable>
 
-            {/* Navigation Links */}
-            <Link href="/profile/forgot-password" asChild>
-                <Pressable disabled={loading}>
-                    <Text style={styles.link}>Forgot Password?</Text>
-                </Pressable>
-            </Link>
+			{/* Navigation Links */}
+			<Link href="/profile/forgot-password" asChild>
+				<Pressable disabled={loading}>
+					<Text style={styles.link}>Forgot Password?</Text>
+				</Pressable>
+			</Link>
 
-            <Link href="/profile/register" asChild>
-                <Pressable disabled={loading}>
-                    <Text style={styles.link}>Create Account</Text>
-                </Pressable>
-            </Link>
-        </ScrollView>
-    );
+			<Link href="/profile/register" asChild>
+				<Pressable disabled={loading}>
+					<Text style={styles.link}>Create Account</Text>
+				</Pressable>
+			</Link>
+		</ScrollView>
+	);
 }

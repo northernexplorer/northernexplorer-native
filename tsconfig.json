@@ -1,9 +1,4 @@
 {
-    "files": [],
-    "references": [
-        { "path": "./apps/migrate" },
-        { "path": "./apps/server" },
-        { "path": "./apps/native" },
-        { "path": "./packages/types" }
-    ]
+	"files": [],
+	"references": [{"path": "./apps/migrate"}, {"path": "./apps/server"}, {"path": "./apps/native"}, {"path": "./packages/types"}]
 }

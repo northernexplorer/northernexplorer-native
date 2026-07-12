@@ -1,7 +1,7 @@
-import { Markdown } from '~/layout/Layout';
+import {Markdown} from '~/layout/Layout';
 
 export function TermsOfService() {
-    const TERMS_AND_CONDITIONS = `
+	const TERMS_AND_CONDITIONS = `
 *Last updated: July 5, 2026*
 
 Welcome to Northern Explorer. By accessing or using our application, you agree to be bound by these Terms and Conditions. If you disagree with any part of these terms, you may not access the service.
@@ -36,5 +36,5 @@ We reserve the right to modify or replace these Terms at any time. By continuing
 If you have any questions about these Terms, please contact us through the support section within the app.
 `;
 
-    return <Markdown content={TERMS_AND_CONDITIONS} />;
+	return <Markdown content={TERMS_AND_CONDITIONS} />;
 }

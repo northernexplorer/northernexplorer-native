@@ -1,2 +1,2 @@
-export { Layout } from './Layout';
-export { Markdown } from './components/Markdown';
+export {Layout} from './Layout';
+export {Markdown} from './components/Markdown';

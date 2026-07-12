@@ -1,6 +1,6 @@
-import { Layout } from '~/layout/Layout';
-import { Profile } from '~/user/Profile';
+import {Layout} from '~/layout/Layout';
+import {Profile} from '~/user/Profile';
 
 export default function () {
-    return <Layout Content={Profile} />;
+	return <Layout Content={Profile} />;
 }

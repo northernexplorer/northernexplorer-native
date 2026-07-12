@@ -1,14 +1,14 @@
-import { WeatherCache } from '../entities/WeatherCache';
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { config } from '../../config';
+import {WeatherCache} from '../entities/WeatherCache';
+import {EntityRepository} from '@mikro-orm/postgresql';
+import {config} from '../../config';
 
 interface RawInternalWeatherRow {
-    weatherData: string | Record<string, unknown>;
+	weatherData: string | Record<string, unknown>;
 }
 
 export class WeatherRepository extends EntityRepository<WeatherCache> {
-    async getWeatherCache(lat: number, lon: number) {
-        const query = `
+	async getWeatherCache(lat: number, lon: number) {
+		const query = `
       SELECT weather_data as "weatherData"
       FROM (
              SELECT weather_data, updated_at,
@@ -21,48 +21,41 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
         LIMIT 1
     `;
 
-        const rawResults = (await this.em
-            .getConnection()
-            .execute(query)) as unknown as RawInternalWeatherRow[];
+		const rawResults = (await this.em.getConnection().execute(query)) as unknown as RawInternalWeatherRow[];
 
-        const cachedRecord = rawResults[0];
-        if (cachedRecord) {
-            const parsedData =
-                typeof cachedRecord.weatherData === 'string'
-                    ? JSON.parse(cachedRecord.weatherData)
-                    : cachedRecord.weatherData;
+		const cachedRecord = rawResults[0];
+		if (cachedRecord) {
+			const parsedData = typeof cachedRecord.weatherData === 'string' ? JSON.parse(cachedRecord.weatherData) : cachedRecord.weatherData;
 
-            return parsedData;
-        }
+			return parsedData;
+		}
 
-        const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${config.WEATHER_API_KEY}&q=${encodeURIComponent(`${lat},${lon}`)}&aqi=no`;
+		const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${config.WEATHER_API_KEY}&q=${encodeURIComponent(`${lat},${lon}`)}&aqi=no`;
 
-        const apiResponse = await fetch(apiUrl);
-        if (!apiResponse.ok) {
-            throw new Error(
-                `WeatherAPI current endpoint responded with status ${apiResponse.status}`,
-            );
-        }
+		const apiResponse = await fetch(apiUrl);
+		if (!apiResponse.ok) {
+			throw new Error(`WeatherAPI current endpoint responded with status ${apiResponse.status}`);
+		}
 
-        const parsedJson = (await apiResponse.json()) as Record<string, unknown>;
+		const parsedJson = (await apiResponse.json()) as Record<string, unknown>;
 
-        await this.createCache(lat, lon, parsedJson);
+		await this.createCache(lat, lon, parsedJson);
 
-        return parsedJson;
-    }
+		return parsedJson;
+	}
 
-    async createCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
-        const freshCacheEntry = this.create({
-            lat,
-            lon,
-            weatherData: parsedJson,
-            updatedAt: new Date(),
-        });
-        this.em.persist(freshCacheEntry);
+	async createCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
+		const freshCacheEntry = this.create({
+			lat,
+			lon,
+			weatherData: parsedJson,
+			updatedAt: new Date(),
+		});
+		this.em.persist(freshCacheEntry);
 
-        await this.nativeDelete({
-            updatedAt: { $lte: new Date(Date.now() - 1000 * 60 * 60 * 3) },
-        });
-        await this.em.flush();
-    }
+		await this.nativeDelete({
+			updatedAt: {$lte: new Date(Date.now() - 1000 * 60 * 60 * 3)},
+		});
+		await this.em.flush();
+	}
 }
