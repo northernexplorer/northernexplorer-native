@@ -9,6 +9,7 @@
     "types": "./src/index.ts",
     "scripts": {
         "build": "tsc",
+        "clean": "rm -rf dist",
         "test:deps": "depcheck --specials=typescript"
     }
 }

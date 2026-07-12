@@ -5,6 +5,7 @@
     "main": "dist/index.js",
     "scripts": {
         "build": "tsc",
+        "clean": "rm -rf dist",
         "start": "tsx src/index.ts",
         "test:deps": "depcheck --specials=typescript"
     },

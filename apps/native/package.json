@@ -7,6 +7,7 @@
         "build:android": "eas build --platform android --profile production",
         "build:ios": "eas build --platform ios --profile production",
         "build:web": "expo export --platform web",
+        "clean": "rm -rf dist",
         "ios": "expo run:ios",
         "start": "expo start",
         "test:deps": "depcheck --specials=typescript --ignores=\"~\"",
