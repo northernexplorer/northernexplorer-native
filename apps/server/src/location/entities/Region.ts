@@ -1,0 +1,17 @@
+import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/decorators/legacy';
+import { Country } from './Country';
+
+@Entity()
+export class Region {
+    @PrimaryKey({ type: 'string' })
+    id!: string;
+
+    @Property({ type: 'number', version: true, default: 1 })
+    version!: number;
+
+    @Property({ type: 'string' })
+    name!: string;
+
+    @ManyToOne(() => Country)
+    country!: Country;
+}

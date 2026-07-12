@@ -1,6 +1,10 @@
 import { CityType, HistoricSiteType } from './location';
 import { ForecastType, LunarCycleType, WeatherType } from './environment';
 import { FieldNoteType } from './environment/FieldNote';
+
+import { CountryType } from './location/Country';
+import { RegionType } from './location/Region';
+
 import {
     ChangePasswordParams,
     EditProfileParams,
@@ -70,6 +74,18 @@ export const ROUTES = {
             getHistoricSiteById: {
                 params: { id: 0 } as { id: number },
                 response: null as unknown as HistoricSiteType,
+            },
+        },
+        CountryController: {
+            getCountryById: {
+                params: { id: '' } as { id: string },
+                response: null as unknown as CountryType,
+            },
+        },
+        RegionController: {
+            getRegionById: {
+                params: { id: '' } as { id: string },
+                response: null as unknown as RegionType,
             },
         },
     },
