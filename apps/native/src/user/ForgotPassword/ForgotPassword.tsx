@@ -47,7 +47,7 @@ export function ForgotPassword() {
 
 	const handleSubmit = async () => {
 		try {
-			// Your password reset API call goes here
+			mutate(formData);
 		} catch (error) {
 			console.error(error);
 		}
