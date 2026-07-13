@@ -1,5 +1,5 @@
 import {View, Text} from 'react-native';
-import {styles} from '~/user/styles';
+import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spiner';
 import React from 'react';

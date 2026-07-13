@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import {View, Text, TextInput, Pressable, Switch, ScrollView} from 'react-native';
-import {styles} from '~/user/styles';
+import styles from '~/user/styles';
 import {Link, router} from 'expo-router';
 import {useApiMutation} from '~/core/useApiMutation';
+import {FormField} from '~/layout/Layout/components/FormField';
 
 const initialFormData = {
 	firstName: '',
@@ -39,7 +40,6 @@ export function Register() {
 	const validateForm = async () => {
 		const newErrors: Partial<Record<FormKeys, string>> = {};
 
-		// Field validations
 		if (formData.firstName.trim().length < 2) newErrors.firstName = 'First name is too short';
 		if (formData.lastName.trim().length < 2) newErrors.lastName = 'Last name is too short';
 		if (formData.username.trim().length < 6) newErrors.username = 'Username must be at least 6 characters';
@@ -71,7 +71,6 @@ export function Register() {
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
 			<Text style={styles.title}>Create Account</Text>
 
-			{/* Honeypot Field - Kept completely invisible to human users */}
 			<TextInput
 				value={formData.website}
 				onChangeText={val => updateField('website', val)}
@@ -82,92 +81,68 @@ export function Register() {
 				pointerEvents="none"
 			/>
 
-			{/* First Name */}
-			<View style={styles.field}>
-				<Text style={styles.label}>First Name</Text>
-				<TextInput
-					value={formData.firstName}
-					onChangeText={val => updateField('firstName', val)}
-					placeholder="First Name"
-					style={styles.input}
-					editable={!loading}
-				/>
-				{errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
-			</View>
+			<FormField
+				fieldName="firstName"
+				label="First Name"
+				placeholder="First Name"
+				value={formData.firstName}
+				updateField={updateField}
+				error={errors.firstName}
+				loading={loading}
+			/>
 
-			{/* Last Name */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Last Name</Text>
-				<TextInput
-					value={formData.lastName}
-					onChangeText={val => updateField('lastName', val)}
-					placeholder="Last Name"
-					style={styles.input}
-					editable={!loading}
-				/>
-				{errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
-			</View>
+			<FormField
+				fieldName="lastName"
+				label="Last Name"
+				placeholder="Last Name"
+				value={formData.lastName}
+				updateField={updateField}
+				error={errors.lastName}
+				loading={loading}
+			/>
 
-			{/* Username */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Username</Text>
-				<TextInput
-					value={formData.username}
-					onChangeText={val => updateField('username', val)}
-					autoCapitalize="none"
-					autoCorrect={false}
-					placeholder="Username"
-					style={styles.input}
-					editable={!loading}
-				/>
-				{errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
-			</View>
+			<FormField
+				fieldName="username"
+				label="Username"
+				placeholder="Username"
+				value={formData.username}
+				updateField={updateField}
+				error={errors.username}
+				loading={loading}
+			/>
 
-			{/* Email */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Email Address</Text>
-				<TextInput
-					value={formData.email}
-					onChangeText={val => updateField('email', val)}
-					autoCapitalize="none"
-					autoCorrect={false}
-					keyboardType="email-address"
-					placeholder="Email Address"
-					style={styles.input}
-					editable={!loading}
-				/>
-				{errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-			</View>
+			<FormField
+				fieldName="email"
+				label="Email Address"
+				placeholder="Email Address"
+				value={formData.email}
+				updateField={updateField}
+				error={errors.email}
+				loading={loading}
+			/>
 
-			{/* Password */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Password</Text>
-				<TextInput
-					value={formData.password}
-					onChangeText={val => updateField('password', val)}
-					secureTextEntry
-					placeholder="Password"
-					style={styles.input}
-					editable={!loading}
-				/>
-				{errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-			</View>
+			<FormField
+				fieldName="password"
+				label="Password"
+				placeholder="Password"
+				value={formData.password}
+				updateField={updateField}
+				error={errors.password}
+				loading={loading}
+				secureTextEntry
+			/>
 
-			{/* Confirm Password */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Confirm Password</Text>
-				<TextInput
-					value={formData.confirmPassword}
-					onChangeText={val => updateField('confirmPassword', val)}
-					secureTextEntry
-					placeholder="Confirm Password"
-					style={styles.input}
-					editable={!loading}
-				/>
-				{errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
-			</View>
+			<FormField
+				fieldName="confirmPassword"
+				label="Confirm Password"
+				placeholder="Confirm Password"
+				value={formData.confirmPassword}
+				updateField={updateField}
+				error={errors.confirmPassword}
+				loading={loading}
+				secureTextEntry
+			/>
 
-			{/* Terms of Service */}
 			<View style={styles.switchRow}>
 				<Text style={styles.label}>
 					I accept the{' '}
@@ -179,7 +154,6 @@ export function Register() {
 			</View>
 			{errors.acceptTerms && <Text style={styles.errorText}>{errors.acceptTerms}</Text>}
 
-			{/* Privacy Policy */}
 			<View style={styles.switchRow}>
 				<Text style={styles.label}>
 					I accept the{' '}
@@ -191,12 +165,10 @@ export function Register() {
 			</View>
 			{errors.acceptPrivacy && <Text style={styles.errorText}>{errors.acceptPrivacy}</Text>}
 
-			{/* Submit Button */}
 			<Pressable style={[styles.button, loading && {opacity: 0.6}]} onPress={validateForm} disabled={loading}>
 				<Text style={styles.buttonText}>{loading ? 'Creating Account...' : 'Create Account'}</Text>
 			</Pressable>
 
-			{/* Sign In Link */}
 			<Link href="/profile/login" asChild>
 				<Pressable disabled={loading}>
 					<Text style={styles.link}>Already have an account? Sign In</Text>
