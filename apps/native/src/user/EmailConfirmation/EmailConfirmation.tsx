@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import {Text, View} from 'react-native';
-import {styles} from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {router} from 'expo-router';
+import styles from '~/user/styles';
 
 export function EmailConfirmation() {
 	const authentication = useAuthentication();
