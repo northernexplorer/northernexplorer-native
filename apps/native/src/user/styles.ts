@@ -29,6 +29,9 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		marginTop: 2,
 	},
+	field: {
+		gap: 6,
+	},
 	buttonText: {
 		color: '#fff',
 		fontSize: 16,

@@ -3,7 +3,7 @@ import {Text, Pressable, ScrollView} from 'react-native';
 import styles from '~/user/styles';
 import {Link} from 'expo-router';
 import {useApiMutation} from '~/core/useApiMutation';
-import {FormField} from "~/layout/Layout/components/FormField";
+import {FormField} from '~/layout/Layout/components/FormField';
 
 const initialFormData = {
 	email: '',
