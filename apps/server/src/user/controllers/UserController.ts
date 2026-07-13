@@ -3,14 +3,17 @@ import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types
 import {TokenPayload, TokenService} from '../services/TokenService';
 import {wrap} from '@mikro-orm/core';
 import {PermissionService} from '../services/PermisionService';
+import {EmailSendService} from '../../system/services/EmailSendService';
+import {config} from '../../config';
 
 type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<'user', 'UserController'>[M];
 
 export class UserController {
-	constructor(private repos: Repositories) {}
-
 	private tokenService = new TokenService();
 	private permissionService = new PermissionService();
+	private emailSendService = new EmailSendService();
+
+	constructor(private repos: Repositories) {}
 
 	async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
 		if (params.website) throw new Error('Forbidden: Bot activity detected.');
@@ -33,25 +36,45 @@ export class UserController {
 			renewalDate,
 		});
 
-		this.repos.user.create({
+		const user = this.repos.user.create({
 			email: params.email,
 			firstName: params.firstName,
 			lastLoginAt: new Date(),
 			lastName: params.lastName,
 			username: params.username,
 			createdAt: new Date(),
-			isActive: true,
+			isActive: false,
 			passwordHash,
 			version: 1,
 			subscription,
 		});
 		await this.repos.user.getEntityManager().flush();
+
+		const activationToken = this.tokenService.generateActivationToken({userId: user.id, email: user.email});
+		const activationUrl = `${config.WEB_URL}/profile/activate?token=${activationToken}`;
+
+		await this.emailSendService.send({
+			to: user.email,
+			subject: 'Welcome to Northern Explorer!',
+			html: `
+			  <h1>Welcome to Northern Explorer!</h1>
+			  <p>Please click the button below to activate your account and start exploring:</p>
+			  <a href="${activationUrl}" style="background: #0088cc; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+				 Activate Account
+			  </a>
+			  <p>Or copy and paste this link into your browser:</p>
+			  <p>${activationUrl}</p>
+			  <p><em>This link will expire in 24 hours.</em></p>
+		   `,
+		});
+
 		return {success: true};
 	}
 
 	async login(params: Params<Route<'login'>>): Promise<Response<Route<'login'>>> {
 		const user = await this.repos.user.findByIdentifier(params.identifier);
 		if (!user) throw new Error('User does not exist');
+		if (!user.isActive) throw new Error('User is not active. Please check your email for the activation link.');
 
 		const isPasswordValid = await this.repos.user.checkPassword(params.password, user.passwordHash);
 		if (!isPasswordValid) {

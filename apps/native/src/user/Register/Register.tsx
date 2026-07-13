@@ -63,7 +63,7 @@ export function Register() {
 	const handleSubmit = async () => {
 		const response = await mutate(formData);
 		if (response.success) {
-			router.replace('/profile/login');
+			router.replace('/profile/email-confirmation');
 		}
 	};
 

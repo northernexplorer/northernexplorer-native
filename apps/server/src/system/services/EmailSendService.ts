@@ -8,13 +8,11 @@ interface Send {
 }
 
 export class EmailSendService {
-	private resend: Resend;
+	private resend = new Resend(config.EMAIL_API_KEY);
 
-	constructor() {
-		this.resend = new Resend(config.EMAIL_API_KEY);
-	}
+	constructor() {}
 
-	async send({to, subject}: Send) {
+	async send({to, subject, html}: Send) {
 		try {
 			const data = await this.resend.emails.send({
 				from: 'noreply@northernexplorer.org',

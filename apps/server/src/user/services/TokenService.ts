@@ -6,6 +6,12 @@ export interface TokenPayload {
 	email: string;
 }
 
+export interface ActivationTokenPayload {
+	userId: number;
+	email: string;
+	purpose: 'account_activation';
+}
+
 export type RefreshTokenPayload = Pick<TokenPayload, 'userId'>;
 
 export class TokenService {
@@ -39,5 +45,25 @@ export class TokenService {
 	 */
 	verifyRefreshToken(token: string): RefreshTokenPayload {
 		return jwt.verify(token, config.REFRESH_SECRET) as RefreshTokenPayload;
+	}
+
+	/**
+	 * Generates a stateless account activation token (expires in 24 hours)
+	 */
+	generateActivationToken(payload: Omit<ActivationTokenPayload, 'purpose'>): string {
+		return jwt.sign({...payload, purpose: 'account_activation'}, config.ACTIVATION_SECRET, {expiresIn: '24h'});
+	}
+
+	/**
+	 * Verifies an activation token and returns its typed payload
+	 */
+	verifyActivationToken(token: string): ActivationTokenPayload {
+		const payload = jwt.verify(token, config.ACTIVATION_SECRET) as ActivationTokenPayload;
+
+		if (payload.purpose !== 'account_activation') {
+			throw new Error('Invalid token purpose.');
+		}
+
+		return payload;
 	}
 }

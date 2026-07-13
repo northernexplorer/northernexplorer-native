@@ -8,4 +8,6 @@ export const config = {
 	ACCESS_SECRET: process.env.ACCESS_SECRET || 'TEMP_ACCESS_SECRET',
 	REFRESH_SECRET: process.env.REFRESH_SECRET || 'TEMP_REFRESH_SECRET',
 	EMAIL_API_KEY: process.env.EMAIL_API_KEY,
+	ACTIVATION_SECRET: process.env.ACTIVATION_SECRET || 'TEMP_ACTIVATION_SECRET',
+	WEB_URL: process.env.WEB_URL || 'http://localhost:8081',
 };
