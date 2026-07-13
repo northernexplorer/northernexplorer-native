@@ -140,7 +140,7 @@ export const ROUTES = {
 			},
 			activate: {
 				params: {} as ActivateParams,
-				response: {success: true} as GenericResponseType,
+				response: {} as UserAuthenticationType,
 			},
 		},
 	},

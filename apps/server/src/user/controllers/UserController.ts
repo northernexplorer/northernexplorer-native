@@ -109,6 +109,9 @@ export class UserController {
 	}
 
 	async forgotPassword(params: Params<Route<'forgotPassword'>>): Promise<Response<Route<'forgotPassword'>>> {
+		const user = await this.repos.user.findByIdentifier(params.email);
+		if (!user) throw new Error('User does not exist');
+		if (!user.isActive) throw new Error('User is not active. Please check your email for the activation link.');
 		console.log('Forgot password', params);
 		throw new Error('Not implemented');
 		return {success: true};
@@ -176,6 +179,35 @@ export class UserController {
 			throw new Error('User associated with this token no longer exists');
 		}
 
+		user.lastLoginAt = new Date();
+		await this.repos.user.getEntityManager().flush();
+
+		const accessToken = this.tokenService.generateAccessToken({
+			userId: user.id,
+			email: user.email,
+		});
+
+		const refreshToken = this.tokenService.generateRefreshToken({
+			userId: user.id,
+		});
+
+		return {
+			userId: user.id,
+			email: user.email,
+			username: user.username,
+			accessToken,
+			refreshToken,
+		};
+	}
+
+	async activate(params: Params<Route<'activate'>>): Promise<Response<Route<'activate'>>> {
+		const {userId} = await this.tokenService.verifyActivationToken(params.activationToken);
+
+		const user = await this.repos.user.getById(userId);
+		if (!user) throw new Error('User does not exist');
+		if (user.isActive) throw new Error('This user account has already been activated.');
+
+		user.isActive = true;
 		user.lastLoginAt = new Date();
 		await this.repos.user.getEntityManager().flush();
 
