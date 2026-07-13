@@ -7,4 +7,5 @@ export const config = {
 	WEATHER_API_KEY: process.env.WEATHER_API_KEY,
 	ACCESS_SECRET: process.env.ACCESS_SECRET || 'TEMP_ACCESS_SECRET',
 	REFRESH_SECRET: process.env.REFRESH_SECRET || 'TEMP_REFRESH_SECRET',
+	EMAIL_API_KEY: process.env.EMAIL_API_KEY,
 };
