@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, TextInput, Pressable, ScrollView} from 'react-native';
-import {styles} from '~/user/styles';
+import {Text, Pressable, ScrollView} from 'react-native';
+import styles from '~/user/styles';
 import {Link, Redirect, useLocalSearchParams, router} from 'expo-router';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spiner';
+import {FormField} from '~/layout/Layout/components/FormField';
 
 type RouteParams = {
 	username: string;
@@ -101,69 +102,50 @@ export function EditProfile() {
 
 			{submissionError && <Text style={[styles.errorText, {textAlign: 'center', marginVertical: 10}]}>{submissionError}</Text>}
 
-			{/* First Name */}
-			<View style={styles.field}>
-				<Text style={styles.label}>First Name</Text>
-				<TextInput
-					value={formData.firstName}
-					onChangeText={val => updateField('firstName', val)}
-					placeholder="First Name"
-					style={styles.input}
-					editable={!mutationLoading}
-				/>
-				{errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
-			</View>
+			<FormField
+				fieldName="firstName"
+				label="First Name"
+				placeholder="First Name"
+				value={formData.firstName}
+				updateField={updateField}
+				error={errors.firstName}
+				loading={mutationLoading}
+			/>
 
-			{/* Last Name */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Last Name</Text>
-				<TextInput
-					value={formData.lastName}
-					onChangeText={val => updateField('lastName', val)}
-					placeholder="Last Name"
-					style={styles.input}
-					editable={!mutationLoading}
-				/>
-				{errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
-			</View>
+			<FormField
+				fieldName="lastName"
+				label="Last Name"
+				placeholder="Last Name"
+				value={formData.lastName}
+				updateField={updateField}
+				error={errors.lastName}
+				loading={mutationLoading}
+			/>
 
-			{/* Username */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Username</Text>
-				<TextInput
-					value={formData.username}
-					onChangeText={val => updateField('username', val)}
-					autoCapitalize="none"
-					autoCorrect={false}
-					placeholder="Username"
-					style={styles.input}
-					editable={!mutationLoading}
-				/>
-				{errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
-			</View>
+			<FormField
+				fieldName="username"
+				label="Username"
+				placeholder="Username"
+				value={formData.username}
+				updateField={updateField}
+				error={errors.username}
+				loading={mutationLoading}
+			/>
 
-			{/* Email Address */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Email Address</Text>
-				<TextInput
-					value={formData.email}
-					onChangeText={val => updateField('email', val)}
-					autoCapitalize="none"
-					autoCorrect={false}
-					keyboardType="email-address"
-					placeholder="Email Address"
-					style={styles.input}
-					editable={!mutationLoading}
-				/>
-				{errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-			</View>
+			<FormField
+				fieldName="email"
+				label="Email Address"
+				placeholder="Email Address"
+				value={formData.email}
+				updateField={updateField}
+				error={errors.email}
+				loading={mutationLoading}
+			/>
 
-			{/* Submit Changes */}
 			<Pressable style={[styles.button, mutationLoading && {opacity: 0.6}]} onPress={validateForm} disabled={mutationLoading}>
 				<Text style={styles.buttonText}>{mutationLoading ? 'Saving Changes...' : 'Save Changes'}</Text>
 			</Pressable>
 
-			{/* Cancel Action */}
 			<Link href={`/profile/${username}`} asChild>
 				<Pressable style={styles.secondaryButton} disabled={mutationLoading}>
 					<Text style={styles.secondaryButtonText}>Cancel</Text>
