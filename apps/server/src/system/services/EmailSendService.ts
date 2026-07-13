@@ -4,6 +4,7 @@ import {config} from '../../config';
 interface Send {
 	subject: string;
 	to: string;
+	html: string;
 }
 
 export class EmailSendService {
@@ -19,7 +20,7 @@ export class EmailSendService {
 				from: 'noreply@northernexplorer.org',
 				to,
 				subject,
-				html: '<p>Welcome back to the wild.</p>',
+				html,
 			});
 			return data;
 		} catch (error) {
