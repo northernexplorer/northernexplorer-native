@@ -56,7 +56,6 @@ export function ForgotPassword() {
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-			<Text style={styles.title}>Forgot Password</Text>
 			<Text style={styles.description}>
 				Enter the email address associated with your account and we'll send you instructions to reset your password.
 			</Text>

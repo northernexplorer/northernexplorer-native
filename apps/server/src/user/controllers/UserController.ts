@@ -16,7 +16,14 @@ export class UserController {
 	constructor(private repos: Repositories) {}
 
 	async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
-		if (params.website) throw new Error('Forbidden: Bot activity detected.');
+		if (params.website) throw new Error('Form submission failed. Please try again.');
+
+		const existingUserWithEmail = await this.repos.user.findByIdentifier(params.email);
+		if (existingUserWithEmail) throw new Error('This email address is already in use.');
+
+		const existingUserWithUsername = await this.repos.user.findByIdentifier(params.username);
+		if (existingUserWithUsername) throw new Error('This username is already taken.');
+
 		await this.repos.user.passwordValidation({
 			password: params.password,
 			confirmPassword: params.confirmPassword,
@@ -57,15 +64,15 @@ export class UserController {
 			to: user.email,
 			subject: 'Welcome to Northern Explorer!',
 			html: `
-			  <h1>Welcome to Northern Explorer!</h1>
-			  <p>Please click the button below to activate your account and start exploring:</p>
-			  <a href="${activationUrl}" style="background: #0088cc; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
-				 Activate Account
-			  </a>
-			  <p>Or copy and paste this link into your browser:</p>
-			  <p>${activationUrl}</p>
-			  <p><em>This link will expire in 24 hours.</em></p>
-		   `,
+            <h1>Welcome to Northern Explorer!</h1>
+            <p>Please click the button below to activate your account and start exploring:</p>
+            <a href="${activationUrl}" style="background: #0088cc; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              Activate Account
+            </a>
+            <p>Or copy and paste this link into your browser:</p>
+            <p>${activationUrl}</p>
+            <p><em>This link will expire in 24 hours.</em></p>
+          `,
 		});
 
 		return {success: true};
@@ -73,13 +80,11 @@ export class UserController {
 
 	async login(params: Params<Route<'login'>>): Promise<Response<Route<'login'>>> {
 		const user = await this.repos.user.findByIdentifier(params.identifier);
-		if (!user) throw new Error('User does not exist');
-		if (!user.isActive) throw new Error('User is not active. Please check your email for the activation link.');
+		if (!user) throw new Error("We couldn't find an account matching that information.");
+		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
 
 		const isPasswordValid = await this.repos.user.checkPassword(params.password, user.passwordHash);
-		if (!isPasswordValid) {
-			throw new Error('Invalid identifier or password');
-		}
+		if (!isPasswordValid) throw new Error('Incorrect password. Please try again or tap forgot password to reset it.');
 
 		user.lastLoginAt = new Date();
 		await this.repos.user.getEntityManager().flush();
@@ -103,17 +108,16 @@ export class UserController {
 	}
 
 	async logout(params: Params<Route<'logout'>>): Promise<Response<Route<'logout'>>> {
-		//todo clear refresh token
 		console.log('Logout', params);
 		return {success: true};
 	}
 
 	async forgotPassword(params: Params<Route<'forgotPassword'>>): Promise<Response<Route<'forgotPassword'>>> {
 		const user = await this.repos.user.findByIdentifier(params.email);
-		if (!user) throw new Error('User does not exist');
-		if (!user.isActive) throw new Error('User is not active. Please check your email for the activation link.');
+		if (!user) throw new Error("We couldn't find an account matching that information.");
+		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
 		console.log('Forgot password', params);
-		throw new Error('Not implemented');
+		throw new Error('Feature not implemented yet.');
 		return {success: true};
 	}
 
@@ -170,14 +174,9 @@ export class UserController {
 
 	async refresh(params: Params<Route<'refresh'>>): Promise<Response<Route<'refresh'>>> {
 		const payload = this.tokenService.verifyRefreshToken(params.refreshToken);
-		if (!payload || !payload.userId) {
-			throw new Error('Invalid refresh token');
-		}
+		if (!payload || !payload.userId) throw new Error('Your session has expired. Please log in again.');
 
 		const user = await this.repos.user.getById(payload.userId);
-		if (!user) {
-			throw new Error('User associated with this token no longer exists');
-		}
 
 		user.lastLoginAt = new Date();
 		await this.repos.user.getEntityManager().flush();
@@ -204,8 +203,8 @@ export class UserController {
 		const {userId} = await this.tokenService.verifyActivationToken(params.activationToken);
 
 		const user = await this.repos.user.getById(userId);
-		if (!user) throw new Error('User does not exist');
-		if (user.isActive) throw new Error('This user account has already been activated.');
+		if (!user) throw new Error("We couldn't find an account matching that information.");
+		if (user.isActive) throw new Error('This account is already active. Try logging in!');
 
 		user.isActive = true;
 		user.lastLoginAt = new Date();

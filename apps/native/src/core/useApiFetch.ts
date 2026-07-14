@@ -4,6 +4,7 @@ import {apiClient} from '~/core/apiClient';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useDispatch} from 'react-redux';
+import {alertStore} from '~/core/alertStore';
 
 export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(
 	category: C,
@@ -50,7 +51,9 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 				}
 			} catch (err) {
 				if (isMounted) {
-					setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+					const e = err instanceof Error ? err : new Error('Mutation failed');
+					setError(e);
+					alertStore.showAlert(e.message);
 				}
 			} finally {
 				if (isMounted) {
@@ -65,5 +68,6 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 			isMounted = false;
 		};
 	}, [category, controller, method, params ? JSON.stringify(params) : null, authentication?.accessToken]);
+
 	return {data, loading, error};
 }

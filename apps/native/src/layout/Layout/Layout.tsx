@@ -56,11 +56,7 @@ export function Layout({Content, components, title, fullPage, home}: Props) {
 								flexDirection: 'column',
 							}}
 						>
-							{title && (
-								<Text style={[home ? styles.titleHome : styles.title, fullPage && {paddingHorizontal: 10, paddingTop: 10}]}>
-									{title}
-								</Text>
-							)}
+							{title && <Text style={[styles.title, fullPage && {paddingHorizontal: 10, paddingTop: 10}]}>{title}</Text>}
 
 							<View style={{flex: 1, display: 'flex', width: '100%'}}>
 								<Content />

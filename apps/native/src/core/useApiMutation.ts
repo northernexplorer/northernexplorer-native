@@ -4,6 +4,7 @@ import {apiClient} from '~/core/apiClient';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useDispatch} from 'react-redux';
+import {alertStore} from '~/core/alertStore';
 
 export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(
 	category: C,
@@ -36,7 +37,7 @@ export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTE
 		} catch (err) {
 			const e = err instanceof Error ? err : new Error('Mutation failed');
 			setError(e);
-			throw e; // Rethrow to handle in the component
+			alertStore.showAlert(e.message);
 		} finally {
 			setLoading(false);
 		}

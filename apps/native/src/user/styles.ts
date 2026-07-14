@@ -8,11 +8,6 @@ const styles = StyleSheet.create({
 		padding: 24,
 		gap: 20,
 	},
-	title: {
-		fontSize: 28,
-		fontWeight: '700',
-		textAlign: 'center',
-	},
 	button: {
 		backgroundColor: '#0088cc',
 		borderRadius: 8,
