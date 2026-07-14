@@ -16,8 +16,6 @@ export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTE
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
 
-	const [, setTriggerError] = useState();
-
 	const mutate = async (params: GetParams<C, K, M>) => {
 		setLoading(true);
 		setError(null);

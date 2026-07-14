@@ -18,8 +18,6 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
 
-	const [, setTriggerError] = useState();
-
 	useEffect(() => {
 		if (!params) {
 			setLoading(false);
