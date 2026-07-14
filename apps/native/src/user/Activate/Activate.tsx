@@ -16,7 +16,7 @@ export function Activate() {
 				const params = new URLSearchParams(window.location.search);
 				const response = await mutate({activationToken: params.get('token') || ''});
 
-				if (response.accessToken) {
+				if (response?.accessToken) {
 					dispatch(setAuthentication(response));
 					setAccountRegistered(true);
 				}
@@ -31,15 +31,13 @@ export function Activate() {
 	if (accountRegistered) {
 		return (
 			<View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20}}>
-				<Text style={[styles.title, {textAlign: 'center', marginBottom: 10}]}>Registration Completed!</Text>
-				<Text style={[styles.label, {textAlign: 'center', fontSize: 16}]}>You have been automatically signed in!</Text>
+				<Text style={[styles.label, {textAlign: 'center', fontSize: 16}]}>Registration Complete! You have been automatically signed in!</Text>
 			</View>
 		);
 	}
 
 	return (
 		<View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20}}>
-			<Text style={[styles.title, {textAlign: 'center', marginBottom: 10}]}>Registering your account...</Text>
 			<Text style={[styles.label, {textAlign: 'center', fontSize: 16}]}>Please wait!</Text>
 		</View>
 	);

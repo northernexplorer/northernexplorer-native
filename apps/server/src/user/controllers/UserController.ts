@@ -73,13 +73,11 @@ export class UserController {
 
 	async login(params: Params<Route<'login'>>): Promise<Response<Route<'login'>>> {
 		const user = await this.repos.user.findByIdentifier(params.identifier);
-		if (!user) throw new Error('User does not exist');
-		if (!user.isActive) throw new Error('User is not active. Please check your email for the activation link.');
+		if (!user) throw new Error('A user with this identifier does not exist.');
+		if (!user.isActive) throw new Error('This user is not active. Please check your email for the activation link.');
 
 		const isPasswordValid = await this.repos.user.checkPassword(params.password, user.passwordHash);
-		if (!isPasswordValid) {
-			throw new Error('Invalid identifier or password');
-		}
+		if (!isPasswordValid) throw new Error('This password is not valid. Please try again or reset your password if you have forgotten it.');
 
 		user.lastLoginAt = new Date();
 		await this.repos.user.getEntityManager().flush();
@@ -110,8 +108,8 @@ export class UserController {
 
 	async forgotPassword(params: Params<Route<'forgotPassword'>>): Promise<Response<Route<'forgotPassword'>>> {
 		const user = await this.repos.user.findByIdentifier(params.email);
-		if (!user) throw new Error('User does not exist');
-		if (!user.isActive) throw new Error('User is not active. Please check your email for the activation link.');
+		if (!user) throw new Error('A user with this identifier does not exist.');
+		if (!user.isActive) throw new Error('This user is not active. Please check your email for the activation link.');
 		console.log('Forgot password', params);
 		throw new Error('Not implemented');
 		return {success: true};
@@ -170,14 +168,9 @@ export class UserController {
 
 	async refresh(params: Params<Route<'refresh'>>): Promise<Response<Route<'refresh'>>> {
 		const payload = this.tokenService.verifyRefreshToken(params.refreshToken);
-		if (!payload || !payload.userId) {
-			throw new Error('Invalid refresh token');
-		}
+		if (!payload || !payload.userId) throw new Error('Invalid refresh token');
 
 		const user = await this.repos.user.getById(payload.userId);
-		if (!user) {
-			throw new Error('User associated with this token no longer exists');
-		}
 
 		user.lastLoginAt = new Date();
 		await this.repos.user.getEntityManager().flush();
@@ -204,7 +197,7 @@ export class UserController {
 		const {userId} = await this.tokenService.verifyActivationToken(params.activationToken);
 
 		const user = await this.repos.user.getById(userId);
-		if (!user) throw new Error('User does not exist');
+		if (!user) throw new Error('A user with this identifier does not exist.');
 		if (user.isActive) throw new Error('This user account has already been activated.');
 
 		user.isActive = true;

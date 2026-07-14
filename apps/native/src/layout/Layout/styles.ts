@@ -29,19 +29,13 @@ export const styles = StyleSheet.create({
 		width: '100%',
 		backgroundColor: '#e9e9e9',
 	},
-	titleHome: {
-		fontSize: 26,
-		fontWeight: '700',
-		color: 'white',
-		marginBottom: 20,
-		letterSpacing: 0.5,
-	},
 	title: {
 		fontSize: 26,
 		fontWeight: '700',
 		color: '#1a1a1a',
 		marginBottom: 20,
 		letterSpacing: 0.5,
+		textAlign: 'center',
 	},
 	navbarContainer: {
 		backgroundColor: '#1a1a1a',

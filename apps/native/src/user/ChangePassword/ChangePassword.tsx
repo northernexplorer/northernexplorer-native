@@ -72,8 +72,6 @@ export function ChangePassword() {
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-			<Text style={styles.title}>Change Password</Text>
-
 			<FormField
 				fieldName="currentPassword"
 				label="Current Password"

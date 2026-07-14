@@ -23,8 +23,6 @@ export function Profile() {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>My Profile</Text>
-
 			<View style={{flexDirection: 'row', marginBottom: 20}}>
 				<TouchableOpacity
 					style={[styles.tabButton, activeTab === 'details' && styles.activeTabButton]}

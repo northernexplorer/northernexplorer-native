@@ -66,7 +66,15 @@ export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUT
 	}
 
 	if (!res.ok) {
-		throw new Error(`API fetch failed [${String(method)}]: ${res.status}`);
+		let serverMessage = '';
+		try {
+			const errorData = await res.json();
+			serverMessage = errorData?.error;
+		} catch {
+			serverMessage = `HTTP Error ${res.status}`;
+		}
+
+		throw new Error(serverMessage || `API fetch failed [${String(method)}]: ${res.status}`);
 	}
 	return res.json() as Promise<GetResponse<C, K, M>>;
 }

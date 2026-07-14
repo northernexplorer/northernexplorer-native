@@ -62,15 +62,13 @@ export function Register() {
 
 	const handleSubmit = async () => {
 		const response = await mutate(formData);
-		if (response.success) {
+		if (response?.success) {
 			router.replace('/profile/email-confirmation');
 		}
 	};
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-			<Text style={styles.title}>Create Account</Text>
-
 			<TextInput
 				value={formData.website}
 				onChangeText={val => updateField('website', val)}

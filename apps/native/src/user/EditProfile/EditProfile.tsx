@@ -98,8 +98,6 @@ export function EditProfile() {
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-			<Text style={styles.title}>Edit Profile</Text>
-
 			{submissionError && <Text style={[styles.errorText, {textAlign: 'center', marginVertical: 10}]}>{submissionError}</Text>}
 
 			<FormField

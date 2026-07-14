@@ -17,6 +17,8 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
 
+	const [, setTriggerError] = useState();
+
 	useEffect(() => {
 		if (!params) {
 			setLoading(false);
@@ -50,7 +52,12 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 				}
 			} catch (err) {
 				if (isMounted) {
-					setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+					const e = err instanceof Error ? err : new Error('Mutation failed');
+					setError(e);
+
+					setTriggerError(() => {
+						throw e;
+					});
 				}
 			} finally {
 				if (isMounted) {
@@ -65,5 +72,6 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 			isMounted = false;
 		};
 	}, [category, controller, method, params ? JSON.stringify(params) : null, authentication?.accessToken]);
+
 	return {data, loading, error};
 }

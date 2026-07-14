@@ -65,8 +65,6 @@ export function Login() {
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-			<Text style={styles.title}>Sign In</Text>
-
 			<FormField
 				fieldName="identifier"
 				label="Username or Email"
