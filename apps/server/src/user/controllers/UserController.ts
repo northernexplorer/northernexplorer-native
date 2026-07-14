@@ -17,6 +17,10 @@ export class UserController {
 
 	async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
 		if (params.website) throw new Error('Forbidden: Bot activity detected.');
+		const existingUserWithEmail = await this.repos.user.findByIdentifier(params.email);
+		if (existingUserWithEmail) throw new Error('An account with this email address already exists.');
+		const existingUserWithUsername = await this.repos.user.findByIdentifier(params.username);
+		if (existingUserWithUsername) throw new Error('An account with this username already exists.');
 		await this.repos.user.passwordValidation({
 			password: params.password,
 			confirmPassword: params.confirmPassword,
