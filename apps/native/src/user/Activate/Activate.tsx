@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
-import {styles} from '~/user/styles';
+import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useDispatch} from 'react-redux';
