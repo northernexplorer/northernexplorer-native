@@ -61,7 +61,7 @@ export class TokenService {
 		const payload = jwt.verify(token, config.ACTIVATION_SECRET) as ActivationTokenPayload;
 
 		if (payload.purpose !== 'account_activation') {
-			throw new Error('Invalid token purpose.');
+			throw new Error('This activation link is invalid or has expired. Please request a new one.');
 		}
 
 		return payload;

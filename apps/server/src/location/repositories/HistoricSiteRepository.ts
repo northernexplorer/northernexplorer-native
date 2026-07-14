@@ -18,8 +18,7 @@ interface HistoricSiteRawRow {
 export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 	async getHistoricSiteDetails(id: number) {
 		const site = await this.findOne({id: Number(id)});
-
-		if (!site) throw new Error('Historic site not found.');
+		if (!site) throw new Error("We couldn't find the historic site you are looking for.");
 
 		return site;
 	}
