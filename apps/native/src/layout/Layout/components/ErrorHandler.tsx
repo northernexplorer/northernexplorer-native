@@ -4,7 +4,6 @@ import {alertStore} from '~/core/alertStore';
 
 export function ErrorHandler({children}: {children: React.ReactNode}) {
 	const [alert, setAlert] = useState<{message: string | null}>({message: null});
-	const title = 'test';
 
 	useEffect(() => {
 		return alertStore.subscribe(setAlert);
@@ -21,7 +20,7 @@ export function ErrorHandler({children}: {children: React.ReactNode}) {
 							<Text style={styles.iconText}>!</Text>
 						</View>
 
-						<Text style={styles.title}>{'Error'}</Text>
+						<Text style={styles.title}>Error</Text>
 						<Text style={styles.message}>{alert.message}</Text>
 
 						<TouchableOpacity style={styles.button} onPress={() => alertStore.clearAlert()}>

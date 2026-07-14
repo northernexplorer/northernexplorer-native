@@ -2,6 +2,7 @@ import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
+import reactPlugin from 'eslint-plugin-react';
 import * as jsoncParser from 'jsonc-eslint-parser';
 import path from 'path';
 
@@ -44,10 +45,14 @@ export default [
 		plugins: {
 			'@typescript-eslint': tsPlugin,
 			prettier: prettierPlugin,
+			react: reactPlugin,
 		},
 		rules: {
 			...tsPlugin.configs.recommended.rules,
 			'prettier/prettier': 'error',
+
+			// Prevent unnecessary curly braces in JSX props and children
+			'react/jsx-curly-brace-presence': ['error', {props: 'never', children: 'never'}],
 		},
 	},
 	prettierConfig,

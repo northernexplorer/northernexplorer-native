@@ -43,7 +43,7 @@ export function Map() {
 				))}
 
 				{selectedSite && (
-					<Marker lngLat={[selectedSite.lon, selectedSite.lat]} anchor={'bottom'}>
+					<Marker lngLat={[selectedSite.lon, selectedSite.lat]} anchor="bottom">
 						<View style={styles.popupContainer}>
 							<Link
 								href={{
