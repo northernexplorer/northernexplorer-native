@@ -13,7 +13,7 @@ export function EmailConfirmation() {
 	}, [authentication?.username]);
 
 	return (
-		<View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20}}>
+		<View style={{flex: 1}}>
 			<Text style={[styles.label, {textAlign: 'center', fontSize: 16}]}>
 				Click the link to verify your email address and complete registration.
 			</Text>

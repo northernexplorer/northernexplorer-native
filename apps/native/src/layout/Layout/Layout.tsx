@@ -6,7 +6,6 @@ import {getWeatherTheme} from '~/layout/Layout/getWeatherTheme';
 import {useWeather} from '~/environment/state/weather/useWeather';
 import {Sidebar} from '~/layout/Layout/components/Sidebar';
 import {Navigation} from '~/layout/Layout/components/Navigation';
-import {ErrorBoundary} from '~/layout/Layout/components/ErrorBoundary';
 
 interface Props {
 	Content: ComponentType;
@@ -57,13 +56,11 @@ export function Layout({Content, components, title, fullPage, home}: Props) {
 								flexDirection: 'column',
 							}}
 						>
-							<ErrorBoundary title={title}>
-								{title && <Text style={[styles.title, fullPage && {paddingHorizontal: 10, paddingTop: 10}]}>{title}</Text>}
+							{title && <Text style={[styles.title, fullPage && {paddingHorizontal: 10, paddingTop: 10}]}>{title}</Text>}
 
-								<View style={{flex: 1, display: 'flex', width: '100%'}}>
-									<Content />
-								</View>
-							</ErrorBoundary>
+							<View style={{flex: 1, display: 'flex', width: '100%'}}>
+								<Content />
+							</View>
 						</View>
 					</ImageBackground>
 				</View>

@@ -24,7 +24,7 @@ export function Logout() {
 	}, []);
 
 	return (
-		<View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20}}>
+		<View style={{flex: 1}}>
 			<Text style={[styles.label, {textAlign: 'center', fontSize: 16}]}>You have been successfully logged out.</Text>
 		</View>
 	);

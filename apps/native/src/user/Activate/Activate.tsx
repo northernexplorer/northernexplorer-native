@@ -30,14 +30,14 @@ export function Activate() {
 
 	if (accountRegistered) {
 		return (
-			<View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20}}>
+			<View style={{flex: 1}}>
 				<Text style={[styles.label, {textAlign: 'center', fontSize: 16}]}>Registration Complete! You have been automatically signed in!</Text>
 			</View>
 		);
 	}
 
 	return (
-		<View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20}}>
+		<View style={{flex: 1}}>
 			<Text style={[styles.label, {textAlign: 'center', fontSize: 16}]}>Please wait!</Text>
 		</View>
 	);
