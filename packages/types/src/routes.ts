@@ -1,6 +1,5 @@
 import {CityType, HistoricSiteType} from './location';
-import {ForecastType, LunarCycleType, WeatherType} from './environment';
-import {FieldNoteType} from './environment/FieldNote';
+import {ForecastType, LunarCycleType, WeatherType, FieldNoteType} from './environment';
 
 import {CountryType} from './location/Country';
 import {RegionType} from './location/Region';
@@ -15,9 +14,10 @@ import {
 	RegisterParams,
 	UserAuthenticationType,
 	GetByUsernameResponse,
+	ActivateParams,
 } from './user';
 import {GenericResponseType} from './system/GenericResponseType';
-import {SubscriptionParams, SubscriptionResponse} from './user/Subscription';
+import {SubscriptionParams, SubscriptionResponse} from './user';
 
 export interface ApiMethod<P = unknown, R = unknown> {
 	params: P;
@@ -136,6 +136,10 @@ export const ROUTES = {
 			},
 			refresh: {
 				params: {} as RefreshParams,
+				response: {} as UserAuthenticationType,
+			},
+			activate: {
+				params: {} as ActivateParams,
 				response: {} as UserAuthenticationType,
 			},
 		},

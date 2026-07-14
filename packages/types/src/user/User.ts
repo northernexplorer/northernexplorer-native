@@ -55,3 +55,7 @@ export type GetByUsernameResponse = {
 export type RefreshParams = {
 	refreshToken: string;
 };
+
+export type ActivateParams = {
+	activationToken: string;
+};
