@@ -4,7 +4,7 @@ import {User} from '../entities/User';
 
 export class CleanUsersHeartbeat {
 	public static readonly queueName = 'clean-users';
-	public static readonly queueSchedule = '0 */12 * * *';
+	public static readonly queueSchedule = '0 0 * * *';
 
 	/**
 	 * Phase 1: Gathers all database context needed for the worker.
