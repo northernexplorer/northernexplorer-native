@@ -19,8 +19,6 @@ export function Map() {
 
 	const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
 
-	if (!coords) return null;
-
 	return (
 		<View style={{flex: 1}}>
 			<NativeMap
@@ -32,10 +30,23 @@ export function Map() {
 					}
 				}}
 			>
-				<Camera zoom={10} center={[coords.lon, coords.lat]} />
+				{coords && <Camera zoom={10} center={[coords.lon, coords.lat]} />}
 
 				{data?.map(site => (
-					<Marker key={site.id} lngLat={[site.lon, site.lat]} anchor="bottom" onPress={() => setSelectedSite(site)}>
+					<Marker
+						key={site.id}
+						lngLat={[site.lon, site.lat]}
+						anchor="bottom"
+						onPress={e => {
+							e.stopPropagation();
+							if (selectedSite && selectedSite.id === site.id) {
+								setSelectedSite(null);
+							} else {
+								setSelectedSite(site);
+							}
+						}}
+						style={{transform: [{translateY: -56}]}}
+					>
 						<View style={styles.iconCircle}>
 							<MaterialCommunityIcons name="bank" size={36} color="#1e1e1e" cursor="pointer" />
 						</View>
@@ -43,7 +54,7 @@ export function Map() {
 				))}
 
 				{selectedSite && (
-					<Marker lngLat={[selectedSite.lon, selectedSite.lat]} anchor="bottom">
+					<Marker lngLat={[selectedSite.lon, selectedSite.lat]} anchor="bottom" offset={[0, -65]}>
 						<View style={styles.popupContainer}>
 							<Link
 								href={{
@@ -87,7 +98,7 @@ const styles = StyleSheet.create({
 	popupContainer: {
 		backgroundColor: '#fff',
 		padding: 12,
-		maxWidth: 220,
+		width: 220,
 		position: 'relative',
 		alignItems: 'flex-start',
 		shadowColor: '#000',
@@ -112,7 +123,6 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		bottom: -6,
 		left: '50%',
-		marginLeft: -6,
 		width: 0,
 		height: 0,
 		borderLeftWidth: 6,

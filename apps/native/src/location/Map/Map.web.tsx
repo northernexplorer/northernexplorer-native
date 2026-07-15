@@ -44,8 +44,12 @@ export function Map() {
 						latitude={site.lat}
 						anchor="bottom"
 						onClick={e => {
-							e.originalEvent.stopPropagation(); // Prevent map click
-							setSelectedSite(site);
+							e.originalEvent.stopPropagation();
+							if (selectedSite && selectedSite.id === site.id) {
+								setSelectedSite(null);
+							} else {
+								setSelectedSite(site);
+							}
 						}}
 					>
 						<div style={styles.iconCircle}>
@@ -55,7 +59,7 @@ export function Map() {
 				))}
 
 				{selectedSite && (
-					<Marker longitude={selectedSite.lon} latitude={selectedSite.lat} anchor="bottom">
+					<Marker longitude={selectedSite.lon} latitude={selectedSite.lat} anchor="bottom" offset={[0, -60]}>
 						<div style={styles.popupContainer}>
 							<Link
 								href={{
