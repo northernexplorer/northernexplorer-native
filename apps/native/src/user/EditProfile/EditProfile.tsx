@@ -91,7 +91,7 @@ export function EditProfile() {
 	const handleSubmit = async () => {
 		const response = await mutate(formData);
 
-		if (response) {
+		if (response?.success) {
 			router.replace(`/profile/${username}`);
 		}
 	};

@@ -52,14 +52,10 @@ export function Login() {
 	};
 
 	const handleSubmit = async () => {
-		try {
-			const response = await mutate(formData);
-			if (response) {
-				dispatch(setAuthentication(response));
-				router.replace(`/profile/${response.username}`);
-			}
-		} catch (error) {
-			console.error(error);
+		const response = await mutate(formData);
+		if (response) {
+			dispatch(setAuthentication(response));
+			router.replace(`/profile/${response.username}`);
 		}
 	};
 
