@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useRef, useMemo, useCallback} from 'react';
 import MapGL, {Marker} from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import useSupercluster from 'use-supercluster';
 import {useLocation} from '~/location/state/location/useLocation';
 import {Link} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
@@ -9,8 +10,15 @@ import {HistoricSiteType} from '@northernexplorer/types';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
+import {BBox} from 'geojson';
+import {MapRef} from 'react-map-gl/mapbox-legacy';
 
 export function Map() {
+	const mapRef = useRef<MapRef>(null);
+	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
+	const [zoom, setZoom] = useState(10);
+	const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
+
 	const coords = useLocation();
 	const {data} = useApiFetch('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
 		lat: coords?.lat || 0,
@@ -18,13 +26,39 @@ export function Map() {
 		limit: 500,
 	});
 
-	const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
+	const points = useMemo(() => {
+		if (!data) return [];
+		return data.map(site => ({
+			type: 'Feature',
+			properties: {cluster: false, siteId: site.id, ...site},
+			geometry: {type: 'Point', coordinates: [site.lon, site.lat]},
+		}));
+	}, [data]);
+
+	const {clusters, supercluster} = useSupercluster({
+		points,
+		bounds,
+		zoom,
+		options: {radius: 75, maxZoom: 20},
+	});
+
+	const updateMapState = useCallback(() => {
+		if (mapRef.current) {
+			const b = mapRef.current.getBounds();
+
+			const nextBounds: BBox = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
+
+			setBounds(nextBounds);
+			setZoom(mapRef.current.getZoom());
+		}
+	}, []);
 
 	if (!coords) return null;
 
 	return (
 		<div style={{width: '100%', height: '100%', minHeight: '400px'}}>
 			<MapGL
+				ref={mapRef}
 				mapLib={maplibregl}
 				initialViewState={{
 					longitude: coords.lon,
@@ -33,26 +67,56 @@ export function Map() {
 				}}
 				mapStyle="https://tiles.openfreemap.org/styles/bright"
 				onClick={() => setSelectedSite(null)}
+				onLoad={updateMapState}
+				onMove={updateMapState}
 				interactiveLayerIds={['historicSitesLayer']}
 				cursor={selectedSite ? 'pointer' : 'default'}
 				minZoom={2}
 			>
-				{data?.map(site => (
-					<Marker
-						key={site.id}
-						longitude={site.lon}
-						latitude={site.lat}
-						anchor="bottom"
-						onClick={e => {
-							e.originalEvent.stopPropagation(); // Prevent map click
-							setSelectedSite(site);
-						}}
-					>
-						<div style={styles.iconCircle}>
-							<MaterialCommunityIcons name="bank" size={36} color="#1e1e1e" cursor="pointer" />
-						</div>
-					</Marker>
-				))}
+				{clusters.map(cluster => {
+					const [longitude, latitude] = cluster.geometry.coordinates;
+					const {cluster: isCluster, point_count: pointCount} = cluster.properties;
+
+					if (isCluster) {
+						return (
+							<Marker key={`cluster-${cluster.id}`} longitude={longitude} latitude={latitude} anchor="center">
+								<div
+									style={styles.clusterMarker}
+									onClick={e => {
+										e.stopPropagation();
+										const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(cluster.id), 20);
+										mapRef.current?.flyTo({
+											center: [longitude, latitude],
+											zoom: expansionZoom,
+											speed: 1.2,
+										});
+									}}
+								>
+									{pointCount}
+								</div>
+							</Marker>
+						);
+					}
+
+					// Render individual site
+					const site = cluster.properties as HistoricSiteType;
+					return (
+						<Marker
+							key={site.id}
+							longitude={longitude}
+							latitude={latitude}
+							anchor="bottom"
+							onClick={e => {
+								e.originalEvent.stopPropagation();
+								setSelectedSite(site);
+							}}
+						>
+							<div style={styles.iconCircle}>
+								<MaterialCommunityIcons name="bank" size={36} color="#1e1e1e" cursor="pointer" />
+							</div>
+						</Marker>
+					);
+				})}
 
 				{selectedSite && (
 					<Marker longitude={selectedSite.lon} latitude={selectedSite.lat} anchor="bottom">
@@ -137,6 +201,20 @@ const styles = {
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'center',
+		boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+		cursor: 'pointer',
+	},
+	clusterMarker: {
+		width: 44,
+		height: 44,
+		borderRadius: '50%',
+		backgroundColor: '#1e1e1e',
+		color: '#fff',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		fontWeight: 'bold',
+		fontSize: 14,
 		boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
 		cursor: 'pointer',
 	},
