@@ -106,16 +106,22 @@ async function bootstrap() {
 			console.log(`Worker listening to queue: ${queueName}`);
 
 			await boss.work(queueName, async () => {
-				const forkEm = orm.em.fork() as EntityManager;
-
-				const context = await workerInstance.getData(forkEm);
+				const dataEm = orm.em.fork() as EntityManager;
+				const context = await workerInstance.getData(dataEm);
 
 				if (context && Array.isArray(context)) {
 					for (const contextItem of context) {
+						// Fork a unique, lightweight Unit of Work context for processing this specific item
+						const executionEm = orm.em.fork() as EntityManager;
 						try {
-							await workerInstance.execute(forkEm, contextItem);
+							// Merge the entity into the execution context
+							const managedItem = executionEm.merge(contextItem);
+
+							// Cast workerInstance to 'any' to bypass compile-time signature collision.
+							// At runtime, the types are guaranteed to match (User to CleanUsers, Subscription to RenewSubscription).
+							await (workerInstance as any).execute(executionEm, managedItem);
 						} catch (entityError) {
-							console.error(`[Queue: ${queueName}] Error processing individual item:`, entityError);
+							console.error(`[Queue: ${queueName}] Error processing individual item ${(contextItem as any).id || ''}:`, entityError);
 						}
 					}
 				}
