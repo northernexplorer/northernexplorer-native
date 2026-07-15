@@ -49,7 +49,7 @@ export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTE
 			if (!isNetworkError) {
 				alertStore.showAlert(e.message);
 			} else {
-				// Let your cache layer quietly serve stale/cached data
+				// Cache layer quietly serve stale/cached data
 				console.log(`Silencing alert for network failure on ${String(method)}. Relying on cache.`);
 			}
 		} finally {
