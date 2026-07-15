@@ -62,11 +62,9 @@ export function ChangePassword() {
 	};
 
 	const handleSubmit = async () => {
-		try {
-			await mutate({...formData, username});
+		const response = await mutate({...formData, username});
+		if (response?.success) {
 			router.replace(`/profile/${username}`);
-		} catch (error) {
-			console.error(error);
 		}
 	};
 
