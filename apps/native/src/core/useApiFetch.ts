@@ -1,4 +1,4 @@
-import {useState, useEffect, useCallback} from 'react';
+import {useState, useCallback} from 'react';
 import {ROUTES, GetParams, GetResponse, NonEmptyCategory} from '@northernexplorer/types';
 import {apiClient} from '~/core/apiClient';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
