@@ -10,7 +10,6 @@ type RouteParams = {
 	username: string;
 };
 
-// Define a type for our active tab
 type ActiveTab = 'details' | 'subscription';
 
 export function Profile() {
