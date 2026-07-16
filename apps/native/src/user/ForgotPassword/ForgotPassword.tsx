@@ -47,11 +47,7 @@ export function ForgotPassword() {
 	};
 
 	const handleSubmit = async () => {
-		try {
-			mutate(formData);
-		} catch (error) {
-			console.error(error);
-		}
+		await mutate(formData);
 	};
 
 	return (

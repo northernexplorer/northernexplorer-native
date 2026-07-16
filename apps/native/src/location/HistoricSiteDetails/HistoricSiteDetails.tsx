@@ -28,7 +28,7 @@ export function HistoricSiteDetails() {
 
 				<View style={styles.metaContainer}>
 					<Text style={styles.metaLabel}>
-						Coordinates: {data.lat.toFixed(4)}°, {data.lon.toFixed(4)}°
+						Coordinates: {data.lat}°, {data.lon}°
 					</Text>
 					<Text style={styles.metaLabel}>
 						Dates: {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
