@@ -1,10 +1,11 @@
-import {useState, useEffect} from 'react';
+import {useState, useCallback} from 'react';
 import {ROUTES, GetParams, GetResponse, NonEmptyCategory} from '@northernexplorer/types';
 import {apiClient} from '~/core/apiClient';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useDispatch} from 'react-redux';
 import {alertStore} from '~/core/alertStore';
+import {useFocusEffect} from 'expo-router';
 
 export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(
 	category: C,
@@ -18,70 +19,62 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
 
-	useEffect(() => {
-		if (!params) {
-			setLoading(false);
-			setData(null);
-			return;
-		}
+	useFocusEffect(
+		useCallback(() => {
+			if (!params) {
+				setLoading(false);
+				setData(null);
+				return;
+			}
 
-		let isMounted = true;
+			let isMounted = true;
 
-		const fetchData = async () => {
-			setLoading(true);
-			setError(null);
+			const fetchData = async () => {
+				setLoading(true);
+				setError(null);
 
-			try {
-				const result = await apiClient(
-					category,
-					controller,
-					method,
-					params,
-					'GET',
-					authentication?.accessToken,
-					authentication?.refreshToken,
-					response => {
-						if (authentication) {
-							dispatch(setAuthentication(response));
+				try {
+					const result = await apiClient(
+						category,
+						controller,
+						method,
+						params,
+						'GET',
+						authentication?.accessToken,
+						authentication?.refreshToken,
+						response => {
+							if (authentication) {
+								dispatch(setAuthentication(response));
+							}
+						},
+					);
+					if (isMounted) {
+						setData(result);
+					}
+				} catch (err) {
+					if (isMounted) {
+						const e = err instanceof Error ? err : new Error('Fetch failed');
+						setError(e);
+
+						const isNetworkError = e instanceof TypeError;
+						if (!isNetworkError) {
+							alertStore.showAlert(e.message);
 						}
-					},
-				);
-				if (isMounted) {
-					setData(result);
-				}
-			} catch (err) {
-				if (isMounted) {
-					const e = err instanceof Error ? err : new Error('Mutation failed');
-					setError(e);
-
-					const isNetworkError =
-						e instanceof TypeError &&
-						(e.message.toLowerCase().includes('failed to fetch') ||
-							e.message.toLowerCase().includes('network request failed') || // React Native
-							e.message.toLowerCase().includes('networkerror') || // Firefox
-							e.message.toLowerCase().includes('load failed')); // Safari
-
-					// Only fire the global alert if it's NOT a network failure
-					if (!isNetworkError) {
-						alertStore.showAlert(e.message);
-					} else {
-						// Cache layer quietly serve stale/cached data
-						console.log(`Silencing alert for network failure on ${String(method)}. Relying on cache.`);
+					}
+				} finally {
+					if (isMounted) {
+						setLoading(false);
 					}
 				}
-			} finally {
-				if (isMounted) {
-					setLoading(false);
-				}
-			}
-		};
+			};
 
-		fetchData();
+			fetchData();
 
-		return () => {
-			isMounted = false;
-		};
-	}, [category, controller, method, params ? JSON.stringify(params) : null, authentication?.accessToken]);
+			return () => {
+				isMounted = false;
+			};
+		}, [category, controller, method, params ? JSON.stringify(params) : null, authentication?.accessToken]),
+	);
 
 	return {data, loading, error};
 }

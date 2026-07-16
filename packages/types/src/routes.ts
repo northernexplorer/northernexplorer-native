@@ -15,6 +15,7 @@ import {
 	UserAuthenticationType,
 	GetByUsernameResponse,
 	ActivateParams,
+	ResetPasswordParams,
 } from './user';
 import {GenericResponseType} from './system/GenericResponseType';
 import {SubscriptionParams, SubscriptionResponse} from './user';
@@ -141,6 +142,10 @@ export const ROUTES = {
 			activate: {
 				params: {} as ActivateParams,
 				response: {} as UserAuthenticationType,
+			},
+			resetPassword: {
+				params: {} as ResetPasswordParams,
+				response: {} as GenericResponseType,
 			},
 		},
 	},

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Text, Pressable, ScrollView} from 'react-native';
 import styles from '~/user/styles';
-import {Link} from 'expo-router';
+import {Link, router} from 'expo-router';
 import {useApiMutation} from '~/core/useApiMutation';
 import {FormField} from '~/layout/Layout/components/FormField';
 
@@ -47,7 +47,10 @@ export function ForgotPassword() {
 	};
 
 	const handleSubmit = async () => {
-		await mutate(formData);
+		const response = await mutate(formData);
+		if (response?.success) {
+			router.replace('/profile/email-reset-confirmation');
+		}
 	};
 
 	return (

@@ -37,6 +37,11 @@ export type ChangePasswordParams = {
 	newPassword: string;
 	confirmPassword: string;
 };
+export type ResetPasswordParams = {
+	token: string;
+	newPassword: string;
+	confirmPassword: string;
+};
 export type GetByUsernameParams = {
 	username: string;
 };
