@@ -946,12 +946,12 @@
     resolve-from "^5.0.0"
     semver "^7.6.0"
 
-"@expo/image-utils@^0.11.1":
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/@expo/image-utils/-/image-utils-0.11.1.tgz#98458b74c7d0871ac08369e1d0367fc3ac2e52c8"
-  integrity sha512-0JueH4vdgAZQmhlSYFvTQzt4b4NO5cnByDuApw7bMUIjhwLRnT46Ki3ritMrzJMQaO2lLK2flInZbsZbOuy8nw==
+"@expo/image-utils@^0.11.1", "@expo/image-utils@^0.11.3":
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/@expo/image-utils/-/image-utils-0.11.3.tgz#e5b930990920035517eb9ddf416bfad6d2115cdb"
+  integrity sha512-yMVjkndhXm9mct0uMq+ndxqT6FgAnhucdUfmXuQ6V6uE021GOiYCACO+KZ0MB4vearPSvbWTGfi32QQr2qocfQ==
   dependencies:
-    "@expo/require-utils" "^57.0.1"
+    "@expo/require-utils" "^57.0.3"
     "@expo/spawn-async" "^1.8.0"
     chalk "^4.0.0"
     getenv "^2.0.0"
@@ -1111,6 +1111,15 @@
   version "57.0.1"
   resolved "https://registry.yarnpkg.com/@expo/require-utils/-/require-utils-57.0.1.tgz#666db9f4e09c20ae1bade752f753732d39100369"
   integrity sha512-uXen5/4x7j60I5slShgZr5QEtJDBK8homFiNLDnDrNrxZhrRHXASo0H6JArs3/1PDzw1wahzhGWg2WKuYyZd0A==
+  dependencies:
+    "@babel/code-frame" "^7.20.0"
+    "@babel/core" "^7.25.2"
+    "@babel/plugin-transform-modules-commonjs" "^7.24.8"
+
+"@expo/require-utils@^57.0.3":
+  version "57.0.3"
+  resolved "https://registry.yarnpkg.com/@expo/require-utils/-/require-utils-57.0.3.tgz#b2bcac04f0f227aad8412ac3a78a6a3b5c26093f"
+  integrity sha512-ns05X1K8tM+Qtzp6dNloUFOopSdh3J+HC61BtOR8WHhgtPFyX8TKuO2diqZUqVg9K8yfkWug7g8tBS0qRniSTA==
   dependencies:
     "@babel/code-frame" "^7.20.0"
     "@babel/core" "^7.25.2"
@@ -3742,12 +3751,12 @@ expo-linking@~57.0.3:
     expo-constants "~57.0.5"
     invariant "^2.2.4"
 
-expo-location@~57.0.2:
-  version "57.0.2"
-  resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-57.0.2.tgz#d1040e9aed8f2e3e23b04bf81a6f3f34f0bd0a45"
-  integrity sha512-yyize0BsBfZjgelBQdhWFH2JUh9OLJOUt7fxz73Y70nbRV2rXZ7A9r0J6jfAa9lXqH7y/GDsFLqecfTc/PcFUQ==
+expo-location@~57.0.4:
+  version "57.0.4"
+  resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-57.0.4.tgz#479db37f34fdba747f94941f8a00544dd42feb1a"
+  integrity sha512-FM7lZIWJMvl6phzM/+Ity4VvIDptWKez8KP9hGh2MX0O0CC2YI+F5TnywbwSg5IAOQ6LMRVDL1vHgTzqZHNKuQ==
   dependencies:
-    "@expo/image-utils" "^0.11.1"
+    "@expo/image-utils" "^0.11.3"
 
 expo-modules-autolinking@~57.0.5:
   version "57.0.5"
