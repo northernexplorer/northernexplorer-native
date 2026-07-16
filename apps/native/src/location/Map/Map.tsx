@@ -95,7 +95,19 @@ export function Map() {
 
 					const site = cluster.properties as HistoricSiteType;
 					return (
-						<Marker key={site.id} lngLat={[longitude, latitude]} anchor="bottom" onPress={() => setSelectedSite(site)}>
+						<Marker
+							key={site.id}
+							lngLat={[longitude, latitude]}
+							anchor="bottom"
+							onPress={e => {
+								e.stopPropagation();
+								if (selectedSite && selectedSite.id === site.id) {
+									setSelectedSite(null);
+								} else {
+									setSelectedSite(site);
+								}
+							}}
+						>
 							<View style={styles.iconCircle}>
 								<MaterialCommunityIcons name="bank" size={36} color="#1e1e1e" />
 							</View>
@@ -104,7 +116,7 @@ export function Map() {
 				})}
 
 				{selectedSite && (
-					<Marker lngLat={[selectedSite.lon, selectedSite.lat]} anchor="bottom">
+					<Marker lngLat={[selectedSite.lon, selectedSite.lat]} anchor="bottom" offset={[0, -65]}>
 						<View style={styles.popupContainer}>
 							<Link
 								href={{
@@ -148,7 +160,7 @@ const styles = StyleSheet.create({
 	popupContainer: {
 		backgroundColor: '#fff',
 		padding: 12,
-		maxWidth: 220,
+		width: 220,
 		position: 'relative',
 		alignItems: 'flex-start',
 		shadowColor: '#000',
@@ -173,7 +185,6 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		bottom: -6,
 		left: '50%',
-		marginLeft: -6,
 		width: 0,
 		height: 0,
 		borderLeftWidth: 6,
