@@ -50,20 +50,22 @@ export class TokenService {
 	/**
 	 * Generates a stateless account activation token (expires in 24 hours)
 	 */
-	generateActivationToken(payload: Omit<ActivationTokenPayload, 'purpose'>): string {
-		return jwt.sign({...payload, purpose: 'account_activation'}, config.ACTIVATION_SECRET, {expiresIn: '24h'});
+	generateToken(payload: Omit<ActivationTokenPayload, 'purpose'>, purpose: 'account_activation' | 'password_reset'): string {
+		return jwt.sign({...payload, purpose}, config.ACTIVATION_SECRET, {expiresIn: '24h'});
 	}
 
 	/**
 	 * Verifies an activation token and returns its typed payload
 	 */
-	verifyActivationToken(token: string): ActivationTokenPayload {
+	verifyToken(token: string): ActivationTokenPayload {
 		const payload = jwt.verify(token, config.ACTIVATION_SECRET) as ActivationTokenPayload;
 
-		if (payload.purpose !== 'account_activation') {
-			throw new Error('This activation link is invalid or has expired. Please request a new one.');
+		if (payload.purpose === 'account_activation') {
+			return payload;
 		}
-
-		return payload;
+		if (payload.purpose === 'password_reset') {
+			return payload;
+		}
+		throw new Error('The token is invalid or has expired. Please request a new one.');
 	}
 }

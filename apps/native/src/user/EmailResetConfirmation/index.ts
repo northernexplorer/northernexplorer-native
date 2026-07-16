@@ -1,0 +1,1 @@
+export {EmailResetConfirmation} from './EmailResetConfirmation';

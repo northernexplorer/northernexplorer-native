@@ -57,12 +57,12 @@ export class UserController {
 		});
 		await this.repos.user.getEntityManager().flush();
 
-		const activationToken = this.tokenService.generateActivationToken({userId: user.id, email: user.email});
+		const activationToken = this.tokenService.generateToken({userId: user.id, email: user.email}, 'account_activation');
 		const activationUrl = `${config.WEB_URL}/profile/activate?token=${activationToken}`;
 
 		await this.emailSendService.send({
 			to: user.email,
-			subject: 'Welcome to Northern Explorer!',
+			subject: 'Northern Explorer: Welcome',
 			html: `
             <h1>Welcome to Northern Explorer!</h1>
             <p>Please click the button below to activate your account and start exploring:</p>
@@ -116,8 +116,24 @@ export class UserController {
 		const user = await this.repos.user.findByIdentifier(params.email);
 		if (!user) throw new Error("We couldn't find an account matching that information.");
 		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
-		console.log('Forgot password', params);
-		throw new Error('Feature not implemented yet.');
+
+		const resetPasswordToken = this.tokenService.generateToken({userId: user.id, email: user.email}, 'password_reset');
+		const resetPasswordUrl = `${config.WEB_URL}/profile/reset-password?token=${resetPasswordToken}`;
+
+		await this.emailSendService.send({
+			to: user.email,
+			subject: 'Northern Explorer: Password Reset',
+			html: `
+               <h1>Reset your password</h1>
+               <p>We received a request to reset your password. Click the button below to proceed:</p>
+               <a href="${resetPasswordUrl}" style="background: #0088cc; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                 Reset Password
+               </a>
+               <p>If you did not request this, please ignore this email.</p>
+               <p><em>This link will expire in 24 hours.</em></p>
+             `,
+		});
+
 		return {success: true};
 	}
 
@@ -200,7 +216,7 @@ export class UserController {
 	}
 
 	async activate(params: Params<Route<'activate'>>): Promise<Response<Route<'activate'>>> {
-		const {userId} = await this.tokenService.verifyActivationToken(params.activationToken);
+		const {userId} = await this.tokenService.verifyToken(params.activationToken);
 
 		const user = await this.repos.user.getById(userId);
 		if (!user) throw new Error("We couldn't find an account matching that information.");
@@ -225,6 +241,31 @@ export class UserController {
 			username: user.username,
 			accessToken,
 			refreshToken,
+		};
+	}
+
+	async resetPassword(params: Params<Route<'resetPassword'>>): Promise<Response<Route<'resetPassword'>>> {
+		const {userId} = await this.tokenService.verifyToken(params.token);
+
+		const user = await this.repos.user.getById(userId);
+		if (!user) throw new Error("We couldn't find an account matching that information.");
+		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
+
+		await this.repos.user.passwordValidation({
+			password: params.newPassword,
+			confirmPassword: params.confirmPassword,
+		});
+
+		const passwordHash = await this.repos.user.hashPassword(params.newPassword);
+
+		wrap(user).assign({
+			passwordHash,
+		});
+
+		await this.repos.user.getEntityManager().flush();
+
+		return {
+			success: true,
 		};
 	}
 }
