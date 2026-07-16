@@ -95,7 +95,19 @@ export function Map() {
 
 					const site = cluster.properties as HistoricSiteType;
 					return (
-						<Marker key={site.id} lngLat={[longitude, latitude]} anchor="bottom" onPress={() => setSelectedSite(site)}>
+						<Marker
+							key={site.id}
+							lngLat={[longitude, latitude]}
+							anchor="bottom"
+							onPress={e => {
+								e.stopPropagation();
+								if (selectedSite && selectedSite.id === site.id) {
+									setSelectedSite(null);
+								} else {
+									setSelectedSite(site);
+								}
+							}}
+						>
 							<View style={styles.iconCircle}>
 								<MaterialCommunityIcons name="bank" size={36} color="#1e1e1e" />
 							</View>

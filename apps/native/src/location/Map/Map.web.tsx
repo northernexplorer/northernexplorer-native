@@ -108,7 +108,11 @@ export function Map() {
 							anchor="bottom"
 							onClick={e => {
 								e.originalEvent.stopPropagation();
-								setSelectedSite(site);
+								if (selectedSite && selectedSite.id === site.id) {
+									setSelectedSite(null);
+								} else {
+									setSelectedSite(site);
+								}
 							}}
 						>
 							<div style={styles.iconCircle}>
