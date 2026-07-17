@@ -1,14 +1,14 @@
-type AlertState = {message: string | null};
+type AlertState = {message: string | null, type: 'error' | 'warning' | 'success'};
 let listeners: Array<(state: AlertState) => void> = [];
-let state: AlertState = {message: null};
+let state: AlertState = {message: null, type: 'error'};
 
 export const alertStore = {
-	showAlert: (message: string) => {
-		state = {message};
+	showAlert: (message: string, type: 'error' | 'warning' | 'success') => {
+		state = {message, type};
 		listeners.forEach(l => l(state));
 	},
 	clearAlert: () => {
-		state = {message: null};
+		state = {message: null, type: 'error'};
 		listeners.forEach(l => l(state));
 	},
 	subscribe: (listener: (state: AlertState) => void) => {

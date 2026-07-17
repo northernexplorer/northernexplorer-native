@@ -53,7 +53,7 @@ export function handle<T extends object>(ControllerClass: ControllerConstructor<
 				const token = authHeader.substring(7);
 				currentUser = {...currentUser, ...tokenService.verifyAccessToken(token)};
 			} catch {
-				res.status(401).json({error: 'Unauthorized: Token has expired or is invalid'});
+				res.status(401).json({error: 'Your login session has expired. Please log in again.'});
 			}
 		}
 
