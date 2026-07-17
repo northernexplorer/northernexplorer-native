@@ -19,4 +19,8 @@ export class SessionRepository extends EntityRepository<Session> {
 	async getByUser(user: User) {
 		return this.find({user});
 	}
+
+	async delete(session: Session) {
+		return this.em.remove(session);
+	}
 }

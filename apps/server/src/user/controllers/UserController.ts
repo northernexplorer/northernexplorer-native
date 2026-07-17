@@ -123,7 +123,11 @@ export class UserController {
 	}
 
 	async logout(params: Params<Route<'logout'>>): Promise<Response<Route<'logout'>>> {
-		console.log('Logout', params);
+		const refreshTokenHash = await this.repos.session.hashToken(params.refreshToken);
+		const session = await this.repos.session.getByRefreshHash(refreshTokenHash);
+		if (session) {
+			await this.repos.session.delete(session);
+		}
 		return {success: true};
 	}
 
@@ -209,11 +213,10 @@ export class UserController {
 
 		const user = await this.repos.user.getById(payload.userId);
 		const refreshHash = await this.repos.session.hashToken(params.refreshToken);
+		console.log(refreshHash);
 		const session = await this.repos.session.getByRefreshHash(refreshHash);
+		console.log(session);
 		if (!session) throw new Error('Your session has expired. Please log in again.');
-
-		session.lastLoginAt = new Date();
-		await this.repos.session.getEntityManager().flush();
 
 		const accessToken = this.tokenService.generateAccessToken({
 			userId: user.id,
@@ -223,6 +226,10 @@ export class UserController {
 		const refreshToken = this.tokenService.generateRefreshToken({
 			userId: user.id,
 		});
+
+		session.refreshTokenHash = await this.repos.session.hashToken(refreshToken);
+		session.lastLoginAt = new Date();
+		await this.repos.session.getEntityManager().flush();
 
 		return {
 			userId: user.id,

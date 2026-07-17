@@ -25,6 +25,9 @@ export type LoginParams = {
 	login: Login;
 	device: Device;
 };
+export type LogoutParams = {
+	refreshToken: string;
+};
 export type Login = {
 	identifier: string;
 	password: string;

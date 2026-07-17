@@ -18,6 +18,7 @@ import {
 	ResetPasswordParams,
 	GetSessionsParams,
 	GetSessionsResponse,
+	LogoutParams,
 } from './user';
 import {GenericResponseType} from './system/GenericResponseType';
 import {SubscriptionParams, SubscriptionResponse} from './user';
@@ -124,7 +125,7 @@ export const ROUTES = {
 				response: {} as UserAuthenticationType,
 			},
 			logout: {
-				params: {} as Record<string, never>,
+				params: {} as LogoutParams,
 				response: {} as GenericResponseType,
 			},
 			forgotPassword: {
