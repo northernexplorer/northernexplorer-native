@@ -5,12 +5,13 @@ import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import React, {useState} from 'react';
 import {ProfileDetails} from '~/user/Profile/components/ProfileDetails';
 import {Subscription} from '~/user/Profile/components/Subscription';
+import {Sessions} from '~/user/Profile/components/Sessions';
 
 type RouteParams = {
 	username: string;
 };
 
-type ActiveTab = 'details' | 'subscription';
+type ActiveTab = 'details' | 'subscription' | 'security';
 
 export function Profile() {
 	const authentication = useAuthentication();
@@ -36,9 +37,18 @@ export function Profile() {
 				>
 					<Text style={activeTab === 'subscription' ? styles.activeTabText : styles.tabText}>Subscription</Text>
 				</TouchableOpacity>
+
+				<TouchableOpacity
+					style={[styles.tabButton, activeTab === 'security' && styles.activeTabButton]}
+					onPress={() => setActiveTab('security')}
+				>
+					<Text style={activeTab === 'security' ? styles.activeTabText : styles.tabText}>Security</Text>
+				</TouchableOpacity>
 			</View>
 
-			{activeTab === 'details' ? <ProfileDetails username={username} /> : <Subscription username={username} />}
+			{activeTab === 'details' && <ProfileDetails username={username} />}
+			{activeTab === 'subscription' && <Subscription username={username} />}
+			{activeTab === 'security' && <Sessions username={username} />}
 		</View>
 	);
 }

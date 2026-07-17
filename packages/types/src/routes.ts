@@ -16,6 +16,8 @@ import {
 	GetByUsernameResponse,
 	ActivateParams,
 	ResetPasswordParams,
+	GetSessionsParams,
+	GetSessionsResponse,
 } from './user';
 import {GenericResponseType} from './system/GenericResponseType';
 import {SubscriptionParams, SubscriptionResponse} from './user';
@@ -100,6 +102,12 @@ export const ROUTES = {
 		MigrationController: {},
 	},
 	user: {
+		SessionController: {
+			getSessions: {
+				params: {} as GetSessionsParams,
+				response: {} as GetSessionsResponse[],
+			},
+		},
 		SubscriptionController: {
 			getByUsername: {
 				params: {} as SubscriptionParams,

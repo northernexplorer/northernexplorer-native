@@ -1,6 +1,6 @@
 import {Repositories} from '../../core/repositories';
 import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
-import {TokenPayload, TokenService} from '../services/TokenService';
+import {TokenService} from '../services/TokenService';
 import {wrap} from '@mikro-orm/core';
 import {PermissionService} from '../services/PermisionService';
 import {EmailSendService} from '../../system/services/EmailSendService';
@@ -17,19 +17,19 @@ export class UserController {
 	constructor(private repos: Repositories) {}
 
 	async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
-		if (params.register.website) throw new Error('Form submission failed. Please try again.');
+		if (params.website) throw new Error('Form submission failed. Please try again.');
 
-		const existingUserWithEmail = await this.repos.user.findByIdentifier(params.register.email);
+		const existingUserWithEmail = await this.repos.user.findByIdentifier(params.email);
 		if (existingUserWithEmail) throw new Error('This email address is already in use.');
 
-		const existingUserWithUsername = await this.repos.user.findByIdentifier(params.register.username);
+		const existingUserWithUsername = await this.repos.user.findByIdentifier(params.username);
 		if (existingUserWithUsername) throw new Error('This username is already taken.');
 
 		await this.repos.user.passwordValidation({
-			password: params.register.password,
-			confirmPassword: params.register.confirmPassword,
+			password: params.password,
+			confirmPassword: params.confirmPassword,
 		});
-		const passwordHash = await this.repos.user.hashPassword(params.register.password);
+		const passwordHash = await this.repos.user.hashPassword(params.password);
 
 		const subscriptionLevel = await this.repos.subscriptionLevel.getById(1);
 
@@ -45,10 +45,10 @@ export class UserController {
 		});
 
 		const user = this.repos.user.create({
-			email: params.register.email,
-			firstName: params.register.firstName,
-			lastName: params.register.lastName,
-			username: params.register.username,
+			email: params.email,
+			firstName: params.firstName,
+			lastName: params.lastName,
+			username: params.username,
 			createdAt: new Date(),
 			isActive: false,
 			passwordHash,
@@ -82,7 +82,6 @@ export class UserController {
 		const user = await this.repos.user.findByIdentifier(params.login.identifier);
 		if (!user) throw new Error("We couldn't find an account matching that information.");
 		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
-		if (!auth) throw new Error('Authorizaton info not found.');
 
 		const isPasswordValid = await this.repos.user.checkPassword(params.login.password, user.passwordHash);
 		if (!isPasswordValid) throw new Error('Incorrect password. Please try again or tap forgot password to reset it.');
@@ -96,14 +95,16 @@ export class UserController {
 			userId: user.id,
 		});
 
+		const refreshTokenHash = await this.repos.session.hashToken(refreshToken);
+
 		const {exp} = this.tokenService.verifyRefreshToken(refreshToken);
 
 		this.repos.session.create({
 			expiresAt: new Date(exp! * 1000),
-			ipAddress: auth.ipAddress,
+			ipAddress: auth?.ipAddress || '',
 			firstLoginAt: new Date(),
 			lastLoginAt: new Date(),
-			refreshTokenHash: refreshToken,
+			refreshTokenHash,
 			user,
 			version: 1,
 			clientName: params.device.clientName,
@@ -207,9 +208,12 @@ export class UserController {
 		if (!payload || !payload.userId) throw new Error('Your session has expired. Please log in again.');
 
 		const user = await this.repos.user.getById(payload.userId);
+		const refreshHash = await this.repos.session.hashToken(params.refreshToken);
+		const session = await this.repos.session.getByRefreshHash(refreshHash);
+		if (!session) throw new Error('Your session has expired. Please log in again.');
 
-		user.lastLoginAt = new Date();
-		await this.repos.user.getEntityManager().flush();
+		session.lastLoginAt = new Date();
+		await this.repos.session.getEntityManager().flush();
 
 		const accessToken = this.tokenService.generateAccessToken({
 			userId: user.id,
@@ -229,7 +233,7 @@ export class UserController {
 		};
 	}
 
-	async activate(params: Params<Route<'activate'>>): Promise<Response<Route<'activate'>>> {
+	async activate(params: Params<Route<'activate'>>, auth?: AuthContext): Promise<Response<Route<'activate'>>> {
 		const {userId} = await this.tokenService.verifyToken(params.activationToken);
 
 		const user = await this.repos.user.getById(userId);
@@ -237,7 +241,6 @@ export class UserController {
 		if (user.isActive) throw new Error('This account is already active. Try logging in!');
 
 		user.isActive = true;
-		user.lastLoginAt = new Date();
 		await this.repos.user.getEntityManager().flush();
 
 		const accessToken = this.tokenService.generateAccessToken({
@@ -247,6 +250,23 @@ export class UserController {
 
 		const refreshToken = this.tokenService.generateRefreshToken({
 			userId: user.id,
+		});
+
+		const refreshTokenHash = await this.repos.session.hashToken(refreshToken);
+
+		const {exp} = this.tokenService.verifyRefreshToken(refreshToken);
+
+		this.repos.session.create({
+			expiresAt: new Date(exp! * 1000),
+			ipAddress: auth?.ipAddress || '',
+			firstLoginAt: new Date(),
+			lastLoginAt: new Date(),
+			refreshTokenHash,
+			user,
+			version: 1,
+			clientName: params.device.clientName,
+			osName: params.device.osName,
+			platform: params.device.platform,
 		});
 
 		return {

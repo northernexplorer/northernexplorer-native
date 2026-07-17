@@ -6,10 +6,6 @@ export type UserAuthenticationType = {
 	refreshToken: string;
 };
 export type RegisterParams = {
-	register: Register;
-	device: Device;
-};
-export type Register = {
 	firstName: string;
 	lastName: string;
 	username: string;
@@ -19,6 +15,11 @@ export type Register = {
 	acceptTerms: boolean;
 	acceptPrivacy: boolean;
 	website?: string;
+};
+
+export type ActivateParams = {
+	activationToken: string;
+	device: Device;
 };
 export type LoginParams = {
 	login: Login;
@@ -71,8 +72,4 @@ export type GetByUsernameResponse = {
 };
 export type RefreshParams = {
 	refreshToken: string;
-};
-
-export type ActivateParams = {
-	activationToken: string;
 };

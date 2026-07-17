@@ -1,3 +1,4 @@
+export {SessionController} from './controllers/SessionController';
 export {SubscriptionController} from './controllers/SubscriptionController';
 export {UserController} from './controllers/UserController';
 

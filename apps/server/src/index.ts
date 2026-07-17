@@ -27,8 +27,8 @@ type ControllerConstructor<T> = new (repos: Repositories) => T;
 const tokenService = new TokenService();
 
 export interface AuthContext {
-	userId: number;
-	email: string;
+	userId?: number;
+	email?: string;
 	ipAddress: string;
 }
 
@@ -44,13 +44,13 @@ export function handle<T extends object>(ControllerClass: ControllerConstructor<
 			throw new Error(`Method ${methodName} is not a function.`);
 		}
 
-		let currentUser: AuthContext | undefined = undefined;
+		let currentUser: AuthContext | undefined = {ipAddress: req.ip || ''};
 		const authHeader = req.headers.authorization;
 
 		if (authHeader?.startsWith('Bearer ')) {
 			try {
 				const token = authHeader.substring(7);
-				currentUser = {...tokenService.verifyAccessToken(token), ipAddress: req.ip || ''};
+				currentUser = {...currentUser, ...tokenService.verifyAccessToken(token)};
 			} catch {
 				res.status(401).json({error: 'Unauthorized: Token has expired or is invalid'});
 			}

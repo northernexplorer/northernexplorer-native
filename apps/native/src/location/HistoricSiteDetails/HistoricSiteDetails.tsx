@@ -5,7 +5,7 @@ import {styles} from '~/location/HistoricSiteDetails/styles';
 import {getUrl} from '@northernexplorer/tools';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/components/Spiner';
+import {Spinner} from '~/layout/Layout/components/Spinner';
 
 export function HistoricSiteDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
