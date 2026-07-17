@@ -4,7 +4,6 @@ import styles from '~/user/styles';
 import {Link, router} from 'expo-router';
 import {useApiMutation} from '~/core/useApiMutation';
 import {FormField} from '~/layout/Layout/components/FormField';
-import {useDeviceInfo} from "~/user/Login/useDeviceInfo";
 
 const initialFormData = {
 	firstName: '',
@@ -24,7 +23,6 @@ type FormKeys = keyof FormData;
 export function Register() {
 	const [formData, setFormData] = useState<FormData>(initialFormData);
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
-    const deviceInfo = useDeviceInfo();
 
 	const {mutate, loading} = useApiMutation('user', 'UserController', 'register');
 
@@ -63,7 +61,7 @@ export function Register() {
 	};
 
 	const handleSubmit = async () => {
-		const response = await mutate({register: formData, device: deviceInfo});
+		const response = await mutate(formData);
 		if (response?.success) {
 			router.replace('/profile/email-confirmation');
 		}

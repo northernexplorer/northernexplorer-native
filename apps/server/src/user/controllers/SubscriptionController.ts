@@ -1,8 +1,7 @@
 import {Repositories} from '../../core/repositories';
 import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
-import {TokenPayload} from '../services/TokenService';
 import {PermissionService} from '../services/PermisionService';
-import {AuthContext} from "../../index";
+import {AuthContext} from '../../index';
 
 type Route<M extends keyof ROUTES['user']['SubscriptionController']> = RouteDefinition<'user', 'SubscriptionController'>[M];
 

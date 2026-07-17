@@ -1,4 +1,4 @@
-type AlertState = {message: string | null, type: 'error' | 'warning' | 'success'};
+type AlertState = {message: string | null; type: 'error' | 'warning' | 'success'};
 let listeners: Array<(state: AlertState) => void> = [];
 let state: AlertState = {message: null, type: 'error'};
 
