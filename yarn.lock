@@ -1370,24 +1370,24 @@
     "@types/geojson" "^7946.0.16"
     pbf "^5.1.0"
 
-"@mikro-orm/cli@^7.1.4":
-  version "7.1.4"
-  resolved "https://registry.npmjs.org/@mikro-orm/cli/-/cli-7.1.4.tgz"
-  integrity sha512-o1AQgwVJ3i8fGpR+48bSTum/Ar5u38WfyX1HykoPR03M5IdOHJ2QdiwA0o58TsA5xd0U+IlhlNLJEwZ8XCNXGA==
+"@mikro-orm/cli@^7.1.6":
+  version "7.1.6"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/cli/-/cli-7.1.6.tgz#fce8334eb8c4b655fe0295f37a3ac1c3c8835797"
+  integrity sha512-qu4r7x3j49uqEjLdo5BD4ZZNsozDCZ9KiA3Kw797OIk/b/1uAnrFzG3I3uJ1tk2y+J7mhjQR2vBFNnKh4YH9Lg==
   dependencies:
-    "@mikro-orm/core" "7.1.4"
-    mikro-orm "7.1.4"
+    "@mikro-orm/core" "7.1.6"
+    mikro-orm "7.1.6"
     yargs "17.7.2"
 
-"@mikro-orm/core@7.1.4", "@mikro-orm/core@^7.1.4":
-  version "7.1.4"
-  resolved "https://registry.npmjs.org/@mikro-orm/core/-/core-7.1.4.tgz"
-  integrity sha512-JPpOoBw2r98hVmsa7kFdt9HDqTa6/x9dhLL2MZRJQt1HwNg7S7A6Eh+nJ21dmB5QfXhu2PXqt03Y+xZZDnUD0w==
+"@mikro-orm/core@7.1.6", "@mikro-orm/core@^7.1.6":
+  version "7.1.6"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/core/-/core-7.1.6.tgz#227151d766063e70ec9d7da978704318f58a700c"
+  integrity sha512-p9mMyGYS+xE0dB29fdtxTj50wuYzrevtCensCsZ6+StvwoTSA6B0ELEm/A0Cch7FfCLYORbND7ui9pW6ugE2tQ==
 
-"@mikro-orm/decorators@^7.1.4":
-  version "7.1.4"
-  resolved "https://registry.npmjs.org/@mikro-orm/decorators/-/decorators-7.1.4.tgz"
-  integrity sha512-3OSFkdgi39c/kFJ89/ylDZ27n5WV3uJgqrAMNVjrAxQs9xByt6mzoTBsWuU/EdNqw3yBLR43FNwTNPc1lWQ7lA==
+"@mikro-orm/decorators@^7.1.6":
+  version "7.1.6"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/decorators/-/decorators-7.1.6.tgz#0f21ea67f1752f1dc087d32d4607d0de9758c468"
+  integrity sha512-6pnkyYg6keb25NAdAa/adkOIqDEfI2YkzfugqA62b1QVbSVlMxqyS6VW4BAHf/9XtJMczJBRKVRuPBsXnrQZRA==
 
 "@mikro-orm/postgresql@^7.1.6":
   version "7.1.6"
@@ -3721,6 +3721,13 @@ expo-constants@~57.0.3, expo-constants@~57.0.5:
   dependencies:
     "@expo/env" "~2.4.2"
 
+expo-device@^57.0.1:
+  version "57.0.1"
+  resolved "https://registry.yarnpkg.com/expo-device/-/expo-device-57.0.1.tgz#1ca758ea538010b8edb0965dec0a18964f6dbad1"
+  integrity sha512-jyEMDUticH+dhcL3GHa2aiifOvGXJsmb3oVT2R2q4i8bN7Bddy61+NkpMmuS2VAZrvoLQwf0TJJ/1vi1ukvutA==
+  dependencies:
+    ua-parser-js "^0.7.33"
+
 expo-file-system@~57.0.0:
   version "57.0.0"
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-57.0.0.tgz#d7afbb2ff0a269113a00a688c1f6ba89404df56c"
@@ -5443,10 +5450,10 @@ micromatch@^4.0.4:
     braces "^3.0.3"
     picomatch "^2.3.1"
 
-mikro-orm@7.1.4:
-  version "7.1.4"
-  resolved "https://registry.npmjs.org/mikro-orm/-/mikro-orm-7.1.4.tgz"
-  integrity sha512-6e71y7tgSWNHMPCsTBxAaEaeBKly99fCYIOByrUVTAP/lm/N9iHYVEATeC7/oqVDYINDzdlJGKk9RI8objPl4A==
+mikro-orm@7.1.6:
+  version "7.1.6"
+  resolved "https://registry.yarnpkg.com/mikro-orm/-/mikro-orm-7.1.6.tgz#547a1982c06c6051451fe3f80db0c504f604f278"
+  integrity sha512-Uoqd4p5r5SRNQt6jLIN5FgLaWdrpi8PjYGnG2/8a8gWXEt/KaGhobFyNu2110A5wjO59WNMgR2MQV0iL8ygfXg==
 
 mime-db@1.52.0:
   version "1.52.0"
@@ -7271,6 +7278,11 @@ typewise@^1.0.3:
   integrity sha512-aXofE06xGhaQSPzt8hlTY+/YWQhm9P0jYUp1f2XtmW/3Bk0qzXcyFWAtPoo2uTGQj1ZwbDuSyuxicq+aDo8lCQ==
   dependencies:
     typewise-core "^1.2.0"
+
+ua-parser-js@^0.7.33:
+  version "0.7.41"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.41.tgz#9f6dee58c389e8afababa62a4a2dc22edb69a452"
+  integrity sha512-O3oYyCMPYgNNHuO7Jjk3uacJWZF8loBgwrfd/5LE/HyZ3lUIOdniQ7DNXJcIgZbwioZxk0fLfI4EVnetdiX5jg==
 
 ua-parser-js@^1.0.35:
   version "1.0.41"

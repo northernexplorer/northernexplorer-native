@@ -19,62 +19,59 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
 
+	const fetchData = useCallback(async () => {
+		if (!params) {
+			setLoading(false);
+			setData(null);
+			return;
+		}
+
+		setLoading(true);
+		setError(null);
+
+		try {
+			const result = await apiClient(
+				category,
+				controller,
+				method,
+				params,
+				'GET',
+				authentication?.accessToken,
+				authentication?.refreshToken,
+				response => {
+					if (authentication) {
+						dispatch(setAuthentication(response));
+					}
+				},
+			);
+			setData(result);
+		} catch (err) {
+			const e = err instanceof Error ? err : new Error('Mutation failed');
+			setError(e);
+
+			const isNetworkError =
+				e instanceof TypeError &&
+				(e.message.toLowerCase().includes('failed to fetch') ||
+					e.message.toLowerCase().includes('network request failed') || // React Native
+					e.message.toLowerCase().includes('networkerror') || // Firefox
+					e.message.toLowerCase().includes('load failed')); // Safari
+
+			if (!isNetworkError) {
+				const alertType = e.message.includes('session has expired') ? 'warning' : 'error';
+				alertStore.showAlert(e.message, alertType);
+			} else {
+				// Cache layer quietly serve stale/cached data
+				console.log(`Silencing alert for network failure on ${String(method)}. Relying on cache.`);
+			}
+		} finally {
+			setLoading(false);
+		}
+	}, [category, controller, method, params ? JSON.stringify(params) : null, authentication?.accessToken]);
 	useFocusEffect(
 		useCallback(() => {
-			if (!params) {
-				setLoading(false);
-				setData(null);
-				return;
-			}
-
-			let isMounted = true;
-
-			const fetchData = async () => {
-				setLoading(true);
-				setError(null);
-
-				try {
-					const result = await apiClient(
-						category,
-						controller,
-						method,
-						params,
-						'GET',
-						authentication?.accessToken,
-						authentication?.refreshToken,
-						response => {
-							if (authentication) {
-								dispatch(setAuthentication(response));
-							}
-						},
-					);
-					if (isMounted) {
-						setData(result);
-					}
-				} catch (err) {
-					if (isMounted) {
-						const e = err instanceof Error ? err : new Error('Fetch failed');
-						setError(e);
-
-						const isNetworkError = e instanceof TypeError;
-						if (!isNetworkError) {
-							alertStore.showAlert(e.message);
-						}
-					}
-				} finally {
-					if (isMounted) {
-						setLoading(false);
-					}
-				}
-			};
-
 			fetchData();
-
-			return () => {
-				isMounted = false;
-			};
-		}, [category, controller, method, params ? JSON.stringify(params) : null, authentication?.accessToken]),
+		}, [fetchData]),
 	);
 
-	return {data, loading, error};
+	return {data, loading, error, refetch: fetchData};
 }

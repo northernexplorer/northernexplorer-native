@@ -16,6 +16,10 @@ import {
 	GetByUsernameResponse,
 	ActivateParams,
 	ResetPasswordParams,
+	GetSessionsParams,
+	GetSessionsResponse,
+	LogoutParams,
+	RemoveSessionParams,
 } from './user';
 import {GenericResponseType} from './system/GenericResponseType';
 import {SubscriptionParams, SubscriptionResponse} from './user';
@@ -100,6 +104,16 @@ export const ROUTES = {
 		MigrationController: {},
 	},
 	user: {
+		SessionController: {
+			getSessions: {
+				params: {} as GetSessionsParams,
+				response: {} as GetSessionsResponse[],
+			},
+			removeSession: {
+				params: {} as RemoveSessionParams,
+				response: {} as GenericResponseType,
+			},
+		},
 		SubscriptionController: {
 			getByUsername: {
 				params: {} as SubscriptionParams,
@@ -116,7 +130,7 @@ export const ROUTES = {
 				response: {} as UserAuthenticationType,
 			},
 			logout: {
-				params: {} as Record<string, never>,
+				params: {} as LogoutParams,
 				response: {} as GenericResponseType,
 			},
 			forgotPassword: {
@@ -132,7 +146,7 @@ export const ROUTES = {
 				response: {success: true} as GenericResponseType,
 			},
 			getByUsername: {
-				params: {username: ''} as GetByUsernameParams,
+				params: {} as GetByUsernameParams,
 				response: {} as GetByUsernameResponse,
 			},
 			refresh: {

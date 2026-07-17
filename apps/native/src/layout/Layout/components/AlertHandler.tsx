@@ -1,26 +1,60 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, Modal} from 'react-native';
 import {alertStore} from '~/core/alertStore';
+import {authEvents} from '~/core/authEvents';
+import {clearAuthentication} from '~/user/state/authentication/authenticationSlice';
+import {router} from 'expo-router';
+import {useDispatch} from 'react-redux';
 
-export function ErrorHandler({children}: {children: React.ReactNode}) {
-	const [alert, setAlert] = useState<{message: string | null}>({message: null});
+const ALERT_CONFIG = {
+	error: {
+		icon: '!',
+		color: '#FF3B30',
+		title: 'Error',
+	},
+	warning: {
+		icon: '⚠',
+		color: '#FF9F0A',
+		title: 'Warning',
+	},
+	success: {
+		icon: '✓',
+		color: '#34C759',
+		title: 'Success',
+	},
+};
+
+export function AlertHandler({children}: {children: React.ReactNode}) {
+	const [alert, setAlert] = useState<{message: string | null; type: 'error' | 'warning' | 'success'}>({message: null, type: 'error'});
+	const dispatch = useDispatch();
+
+	const config = ALERT_CONFIG[alert.type];
 
 	useEffect(() => {
 		return alertStore.subscribe(setAlert);
 	}, []);
 
+	useEffect(() => {
+		return authEvents.subscribe(event => {
+			if (event === 'FORCE_LOGOUT') {
+				dispatch(clearAuthentication());
+				router.replace('/profile/login');
+			}
+		});
+	}, [dispatch, router]);
+
 	return (
 		<View style={styles.container}>
 			{children}
 
-			<Modal transparent visible={!!alert.message} animationType="fade" onRequestClose={() => alertStore.clearAlert()}>
+			<Modal transparent visible={!!alert.message} animationType="fade">
 				<View style={styles.overlay}>
 					<View style={styles.alertBox}>
-						<View style={styles.iconCircle}>
-							<Text style={styles.iconText}>!</Text>
+						<View style={[styles.iconCircle, {borderColor: config.color, backgroundColor: `${config.color}15`}]}>
+							<Text style={[styles.iconText, {color: config.color}]}>{config.icon}</Text>
 						</View>
 
-						<Text style={styles.title}>Error</Text>
+						{alert.type === 'error' && <Text style={styles.title}>{config.title}</Text>}
 						<Text style={styles.message}>{alert.message}</Text>
 
 						<TouchableOpacity style={styles.button} onPress={() => alertStore.clearAlert()}>

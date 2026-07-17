@@ -45,9 +45,9 @@ export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTE
 					e.message.toLowerCase().includes('networkerror') || // Firefox
 					e.message.toLowerCase().includes('load failed')); // Safari
 
-			// Only fire the global alert if it's NOT a network failure
 			if (!isNetworkError) {
-				alertStore.showAlert(e.message);
+				const alertType = e.message.includes('session has expired') ? 'warning' : 'error';
+				alertStore.showAlert(e.message, alertType);
 			} else {
 				// Cache layer quietly serve stale/cached data
 				console.log(`Silencing alert for network failure on ${String(method)}. Relying on cache.`);

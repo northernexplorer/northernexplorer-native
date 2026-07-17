@@ -15,6 +15,7 @@ import {PgBoss} from 'pg-boss';
 import {heartbeats} from './core/heartbeats';
 
 const app = express();
+app.set('trust proxy', true);
 const PORT = config.PORT;
 
 app.use(cors({origin: '*'}));
@@ -24,6 +25,13 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 type ControllerConstructor<T> = new (repos: Repositories) => T;
 
 const tokenService = new TokenService();
+
+export interface AuthContext {
+	userId?: number;
+	email?: string;
+	refreshToken?: string;
+	ipAddress: string;
+}
 
 export function handle<T extends object>(ControllerClass: ControllerConstructor<any>, methodName: keyof T & string) {
 	return async (req: Request, res: Response): Promise<void> => {
@@ -37,15 +45,15 @@ export function handle<T extends object>(ControllerClass: ControllerConstructor<
 			throw new Error(`Method ${methodName} is not a function.`);
 		}
 
-		let currentUser: unknown = undefined;
+		let currentUser: AuthContext | undefined = {ipAddress: req.ip || ''};
 		const authHeader = req.headers.authorization;
 
 		if (authHeader?.startsWith('Bearer ')) {
 			try {
 				const token = authHeader.substring(7);
-				currentUser = tokenService.verifyAccessToken(token);
+				currentUser = {...currentUser, ...tokenService.verifyAccessToken(token)};
 			} catch {
-				res.status(401).json({error: 'Unauthorized: Token has expired or is invalid'});
+				res.status(401).json({error: 'Your login session has expired. Please log in again.'});
 			}
 		}
 

@@ -1,5 +1,6 @@
 import {GetParams, GetResponse, NonEmptyCategory, ROUTES, UserAuthenticationType} from '@northernexplorer/types';
 import {config} from '~/config';
+import {authEvents} from '~/core/authEvents';
 
 export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(
 	category: C,
@@ -59,10 +60,14 @@ export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUT
 				};
 
 				res = await fetch(url.toString(), options);
+			} else {
+				authEvents.emit('FORCE_LOGOUT');
 			}
 		} catch {
-			throw new Error('Session expired. Please log in again.');
+			authEvents.emit('FORCE_LOGOUT');
 		}
+	} else if (res.status === 401) {
+		authEvents.emit('FORCE_LOGOUT');
 	}
 
 	if (!res.ok) {

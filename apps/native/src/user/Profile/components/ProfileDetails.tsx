@@ -2,7 +2,7 @@ import {View, Text, Pressable} from 'react-native';
 import styles from '~/user/styles';
 import {Link} from 'expo-router';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/components/Spiner';
+import {Spinner} from '~/layout/Layout/components/Spinner';
 import React from 'react';
 
 type Props = {

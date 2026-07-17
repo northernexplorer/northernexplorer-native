@@ -5,7 +5,7 @@ import {Link, Redirect, useLocalSearchParams, router} from 'expo-router';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/components/Spiner';
+import {Spinner} from '~/layout/Layout/components/Spinner';
 import {FormField} from '~/layout/Layout/components/FormField';
 
 type RouteParams = {

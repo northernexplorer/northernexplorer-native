@@ -6,6 +6,7 @@ import {useApiMutation} from '~/core/useApiMutation';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useDispatch} from 'react-redux';
 import {FormField} from '~/layout/Layout/components/FormField';
+import {useDeviceInfo} from '~/user/Login/useDeviceInfo';
 
 const initialFormData = {
 	identifier: '',
@@ -20,6 +21,7 @@ export function Login() {
 	const [formData, setFormData] = useState<FormData>(initialFormData);
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const dispatch = useDispatch();
+	const deviceInfo = useDeviceInfo();
 
 	const {mutate, loading} = useApiMutation('user', 'UserController', 'login');
 
@@ -52,7 +54,7 @@ export function Login() {
 	};
 
 	const handleSubmit = async () => {
-		const response = await mutate(formData);
+		const response = await mutate({login: formData, device: deviceInfo});
 		if (response) {
 			dispatch(setAuthentication(response));
 			router.replace(`/profile/${response.username}`);

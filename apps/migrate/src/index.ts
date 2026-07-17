@@ -13,7 +13,7 @@ const pool = new Pool({
 });
 
 async function runIncrementalMigrations() {
-	console.log('🚀 Initializing Native SQL Migration Service...');
+	console.log('Initializing Native SQL Migration Service...');
 	const client = await pool.connect();
 
 	try {
@@ -31,15 +31,15 @@ async function runIncrementalMigrations() {
 		const pendingKeys = Object.keys(migrationsRegistry).filter(key => !executedKeys.has(key));
 
 		if (pendingKeys.length === 0) {
-			console.log('✨ Database schema is up to date. No pending migrations found.');
+			console.log('Database schema is up to date. No pending migrations found.');
 			return;
 		}
 
-		console.log(`📥 Found ${pendingKeys.length} pending migration batches to execute.`);
+		console.log(`Found ${pendingKeys.length} pending migration batches to execute.`);
 
 		// Process each missing migration file sequentially
 		for (const key of pendingKeys) {
-			console.log(`\n⚡ Processing batch: [${key}]`);
+			console.log(`\nProcessing batch: [${key}]`);
 			const sqlLines = migrationsRegistry[key];
 
 			// Start transaction
@@ -57,22 +57,22 @@ async function runIncrementalMigrations() {
 				// Log this key so it skips next time (using standard $1 token placeholder for pg)
 				await client.query('INSERT INTO migration (migration_key, executed_at) VALUES ($1, CURRENT_TIMESTAMP)', [key]);
 				await client.query('COMMIT');
-				console.log(`✅ Completed and recorded migration: [${key}]`);
+				console.log(`Completed and recorded migration: [${key}]`);
 			} catch (txError) {
 				await client.query('ROLLBACK');
 				throw txError;
 			}
 		}
 
-		console.log('\n🎉 All structural updates applied cleanly!');
+		console.log('\nAll structural updates applied cleanly!');
 	} catch (error) {
-		console.error('\n❌ Migration batch aborted due to execution error. Changes rolled back.');
+		console.error('\n Migration batch aborted due to execution error. Changes rolled back.');
 		console.error(error);
 		process.exit(1);
 	} finally {
 		client.release();
 		await pool.end();
-		console.log('🔌 Connection pool released cleanly.');
+		console.log('Connection pool released cleanly.');
 		process.exit(0);
 	}
 }

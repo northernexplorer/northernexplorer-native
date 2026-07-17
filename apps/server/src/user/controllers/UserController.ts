@@ -1,10 +1,11 @@
 import {Repositories} from '../../core/repositories';
 import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
-import {TokenPayload, TokenService} from '../services/TokenService';
+import {TokenService} from '../services/TokenService';
 import {wrap} from '@mikro-orm/core';
 import {PermissionService} from '../services/PermisionService';
 import {EmailSendService} from '../../system/services/EmailSendService';
 import {config} from '../../config';
+import {AuthContext} from '../../index';
 
 type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<'user', 'UserController'>[M];
 
@@ -46,7 +47,6 @@ export class UserController {
 		const user = this.repos.user.create({
 			email: params.email,
 			firstName: params.firstName,
-			lastLoginAt: new Date(),
 			lastName: params.lastName,
 			username: params.username,
 			createdAt: new Date(),
@@ -78,16 +78,13 @@ export class UserController {
 		return {success: true};
 	}
 
-	async login(params: Params<Route<'login'>>): Promise<Response<Route<'login'>>> {
-		const user = await this.repos.user.findByIdentifier(params.identifier);
+	async login(params: Params<Route<'login'>>, auth?: AuthContext): Promise<Response<Route<'login'>>> {
+		const user = await this.repos.user.findByIdentifier(params.login.identifier);
 		if (!user) throw new Error("We couldn't find an account matching that information.");
 		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
 
-		const isPasswordValid = await this.repos.user.checkPassword(params.password, user.passwordHash);
+		const isPasswordValid = await this.repos.user.checkPassword(params.login.password, user.passwordHash);
 		if (!isPasswordValid) throw new Error('Incorrect password. Please try again or tap forgot password to reset it.');
-
-		user.lastLoginAt = new Date();
-		await this.repos.user.getEntityManager().flush();
 
 		const accessToken = this.tokenService.generateAccessToken({
 			userId: user.id,
@@ -97,6 +94,24 @@ export class UserController {
 		const refreshToken = this.tokenService.generateRefreshToken({
 			userId: user.id,
 		});
+
+		const refreshTokenHash = await this.repos.session.hashToken(refreshToken);
+
+		const {exp} = this.tokenService.verifyRefreshToken(refreshToken);
+
+		this.repos.session.create({
+			expiresAt: new Date(exp! * 1000),
+			ipAddress: auth?.ipAddress || '',
+			firstLoginAt: new Date(),
+			lastLoginAt: new Date(),
+			refreshTokenHash,
+			user,
+			version: 1,
+			clientName: params.device.clientName,
+			osName: params.device.osName,
+			platform: params.device.platform,
+		});
+		await this.repos.user.getEntityManager().flush();
 
 		return {
 			userId: user.id,
@@ -108,7 +123,11 @@ export class UserController {
 	}
 
 	async logout(params: Params<Route<'logout'>>): Promise<Response<Route<'logout'>>> {
-		console.log('Logout', params);
+		const refreshTokenHash = await this.repos.session.hashToken(params.refreshToken);
+		const session = await this.repos.session.getByRefreshHash(refreshTokenHash);
+		if (session) {
+			await this.repos.session.delete(session);
+		}
 		return {success: true};
 	}
 
@@ -137,7 +156,7 @@ export class UserController {
 		return {success: true};
 	}
 
-	async editProfile(params: Params<Route<'editProfile'>>, auth?: TokenPayload): Promise<Response<Route<'editProfile'>>> {
+	async editProfile(params: Params<Route<'editProfile'>>, auth?: AuthContext): Promise<Response<Route<'editProfile'>>> {
 		const {targetId} = this.permissionService.canAccessProfile({
 			userId: auth?.userId,
 			targetId: params.userId,
@@ -148,7 +167,7 @@ export class UserController {
 		return {success: true};
 	}
 
-	async changePassword(params: Params<Route<'changePassword'>>, auth?: TokenPayload): Promise<Response<Route<'changePassword'>>> {
+	async changePassword(params: Params<Route<'changePassword'>>, auth?: AuthContext): Promise<Response<Route<'changePassword'>>> {
 		const user = await this.repos.user.getByUsername(params.username);
 		this.permissionService.canAccessProfile({
 			userId: auth?.userId,
@@ -175,7 +194,7 @@ export class UserController {
 		};
 	}
 
-	async getByUsername(params: Params<Route<'getByUsername'>>, auth?: TokenPayload): Promise<Response<Route<'getByUsername'>>> {
+	async getByUsername(params: Params<Route<'getByUsername'>>, auth?: AuthContext): Promise<Response<Route<'getByUsername'>>> {
 		const user = await this.repos.user.getByUsername(params.username);
 		this.permissionService.canAccessProfile({
 			userId: auth?.userId,
@@ -190,32 +209,34 @@ export class UserController {
 
 	async refresh(params: Params<Route<'refresh'>>): Promise<Response<Route<'refresh'>>> {
 		const payload = this.tokenService.verifyRefreshToken(params.refreshToken);
-		if (!payload || !payload.userId) throw new Error('Your session has expired. Please log in again.');
+		if (!payload?.userId) throw new Error('Your session has expired. Please log in again.');
+
+		const refreshHash = await this.repos.session.hashToken(params.refreshToken);
+		const session = await this.repos.session.getByRefreshHash(refreshHash);
+		if (!session) throw new Error('Your session has expired.');
 
 		const user = await this.repos.user.getById(payload.userId);
+		if (!user) throw new Error('User not found.');
 
-		user.lastLoginAt = new Date();
-		await this.repos.user.getEntityManager().flush();
+		const accessToken = this.tokenService.generateAccessToken({userId: user.id, email: user.email});
+		const newRefreshToken = this.tokenService.generateRefreshToken({userId: user.id});
+		const newRefreshHash = await this.repos.session.hashToken(newRefreshToken);
 
-		const accessToken = this.tokenService.generateAccessToken({
-			userId: user.id,
-			email: user.email,
-		});
+		session.refreshTokenHash = newRefreshHash;
+		session.lastLoginAt = new Date();
 
-		const refreshToken = this.tokenService.generateRefreshToken({
-			userId: user.id,
-		});
+		await this.repos.session.getEntityManager().flush();
 
 		return {
 			userId: user.id,
 			email: user.email,
 			username: user.username,
 			accessToken,
-			refreshToken,
+			refreshToken: newRefreshToken,
 		};
 	}
 
-	async activate(params: Params<Route<'activate'>>): Promise<Response<Route<'activate'>>> {
+	async activate(params: Params<Route<'activate'>>, auth?: AuthContext): Promise<Response<Route<'activate'>>> {
 		const {userId} = await this.tokenService.verifyToken(params.activationToken);
 
 		const user = await this.repos.user.getById(userId);
@@ -223,7 +244,6 @@ export class UserController {
 		if (user.isActive) throw new Error('This account is already active. Try logging in!');
 
 		user.isActive = true;
-		user.lastLoginAt = new Date();
 		await this.repos.user.getEntityManager().flush();
 
 		const accessToken = this.tokenService.generateAccessToken({
@@ -233,6 +253,23 @@ export class UserController {
 
 		const refreshToken = this.tokenService.generateRefreshToken({
 			userId: user.id,
+		});
+
+		const refreshTokenHash = await this.repos.session.hashToken(refreshToken);
+
+		const {exp} = this.tokenService.verifyRefreshToken(refreshToken);
+
+		this.repos.session.create({
+			expiresAt: new Date(exp! * 1000),
+			ipAddress: auth?.ipAddress || '',
+			firstLoginAt: new Date(),
+			lastLoginAt: new Date(),
+			refreshTokenHash,
+			user,
+			version: 1,
+			clientName: params.device.clientName,
+			osName: params.device.osName,
+			platform: params.device.platform,
 		});
 
 		return {
