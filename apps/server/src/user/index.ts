@@ -13,4 +13,5 @@ export {SubscriptionLevelRepository} from './repositories/SubscriptionLevelRepos
 export {UserRepository} from './repositories/UserRepository';
 
 export {CleanUsersHeartbeat} from './heartbeats/CleanUsersHeartbeat';
+export {CleanSessionsHeartbeat} from './heartbeats/CleanSessionsHeartbeat';
 export {RenewSubscriptionHeartbeat} from './heartbeats/RenewSubscriptionHeartbeat';

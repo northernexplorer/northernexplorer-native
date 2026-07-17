@@ -26,7 +26,6 @@ export class CleanUsersHeartbeat {
 
 	/**
 	 * Phase 2: Performs the actual business operation on a single user entity instance.
-	 * Safely deletes the user without the overhead of an explicit transaction block.
 	 */
 	public async execute(em: EntityManager, user: User): Promise<void> {
 		em.remove(user);

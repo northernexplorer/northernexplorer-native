@@ -20,7 +20,7 @@ export class TokenService {
 	 */
 	generateAccessToken(payload: TokenPayload): string {
 		return jwt.sign(payload, config.ACCESS_SECRET, {
-			expiresIn: '15m',
+			expiresIn: '10m',
 		});
 	}
 
