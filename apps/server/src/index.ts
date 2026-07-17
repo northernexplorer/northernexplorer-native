@@ -15,7 +15,6 @@ import {PgBoss} from 'pg-boss';
 import {heartbeats} from './core/heartbeats';
 
 const app = express();
-app.set('trust proxy', true);
 const PORT = config.PORT;
 
 app.use(cors({origin: '*'}));
