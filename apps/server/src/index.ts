@@ -13,6 +13,7 @@ import {controllers} from './core/controllers';
 import {TokenService} from './user/services/TokenService';
 import {PgBoss} from 'pg-boss';
 import {heartbeats} from './core/heartbeats';
+import {getClientIp} from './core/getClientIp';
 
 const app = express();
 const PORT = config.PORT;
@@ -44,9 +45,7 @@ export function handle<T extends object>(ControllerClass: ControllerConstructor<
 			throw new Error(`Method ${methodName} is not a function.`);
 		}
 
-		const doIp = req.headers['do-connecting-ip'];
-		const ipAddress = Array.isArray(doIp) ? doIp[0] : doIp || req.ip || '';
-		let currentUser: AuthContext | undefined = {ipAddress};
+		let currentUser: AuthContext | undefined = {ipAddress: getClientIp(req)};
 		const authHeader = req.headers.authorization;
 
 		if (authHeader?.startsWith('Bearer ')) {
