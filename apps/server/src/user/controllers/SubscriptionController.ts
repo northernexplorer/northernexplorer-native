@@ -18,7 +18,7 @@ export class SubscriptionController {
 		});
 
 		const subscription = await this.repos.subscription.getById(user.subscription.id);
-		const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.id);
+		const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
 
 		return {subscription, subscriptionLevel};
 	}
