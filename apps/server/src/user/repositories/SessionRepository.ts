@@ -1,15 +1,15 @@
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {Session} from '../entities/Session';
-import {hash} from 'bcrypt';
 import {User} from '../entities/User';
+import {createHash} from 'node:crypto';
 
 export class SessionRepository extends EntityRepository<Session> {
 	async getById(id: number) {
 		return this.findOneOrFail({id});
 	}
 
-	async hashToken(userPassword: string) {
-		return hash(userPassword, 12);
+	async hashToken(token: string) {
+		return createHash('sha256').update(token).digest('hex');
 	}
 
 	async getByRefreshHash(refreshTokenHash: string) {
@@ -21,6 +21,6 @@ export class SessionRepository extends EntityRepository<Session> {
 	}
 
 	async delete(session: Session) {
-		return this.em.remove(session);
+		return this.nativeDelete({id: session.id});
 	}
 }

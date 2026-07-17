@@ -29,6 +29,7 @@ const tokenService = new TokenService();
 export interface AuthContext {
 	userId?: number;
 	email?: string;
+	refreshToken?: string;
 	ipAddress: string;
 }
 

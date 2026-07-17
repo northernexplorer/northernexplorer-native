@@ -209,26 +209,22 @@ export class UserController {
 
 	async refresh(params: Params<Route<'refresh'>>): Promise<Response<Route<'refresh'>>> {
 		const payload = this.tokenService.verifyRefreshToken(params.refreshToken);
-		if (!payload || !payload.userId) throw new Error('Your session has expired. Please log in again.');
+		if (!payload?.userId) throw new Error('Your session has expired. Please log in again.');
+
+		const refreshHash = await this.repos.session.hashToken(params.refreshToken);
+		const session = await this.repos.session.getByRefreshHash(refreshHash);
+		if (!session) throw new Error('Your session has expired.');
 
 		const user = await this.repos.user.getById(payload.userId);
-		const refreshHash = await this.repos.session.hashToken(params.refreshToken);
-		console.log(refreshHash);
-		const session = await this.repos.session.getByRefreshHash(refreshHash);
-		console.log(session);
-		if (!session) throw new Error('Your session has expired. Please log in again.');
+		if (!user) throw new Error('User not found.');
 
-		const accessToken = this.tokenService.generateAccessToken({
-			userId: user.id,
-			email: user.email,
-		});
+		const accessToken = this.tokenService.generateAccessToken({userId: user.id, email: user.email});
+		const newRefreshToken = this.tokenService.generateRefreshToken({userId: user.id});
+		const newRefreshHash = await this.repos.session.hashToken(newRefreshToken);
 
-		const refreshToken = this.tokenService.generateRefreshToken({
-			userId: user.id,
-		});
-
-		session.refreshTokenHash = await this.repos.session.hashToken(refreshToken);
+		session.refreshTokenHash = newRefreshHash;
 		session.lastLoginAt = new Date();
+
 		await this.repos.session.getEntityManager().flush();
 
 		return {
@@ -236,7 +232,7 @@ export class UserController {
 			email: user.email,
 			username: user.username,
 			accessToken,
-			refreshToken,
+			refreshToken: newRefreshToken,
 		};
 	}
 

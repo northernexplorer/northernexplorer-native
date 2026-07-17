@@ -4,6 +4,7 @@ import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 import React from 'react';
 import {Spinner} from '~/layout/Layout/components/Spinner';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 type Props = {
 	username: string;
@@ -26,8 +27,10 @@ const getIconForClient = (client: string) => {
 };
 
 export function Sessions({username}: Props) {
+	const auth = useAuthentication();
 	const {data, loading} = useApiFetch('user', 'SessionController', 'getSessions', {
 		username,
+		refreshToken: auth?.refreshToken || '',
 	});
 
 	if (loading || !data) return <Spinner />;
@@ -35,16 +38,44 @@ export function Sessions({username}: Props) {
 	return (
 		<View style={styles.container}>
 			{data.map(session => (
-				<View key={session.id} style={[styles.field, {flexDirection: 'row', alignItems: 'center', paddingVertical: 10}]}>
+				<View
+					key={session.id}
+					style={[
+						styles.field,
+						{
+							flexDirection: 'row',
+							alignItems: 'center',
+							paddingVertical: 10,
+							backgroundColor: session.active ? '#F0FFF4' : 'transparent',
+							borderColor: session.active ? '#48BB78' : '#E2E8F0',
+							borderWidth: 1,
+							borderRadius: 8,
+							marginBottom: 8,
+						},
+					]}
+				>
 					<View style={{width: 40, alignItems: 'center', marginRight: 10}}>
-						<Ionicons name={getIconForOS(session.osName)} size={22} color="#4A4A4A" />
-						<Ionicons name={getIconForClient(session.clientName)} size={22} color="#4A4A4A" style={{marginTop: -4}} />
+						<Ionicons name={getIconForOS(session.osName)} size={22} color={session.active ? '#48BB78' : '#4A4A4A'} />
+						<Ionicons
+							name={getIconForClient(session.clientName)}
+							size={22}
+							color={session.active ? '#48BB78' : '#4A4A4A'}
+							style={{marginTop: -4}}
+						/>
 					</View>
 
 					<View style={{flex: 1}}>
-						<Text style={[styles.label, {fontWeight: '600'}]}>
-							{session.osName} • {session.clientName}
-						</Text>
+						<View style={{flexDirection: 'row', alignItems: 'center'}}>
+							<Text style={[styles.label, {fontWeight: '600'}]}>
+								{session.osName} • {session.clientName}
+							</Text>
+							{/* Active Badge */}
+							{session.active && (
+								<View style={{marginLeft: 8, backgroundColor: '#48BB78', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4}}>
+									<Text style={{color: 'white', fontSize: 10, fontWeight: 'bold'}}>ACTIVE</Text>
+								</View>
+							)}
+						</View>
 
 						<Text style={[styles.value, {fontSize: 14}]}>
 							{new Date(session.firstLoginAt).toLocaleDateString()} to {new Date(session.lastLoginAt).toLocaleDateString()}

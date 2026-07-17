@@ -19,11 +19,20 @@ export class SessionController {
 
 		const sessions = await this.repos.session.getByUser(user);
 
-		// Remove refreshTokenHash from each session object
-		return sessions.map(session => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const {refreshTokenHash, ...sessionWithoutToken} = session;
-			return sessionWithoutToken;
-		});
+		let activeTokenHash: string | null = null;
+		if (params.refreshToken) {
+			activeTokenHash = await this.repos.session.hashToken(params.refreshToken);
+		}
+
+		return sessions
+			.map(session => {
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				const {refreshTokenHash, ...sessionData} = session;
+				return {
+					...sessionData,
+					active: activeTokenHash === session.refreshTokenHash,
+				};
+			})
+			.sort((a, b) => Number(b.active) - Number(a.active));
 	}
 }

@@ -1,5 +1,6 @@
 export type GetSessionsParams = {
 	username: string;
+	refreshToken: string;
 };
 
 export type GetSessionsResponse = {
@@ -11,4 +12,5 @@ export type GetSessionsResponse = {
 	ipAddress: string;
 	firstLoginAt: Date;
 	lastLoginAt: Date;
+	active: boolean;
 };
