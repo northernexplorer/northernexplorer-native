@@ -35,4 +35,19 @@ export class SessionController {
 			})
 			.sort((a, b) => Number(b.active) - Number(a.active));
 	}
+
+	async removeSession(params: Params<Route<'removeSession'>>, auth?: AuthContext): Promise<Response<Route<'removeSession'>>> {
+		const session = await this.repos.session.getById(params.sessionId);
+
+		// Authorization check
+		this.permissionService.canAccessProfile({
+			userId: auth?.userId,
+			targetId: session.user.id,
+		});
+
+		await this.repos.session.delete(session);
+		await this.repos.session.getEntityManager().flush();
+
+		return {success: true};
+	}
 }

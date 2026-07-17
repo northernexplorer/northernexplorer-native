@@ -14,3 +14,7 @@ export type GetSessionsResponse = {
 	lastLoginAt: Date;
 	active: boolean;
 };
+
+export type RemoveSessionParams = {
+	sessionId: number;
+};

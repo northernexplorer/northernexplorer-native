@@ -1,10 +1,11 @@
-import {View, Text} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 import React from 'react';
 import {Spinner} from '~/layout/Layout/components/Spinner';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {useApiMutation} from '~/core/useApiMutation';
 
 type Props = {
 	username: string;
@@ -28,12 +29,20 @@ const getIconForClient = (client: string) => {
 
 export function Sessions({username}: Props) {
 	const auth = useAuthentication();
-	const {data, loading} = useApiFetch('user', 'SessionController', 'getSessions', {
+	const {data, loading, refetch} = useApiFetch('user', 'SessionController', 'getSessions', {
 		username,
 		refreshToken: auth?.refreshToken || '',
 	});
+	const {mutate} = useApiMutation('user', 'SessionController', 'removeSession');
 
 	if (loading || !data) return <Spinner />;
+
+	const handleSubmit = async (sessionId: number) => {
+		const response = await mutate({sessionId});
+		if (response) {
+			refetch();
+		}
+	};
 
 	return (
 		<View style={styles.container}>
@@ -82,6 +91,11 @@ export function Sessions({username}: Props) {
 						</Text>
 						<Text style={{fontSize: 12, color: '#A0A0A0', marginTop: 2}}>{session.ipAddress}</Text>
 					</View>
+					{!session.active && (
+						<TouchableOpacity onPress={() => handleSubmit(session.id)} style={{padding: 10}}>
+							<Ionicons name="trash-outline" size={20} color="#E53E3E" />
+						</TouchableOpacity>
+					)}
 				</View>
 			))}
 		</View>
