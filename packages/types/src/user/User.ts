@@ -5,8 +5,11 @@ export type UserAuthenticationType = {
 	accessToken: string;
 	refreshToken: string;
 };
-
 export type RegisterParams = {
+	register: Register;
+	device: Device;
+};
+export type Register = {
 	firstName: string;
 	lastName: string;
 	username: string;
@@ -18,8 +21,17 @@ export type RegisterParams = {
 	website?: string;
 };
 export type LoginParams = {
+	login: Login;
+	device: Device;
+};
+export type Login = {
 	identifier: string;
 	password: string;
+};
+export type Device = {
+	osName: string;
+	clientName: string;
+	platform: string;
 };
 export type ForgotPasswordParams = {
 	email: string;

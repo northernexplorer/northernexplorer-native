@@ -5,6 +5,7 @@ import {wrap} from '@mikro-orm/core';
 import {PermissionService} from '../services/PermisionService';
 import {EmailSendService} from '../../system/services/EmailSendService';
 import {config} from '../../config';
+import {AuthContext} from '../../index';
 
 type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<'user', 'UserController'>[M];
 
@@ -16,19 +17,19 @@ export class UserController {
 	constructor(private repos: Repositories) {}
 
 	async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
-		if (params.website) throw new Error('Form submission failed. Please try again.');
+		if (params.register.website) throw new Error('Form submission failed. Please try again.');
 
-		const existingUserWithEmail = await this.repos.user.findByIdentifier(params.email);
+		const existingUserWithEmail = await this.repos.user.findByIdentifier(params.register.email);
 		if (existingUserWithEmail) throw new Error('This email address is already in use.');
 
-		const existingUserWithUsername = await this.repos.user.findByIdentifier(params.username);
+		const existingUserWithUsername = await this.repos.user.findByIdentifier(params.register.username);
 		if (existingUserWithUsername) throw new Error('This username is already taken.');
 
 		await this.repos.user.passwordValidation({
-			password: params.password,
-			confirmPassword: params.confirmPassword,
+			password: params.register.password,
+			confirmPassword: params.register.confirmPassword,
 		});
-		const passwordHash = await this.repos.user.hashPassword(params.password);
+		const passwordHash = await this.repos.user.hashPassword(params.register.password);
 
 		const subscriptionLevel = await this.repos.subscriptionLevel.getById(1);
 
@@ -44,11 +45,10 @@ export class UserController {
 		});
 
 		const user = this.repos.user.create({
-			email: params.email,
-			firstName: params.firstName,
-			lastLoginAt: new Date(),
-			lastName: params.lastName,
-			username: params.username,
+			email: params.register.email,
+			firstName: params.register.firstName,
+			lastName: params.register.lastName,
+			username: params.register.username,
 			createdAt: new Date(),
 			isActive: false,
 			passwordHash,
@@ -78,16 +78,14 @@ export class UserController {
 		return {success: true};
 	}
 
-	async login(params: Params<Route<'login'>>): Promise<Response<Route<'login'>>> {
-		const user = await this.repos.user.findByIdentifier(params.identifier);
+	async login(params: Params<Route<'login'>>, auth?: AuthContext): Promise<Response<Route<'login'>>> {
+		const user = await this.repos.user.findByIdentifier(params.login.identifier);
 		if (!user) throw new Error("We couldn't find an account matching that information.");
 		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
+		if (!auth) throw new Error('Authorizaton info not found.');
 
-		const isPasswordValid = await this.repos.user.checkPassword(params.password, user.passwordHash);
+		const isPasswordValid = await this.repos.user.checkPassword(params.login.password, user.passwordHash);
 		if (!isPasswordValid) throw new Error('Incorrect password. Please try again or tap forgot password to reset it.');
-
-		user.lastLoginAt = new Date();
-		await this.repos.user.getEntityManager().flush();
 
 		const accessToken = this.tokenService.generateAccessToken({
 			userId: user.id,
@@ -97,6 +95,22 @@ export class UserController {
 		const refreshToken = this.tokenService.generateRefreshToken({
 			userId: user.id,
 		});
+
+		const {exp} = this.tokenService.verifyRefreshToken(refreshToken);
+
+		this.repos.session.create({
+			expiresAt: new Date(exp! * 1000),
+			ipAddress: auth.ipAddress,
+			firstLoginAt: new Date(),
+			lastLoginAt: new Date(),
+			refreshTokenHash: refreshToken,
+			user,
+			version: 1,
+			clientName: params.device.clientName,
+			osName: params.device.osName,
+			platform: params.device.platform,
+		});
+		await this.repos.user.getEntityManager().flush();
 
 		return {
 			userId: user.id,
@@ -137,7 +151,7 @@ export class UserController {
 		return {success: true};
 	}
 
-	async editProfile(params: Params<Route<'editProfile'>>, auth?: TokenPayload): Promise<Response<Route<'editProfile'>>> {
+	async editProfile(params: Params<Route<'editProfile'>>, auth?: AuthContext): Promise<Response<Route<'editProfile'>>> {
 		const {targetId} = this.permissionService.canAccessProfile({
 			userId: auth?.userId,
 			targetId: params.userId,
@@ -148,7 +162,7 @@ export class UserController {
 		return {success: true};
 	}
 
-	async changePassword(params: Params<Route<'changePassword'>>, auth?: TokenPayload): Promise<Response<Route<'changePassword'>>> {
+	async changePassword(params: Params<Route<'changePassword'>>, auth?: AuthContext): Promise<Response<Route<'changePassword'>>> {
 		const user = await this.repos.user.getByUsername(params.username);
 		this.permissionService.canAccessProfile({
 			userId: auth?.userId,
@@ -175,7 +189,7 @@ export class UserController {
 		};
 	}
 
-	async getByUsername(params: Params<Route<'getByUsername'>>, auth?: TokenPayload): Promise<Response<Route<'getByUsername'>>> {
+	async getByUsername(params: Params<Route<'getByUsername'>>, auth?: AuthContext): Promise<Response<Route<'getByUsername'>>> {
 		const user = await this.repos.user.getByUsername(params.username);
 		this.permissionService.canAccessProfile({
 			userId: auth?.userId,

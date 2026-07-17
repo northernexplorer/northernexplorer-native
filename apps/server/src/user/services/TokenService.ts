@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, {JwtPayload} from 'jsonwebtoken';
 import {config} from '../../config';
 
 export interface TokenPayload {
@@ -12,7 +12,7 @@ export interface ActivationTokenPayload {
 	purpose: 'account_activation';
 }
 
-export type RefreshTokenPayload = Pick<TokenPayload, 'userId'>;
+export type RefreshTokenPayload = Pick<TokenPayload, 'userId'> & JwtPayload;
 
 export class TokenService {
 	/**

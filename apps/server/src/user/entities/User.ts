@@ -24,9 +24,6 @@ export class User {
 	@Property({type: 'datetime'})
 	createdAt = new Date();
 
-	@Property({type: 'datetime', nullable: true})
-	lastLoginAt?: Date | null;
-
 	@Property({type: 'text'})
 	passwordHash!: string;
 
