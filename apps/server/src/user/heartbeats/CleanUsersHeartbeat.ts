@@ -29,6 +29,7 @@ export class CleanUsersHeartbeat {
 	 */
 	public async execute(em: EntityManager, user: User): Promise<void> {
 		em.remove(user);
+		em.remove(user.subscription);
 		await em.flush();
 	}
 }
