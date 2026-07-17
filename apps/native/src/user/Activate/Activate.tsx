@@ -4,17 +4,19 @@ import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useDispatch} from 'react-redux';
+import {useDeviceInfo} from '~/user/Login/useDeviceInfo';
 
 export function Activate() {
 	const [accountRegistered, setAccountRegistered] = useState(false);
 	const {mutate} = useApiMutation('user', 'UserController', 'activate');
 	const dispatch = useDispatch();
+	const device = useDeviceInfo();
 
 	useEffect(() => {
 		const activateAccount = async () => {
 			try {
 				const params = new URLSearchParams(window.location.search);
-				const response = await mutate({activationToken: params.get('token') || ''});
+				const response = await mutate({activationToken: params.get('token') || '', device});
 
 				if (response?.accessToken) {
 					dispatch(setAuthentication(response));
