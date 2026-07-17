@@ -44,7 +44,9 @@ export function handle<T extends object>(ControllerClass: ControllerConstructor<
 			throw new Error(`Method ${methodName} is not a function.`);
 		}
 
-		let currentUser: AuthContext | undefined = {ipAddress: req.ip || ''};
+		const doIp = req.headers['do-connecting-ip'];
+		const ipAddress = Array.isArray(doIp) ? doIp[0] : doIp || req.ip || '';
+		let currentUser: AuthContext | undefined = {ipAddress};
 		const authHeader = req.headers.authorization;
 
 		if (authHeader?.startsWith('Bearer ')) {
