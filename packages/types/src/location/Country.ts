@@ -5,3 +5,8 @@ export type CountryType = {
 	name: string;
 	regions: RegionType[];
 };
+
+export type countrySummary = {
+	id: string;
+	name: string;
+};

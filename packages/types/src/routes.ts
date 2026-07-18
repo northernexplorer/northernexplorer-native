@@ -1,4 +1,4 @@
-import {CityType, HistoricSiteType} from './location';
+import {CityType, HistoricSiteSummaryType, HistoricSiteType} from './location';
 import {ForecastType, LunarCycleType, WeatherType} from './environment';
 import {FieldNoteType} from './environment/FieldNote';
 
@@ -69,7 +69,7 @@ export const ROUTES = {
 		HistoricSiteController: {
 			getNearbyHistoricSites: {
 				params: {lat: 0, lon: 0, limit: 0} as {lat: number; lon: number; limit: number},
-				response: null as unknown as HistoricSiteType[],
+				response: null as unknown as HistoricSiteSummaryType[],
 			},
 			getHistoricSiteById: {
 				params: {id: 0} as {id: number},

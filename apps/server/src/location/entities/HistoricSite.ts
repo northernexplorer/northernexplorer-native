@@ -1,4 +1,6 @@
-import {Entity, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
+import {Entity, ManyToOne, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
+import {Region} from './Region';
+import {Country} from './Country';
 
 @Entity()
 export class HistoricSite {
@@ -29,11 +31,11 @@ export class HistoricSite {
 	@Property({type: 'double', nullable: true})
 	endDate?: number | null;
 
-	@Property({type: 'string', length: 100})
-	country!: string;
+	@ManyToOne(() => Country)
+	country!: Country;
 
-	@Property({type: 'string', length: 100})
-	region!: string;
+	@ManyToOne(() => Region)
+	region!: Region;
 
 	@Property({type: 'datetime'})
 	createdAt = new Date();
