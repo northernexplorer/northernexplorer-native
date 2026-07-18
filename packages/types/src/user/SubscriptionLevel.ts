@@ -5,4 +5,5 @@ export type SubscriptionLevelsResponse = {
 	enabled: boolean;
 	cost: number;
 	description: string;
+	shortDescription: string;
 };

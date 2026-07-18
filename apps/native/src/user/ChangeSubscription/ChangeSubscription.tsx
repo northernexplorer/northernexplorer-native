@@ -13,7 +13,7 @@ type RouteParams = {
 	username: string;
 };
 
-export function ChangeSubscription() {
+function ChangeSubscription() {
 	const authentication = useAuthentication();
 	const {username} = useLocalSearchParams<RouteParams>();
 	const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<number>(5);
@@ -43,8 +43,12 @@ export function ChangeSubscription() {
 		}
 	};
 
-	const displayProperties: (keyof SubscriptionLevelsResponse)[] = ['cost'];
+	const displayProperties: (keyof SubscriptionLevelsResponse)[] = ['shortDescription', 'cost'];
 	const disabledChangeButton = subscriptionData.subscriptionLevel.id === selectedSubscriptionId;
+	const formatHeader = (key: string) => {
+		const result = key.replace(/([A-Z])/g, ' $1');
+		return result.charAt(0).toUpperCase() + result.slice(1);
+	};
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
 			<View style={tableStyles.tableContainer}>
@@ -58,7 +62,7 @@ export function ChangeSubscription() {
 				</View>
 				{displayProperties.map(prop => (
 					<View key={prop} style={tableStyles.tableRow}>
-						<Text style={[tableStyles.cell, {flex: 2}]}>{prop.charAt(0).toUpperCase() + prop.slice(1)}</Text>
+						<Text style={[tableStyles.cell, {flex: 2}]}>{formatHeader(prop)}</Text>
 						{data?.map(plan => {
 							const value = prop === 'cost' ? formatMoney(plan[prop] as number) : String(plan[prop]);
 
@@ -80,7 +84,7 @@ export function ChangeSubscription() {
 				</View>
 			</View>
 			<Pressable
-				style={[styles.button, (mutationLoading || disabledChangeButton) && {opacity: 0.6}]}
+				style={[styles.button, (mutationLoading || disabledChangeButton || true) && {opacity: 0.6}]}
 				onPress={validateForm}
 				disabled={mutationLoading || disabledChangeButton}
 			>
@@ -95,6 +99,8 @@ export function ChangeSubscription() {
 		</ScrollView>
 	);
 }
+
+export default ChangeSubscription;
 
 const tableStyles = StyleSheet.create({
 	tableContainer: {

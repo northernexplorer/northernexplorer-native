@@ -1,1 +1,1 @@
-export {ChangeSubscription} from './ChangeSubscription';
+export {default as ChangeSubscription} from './ChangeSubscription';
