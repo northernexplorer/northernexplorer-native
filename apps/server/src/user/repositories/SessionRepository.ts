@@ -8,7 +8,7 @@ export class SessionRepository extends EntityRepository<Session> {
 		return this.findOneOrFail({id});
 	}
 
-	async hashToken(token: string) {
+	hashToken(token: string) {
 		return createHash('sha256').update(token.trim()).digest('hex');
 	}
 

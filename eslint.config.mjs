@@ -53,6 +53,10 @@ export default [
 
 			// Prevent unnecessary curly braces in JSX props and children
 			'react/jsx-curly-brace-presence': ['error', {props: 'never', children: 'never'}],
+
+			// Added Type-Aware Rules
+			'@typescript-eslint/await-thenable': 'error',
+			'@typescript-eslint/require-await': 'error',
 		},
 	},
 	prettierConfig,

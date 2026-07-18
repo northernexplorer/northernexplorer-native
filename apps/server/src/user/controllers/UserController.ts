@@ -237,7 +237,7 @@ export class UserController {
 	}
 
 	async activate(params: Params<Route<'activate'>>, auth?: AuthContext): Promise<Response<Route<'activate'>>> {
-		const {userId} = await this.tokenService.verifyToken(params.activationToken);
+		const {userId} = this.tokenService.verifyToken(params.activationToken);
 
 		const user = await this.repos.user.getById(userId);
 		if (!user) throw new Error("We couldn't find an account matching that information.");
@@ -282,7 +282,7 @@ export class UserController {
 	}
 
 	async resetPassword(params: Params<Route<'resetPassword'>>): Promise<Response<Route<'resetPassword'>>> {
-		const {userId} = await this.tokenService.verifyToken(params.token);
+		const {userId} = this.tokenService.verifyToken(params.token);
 
 		const user = await this.repos.user.getById(userId);
 		if (!user) throw new Error("We couldn't find an account matching that information.");
