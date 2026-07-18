@@ -1,5 +1,6 @@
 export {SessionController} from './controllers/SessionController';
 export {SubscriptionController} from './controllers/SubscriptionController';
+export {SubscriptionLevelController} from './controllers/SubscriptionLevelController';
 export {UserController} from './controllers/UserController';
 
 export {Session} from './entities/Session';

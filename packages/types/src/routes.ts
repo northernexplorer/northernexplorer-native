@@ -5,21 +5,22 @@ import {CountryType} from './location/Country';
 import {RegionType} from './location/Region';
 
 import {
-	ChangePasswordParams,
-	EditProfileParams,
-	ForgotPasswordParams,
-	GetByUsernameParams,
-	LoginParams,
-	RefreshParams,
-	RegisterParams,
-	UserAuthenticationType,
-	GetByUsernameResponse,
-	ActivateParams,
-	ResetPasswordParams,
-	GetSessionsParams,
-	GetSessionsResponse,
-	LogoutParams,
-	RemoveSessionParams,
+    ChangePasswordParams,
+    EditProfileParams,
+    ForgotPasswordParams,
+    GetByUsernameParams,
+    LoginParams,
+    RefreshParams,
+    RegisterParams,
+    UserAuthenticationType,
+    GetByUsernameResponse,
+    ActivateParams,
+    ResetPasswordParams,
+    GetSessionsParams,
+    GetSessionsResponse,
+    LogoutParams,
+    RemoveSessionParams,
+    SubscriptionLevelsResponse, ChangeSubscriptionParams,
 } from './user';
 import {GenericResponseType} from './system/GenericResponseType';
 import {SubscriptionParams, SubscriptionResponse} from './user';
@@ -118,6 +119,16 @@ export const ROUTES = {
 			getByUsername: {
 				params: {} as SubscriptionParams,
 				response: {} as SubscriptionResponse,
+			},
+			changeSubscription: {
+				params: {} as ChangeSubscriptionParams,
+				response: {} as GenericResponseType,
+			},
+		},
+		SubscriptionLevelController: {
+			getSubscriptionLevels: {
+				params: {} as Record<string, never>,
+				response: {} as SubscriptionLevelsResponse[],
 			},
 		},
 		UserController: {
