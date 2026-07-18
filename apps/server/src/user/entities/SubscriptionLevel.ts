@@ -14,6 +14,9 @@ export class SubscriptionLevel {
 	@Property({type: 'text'})
 	description!: string;
 
+	@Property({type: 'text'})
+	shortDescription!: string;
+
 	@Property({type: 'boolean'})
 	enabled!: boolean;
 
