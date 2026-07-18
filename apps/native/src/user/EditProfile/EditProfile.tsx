@@ -8,7 +8,6 @@ import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
 import {FormField} from '~/layout/Layout/components/FormField';
 import {isValidEmail} from '~/user/isValidEmail';
-import {fireEvent} from 'expo-router/testing-library';
 
 type RouteParams = {
 	username: string;
