@@ -6,7 +6,7 @@ type Route<M extends keyof ROUTES['system']['StatusController']> = RouteDefiniti
 export class StatusController {
 	constructor(private repos: Repositories) {}
 
-	public async getOnlineStatus(): Promise<Response<Route<'getOnlineStatus'>>> {
+	public getOnlineStatus(): Response<Route<'getOnlineStatus'>> {
 		return true;
 	}
 }

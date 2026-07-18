@@ -6,7 +6,7 @@ type Route<M extends keyof ROUTES['environment']['LunarController']> = RouteDefi
 export class LunarController {
 	constructor(private repos: Repositories) {}
 
-	public async getLunarData(): Promise<Response<Route<'getLunarData'>>> {
+	public getLunarData(): Response<Route<'getLunarData'>> {
 		// Known reference New Moon date (January 6, 2000, 18:14 UTC) in milliseconds
 		const referenceTimeMs = Date.UTC(2000, 0, 6, 18, 14, 0);
 
