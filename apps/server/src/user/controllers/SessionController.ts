@@ -21,7 +21,7 @@ export class SessionController {
 
 		let activeTokenHash: string | null = null;
 		if (params.refreshToken) {
-			activeTokenHash = await this.repos.session.hashToken(params.refreshToken);
+			activeTokenHash = this.repos.session.hashToken(params.refreshToken);
 		}
 
 		return sessions

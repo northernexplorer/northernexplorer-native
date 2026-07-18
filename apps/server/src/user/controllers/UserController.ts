@@ -95,7 +95,7 @@ export class UserController {
 			userId: user.id,
 		});
 
-		const refreshTokenHash = await this.repos.session.hashToken(refreshToken);
+		const refreshTokenHash = this.repos.session.hashToken(refreshToken);
 
 		const {exp} = this.tokenService.verifyRefreshToken(refreshToken);
 
@@ -123,7 +123,7 @@ export class UserController {
 	}
 
 	async logout(params: Params<Route<'logout'>>): Promise<Response<Route<'logout'>>> {
-		const refreshTokenHash = await this.repos.session.hashToken(params.refreshToken);
+		const refreshTokenHash = this.repos.session.hashToken(params.refreshToken);
 		const session = await this.repos.session.getByRefreshHash(refreshTokenHash);
 		if (session) {
 			await this.repos.session.delete(session);
@@ -211,7 +211,7 @@ export class UserController {
 		const payload = this.tokenService.verifyRefreshToken(params.refreshToken);
 		if (!payload?.userId) throw new Error('Your session has expired. Please log in again.');
 
-		const refreshHash = await this.repos.session.hashToken(params.refreshToken);
+		const refreshHash = this.repos.session.hashToken(params.refreshToken);
 		const session = await this.repos.session.getByRefreshHash(refreshHash);
 		if (!session) throw new Error('Your session has expired.');
 
@@ -220,7 +220,7 @@ export class UserController {
 
 		const accessToken = this.tokenService.generateAccessToken({userId: user.id, email: user.email});
 		const newRefreshToken = this.tokenService.generateRefreshToken({userId: user.id});
-		const newRefreshHash = await this.repos.session.hashToken(newRefreshToken);
+		const newRefreshHash = this.repos.session.hashToken(newRefreshToken);
 
 		session.refreshTokenHash = newRefreshHash;
 		session.lastLoginAt = new Date();
@@ -237,7 +237,7 @@ export class UserController {
 	}
 
 	async activate(params: Params<Route<'activate'>>, auth?: AuthContext): Promise<Response<Route<'activate'>>> {
-		const {userId} = await this.tokenService.verifyToken(params.activationToken);
+		const {userId} = this.tokenService.verifyToken(params.activationToken);
 
 		const user = await this.repos.user.getById(userId);
 		if (!user) throw new Error("We couldn't find an account matching that information.");
@@ -255,7 +255,7 @@ export class UserController {
 			userId: user.id,
 		});
 
-		const refreshTokenHash = await this.repos.session.hashToken(refreshToken);
+		const refreshTokenHash = this.repos.session.hashToken(refreshToken);
 
 		const {exp} = this.tokenService.verifyRefreshToken(refreshToken);
 
@@ -282,7 +282,7 @@ export class UserController {
 	}
 
 	async resetPassword(params: Params<Route<'resetPassword'>>): Promise<Response<Route<'resetPassword'>>> {
-		const {userId} = await this.tokenService.verifyToken(params.token);
+		const {userId} = this.tokenService.verifyToken(params.token);
 
 		const user = await this.repos.user.getById(userId);
 		if (!user) throw new Error("We couldn't find an account matching that information.");
