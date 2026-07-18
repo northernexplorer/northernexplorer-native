@@ -1,9 +1,11 @@
-import {useState, useEffect} from 'react';
+import {useState, useCallback} from 'react';
 import {ROUTES, GetParams, GetResponse, NonEmptyCategory} from '@northernexplorer/types';
 import {apiClient} from '~/core/apiClient';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useDispatch} from 'react-redux';
+import {alertStore} from '~/core/alertStore';
+import {useFocusEffect} from 'expo-router';
 
 export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(
 	category: C,
@@ -17,53 +19,59 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
 
-	useEffect(() => {
+	const fetchData = useCallback(async () => {
 		if (!params) {
 			setLoading(false);
 			setData(null);
 			return;
 		}
 
-		let isMounted = true;
+		setLoading(true);
+		setError(null);
 
-		const fetchData = async () => {
-			setLoading(true);
-			setError(null);
+		try {
+			const result = await apiClient(
+				category,
+				controller,
+				method,
+				params,
+				'GET',
+				authentication?.accessToken,
+				authentication?.refreshToken,
+				response => {
+					if (authentication) {
+						dispatch(setAuthentication(response));
+					}
+				},
+			);
+			setData(result);
+		} catch (err) {
+			const e = err instanceof Error ? err : new Error('Mutation failed');
+			setError(e);
 
-			try {
-				const result = await apiClient(
-					category,
-					controller,
-					method,
-					params,
-					'GET',
-					authentication?.accessToken,
-					authentication?.refreshToken,
-					response => {
-						if (authentication) {
-							dispatch(setAuthentication(response));
-						}
-					},
-				);
-				if (isMounted) {
-					setData(result);
-				}
-			} catch (err) {
-				if (isMounted) {
-					setError(err instanceof Error ? err : new Error('An unknown error occurred'));
-				}
-			} finally {
-				if (isMounted) {
-					setLoading(false);
-				}
+			const isNetworkError =
+				e instanceof TypeError &&
+				(e.message.toLowerCase().includes('failed to fetch') ||
+					e.message.toLowerCase().includes('network request failed') || // React Native
+					e.message.toLowerCase().includes('networkerror') || // Firefox
+					e.message.toLowerCase().includes('load failed')); // Safari
+
+			if (!isNetworkError) {
+				const alertType = e.message.includes('session has expired') ? 'warning' : 'error';
+				alertStore.showAlert(e.message, alertType);
+			} else {
+				// Cache layer quietly serve stale/cached data
+				console.log(`Silencing alert for network failure on ${String(method)}. Relying on cache.`);
 			}
-		};
-
-		fetchData();
-
-		return () => {
-			isMounted = false;
-		};
+		} finally {
+			setLoading(false);
+		}
 	}, [category, controller, method, params ? JSON.stringify(params) : null, authentication?.accessToken]);
-	return {data, loading, error};
+	useFocusEffect(
+		useCallback(() => {
+			fetchData();
+		}, [fetchData]),
+	);
+
+	return {data, loading, error, refetch: fetchData};
 }

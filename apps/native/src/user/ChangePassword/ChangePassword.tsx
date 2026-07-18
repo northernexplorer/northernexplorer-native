@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
-import {View, TextInput, Pressable, Text, ScrollView} from 'react-native';
-import {styles} from '~/user/styles';
+import {Pressable, Text, ScrollView} from 'react-native';
+import styles from '~/user/styles';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
+import {FormField} from '~/layout/Layout/components/FormField';
 
 const initialFormData = {
 	currentPassword: '',
@@ -61,66 +62,51 @@ export function ChangePassword() {
 	};
 
 	const handleSubmit = async () => {
-		try {
-			await mutate({...formData, username});
+		const response = await mutate({...formData, username});
+		if (response?.success) {
 			router.replace(`/profile/${username}`);
-		} catch (error) {
-			console.error(error);
 		}
 	};
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-			<Text style={styles.title}>Change Password</Text>
+			<FormField
+				fieldName="currentPassword"
+				label="Current Password"
+				placeholder="Current Password"
+				value={formData.currentPassword}
+				updateField={updateField}
+				error={errors.currentPassword}
+				loading={loading}
+				secureTextEntry
+			/>
 
-			{/* Current Password */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Current Password</Text>
-				<TextInput
-					style={styles.input}
-					placeholder="Current Password"
-					secureTextEntry
-					value={formData.currentPassword}
-					onChangeText={val => updateField('currentPassword', val)}
-					editable={!loading}
-				/>
-				{errors.currentPassword && <Text style={styles.errorText}>{errors.currentPassword}</Text>}
-			</View>
+			<FormField
+				fieldName="newPassword"
+				label="New Password"
+				placeholder="New Password"
+				value={formData.newPassword}
+				updateField={updateField}
+				error={errors.newPassword}
+				loading={loading}
+				secureTextEntry
+			/>
 
-			{/* New Password */}
-			<View style={styles.field}>
-				<Text style={styles.label}>New Password</Text>
-				<TextInput
-					style={styles.input}
-					placeholder="New Password"
-					secureTextEntry
-					value={formData.newPassword}
-					onChangeText={val => updateField('newPassword', val)}
-					editable={!loading}
-				/>
-				{errors.newPassword && <Text style={styles.errorText}>{errors.newPassword}</Text>}
-			</View>
+			<FormField
+				fieldName="confirmPassword"
+				label="Confirm New Password"
+				placeholder="Confirm New Password"
+				value={formData.confirmPassword}
+				updateField={updateField}
+				error={errors.confirmPassword}
+				loading={loading}
+				secureTextEntry
+			/>
 
-			{/* Confirm New Password */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Confirm New Password</Text>
-				<TextInput
-					style={styles.input}
-					placeholder="Confirm New Password"
-					secureTextEntry
-					value={formData.confirmPassword}
-					onChangeText={val => updateField('confirmPassword', val)}
-					editable={!loading}
-				/>
-				{errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
-			</View>
-
-			{/* Submit Action Button */}
 			<Pressable style={[styles.button, loading && {opacity: 0.6}]} onPress={validateForm} disabled={loading}>
 				<Text style={styles.buttonText}>{loading ? 'Updating Password...' : 'Change Password'}</Text>
 			</Pressable>
 
-			{/* Cancel Action Link */}
 			<Link href={`/profile/${username}`} asChild>
 				<Pressable style={styles.secondaryButton} disabled={loading}>
 					<Text style={styles.secondaryButtonText}>Cancel</Text>

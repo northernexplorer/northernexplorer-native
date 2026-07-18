@@ -1,6 +1,5 @@
-import {CityType, HistoricSiteSummaryType, HistoricSiteType} from './location';
-import {ForecastType, LunarCycleType, WeatherType} from './environment';
-import {FieldNoteType} from './environment/FieldNote';
+import {CityType, HistoricSiteType} from './location';
+import {ForecastType, LunarCycleType, WeatherType, FieldNoteType} from './environment';
 
 import {CountryType} from './location/Country';
 import {RegionType} from './location/Region';
@@ -15,9 +14,15 @@ import {
 	RegisterParams,
 	UserAuthenticationType,
 	GetByUsernameResponse,
+	ActivateParams,
+	ResetPasswordParams,
+	GetSessionsParams,
+	GetSessionsResponse,
+	LogoutParams,
+	RemoveSessionParams,
 } from './user';
 import {GenericResponseType} from './system/GenericResponseType';
-import {SubscriptionParams, SubscriptionResponse} from './user/Subscription';
+import {SubscriptionParams, SubscriptionResponse} from './user';
 
 export interface ApiMethod<P = unknown, R = unknown> {
 	params: P;
@@ -69,7 +74,7 @@ export const ROUTES = {
 		HistoricSiteController: {
 			getNearbyHistoricSites: {
 				params: {lat: 0, lon: 0, limit: 0} as {lat: number; lon: number; limit: number},
-				response: null as unknown as HistoricSiteSummaryType[],
+				response: null as unknown as HistoricSiteType[],
 			},
 			getHistoricSiteById: {
 				params: {id: 0} as {id: number},
@@ -99,6 +104,16 @@ export const ROUTES = {
 		MigrationController: {},
 	},
 	user: {
+		SessionController: {
+			getSessions: {
+				params: {} as GetSessionsParams,
+				response: {} as GetSessionsResponse[],
+			},
+			removeSession: {
+				params: {} as RemoveSessionParams,
+				response: {} as GenericResponseType,
+			},
+		},
 		SubscriptionController: {
 			getByUsername: {
 				params: {} as SubscriptionParams,
@@ -115,7 +130,7 @@ export const ROUTES = {
 				response: {} as UserAuthenticationType,
 			},
 			logout: {
-				params: {} as Record<string, never>,
+				params: {} as LogoutParams,
 				response: {} as GenericResponseType,
 			},
 			forgotPassword: {
@@ -131,12 +146,20 @@ export const ROUTES = {
 				response: {success: true} as GenericResponseType,
 			},
 			getByUsername: {
-				params: {username: ''} as GetByUsernameParams,
+				params: {} as GetByUsernameParams,
 				response: {} as GetByUsernameResponse,
 			},
 			refresh: {
 				params: {} as RefreshParams,
 				response: {} as UserAuthenticationType,
+			},
+			activate: {
+				params: {} as ActivateParams,
+				response: {} as UserAuthenticationType,
+			},
+			resetPassword: {
+				params: {} as ResetPasswordParams,
+				response: {} as GenericResponseType,
 			},
 		},
 	},

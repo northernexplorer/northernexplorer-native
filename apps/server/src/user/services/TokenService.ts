@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, {JwtPayload} from 'jsonwebtoken';
 import {config} from '../../config';
 
 export interface TokenPayload {
@@ -6,7 +6,13 @@ export interface TokenPayload {
 	email: string;
 }
 
-export type RefreshTokenPayload = Pick<TokenPayload, 'userId'>;
+export interface ActivationTokenPayload {
+	userId: number;
+	email: string;
+	purpose: 'account_activation';
+}
+
+export type RefreshTokenPayload = Pick<TokenPayload, 'userId'> & JwtPayload;
 
 export class TokenService {
 	/**
@@ -14,7 +20,7 @@ export class TokenService {
 	 */
 	generateAccessToken(payload: TokenPayload): string {
 		return jwt.sign(payload, config.ACCESS_SECRET, {
-			expiresIn: '15m',
+			expiresIn: '10m',
 		});
 	}
 
@@ -39,5 +45,27 @@ export class TokenService {
 	 */
 	verifyRefreshToken(token: string): RefreshTokenPayload {
 		return jwt.verify(token, config.REFRESH_SECRET) as RefreshTokenPayload;
+	}
+
+	/**
+	 * Generates a stateless account activation token (expires in 24 hours)
+	 */
+	generateToken(payload: Omit<ActivationTokenPayload, 'purpose'>, purpose: 'account_activation' | 'password_reset'): string {
+		return jwt.sign({...payload, purpose}, config.ACTIVATION_SECRET, {expiresIn: '24h'});
+	}
+
+	/**
+	 * Verifies an activation token and returns its typed payload
+	 */
+	verifyToken(token: string): ActivationTokenPayload {
+		const payload = jwt.verify(token, config.ACTIVATION_SECRET) as ActivationTokenPayload;
+
+		if (payload.purpose === 'account_activation') {
+			return payload;
+		}
+		if (payload.purpose === 'password_reset') {
+			return payload;
+		}
+		throw new Error('The token is invalid or has expired. Please request a new one.');
 	}
 }

@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
 	container: {
 		width: '100%',
 		maxWidth: 420,
@@ -8,32 +8,24 @@ export const styles = StyleSheet.create({
 		padding: 24,
 		gap: 20,
 	},
-	title: {
-		fontSize: 28,
-		fontWeight: '700',
-		textAlign: 'center',
-	},
-	field: {
-		gap: 6,
-	},
-	label: {
-		fontSize: 15,
-		fontWeight: '600',
-	},
-	input: {
-		borderWidth: 1,
-		borderColor: '#ccc',
-		borderRadius: 8,
-		paddingHorizontal: 14,
-		paddingVertical: 12,
-		fontSize: 16,
-		opacity: 0.5,
-	},
 	button: {
 		backgroundColor: '#0088cc',
 		borderRadius: 8,
 		paddingVertical: 14,
 		alignItems: 'center',
+	},
+	label: {
+		fontSize: 15,
+		fontWeight: '600',
+		color: '#333',
+	},
+	errorText: {
+		color: '#FF3B30',
+		fontSize: 12,
+		marginTop: 2,
+	},
+	field: {
+		gap: 6,
 	},
 	buttonText: {
 		color: '#fff',
@@ -86,11 +78,6 @@ export const styles = StyleSheet.create({
 		textDecorationLine: 'underline',
 		fontWeight: 'bold',
 	},
-	errorText: {
-		color: '#FF3B30',
-		fontSize: 12,
-		marginTop: 4,
-	},
 	tabButton: {
 		flex: 1,
 		paddingVertical: 10,
@@ -109,3 +96,4 @@ export const styles = StyleSheet.create({
 		fontWeight: 'bold',
 	},
 });
+export default styles;

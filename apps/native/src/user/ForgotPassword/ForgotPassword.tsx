@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, Pressable, ScrollView} from 'react-native';
-import {styles} from '~/user/styles';
-import {Link} from 'expo-router';
+import {Text, Pressable, ScrollView} from 'react-native';
+import styles from '~/user/styles';
+import {Link, router} from 'expo-router';
 import {useApiMutation} from '~/core/useApiMutation';
+import {FormField} from '~/layout/Layout/components/FormField';
 
 const initialFormData = {
 	email: '',
@@ -46,35 +47,28 @@ export function ForgotPassword() {
 	};
 
 	const handleSubmit = async () => {
-		try {
-			mutate(formData);
-		} catch (error) {
-			console.error(error);
+		const response = await mutate(formData);
+		if (response?.success) {
+			router.replace('/profile/email-reset-confirmation');
 		}
 	};
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-			<Text style={styles.title}>Forgot Password</Text>
 			<Text style={styles.description}>
 				Enter the email address associated with your account and we'll send you instructions to reset your password.
 			</Text>
 
-			{/* Email Field */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Email Address</Text>
-				<TextInput
-					value={formData.email}
-					onChangeText={val => updateField('email', val)}
-					autoCapitalize="none"
-					autoCorrect={false}
-					keyboardType="email-address"
-					placeholder="Email Address"
-					style={styles.input}
-					editable={!loading}
-				/>
-				{errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-			</View>
+			{/* Email Field using FormField */}
+			<FormField
+				fieldName="email"
+				label="Email Address"
+				placeholder="Email Address"
+				value={formData.email}
+				updateField={updateField}
+				error={errors.email}
+				loading={loading}
+			/>
 
 			{/* Submit Button */}
 			<Pressable style={[styles.button, loading && {opacity: 0.6}]} onPress={validateForm} disabled={loading}>

@@ -13,6 +13,7 @@ import {controllers} from './core/controllers';
 import {TokenService} from './user/services/TokenService';
 import {PgBoss} from 'pg-boss';
 import {heartbeats} from './core/heartbeats';
+import {getClientIp} from './core/getClientIp';
 
 const app = express();
 const PORT = config.PORT;
@@ -24,6 +25,13 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 type ControllerConstructor<T> = new (repos: Repositories) => T;
 
 const tokenService = new TokenService();
+
+export interface AuthContext {
+	userId?: number;
+	email?: string;
+	refreshToken?: string;
+	ipAddress: string;
+}
 
 export function handle<T extends object>(ControllerClass: ControllerConstructor<any>, methodName: keyof T & string) {
 	return async (req: Request, res: Response): Promise<void> => {
@@ -37,15 +45,15 @@ export function handle<T extends object>(ControllerClass: ControllerConstructor<
 			throw new Error(`Method ${methodName} is not a function.`);
 		}
 
-		let currentUser: unknown = undefined;
+		let currentUser: AuthContext | undefined = {ipAddress: getClientIp(req)};
 		const authHeader = req.headers.authorization;
 
 		if (authHeader?.startsWith('Bearer ')) {
 			try {
 				const token = authHeader.substring(7);
-				currentUser = tokenService.verifyAccessToken(token);
+				currentUser = {...currentUser, ...tokenService.verifyAccessToken(token)};
 			} catch {
-				res.status(401).json({error: 'Unauthorized: Token has expired or is invalid'});
+				res.status(401).json({error: 'Your login session has expired. Please log in again.'});
 			}
 		}
 
@@ -106,16 +114,22 @@ async function bootstrap() {
 			console.log(`Worker listening to queue: ${queueName}`);
 
 			await boss.work(queueName, async () => {
-				const forkEm = orm.em.fork() as EntityManager;
-
-				const context = await workerInstance.getData(forkEm);
+				const dataEm = orm.em.fork() as EntityManager;
+				const context = await workerInstance.getData(dataEm);
 
 				if (context && Array.isArray(context)) {
 					for (const contextItem of context) {
+						// Fork a unique, lightweight Unit of Work context for processing this specific item
+						const executionEm = orm.em.fork() as EntityManager;
 						try {
-							await workerInstance.execute(forkEm, contextItem);
+							// Merge the entity into the execution context
+							const managedItem = executionEm.merge(contextItem);
+
+							// Cast workerInstance to 'any' to bypass compile-time signature collision.
+							// At runtime, the types are guaranteed to match (User to CleanUsers, Subscription to RenewSubscription).
+							await (workerInstance as any).execute(executionEm, managedItem);
 						} catch (entityError) {
-							console.error(`[Queue: ${queueName}] Error processing individual item:`, entityError);
+							console.error(`[Queue: ${queueName}] Error processing individual item ${(contextItem as any).id || ''}:`, entityError);
 						}
 					}
 				}

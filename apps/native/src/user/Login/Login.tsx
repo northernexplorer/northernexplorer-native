@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, Pressable, Switch, ScrollView} from 'react-native';
-import {styles} from '~/user/styles';
+import {View, Text, Pressable, Switch, ScrollView} from 'react-native';
+import styles from '~/user/styles';
 import {Link, router} from 'expo-router';
 import {useApiMutation} from '~/core/useApiMutation';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useDispatch} from 'react-redux';
+import {FormField} from '~/layout/Layout/components/FormField';
+import {useDeviceInfo} from '~/user/Login/useDeviceInfo';
 
 const initialFormData = {
 	identifier: '',
@@ -19,6 +21,7 @@ export function Login() {
 	const [formData, setFormData] = useState<FormData>(initialFormData);
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const dispatch = useDispatch();
+	const deviceInfo = useDeviceInfo();
 
 	const {mutate, loading} = useApiMutation('user', 'UserController', 'login');
 
@@ -51,63 +54,45 @@ export function Login() {
 	};
 
 	const handleSubmit = async () => {
-		try {
-			const response = await mutate(formData);
-			if (response) {
-				dispatch(setAuthentication(response));
-				router.replace(`/profile/${response.username}`);
-			}
-		} catch (error) {
-			console.error(error);
+		const response = await mutate({login: formData, device: deviceInfo});
+		if (response) {
+			dispatch(setAuthentication(response));
+			router.replace(`/profile/${response.username}`);
 		}
 	};
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-			<Text style={styles.title}>Sign In</Text>
+			<FormField
+				fieldName="identifier"
+				label="Username or Email"
+				placeholder="Username or Email"
+				value={formData.identifier}
+				updateField={updateField}
+				error={errors.identifier}
+				loading={loading}
+			/>
 
-			{/* Username or Email Field */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Username or Email</Text>
-				<TextInput
-					value={formData.identifier}
-					onChangeText={val => updateField('identifier', val)}
-					autoCapitalize="none"
-					autoCorrect={false}
-					keyboardType="email-address"
-					placeholder="Username or Email"
-					style={styles.input}
-					editable={!loading}
-				/>
-				{errors.identifier && <Text style={styles.errorText}>{errors.identifier}</Text>}
-			</View>
+			<FormField
+				fieldName="password"
+				label="Password"
+				placeholder="Password"
+				value={formData.password}
+				updateField={updateField}
+				error={errors.password}
+				loading={loading}
+				secureTextEntry
+			/>
 
-			{/* Password Field */}
-			<View style={styles.field}>
-				<Text style={styles.label}>Password</Text>
-				<TextInput
-					value={formData.password}
-					onChangeText={val => updateField('password', val)}
-					secureTextEntry
-					placeholder="Password"
-					style={styles.input}
-					editable={!loading}
-				/>
-				{errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-			</View>
-
-			{/* Remember Me Switch Row */}
 			<View style={styles.rememberRow}>
 				<Text style={styles.label}>Remember Me</Text>
 				<Switch value={formData.rememberMe} onValueChange={val => updateField('rememberMe', val)} disabled={loading} />
 			</View>
 
-			{/* Submit Button */}
 			<Pressable style={[styles.button, loading && {opacity: 0.6}]} onPress={validateForm} disabled={loading}>
 				<Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
 			</Pressable>
 
-			{/* Navigation Links */}
 			<Link href="/profile/forgot-password" asChild>
 				<Pressable disabled={loading}>
 					<Text style={styles.link}>Forgot Password?</Text>

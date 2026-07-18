@@ -1,5 +1,6 @@
 import {GetParams, GetResponse, NonEmptyCategory, ROUTES, UserAuthenticationType} from '@northernexplorer/types';
 import {config} from '~/config';
+import {authEvents} from '~/core/authEvents';
 
 export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(
 	category: C,
@@ -59,14 +60,26 @@ export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUT
 				};
 
 				res = await fetch(url.toString(), options);
+			} else {
+				authEvents.emit('FORCE_LOGOUT');
 			}
 		} catch {
-			throw new Error('Session expired. Please log in again.');
+			authEvents.emit('FORCE_LOGOUT');
 		}
+	} else if (res.status === 401) {
+		authEvents.emit('FORCE_LOGOUT');
 	}
 
 	if (!res.ok) {
-		throw new Error(`API fetch failed [${String(method)}]: ${res.status}`);
+		let serverMessage = '';
+		try {
+			const errorData = await res.json();
+			serverMessage = errorData?.error;
+		} catch {
+			serverMessage = `HTTP Error ${res.status}`;
+		}
+
+		throw new Error(serverMessage || `API fetch failed [${String(method)}]: ${res.status}`);
 	}
 	return res.json() as Promise<GetResponse<C, K, M>>;
 }

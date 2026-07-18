@@ -1,0 +1,1 @@
+export {ResetPasswordComplete} from './ResetPasswordComplete';

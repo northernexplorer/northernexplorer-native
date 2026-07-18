@@ -9,7 +9,7 @@ export class FieldNoteController {
 	public async getFieldNoteData(params: Params<Route<'getFieldNoteData'>>): Promise<Response<Route<'getFieldNoteData'>>> {
 		const {lat, lon} = params;
 		const weather = await this.repos.weather.getWeatherCache(lat, lon);
-		if (!weather.current) throw new Error('Weather data not found');
+		if (!weather.current) throw new Error('Unable to load current weather.');
 
 		const temp = weather.current?.temp_c !== undefined ? parseFloat(String(weather.current.temp_c)) : 999;
 		const wind = weather.current.wind_kph ?? 0;

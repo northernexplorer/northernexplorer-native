@@ -5,7 +5,7 @@ import {styles} from '~/location/HistoricSiteDetails/styles';
 import {getUrl} from '@northernexplorer/tools';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/components/Spiner';
+import {Spinner} from '~/layout/Layout/components/Spinner';
 
 export function HistoricSiteDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
@@ -28,7 +28,7 @@ export function HistoricSiteDetails() {
 
 				<View style={styles.metaContainer}>
 					<Text style={styles.metaLabel}>
-						Coordinates: {data.lat.toFixed(4)}°, {data.lon.toFixed(4)}°
+						Coordinates: {data.lat}°, {data.lon}°
 					</Text>
 					<Text style={styles.metaLabel}>
 						Dates: {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
