@@ -1,4 +1,4 @@
-import {CountryType} from '../../../../../packages/types/src/location/Country';
+
 import {RegionType} from '../../../../../packages/types/src/location/Region';
 import {HistoricSite} from '../entities/HistoricSite';
 import {EntityRepository} from '@mikro-orm/postgresql';
@@ -12,14 +12,14 @@ interface HistoricSiteRawRow {
 	lon: string | number;
 	startDate: string | number;
 	endDate: string | number;
-	country: CountryType;
+	country: {id:string,name:string};
 	region: RegionType;
 	distanceMeters: number;
 }
 
 export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 	async getHistoricSiteDetails(id: number) {
-		const site = await this.findOne({id: Number(id)}, {populate: ['country.name', 'region.name']});
+		const site = await this.findOne({id: Number(id)}, {populate: ['country', 'region']});
 
 		if (!site) throw new Error('Historic site not found.');
 
@@ -36,16 +36,20 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
                 'id', c.id,
                 'name', c.name
             ) as country,
-            json_build_object(
-                'id', r.id,
-          
-                'name', r.name
-            ) as region,
+          json_build_object(
+    'id', r.id,
+    'name', r.name,
+    'country',
+        json_build_object(
+            'id', c.id,
+            'name', c.name
+        )
+) AS region,
 					 h.start_date, h.end_date,
                             (6371000 * acos(
                                 cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
                                 sin(radians(?)) * sin(radians(h.lat))
-                              )) AS distance_meters
+                                       )) AS distance_meters
                      FROM historic_site h
 					 JOIN country c
 					 ON h.country_id = c.id
@@ -63,8 +67,8 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 			name: site.name,
 			description: site.description,
 			image: site.image,
-			country: site.country.name,
-			region: site.region.name,
+			country: site.country,
+			region: site.region,
 			lat: Number(site.lat),
 			lon: Number(site.lon),
 			startDate: site.startDate ? Number(site.startDate) : null,

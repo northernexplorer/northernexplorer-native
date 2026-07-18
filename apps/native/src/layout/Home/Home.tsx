@@ -82,8 +82,8 @@ export function Home() {
 							name={site.name}
 							description={site.description}
 							image={site.image}
-							country={site.country}
-							region={site.region}
+							country={site.country.name}
+							region={site.region.name}
 							id={site.id}
 						/>
 					))}

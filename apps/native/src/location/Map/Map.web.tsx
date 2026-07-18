@@ -100,6 +100,7 @@ export function Map() {
 
 					// Render individual site
 					const site = cluster.properties as HistoricSiteType;
+
 					return (
 						<Marker
 							key={site.id}
@@ -129,8 +130,8 @@ export function Map() {
 								href={{
 									pathname: '/[country]/[region]/[name]/[id]',
 									params: {
-										country: getUrlSafeString(selectedSite.country),
-										region: getUrlSafeString(selectedSite.region),
+										country: getUrlSafeString(selectedSite.country.name),
+										region: getUrlSafeString(selectedSite.region.name),
 										id: getUrlSafeString(selectedSite.id),
 										name: getUrlSafeString(selectedSite.name),
 									},
