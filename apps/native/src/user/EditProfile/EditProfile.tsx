@@ -7,6 +7,7 @@ import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
 import {FormField} from '~/layout/Layout/components/FormField';
+import {isValidEmail} from '~/user/isValidEmail';
 
 type RouteParams = {
 	username: string;
@@ -79,7 +80,7 @@ export function EditProfile() {
 		if (formData.username.trim().length < 6) {
 			newErrors.username = 'Username must be at least 6 characters';
 		}
-		if (!formData.email.trim().includes('@')) newErrors.email = 'Invalid email address';
+		if (!isValidEmail(formData.email)) newErrors.email = 'Invalid email address';
 
 		setErrors(newErrors);
 

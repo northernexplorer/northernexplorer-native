@@ -17,3 +17,8 @@ export type SubscriptionResponse = {
 		description: string;
 	};
 };
+
+export type ChangeSubscriptionParams = {
+	username: string;
+	subscriptionLevelId: number;
+};
