@@ -1,10 +1,11 @@
 import {Entity, PrimaryKey, Property, ManyToOne} from '@mikro-orm/decorators/legacy';
 import {Country} from './Country';
+import {v4} from 'uuid';
 
 @Entity()
 export class Region {
 	@PrimaryKey({type: 'string'})
-	id!: string;
+	id = v4();
 
 	@Property({type: 'number', version: true, default: 1})
 	version!: number;

@@ -23,7 +23,8 @@
 		"jsonwebtoken": "^9.0.3",
 		"pg-boss": "^12.25.1",
 		"reflect-metadata": "^0.2.2",
-		"resend": "^6.17.2"
+		"resend": "^6.17.2",
+		"uuid": "^14.0.1"
 	},
 	"devDependencies": {
 		"@mikro-orm/cli": "^7.1.6",

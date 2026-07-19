@@ -1,9 +1,10 @@
 import {Entity, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
+import {v4} from 'uuid';
 
 @Entity()
 export class ForecastCache {
 	@PrimaryKey({type: 'integer'})
-	id!: number;
+	id = v4();
 
 	@Property({type: 'double'})
 	lat!: number;

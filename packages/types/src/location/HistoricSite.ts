@@ -2,7 +2,7 @@ import {RegionType} from './Region';
 import {CountryType} from './Country';
 
 export type HistoricSiteType = {
-	id: number;
+	id: string;
 	name: string;
 	description: string;
 	image: string;

@@ -3,7 +3,7 @@ import {EntityRepository} from '@mikro-orm/postgresql';
 import {HistoricSite} from '../entities/HistoricSite';
 
 interface HistoricSiteRawRow {
-	id: number;
+	id: string;
 	name: string;
 	description: string;
 	image: string;
@@ -17,8 +17,8 @@ interface HistoricSiteRawRow {
 }
 
 export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
-	async getHistoricSiteDetails(id: number) {
-		const site = await this.findOne({id: Number(id)}, {populate: ['country', 'region']});
+	async getHistoricSiteDetails(id: string) {
+		const site = await this.findOne({id: String(id)}, {populate: ['country', 'region']});
 
 		if (!site) throw new Error('Historic site not found.');
 
