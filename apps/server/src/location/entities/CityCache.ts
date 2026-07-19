@@ -3,7 +3,7 @@ import {v4} from 'uuid';
 
 @Entity()
 export class CityCache {
-	@PrimaryKey({type: 'string'})
+	@PrimaryKey()
 	id = v4();
 
 	@Property({type: 'double'})

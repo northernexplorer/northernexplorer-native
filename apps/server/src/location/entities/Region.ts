@@ -4,7 +4,7 @@ import {Country} from './Country';
 
 @Entity()
 export class Region {
-	@PrimaryKey({type: 'string'})
+	@PrimaryKey()
 	id = v4();
 
 	@Property({type: 'number', version: true, default: 1})

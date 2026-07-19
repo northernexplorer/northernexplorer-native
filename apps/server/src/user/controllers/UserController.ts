@@ -31,7 +31,7 @@ export class UserController {
 		});
 		const passwordHash = await this.repos.user.hashPassword(params.password);
 
-		const subscriptionLevel = await this.repos.subscriptionLevel.getById(1);
+		const subscriptionLevel = await this.repos.subscriptionLevel.getByName('Pathfinder');
 
 		const startDate = new Date();
 		const renewalDate = new Date();

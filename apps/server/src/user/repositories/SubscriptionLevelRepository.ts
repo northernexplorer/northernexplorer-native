@@ -6,6 +6,10 @@ export class SubscriptionLevelRepository extends EntityRepository<SubscriptionLe
 		return this.findOneOrFail({id});
 	}
 
+	async getByName(name: string) {
+		return this.findOneOrFail({name});
+	}
+
 	async getAll() {
 		return this.find({enabled: true}, {orderBy: {cost: 'asc'}});
 	}

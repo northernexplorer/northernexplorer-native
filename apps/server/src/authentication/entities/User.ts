@@ -3,7 +3,7 @@ import {v4} from 'uuid';
 
 @Entity()
 export class User {
-	@PrimaryKey({type: 'string'})
+	@PrimaryKey()
 	id = v4();
 
 	@Property({type: 'number', version: true, default: 1})
