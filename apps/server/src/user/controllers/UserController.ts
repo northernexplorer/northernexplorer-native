@@ -13,7 +13,7 @@ import {Session} from '../entities/Session';
 
 type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<'user', 'UserController'>[M];
 
-class UserController extends BaseController {
+export class UserController extends BaseController {
 	constructor(repos: Repositories) {
 		super(repos);
 	}
