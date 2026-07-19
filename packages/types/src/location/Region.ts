@@ -1,8 +1,8 @@
-import {countrySummary} from './Country';
+import {CountryType} from './Country';
 
 export type RegionType = {
 	id: string;
 	name: string;
-	country?: countrySummary;
+	country?: CountryType;
 	countryId?: string;
 };

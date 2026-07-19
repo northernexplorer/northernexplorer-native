@@ -21,7 +21,7 @@ export function HistoricSiteDetails() {
 			<Image source={{uri: getUrl({path: data.image, serverUrl: config.SERVER_URL})}} style={styles.banner} />
 			<View style={styles.content}>
 				<Text style={styles.breadcrumbs}>
-					{data.country.name} › {data.region.name}
+					{data.country?.name} › {data.region?.name}
 				</Text>
 
 				<Text style={styles.title}>{data.name}</Text>

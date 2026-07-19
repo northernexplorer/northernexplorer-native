@@ -1,4 +1,4 @@
-import {RegionType} from '@northernexplorer/types';
+import {CountryType, RegionType} from '@northernexplorer/types';
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {HistoricSite} from '../entities/HistoricSite';
 
@@ -11,7 +11,7 @@ interface HistoricSiteRawRow {
 	lon: string | number;
 	startDate: string | number;
 	endDate: string | number;
-	country: {id: string; name: string};
+	country: CountryType;
 	region: RegionType;
 	distanceMeters: number;
 }

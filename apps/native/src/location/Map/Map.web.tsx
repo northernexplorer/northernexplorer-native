@@ -130,8 +130,8 @@ export function Map() {
 								href={{
 									pathname: '/[country]/[region]/[name]/[id]',
 									params: {
-										country: getUrlSafeString(selectedSite.country.name),
-										region: getUrlSafeString(selectedSite.region.name),
+										country: getUrlSafeString(selectedSite.country?.name),
+										region: getUrlSafeString(selectedSite.region?.name),
 										id: getUrlSafeString(selectedSite.id),
 										name: getUrlSafeString(selectedSite.name),
 									},
