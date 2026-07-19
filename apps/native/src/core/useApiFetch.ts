@@ -1,11 +1,11 @@
 import {useState, useCallback} from 'react';
 import {ROUTES, GetParams, GetResponse, NonEmptyCategory} from '@northernexplorer/types';
+import {useDispatch} from 'react-redux';
+import {useFocusEffect} from 'expo-router';
 import {apiClient} from '~/core/apiClient';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
-import {useDispatch} from 'react-redux';
 import {alertStore} from '~/core/alertStore';
-import {useFocusEffect} from 'expo-router';
 
 export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(
 	category: C,

@@ -1,5 +1,5 @@
-import {CityCache} from '../entities/CityCache';
 import {EntityRepository} from '@mikro-orm/postgresql';
+import {CityCache} from '../entities/CityCache';
 import {config} from '../../config';
 
 export class CityRepository extends EntityRepository<CityCache> {

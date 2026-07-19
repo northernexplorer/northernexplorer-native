@@ -1,8 +1,8 @@
 import {View, Text} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {WeatherType} from '@northernexplorer/types';
 import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
 import {styles} from '~/layout/Home/styles';
-import {WeatherType} from '@northernexplorer/types';
 
 type WeatherProps = {
 	data: WeatherType;

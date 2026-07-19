@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, Text, Image} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
-import {styles} from '~/location/HistoricSiteDetails/styles';
 import {getUrl} from '@northernexplorer/tools';
+import {styles} from '~/location/HistoricSiteDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';

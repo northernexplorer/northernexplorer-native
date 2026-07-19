@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
-import {useAppDispatch} from '~/core/storeHooks';
 import {ActionCreatorWithPayload} from '@reduxjs/toolkit';
+import {useAppDispatch} from '~/core/storeHooks';
 
 export function useSyncToRedux<T>(
 	data: T | null,

@@ -1,7 +1,7 @@
 import {View, Text} from 'react-native';
+import {ComponentType} from 'react';
 import {useCity} from '~/location/state/city/useCity';
 import {useLocation} from '~/location/state/location/useLocation';
-import {ComponentType} from 'react';
 import {useIsOffline} from '~/core/ConnectivityProvider';
 
 interface Props {

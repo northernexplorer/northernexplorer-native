@@ -1,8 +1,8 @@
 import {Link, usePathname} from 'expo-router';
 import {Pressable, StyleSheet, Text} from 'react-native';
-import {styles} from '~/layout/Layout/styles';
 import {Ionicons} from '@expo/vector-icons';
 import React, {ComponentProps} from 'react';
+import {styles} from '~/layout/Layout/styles';
 
 interface Props {
 	route: string;

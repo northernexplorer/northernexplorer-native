@@ -1,9 +1,9 @@
 import {View, Text, Pressable} from 'react-native';
-import styles from '~/user/styles';
 import {Link} from 'expo-router';
+import React from 'react';
+import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
-import React from 'react';
 
 type Props = {
 	username: string;

@@ -1,8 +1,8 @@
 import {Link, usePathname} from 'expo-router';
 import {Pressable, StyleSheet, View} from 'react-native';
-import {styles} from '~/layout/Layout/styles';
 import {Ionicons} from '@expo/vector-icons';
 import React from 'react';
+import {styles} from '~/layout/Layout/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 interface Props {

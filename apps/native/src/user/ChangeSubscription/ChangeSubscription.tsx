@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {Pressable, Text, ScrollView, StyleSheet, View} from 'react-native';
-import styles from '~/user/styles';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
+import {SubscriptionLevelsResponse} from '@northernexplorer/types';
+import {formatMoney} from '@northernexplorer/tools';
+import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
-import {SubscriptionLevelsResponse} from '@northernexplorer/types';
 import {Spinner} from '~/layout/Layout/components/Spinner';
-import {formatMoney} from '@northernexplorer/tools';
 
 type RouteParams = {
 	username: string;

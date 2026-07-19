@@ -5,6 +5,7 @@ import prettierConfig from 'eslint-config-prettier';
 import reactPlugin from 'eslint-plugin-react';
 import * as jsoncParser from 'jsonc-eslint-parser';
 import path from 'path';
+import reactImport from 'eslint-plugin-import';
 
 export default [
 	{
@@ -46,6 +47,7 @@ export default [
 			'@typescript-eslint': tsPlugin,
 			prettier: prettierPlugin,
 			react: reactPlugin,
+			import: reactImport,
 		},
 		rules: {
 			...tsPlugin.configs.recommended.rules,
@@ -57,6 +59,12 @@ export default [
 			// Added Type-Aware Rules
 			'@typescript-eslint/await-thenable': 'error',
 			'@typescript-eslint/require-await': 'error',
+			'import/order': [
+				'error',
+				{
+					'newlines-between': 'never',
+				},
+			],
 		},
 	},
 	prettierConfig,
