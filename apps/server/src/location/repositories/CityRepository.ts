@@ -40,14 +40,14 @@ export class CityRepository extends EntityRepository<CityCache> {
 	}
 
 	async createCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
-		const newCacheEntry = this.create({
+		const cityCache = new CityCache({
 			lat: Number(lat),
 			lon: Number(lon),
 			cityData: parsedJson,
 			updatedAt: new Date(),
 		});
 
-		this.em.persist(newCacheEntry);
+		this.em.persist(cityCache);
 
 		await this.nativeDelete({
 			updatedAt: {$lte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90)},

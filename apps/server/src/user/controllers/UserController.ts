@@ -7,10 +7,13 @@ import {EmailSendService} from '../../system/services/EmailSendService';
 import {config} from '../../config';
 import {AuthContext} from '../../index';
 import {BaseController} from '../../core/BaseController';
+import {Subscription} from '../entities/Subscription';
+import {User} from '../entities/User';
+import {Session} from '../entities/Session';
 
 type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<'user', 'UserController'>[M];
 
-export class UserController extends BaseController {
+class UserController extends BaseController {
 	constructor(repos: Repositories) {
 		super(repos);
 	}
@@ -40,14 +43,14 @@ export class UserController extends BaseController {
 		const renewalDate = new Date();
 		renewalDate.setMonth(startDate.getMonth() + 1);
 
-		const subscription = this.repos.subscription.create({
+		const subscription = new Subscription({
 			subscriptionLevel,
-			version: 1,
 			startDate,
 			renewalDate,
 		});
+		this.persist(subscription);
 
-		const user = this.repos.user.create({
+		const user = new User({
 			email: params.email,
 			firstName: params.firstName,
 			lastName: params.lastName,
@@ -55,9 +58,10 @@ export class UserController extends BaseController {
 			createdAt: new Date(),
 			isActive: false,
 			passwordHash,
-			version: 1,
 			subscription,
 		});
+
+		this.persist(user);
 		await this.flush();
 
 		const activationToken = this.tokenService.generateToken({userId: user.id, email: user.email}, 'account_activation');
@@ -102,18 +106,19 @@ export class UserController extends BaseController {
 
 		const {exp} = this.tokenService.verifyRefreshToken(refreshToken);
 
-		this.repos.session.create({
+		const session = new Session({
 			expiresAt: new Date(exp! * 1000),
 			ipAddress: auth?.ipAddress || '',
 			firstLoginAt: new Date(),
 			lastLoginAt: new Date(),
 			refreshTokenHash,
 			user,
-			version: 1,
 			clientName: params.device.clientName,
 			osName: params.device.osName,
 			platform: params.device.platform,
 		});
+
+		this.persist(session);
 		await this.flush();
 
 		return {
@@ -263,18 +268,19 @@ export class UserController extends BaseController {
 
 		const {exp} = this.tokenService.verifyRefreshToken(refreshToken);
 
-		this.repos.session.create({
+		const session = new Session({
 			expiresAt: new Date(exp! * 1000),
 			ipAddress: auth?.ipAddress || '',
 			firstLoginAt: new Date(),
 			lastLoginAt: new Date(),
 			refreshTokenHash,
 			user,
-			version: 1,
 			clientName: params.device.clientName,
 			osName: params.device.osName,
 			platform: params.device.platform,
 		});
+		this.persist(session);
+		await this.flush();
 
 		return {
 			userId: user.id,
@@ -310,3 +316,5 @@ export class UserController extends BaseController {
 		};
 	}
 }
+
+export default UserController;
