@@ -58,7 +58,7 @@ export class UserController extends BaseController {
 			version: 1,
 			subscription,
 		});
-        await this.flush();
+		await this.flush();
 
 		const activationToken = this.tokenService.generateToken({userId: user.id, email: user.email}, 'account_activation');
 		const activationUrl = `${config.WEB_URL}/profile/activate?token=${activationToken}`;
@@ -114,7 +114,7 @@ export class UserController extends BaseController {
 			osName: params.device.osName,
 			platform: params.device.platform,
 		});
-        await this.flush();
+		await this.flush();
 
 		return {
 			userId: user.id,
@@ -167,7 +167,7 @@ export class UserController extends BaseController {
 		const user = await this.repos.user.getById(targetId);
 
 		await this.repos.user.update(user.id, params);
-        await this.flush();
+		await this.flush();
 		return {success: true};
 	}
 
@@ -191,7 +191,7 @@ export class UserController extends BaseController {
 			passwordHash,
 		});
 
-        await this.flush();
+		await this.flush();
 
 		return {
 			success: true,
@@ -229,7 +229,7 @@ export class UserController extends BaseController {
 		session.refreshTokenHash = newRefreshHash;
 		session.lastLoginAt = new Date();
 
-        await this.flush();
+		await this.flush();
 
 		return {
 			userId: user.id,
@@ -248,7 +248,7 @@ export class UserController extends BaseController {
 		if (user.isActive) throw new Error('This account is already active. Try logging in!');
 
 		user.isActive = true;
-        await this.flush();
+		await this.flush();
 
 		const accessToken = this.tokenService.generateAccessToken({
 			userId: user.id,
@@ -303,7 +303,7 @@ export class UserController extends BaseController {
 			passwordHash,
 		});
 
-        await this.flush();
+		await this.flush();
 
 		return {
 			success: true,

@@ -1,13 +1,13 @@
 import {Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
-import {BaseController} from "../../core/BaseController";
+import {BaseController} from '../../core/BaseController';
 
 type Route<M extends keyof ROUTES['environment']['LunarController']> = RouteDefinition<'environment', 'LunarController'>[M];
 
 export class LunarController extends BaseController {
-    constructor(repos: Repositories) {
-        super(repos);
-    }
+	constructor(repos: Repositories) {
+		super(repos);
+	}
 
 	public getLunarData(): Response<Route<'getLunarData'>> {
 		// Known reference New Moon date (January 6, 2000, 18:14 UTC) in milliseconds

@@ -1,13 +1,13 @@
 import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
-import {BaseController} from "../../core/BaseController";
+import {BaseController} from '../../core/BaseController';
 
 type Route<M extends keyof ROUTES['environment']['FieldNoteController']> = RouteDefinition<'environment', 'FieldNoteController'>[M];
 
 export class FieldNoteController extends BaseController {
-    constructor(repos: Repositories) {
-        super(repos);
-    }
+	constructor(repos: Repositories) {
+		super(repos);
+	}
 
 	public async getFieldNoteData(params: Params<Route<'getFieldNoteData'>>): Promise<Response<Route<'getFieldNoteData'>>> {
 		const {lat, lon} = params;

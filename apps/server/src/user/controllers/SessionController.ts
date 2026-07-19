@@ -7,9 +7,9 @@ import {BaseController} from '../../core/BaseController';
 type Route<M extends keyof ROUTES['user']['SessionController']> = RouteDefinition<'user', 'SessionController'>[M];
 
 export class SessionController extends BaseController {
-    constructor(repos: Repositories) {
-        super(repos);
-    }
+	constructor(repos: Repositories) {
+		super(repos);
+	}
 
 	private permissionService = new PermissionService();
 
