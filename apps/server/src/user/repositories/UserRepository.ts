@@ -8,18 +8,6 @@ export class UserRepository extends EntityRepository<User> {
 		return this.findOne({$or: [{email: identifier}, {username: identifier}]});
 	}
 
-	async updateProfile(id: string, data: User): Promise<void> {
-		const user = await this.findOneOrFail({id});
-		this.assign(user, data);
-		await this.em.flush();
-	}
-
-	async updatePassword(id: string, passwordHash: string): Promise<void> {
-		const user = await this.findOneOrFail({id});
-		user.passwordHash = passwordHash;
-		await this.em.flush();
-	}
-
 	async update(id: string, data: EditProfileParams): Promise<void> {
 		const user = await this.findOneOrFail({id});
 		this.assign(user, {
@@ -28,7 +16,6 @@ export class UserRepository extends EntityRepository<User> {
 			username: data.username,
 			email: data.email,
 		});
-		await this.em.flush();
 	}
 
 	async hashPassword(userPassword: string) {

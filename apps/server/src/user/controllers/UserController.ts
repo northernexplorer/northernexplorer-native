@@ -6,15 +6,18 @@ import {PermissionService} from '../services/PermisionService';
 import {EmailSendService} from '../../system/services/EmailSendService';
 import {config} from '../../config';
 import {AuthContext} from '../../index';
+import {BaseController} from '../../core/BaseController';
 
 type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<'user', 'UserController'>[M];
 
-export class UserController {
+export class UserController extends BaseController {
+	constructor(repos: Repositories) {
+		super(repos);
+	}
+
 	private tokenService = new TokenService();
 	private permissionService = new PermissionService();
 	private emailSendService = new EmailSendService();
-
-	constructor(private repos: Repositories) {}
 
 	async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
 		if (params.website) throw new Error('Form submission failed. Please try again.');
@@ -55,7 +58,7 @@ export class UserController {
 			version: 1,
 			subscription,
 		});
-		await this.repos.user.getEntityManager().flush();
+		await this.flush();
 
 		const activationToken = this.tokenService.generateToken({userId: user.id, email: user.email}, 'account_activation');
 		const activationUrl = `${config.WEB_URL}/profile/activate?token=${activationToken}`;
@@ -111,7 +114,7 @@ export class UserController {
 			osName: params.device.osName,
 			platform: params.device.platform,
 		});
-		await this.repos.user.getEntityManager().flush();
+		await this.flush();
 
 		return {
 			userId: user.id,
@@ -164,6 +167,7 @@ export class UserController {
 		const user = await this.repos.user.getById(targetId);
 
 		await this.repos.user.update(user.id, params);
+		await this.flush();
 		return {success: true};
 	}
 
@@ -187,7 +191,7 @@ export class UserController {
 			passwordHash,
 		});
 
-		await this.repos.user.getEntityManager().flush();
+		await this.flush();
 
 		return {
 			success: true,
@@ -225,7 +229,7 @@ export class UserController {
 		session.refreshTokenHash = newRefreshHash;
 		session.lastLoginAt = new Date();
 
-		await this.repos.session.getEntityManager().flush();
+		await this.flush();
 
 		return {
 			userId: user.id,
@@ -244,7 +248,7 @@ export class UserController {
 		if (user.isActive) throw new Error('This account is already active. Try logging in!');
 
 		user.isActive = true;
-		await this.repos.user.getEntityManager().flush();
+		await this.flush();
 
 		const accessToken = this.tokenService.generateAccessToken({
 			userId: user.id,
@@ -299,7 +303,7 @@ export class UserController {
 			passwordHash,
 		});
 
-		await this.repos.user.getEntityManager().flush();
+		await this.flush();
 
 		return {
 			success: true,

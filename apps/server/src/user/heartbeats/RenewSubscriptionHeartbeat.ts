@@ -30,7 +30,7 @@ export class RenewSubscriptionHeartbeat {
 	/**
 	 * Phase 2: Performs the actual business operation on a single subscription entity instance.
 	 */
-	public async execute(em: EntityManager, subscription: Subscription): Promise<void> {
+	public execute(em: EntityManager, subscription: Subscription) {
 		if (subscription.endDate !== null && subscription.endDate <= new Date()) {
 			console.log(`[Renewal Heartbeat] Subscription ${subscription.id} cancelled/expired. Skipping.`);
 			return;
@@ -43,7 +43,6 @@ export class RenewSubscriptionHeartbeat {
 			subscription.renewalDate = nextRenewalDate;
 
 			em.persist(subscription);
-			await em.flush();
 
 			console.log(
 				`[Renewal Heartbeat] Successfully processed rolling renewal for subscription ${subscription.id}. Next check: ${nextRenewalDate.toISOString()}`,
