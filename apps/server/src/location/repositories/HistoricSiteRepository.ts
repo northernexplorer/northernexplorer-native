@@ -1,6 +1,6 @@
 import {RegionType} from '@northernexplorer/types';
-import {HistoricSite} from '../entities/HistoricSite';
 import {EntityRepository} from '@mikro-orm/postgresql';
+import {HistoricSite} from '../entities/HistoricSite';
 
 interface HistoricSiteRawRow {
 	id: number;
