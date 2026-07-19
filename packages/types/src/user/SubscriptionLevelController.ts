@@ -7,3 +7,10 @@ export type SubscriptionLevelsResponse = {
 	description: string;
 	shortDescription: string;
 };
+
+export const SubscriptionLevelController = {
+	getSubscriptionLevels: {
+		params: {} as Record<string, never>,
+		response: {} as SubscriptionLevelsResponse[],
+	},
+};
