@@ -4,7 +4,7 @@ import {User} from './User';
 
 @Entity()
 export class Session {
-	@PrimaryKey({type: 'integer'})
+	@PrimaryKey({type: 'string'})
 	id = v4();
 
 	@Property({type: 'integer', version: true})

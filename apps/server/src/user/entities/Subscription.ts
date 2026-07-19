@@ -4,7 +4,7 @@ import {SubscriptionLevel} from './SubscriptionLevel';
 
 @Entity()
 export class Subscription {
-	@PrimaryKey({type: 'integer'})
+	@PrimaryKey({type: 'string'})
 	id = v4();
 
 	@Property({type: 'integer', version: true})

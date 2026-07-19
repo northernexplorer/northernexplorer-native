@@ -5,7 +5,7 @@ import {Country} from './Country';
 
 @Entity()
 export class HistoricSite {
-	@PrimaryKey({type: 'integer'})
+	@PrimaryKey({type: 'string'})
 	id = v4();
 
 	@Property({type: 'integer', version: true})

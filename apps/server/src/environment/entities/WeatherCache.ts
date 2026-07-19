@@ -3,7 +3,7 @@ import {v4} from 'uuid';
 
 @Entity()
 export class WeatherCache {
-	@PrimaryKey({type: 'integer'})
+	@PrimaryKey({type: 'string'})
 	id = v4();
 
 	@Property({type: 'double'})

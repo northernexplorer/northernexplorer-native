@@ -4,7 +4,7 @@ import {Subscription} from './Subscription';
 
 @Entity()
 export class User {
-	@PrimaryKey({type: 'integer'})
+	@PrimaryKey({type: 'string'})
 	id = v4();
 
 	@Property({type: 'integer', version: true})
