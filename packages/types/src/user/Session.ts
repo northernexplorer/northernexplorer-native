@@ -16,5 +16,5 @@ export type GetSessionsResponse = {
 };
 
 export type RemoveSessionParams = {
-	sessionid: string;
+	sessionId: string;
 };

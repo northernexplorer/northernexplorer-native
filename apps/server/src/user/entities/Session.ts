@@ -1,6 +1,6 @@
 import {Entity, Property, PrimaryKey, ManyToOne} from '@mikro-orm/decorators/legacy';
-import {User} from './User';
 import {v4} from 'uuid';
+import {User} from './User';
 
 @Entity()
 export class Session {

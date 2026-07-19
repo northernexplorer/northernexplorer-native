@@ -1,7 +1,7 @@
 import {Entity, ManyToOne, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
+import {v4} from 'uuid';
 import {Region} from './Region';
 import {Country} from './Country';
-import {v4} from 'uuid';
 
 @Entity()
 export class HistoricSite {

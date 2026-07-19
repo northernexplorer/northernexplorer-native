@@ -27,7 +27,7 @@ type ControllerConstructor<T> = new (repos: Repositories) => T;
 const tokenService = new TokenService();
 
 export interface AuthContext {
-	userId?: number;
+	userId?: string;
 	email?: string;
 	refreshToken?: string;
 	ipAddress: string;

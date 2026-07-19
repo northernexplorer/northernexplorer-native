@@ -1,6 +1,6 @@
 import {Entity, Property, PrimaryKey, OneToOne} from '@mikro-orm/decorators/legacy';
-import {Subscription} from './Subscription';
 import {v4} from 'uuid';
+import {Subscription} from './Subscription';
 
 @Entity()
 export class User {

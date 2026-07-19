@@ -20,5 +20,5 @@ export type SubscriptionResponse = {
 
 export type ChangeSubscriptionParams = {
 	username: string;
-	subscriptionLevelid: string;
+	subscriptionLevelId: string;
 };

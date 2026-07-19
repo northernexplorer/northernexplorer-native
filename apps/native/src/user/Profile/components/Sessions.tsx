@@ -37,7 +37,7 @@ export function Sessions({username}: Props) {
 
 	if (loading || !data) return <Spinner />;
 
-	const handleSubmit = async (sessionId: number) => {
+	const handleSubmit = async (sessionId: string) => {
 		const response = await mutate({sessionId});
 		if (response) {
 			refetch();
