@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'reflect-metadata';
+import path from 'node:path';
 import express, {Request, Response} from 'express';
 import cors from 'cors';
 import {MikroORM, RequestContext} from '@mikro-orm/core';
 import {EntityManager} from '@mikro-orm/postgresql';
+import {ROUTES} from '@northernexplorer/types';
+import {PgBoss} from 'pg-boss';
 import ormConfig from './mikro-orm.config';
 import {config} from './config';
-import {ROUTES} from '@northernexplorer/types';
-import path from 'node:path';
 import {repositories, Repositories} from './core/repositories';
 import {controllers} from './core/controllers';
 import {TokenService} from './user/services/TokenService';
-import {PgBoss} from 'pg-boss';
 import {heartbeats} from './core/heartbeats';
 import {getClientIp} from './core/getClientIp';
 

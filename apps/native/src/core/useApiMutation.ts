@@ -1,9 +1,9 @@
 import {useState} from 'react';
 import {ROUTES, GetParams, NonEmptyCategory} from '@northernexplorer/types';
+import {useDispatch} from 'react-redux';
 import {apiClient} from '~/core/apiClient';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
-import {useDispatch} from 'react-redux';
 import {alertStore} from '~/core/alertStore';
 
 export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(

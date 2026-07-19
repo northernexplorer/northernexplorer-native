@@ -1,5 +1,5 @@
-import {WeatherCache} from '../entities/WeatherCache';
 import {EntityRepository} from '@mikro-orm/postgresql';
+import {WeatherCache} from '../entities/WeatherCache';
 import {config} from '../../config';
 
 interface RawInternalWeatherRow {

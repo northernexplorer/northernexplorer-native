@@ -1,8 +1,8 @@
 import {View, Text, TouchableOpacity} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
+import React from 'react';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
-import React from 'react';
 import {Spinner} from '~/layout/Layout/components/Spinner';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';

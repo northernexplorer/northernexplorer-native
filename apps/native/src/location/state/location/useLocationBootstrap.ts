@@ -1,7 +1,5 @@
 import {useEffect, useState} from 'react';
 import {Platform} from 'react-native';
-import {useAppSelector} from '~/core/storeHooks';
-import {setLocation, setLocationError, setLocationLoading} from '~/location/state/location/locationSlice';
 import {
 	Accuracy,
 	getForegroundPermissionsAsync,
@@ -9,6 +7,8 @@ import {
 	getLastKnownPositionAsync,
 	getCurrentPositionAsync,
 } from 'expo-location';
+import {useAppSelector} from '~/core/storeHooks';
+import {setLocation, setLocationError, setLocationLoading} from '~/location/state/location/locationSlice';
 import {useSyncToRedux} from '~/core/useSyncToRedux';
 
 export function useLocationBootstrap() {

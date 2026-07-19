@@ -1,5 +1,5 @@
-import {Repositories} from '../../core/repositories';
 import {Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Repositories} from '../../core/repositories';
 
 type Route<M extends keyof ROUTES['system']['StatusController']> = RouteDefinition<'system', 'StatusController'>[M];
 

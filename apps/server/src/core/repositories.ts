@@ -1,5 +1,5 @@
-import {ForecastCache, ForecastRepository, WeatherCache, WeatherRepository} from '../environment';
 import {EntityManager} from '@mikro-orm/postgresql';
+import {ForecastCache, ForecastRepository, WeatherCache, WeatherRepository} from '../environment';
 import {CityCache, CityRepository, HistoricSite, HistoricSiteRepository, CountryRepository, Country, Region, RegionRepository} from '../location';
 import {
 	Session,

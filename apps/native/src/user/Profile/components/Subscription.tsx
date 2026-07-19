@@ -2,7 +2,6 @@ import {View, Text, Pressable} from 'react-native';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
-import React from 'react';
 import {formatMoney} from '@northernexplorer/tools';
 import {Link} from 'expo-router';
 

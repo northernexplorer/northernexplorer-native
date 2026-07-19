@@ -1,8 +1,8 @@
 import {Link} from 'expo-router';
 import {Image, Pressable, Text} from 'react-native';
-import {styles} from '~/layout/Layout/styles';
-import logo from '../../../../assets/images/logo.png';
 import React from 'react';
+import logo from '../../../../assets/images/logo.png';
+import {styles} from '~/layout/Layout/styles';
 
 interface Props {
 	isDrawer: boolean;

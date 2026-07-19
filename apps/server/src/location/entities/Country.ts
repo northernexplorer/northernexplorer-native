@@ -1,6 +1,6 @@
 import {Entity, PrimaryKey, Property, OneToMany} from '@mikro-orm/decorators/legacy';
-import {Region} from './Region';
 import {Collection} from '@mikro-orm/core';
+import {Region} from './Region';
 
 @Entity()
 export class Country {

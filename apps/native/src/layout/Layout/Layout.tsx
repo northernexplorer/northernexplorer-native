@@ -1,6 +1,5 @@
 import {ComponentType} from 'react';
 import {ImageBackground, ScrollView, Text, useWindowDimensions, View} from 'react-native';
-
 import {styles} from './styles';
 import {getWeatherTheme} from '~/layout/Layout/getWeatherTheme';
 import {useWeather} from '~/environment/state/weather/useWeather';

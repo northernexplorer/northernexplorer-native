@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Pressable, Text, ScrollView} from 'react-native';
-import styles from '~/user/styles';
 import {Link, router, useLocalSearchParams} from 'expo-router';
+import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {FormField} from '~/layout/Layout/components/FormField';
 

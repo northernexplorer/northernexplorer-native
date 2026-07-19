@@ -1,6 +1,6 @@
 import {ROUTES} from '@northernexplorer/types';
-import {Repositories} from '../../core/repositories';
 import {Params, RouteDefinition, Response} from '@northernexplorer/types';
+import {Repositories} from '../../core/repositories';
 
 type Route<M extends keyof ROUTES['environment']['ForecastController']> = RouteDefinition<'environment', 'ForecastController'>[M];
 
