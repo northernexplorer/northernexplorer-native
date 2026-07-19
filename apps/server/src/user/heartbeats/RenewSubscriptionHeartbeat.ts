@@ -43,7 +43,6 @@ export class RenewSubscriptionHeartbeat {
 			subscription.renewalDate = nextRenewalDate;
 
 			em.persist(subscription);
-			await em.flush();
 
 			console.log(
 				`[Renewal Heartbeat] Successfully processed rolling renewal for subscription ${subscription.id}. Next check: ${nextRenewalDate.toISOString()}`,

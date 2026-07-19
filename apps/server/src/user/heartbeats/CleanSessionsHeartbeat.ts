@@ -26,6 +26,5 @@ export class CleanSessionsHeartbeat {
 	 */
 	public async execute(em: EntityManager, session: Session): Promise<void> {
 		em.remove(session);
-		await em.flush();
 	}
 }

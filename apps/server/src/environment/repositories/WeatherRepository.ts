@@ -56,6 +56,5 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
 		await this.nativeDelete({
 			updatedAt: {$lte: new Date(Date.now() - 1000 * 60 * 60 * 3)},
 		});
-		await this.em.flush();
 	}
 }

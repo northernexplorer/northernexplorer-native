@@ -129,6 +129,7 @@ async function bootstrap() {
 							// Cast workerInstance to 'any' to bypass compile-time signature collision.
 							// At runtime, the types are guaranteed to match (User to CleanUsers, Subscription to RenewSubscription).
 							await (workerInstance as any).execute(executionEm, managedItem);
+							await executionEm.flush();
 						} catch (entityError) {
 							console.error(`[Queue: ${queueName}] Error processing individual item ${(contextItem as any).id || ''}:`, entityError);
 						}
