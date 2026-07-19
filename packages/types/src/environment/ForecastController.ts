@@ -36,7 +36,7 @@ export type ForecastType = {
 	};
 };
 
-export type ForecastDay = {
+type ForecastDay = {
 	date: string;
 	date_epoch: number;
 	day: {
@@ -72,7 +72,7 @@ export type ForecastDay = {
 	hour: ForecastHour[];
 };
 
-export type ForecastHour = {
+type ForecastHour = {
 	time_epoch: number;
 	time: string;
 	temp_c: number;
@@ -101,4 +101,11 @@ export type ForecastHour = {
 	vis_km: number;
 	gust_kph: number;
 	uv: number;
+};
+
+export const ForecastController = {
+	getForecastData: {
+		params: {lat: 0, lon: 0} as {lat: number; lon: number},
+		response: null as unknown as ForecastType,
+	},
 };
