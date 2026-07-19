@@ -3,27 +3,27 @@ import {v4} from 'uuid';
 
 @Entity()
 export class User {
-	@PrimaryKey()
+	@PrimaryKey({type: 'uuid'})
 	id = v4();
 
 	@Property({type: 'number', version: true, default: 1})
-	version!: number;
+	version: number;
 
 	@Property({type: 'text'})
-	firstName!: string;
+	firstName: string;
 
 	@Property({type: 'text'})
-	lastName!: string;
+	lastName: string;
 
 	@Property({type: 'text'})
-	userName!: string;
+	userName: string;
 
 	@Property({type: 'text'})
-	email!: string;
+	email: string;
 
 	@Property({type: 'text'})
-	emailActivatedAt!: string;
+	emailActivatedAt: string;
 
 	@Property({type: 'datetime', columnType: 'timestamp', default: 'CURRENT_TIMESTAMP'})
-	createdAt!: Date;
+	createdAt: Date;
 }
