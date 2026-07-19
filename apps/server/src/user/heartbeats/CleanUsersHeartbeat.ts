@@ -27,7 +27,7 @@ export class CleanUsersHeartbeat {
 	/**
 	 * Phase 2: Performs the actual business operation on a single user entity instance.
 	 */
-	public async execute(em: EntityManager, user: User): Promise<void> {
+	public execute(em: EntityManager, user: User) {
 		em.remove(user);
 		em.remove(user.subscription);
 	}
