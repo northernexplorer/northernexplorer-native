@@ -1,7 +1,7 @@
+import {createHash} from 'node:crypto';
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {Session} from '../entities/Session';
 import {User} from '../entities/User';
-import {createHash} from 'node:crypto';
 
 export class SessionRepository extends EntityRepository<Session> {
 	async getById(id: number) {

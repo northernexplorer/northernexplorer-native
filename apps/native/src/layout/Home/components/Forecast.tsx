@@ -1,9 +1,8 @@
-import {Animated, Text, View} from 'react-native';
-import ScrollView = Animated.ScrollView;
-import {styles} from '~/layout/Home/styles';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
+import {ScrollView, Text, View} from 'react-native';
 import {ForecastType} from '@northernexplorer/types';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {styles} from '~/layout/Home/styles';
+import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
 
 type ForecastProps = {
 	data: ForecastType;

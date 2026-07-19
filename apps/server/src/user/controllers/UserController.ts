@@ -1,7 +1,7 @@
-import {Repositories} from '../../core/repositories';
 import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
-import {TokenService} from '../services/TokenService';
 import {wrap} from '@mikro-orm/core';
+import {Repositories} from '../../core/repositories';
+import {TokenService} from '../services/TokenService';
 import {PermissionService} from '../services/PermisionService';
 import {EmailSendService} from '../../system/services/EmailSendService';
 import {config} from '../../config';

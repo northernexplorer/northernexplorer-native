@@ -1,8 +1,8 @@
 import {View, Text, TouchableOpacity} from 'react-native';
-import styles from '~/user/styles';
 import {Redirect, useLocalSearchParams, useRouter} from 'expo-router';
-import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import React from 'react';
+import styles from '~/user/styles';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {ProfileDetails} from '~/user/Profile/components/ProfileDetails';
 import {Subscription} from '~/user/Profile/components/Subscription';
 import {Sessions} from '~/user/Profile/components/Sessions';

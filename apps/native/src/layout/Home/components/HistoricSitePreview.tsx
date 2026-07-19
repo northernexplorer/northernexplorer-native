@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, Text, Image, Pressable} from 'react-native';
 import {Link} from 'expo-router';
-import {styles} from '~/layout/Home/styles';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {styles} from '~/layout/Home/styles';
 import {config} from '~/config';
 
 type Props = {

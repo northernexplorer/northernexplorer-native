@@ -2,14 +2,14 @@ import React, {useState, useMemo, useRef, useCallback} from 'react';
 import {View, Text, StyleSheet, Image, NativeSyntheticEvent} from 'react-native';
 import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
 import useSupercluster from 'use-supercluster';
-import {useLocation} from '~/location/state/location/useLocation';
 import {Link} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {HistoricSiteType} from '@northernexplorer/types';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {BBox} from 'geojson';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
-import {BBox} from 'geojson';
+import {useLocation} from '~/location/state/location/useLocation';
 
 export function Map() {
 	const cameraRef = useRef<CameraRef>(null);

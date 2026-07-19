@@ -1,5 +1,5 @@
-import {ForecastCache} from '../entities/ForecastCache';
 import {EntityRepository} from '@mikro-orm/postgresql';
+import {ForecastCache} from '../entities/ForecastCache';
 import {config} from '../../config';
 
 interface RawInternalForecastRow {

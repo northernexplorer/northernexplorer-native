@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import {View, Text, Pressable, Switch, ScrollView} from 'react-native';
-import styles from '~/user/styles';
 import {Link, router} from 'expo-router';
+import {useDispatch} from 'react-redux';
+import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
-import {useDispatch} from 'react-redux';
 import {FormField} from '~/layout/Layout/components/FormField';
 import {useDeviceInfo} from '~/user/Login/useDeviceInfo';
 

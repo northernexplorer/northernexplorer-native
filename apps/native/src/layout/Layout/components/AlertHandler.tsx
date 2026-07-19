@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, Modal} from 'react-native';
+import {router} from 'expo-router';
+import {useDispatch} from 'react-redux';
 import {alertStore} from '~/core/alertStore';
 import {authEvents} from '~/core/authEvents';
 import {clearAuthentication} from '~/user/state/authentication/authenticationSlice';
-import {router} from 'expo-router';
-import {useDispatch} from 'react-redux';
 
 const ALERT_CONFIG = {
 	error: {

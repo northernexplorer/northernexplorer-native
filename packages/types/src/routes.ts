@@ -1,9 +1,7 @@
 import {CityType, HistoricSiteType} from './location';
 import {ForecastType, LunarCycleType, WeatherType, FieldNoteType} from './environment';
-
 import {CountryType} from './location/Country';
 import {RegionType} from './location/Region';
-
 import {
 	ChangePasswordParams,
 	EditProfileParams,
