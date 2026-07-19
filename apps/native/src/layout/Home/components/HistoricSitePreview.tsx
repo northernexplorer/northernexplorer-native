@@ -10,7 +10,7 @@ type Props = {
 	name: string;
 	description: string;
 	image: string;
-	country: string;
+	country?: string | null;
 	region?: string | null;
 };
 

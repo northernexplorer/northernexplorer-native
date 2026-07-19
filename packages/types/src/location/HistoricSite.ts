@@ -1,3 +1,6 @@
+import {RegionType} from './Region';
+import {CountryType} from './Country';
+
 export type HistoricSiteType = {
 	id: number;
 	name: string;
@@ -5,8 +8,8 @@ export type HistoricSiteType = {
 	image: string;
 	lat: number;
 	lon: number;
-	country: string;
-	region: string;
+	country?: CountryType;
+	region?: RegionType;
 	startDate?: number | null;
 	endDate?: number | null;
 };
