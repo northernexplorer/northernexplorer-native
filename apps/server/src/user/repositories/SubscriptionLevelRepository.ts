@@ -2,8 +2,12 @@ import {EntityRepository} from '@mikro-orm/postgresql';
 import {SubscriptionLevel} from '../entities/SubscriptionLevel';
 
 export class SubscriptionLevelRepository extends EntityRepository<SubscriptionLevel> {
-	async getById(id: number) {
+	async getById(id: string) {
 		return this.findOneOrFail({id});
+	}
+
+	async getByName(name: string) {
+		return this.findOneOrFail({name});
 	}
 
 	async getAll() {

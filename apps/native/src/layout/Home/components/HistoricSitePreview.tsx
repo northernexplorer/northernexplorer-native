@@ -6,7 +6,7 @@ import {styles} from '~/layout/Home/styles';
 import {config} from '~/config';
 
 type Props = {
-	id: number;
+	id: string;
 	name: string;
 	description: string;
 	image: string;

@@ -16,7 +16,7 @@ type RouteParams = {
 function ChangeSubscription() {
 	const authentication = useAuthentication();
 	const {username} = useLocalSearchParams<RouteParams>();
-	const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<number>(5);
+	const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<string>('');
 	const {data, loading} = useApiFetch('user', 'SubscriptionLevelController', 'getSubscriptionLevels', {});
 	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
 

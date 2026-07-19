@@ -1,10 +1,11 @@
 import {Entity, Property, PrimaryKey, ManyToOne} from '@mikro-orm/decorators/legacy';
+import {v4} from 'uuid';
 import {User} from './User';
 
 @Entity()
 export class Session {
-	@PrimaryKey({type: 'integer'})
-	id!: number;
+	@PrimaryKey()
+	id = v4();
 
 	@Property({type: 'integer', version: true})
 	version = 1;

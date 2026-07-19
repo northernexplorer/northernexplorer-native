@@ -67,29 +67,29 @@ export const ROUTES = {
 	location: {
 		CityController: {
 			getCityData: {
-				params: {lat: 0, lon: 0} as {lat: number; lon: number},
+				params: {} as {lat: number; lon: number},
 				response: null as unknown as CityType,
 			},
 		},
 		HistoricSiteController: {
 			getNearbyHistoricSites: {
-				params: {lat: 0, lon: 0, limit: 0} as {lat: number; lon: number; limit: number},
+				params: {} as {lat: number; lon: number; limit: number},
 				response: null as unknown as HistoricSiteType[],
 			},
 			getHistoricSiteById: {
-				params: {id: 0} as {id: number},
+				params: {} as {id: string},
 				response: null as unknown as HistoricSiteType,
 			},
 		},
 		CountryController: {
 			getCountryById: {
-				params: {id: ''} as {id: string},
+				params: {} as {id: string},
 				response: null as unknown as CountryType,
 			},
 		},
 		RegionController: {
 			getRegionById: {
-				params: {id: ''} as {id: string},
+				params: {} as {id: string},
 				response: null as unknown as RegionType,
 			},
 		},

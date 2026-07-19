@@ -1,5 +1,5 @@
 export type UserAuthenticationType = {
-	userId: number;
+	userId: string;
 	email: string;
 	username: string;
 	accessToken: string;
@@ -45,7 +45,7 @@ export type EditProfileParams = {
 	lastName: string;
 	username: string;
 	email: string;
-	userId: number;
+	userId: string;
 };
 export type ChangePasswordParams = {
 	username: string;
@@ -62,7 +62,7 @@ export type GetByUsernameParams = {
 	username: string;
 };
 export type GetByUsernameResponse = {
-	id: number;
+	id: string;
 	version: number;
 	firstName: string;
 	lastName: string;

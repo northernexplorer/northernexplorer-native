@@ -9,7 +9,7 @@ import {Spinner} from '~/layout/Layout/components/Spinner';
 
 export function HistoricSiteDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
-	const {data, loading, error} = useApiFetch('location', 'HistoricSiteController', 'getHistoricSiteById', {id: parseInt(id)});
+	const {data, loading, error} = useApiFetch('location', 'HistoricSiteController', 'getHistoricSiteById', {id});
 	if (loading) return <Spinner />;
 
 	if (error || !data) {

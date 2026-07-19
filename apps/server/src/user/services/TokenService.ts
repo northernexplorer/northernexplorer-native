@@ -2,12 +2,12 @@ import jwt, {JwtPayload} from 'jsonwebtoken';
 import {config} from '../../config';
 
 export interface TokenPayload {
-	userId: number;
+	userId: string;
 	email: string;
 }
 
 export interface ActivationTokenPayload {
-	userId: number;
+	userId: string;
 	email: string;
 	purpose: 'account_activation';
 }

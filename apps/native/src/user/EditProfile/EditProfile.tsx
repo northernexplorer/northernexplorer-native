@@ -18,7 +18,7 @@ interface ProfileFormFields {
 	lastName: string;
 	username: string;
 	email: string;
-	userId: number;
+	userId: string;
 }
 
 type FormKeys = keyof ProfileFormFields;
@@ -42,7 +42,7 @@ export function EditProfile() {
 		lastName: '',
 		username: '',
 		email: '',
-		userId: 0,
+		userId: '',
 	});
 
 	useEffect(() => {

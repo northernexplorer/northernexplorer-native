@@ -4,7 +4,7 @@ import {Session} from '../entities/Session';
 import {User} from '../entities/User';
 
 export class SessionRepository extends EntityRepository<Session> {
-	async getById(id: number) {
+	async getById(id: string) {
 		return this.findOneOrFail({id});
 	}
 

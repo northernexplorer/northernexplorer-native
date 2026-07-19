@@ -1,5 +1,5 @@
 export type SubscriptionLevelsResponse = {
-	id: number;
+	id: string;
 	version: number;
 	name: string;
 	enabled: boolean;

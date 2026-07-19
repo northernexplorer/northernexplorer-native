@@ -1,10 +1,11 @@
 import {Entity, Property, PrimaryKey, OneToOne} from '@mikro-orm/decorators/legacy';
+import {v4} from 'uuid';
 import {Subscription} from './Subscription';
 
 @Entity()
 export class User {
-	@PrimaryKey({type: 'integer'})
-	id!: number;
+	@PrimaryKey()
+	id = v4();
 
 	@Property({type: 'integer', version: true})
 	version = 1;

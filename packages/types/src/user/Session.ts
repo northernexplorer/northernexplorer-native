@@ -4,7 +4,7 @@ export type GetSessionsParams = {
 };
 
 export type GetSessionsResponse = {
-	id: number;
+	id: string;
 	version: number;
 	clientName: string;
 	osName: string;
@@ -16,5 +16,5 @@ export type GetSessionsResponse = {
 };
 
 export type RemoveSessionParams = {
-	sessionId: number;
+	sessionId: string;
 };
