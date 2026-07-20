@@ -1,35 +1,60 @@
 import {Entity, Property, PrimaryKey, OneToOne} from '@mikro-orm/decorators/legacy';
+import {v4} from 'uuid';
 import {Subscription} from './Subscription';
+
+type UserInput = {
+	firstName: string;
+	lastName: string;
+	username: string;
+	email: string;
+	passwordHash: string;
+	isActive: boolean;
+	subscription: Subscription;
+	createdAt?: Date;
+};
 
 @Entity()
 export class User {
-	@PrimaryKey({type: 'integer'})
-	id!: number;
+	@PrimaryKey({type: 'uuid'})
+	id = v4();
 
 	@Property({type: 'integer', version: true})
 	version = 1;
 
 	@Property({type: 'text'})
-	firstName!: string;
+	firstName: string;
 
 	@Property({type: 'text'})
-	lastName!: string;
+	lastName: string;
 
 	@Property({type: 'text', unique: true})
-	username!: string;
+	username: string;
 
 	@Property({type: 'text', unique: true})
-	email!: string;
+	email: string;
 
 	@Property({type: 'datetime'})
 	createdAt = new Date();
 
 	@Property({type: 'text'})
-	passwordHash!: string;
+	passwordHash: string;
 
 	@Property({type: 'boolean'})
-	isActive!: boolean;
+	isActive: boolean;
 
 	@OneToOne(() => Subscription)
-	subscription!: Subscription;
+	subscription: Subscription;
+
+	constructor(data: UserInput) {
+		this.firstName = data.firstName;
+		this.lastName = data.lastName;
+		this.username = data.username;
+		this.email = data.email;
+		this.passwordHash = data.passwordHash;
+		this.isActive = data.isActive;
+		this.subscription = data.subscription;
+		if (data.createdAt) {
+			this.createdAt = data.createdAt;
+		}
+	}
 }

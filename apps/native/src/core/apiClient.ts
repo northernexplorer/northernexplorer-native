@@ -2,6 +2,32 @@ import {GetParams, GetResponse, NonEmptyCategory, ROUTES, UserAuthenticationType
 import {config} from '~/config';
 import {authEvents} from '~/core/authEvents';
 
+let refreshPromise: Promise<UserAuthenticationType | null> | null = null;
+
+function refreshTokens(refreshToken: string): Promise<UserAuthenticationType | null> {
+	if (!refreshPromise) {
+		refreshPromise = (async () => {
+			try {
+				const refreshUrl = new URL(`${config.SERVER_URL}/api/UserController/refresh`);
+				const refreshRes = await fetch(refreshUrl.toString(), {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({refreshToken}),
+				});
+				if (refreshRes.ok) {
+					return (await refreshRes.json()) as UserAuthenticationType;
+				}
+				return null;
+			} catch {
+				return null;
+			} finally {
+				refreshPromise = null;
+			}
+		})();
+	}
+	return refreshPromise;
+}
+
 export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(
 	category: C,
 	controller: K,
@@ -14,18 +40,12 @@ export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUT
 ): Promise<GetResponse<C, K, M>> {
 	const url = new URL(`${config.SERVER_URL}/api/${String(controller)}/${String(method)}`);
 
-	const headers: Record<string, string> = {
-		'Content-Type': 'application/json',
-	};
-
+	const headers: Record<string, string> = {'Content-Type': 'application/json'};
 	if (accessToken) {
 		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
-	const options: RequestInit = {
-		method: fetchMethod,
-		headers,
-	};
+	const options: RequestInit = {method: fetchMethod, headers};
 
 	if (fetchMethod === 'POST') {
 		options.cache = 'no-store';
@@ -33,41 +53,33 @@ export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUT
 	} else if (params && typeof params === 'object') {
 		Object.entries(params).forEach(([key, value]) => {
 			if (value !== undefined && value !== null) {
-				url.searchParams.set(key, String(value));
+				if (Array.isArray(value)) {
+					value.forEach(v => url.searchParams.append(key, String(v)));
+				} else {
+					url.searchParams.set(key, String(value));
+				}
 			}
 		});
 	}
 
 	let res = await fetch(url.toString(), options);
 
+	// 401 Logic with proper error termination
 	if (res.status === 401 && refreshToken && onTokenRefresh) {
-		try {
-			const refreshUrl = new URL(`${config.SERVER_URL}/api/UserController/refresh`);
+		const tokenData = await refreshTokens(refreshToken);
 
-			const refreshRes = await fetch(refreshUrl.toString(), {
-				method: 'POST',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({refreshToken}),
-			});
-
-			if (refreshRes.ok) {
-				const tokenData = (await refreshRes.json()) as ROUTES['user']['UserController']['refresh']['response'];
-
-				onTokenRefresh(tokenData);
-				options.headers = {
-					...options.headers,
-					Authorization: `Bearer ${tokenData.accessToken}`,
-				};
-
-				res = await fetch(url.toString(), options);
-			} else {
-				authEvents.emit('FORCE_LOGOUT');
-			}
-		} catch {
+		if (tokenData) {
+			onTokenRefresh(tokenData);
+			// Re-fetch with new token
+			const retryHeaders = {...headers, Authorization: `Bearer ${tokenData.accessToken}`};
+			res = await fetch(url.toString(), {...options, headers: retryHeaders});
+		} else {
 			authEvents.emit('FORCE_LOGOUT');
+			throw new Error('Unauthorized');
 		}
 	} else if (res.status === 401) {
 		authEvents.emit('FORCE_LOGOUT');
+		throw new Error('Unauthorized');
 	}
 
 	if (!res.ok) {
@@ -78,8 +90,8 @@ export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUT
 		} catch {
 			serverMessage = `HTTP Error ${res.status}`;
 		}
-
 		throw new Error(serverMessage || `API fetch failed [${String(method)}]: ${res.status}`);
 	}
+
 	return res.json() as Promise<GetResponse<C, K, M>>;
 }

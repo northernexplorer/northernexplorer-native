@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'reflect-metadata';
+import path from 'node:path';
 import express, {Request, Response} from 'express';
 import cors from 'cors';
 import {MikroORM, RequestContext} from '@mikro-orm/core';
 import {EntityManager} from '@mikro-orm/postgresql';
+import {ROUTES} from '@northernexplorer/types';
+import {PgBoss} from 'pg-boss';
 import ormConfig from './mikro-orm.config';
 import {config} from './config';
-import {ROUTES} from '@northernexplorer/types';
-import path from 'node:path';
 import {repositories, Repositories} from './core/repositories';
 import {controllers} from './core/controllers';
 import {TokenService} from './user/services/TokenService';
-import {PgBoss} from 'pg-boss';
 import {heartbeats} from './core/heartbeats';
 import {getClientIp} from './core/getClientIp';
 
@@ -27,7 +27,7 @@ type ControllerConstructor<T> = new (repos: Repositories) => T;
 const tokenService = new TokenService();
 
 export interface AuthContext {
-	userId?: number;
+	userId?: string;
 	email?: string;
 	refreshToken?: string;
 	ipAddress: string;
@@ -129,6 +129,7 @@ async function bootstrap() {
 							// Cast workerInstance to 'any' to bypass compile-time signature collision.
 							// At runtime, the types are guaranteed to match (User to CleanUsers, Subscription to RenewSubscription).
 							await (workerInstance as any).execute(executionEm, managedItem);
+							await executionEm.flush();
 						} catch (entityError) {
 							console.error(`[Queue: ${queueName}] Error processing individual item ${(contextItem as any).id || ''}:`, entityError);
 						}

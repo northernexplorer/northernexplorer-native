@@ -24,8 +24,7 @@ export class CleanSessionsHeartbeat {
 	/**
 	 * Phase 2: Performs the actual business operation on a single session entity instance.
 	 */
-	public async execute(em: EntityManager, session: Session): Promise<void> {
+	public execute(em: EntityManager, session: Session) {
 		em.remove(session);
-		await em.flush();
 	}
 }

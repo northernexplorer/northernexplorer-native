@@ -1,16 +1,24 @@
 import {Entity, Property, PrimaryKey, ManyToOne} from '@mikro-orm/decorators/legacy';
+import {v4} from 'uuid';
 import {SubscriptionLevel} from './SubscriptionLevel';
+
+type SubscriptionInput = {
+	subscriptionLevel: SubscriptionLevel;
+	startDate?: Date;
+	endDate?: Date | null;
+	renewalDate?: Date;
+};
 
 @Entity()
 export class Subscription {
-	@PrimaryKey({type: 'integer'})
-	id!: number;
+	@PrimaryKey({type: 'uuid'})
+	id = v4();
 
 	@Property({type: 'integer', version: true})
 	version = 1;
 
 	@ManyToOne(() => SubscriptionLevel)
-	subscriptionLevel!: SubscriptionLevel;
+	subscriptionLevel: SubscriptionLevel;
 
 	@Property({type: 'datetime'})
 	startDate = new Date();
@@ -20,4 +28,11 @@ export class Subscription {
 
 	@Property({type: 'datetime'})
 	renewalDate = new Date();
+
+	constructor(data: SubscriptionInput) {
+		this.subscriptionLevel = data.subscriptionLevel;
+		if (data.startDate) this.startDate = data.startDate;
+		if (data.endDate !== undefined) this.endDate = data.endDate;
+		if (data.renewalDate) this.renewalDate = data.renewalDate;
+	}
 }

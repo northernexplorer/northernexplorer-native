@@ -1,12 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import {Text, Pressable, ScrollView} from 'react-native';
-import styles from '~/user/styles';
 import {Link, Redirect, useLocalSearchParams, router} from 'expo-router';
+import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
 import {FormField} from '~/layout/Layout/components/FormField';
+import {isValidEmail} from '~/user/isValidEmail';
 
 type RouteParams = {
 	username: string;
@@ -17,7 +18,7 @@ interface ProfileFormFields {
 	lastName: string;
 	username: string;
 	email: string;
-	userId: number;
+	userId: string;
 }
 
 type FormKeys = keyof ProfileFormFields;
@@ -41,7 +42,7 @@ export function EditProfile() {
 		lastName: '',
 		username: '',
 		email: '',
-		userId: 0,
+		userId: '',
 	});
 
 	useEffect(() => {
@@ -79,7 +80,7 @@ export function EditProfile() {
 		if (formData.username.trim().length < 6) {
 			newErrors.username = 'Username must be at least 6 characters';
 		}
-		if (!formData.email.trim().includes('@')) newErrors.email = 'Invalid email address';
+		if (!isValidEmail(formData.email)) newErrors.email = 'Invalid email address';
 
 		setErrors(newErrors);
 

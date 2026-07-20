@@ -1,16 +1,16 @@
 import React from 'react';
 import {View, Text, Image, Pressable} from 'react-native';
 import {Link} from 'expo-router';
-import {styles} from '~/layout/Home/styles';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {styles} from '~/layout/Home/styles';
 import {config} from '~/config';
 
 type Props = {
-	id: number;
+	id: string;
 	name: string;
 	description: string;
 	image: string;
-	country: string;
+	country?: string | null;
 	region?: string | null;
 };
 

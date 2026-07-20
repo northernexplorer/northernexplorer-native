@@ -1,9 +1,9 @@
-import {View, Text} from 'react-native';
+import {View, Text, Pressable} from 'react-native';
+import {formatMoney} from '@northernexplorer/tools';
+import {Link} from 'expo-router';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
-import React from 'react';
-import {formatMoney} from '@northernexplorer/tools';
 
 type Props = {
 	username: string;
@@ -28,6 +28,11 @@ export function Subscription({username}: Props) {
 			{data.subscription.endDate && <ProfileField label="End Date" value={new Date(data.subscription.endDate).toLocaleDateString()} />}
 			<ProfileField label="Cost" value={formatMoney(data.subscriptionLevel.cost)} />
 			<ProfileField label="Description" value={data.subscriptionLevel.description} />
+			<Link href={`/profile/${username}/change-subscription`} asChild>
+				<Pressable style={styles.button}>
+					<Text style={styles.buttonText}>Change Subscription</Text>
+				</Pressable>
+			</Link>
 		</View>
 	);
 }

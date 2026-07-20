@@ -1,5 +1,5 @@
-import {WeatherCache} from '../entities/WeatherCache';
 import {EntityRepository} from '@mikro-orm/postgresql';
+import {WeatherCache} from '../entities/WeatherCache';
 import {config} from '../../config';
 
 interface RawInternalWeatherRow {
@@ -25,9 +25,7 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
 
 		const cachedRecord = rawResults[0];
 		if (cachedRecord) {
-			const parsedData = typeof cachedRecord.weatherData === 'string' ? JSON.parse(cachedRecord.weatherData) : cachedRecord.weatherData;
-
-			return parsedData;
+			return typeof cachedRecord.weatherData === 'string' ? JSON.parse(cachedRecord.weatherData) : cachedRecord.weatherData;
 		}
 
 		const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${config.WEATHER_API_KEY}&q=${encodeURIComponent(`${lat},${lon}`)}&aqi=no`;
@@ -45,17 +43,16 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
 	}
 
 	async createCache(lat: number, lon: number, parsedJson: Record<string, unknown>) {
-		const freshCacheEntry = this.create({
+		const weatherCache = new WeatherCache({
 			lat,
 			lon,
 			weatherData: parsedJson,
 			updatedAt: new Date(),
 		});
-		this.em.persist(freshCacheEntry);
+		this.em.persist(weatherCache);
 
 		await this.nativeDelete({
 			updatedAt: {$lte: new Date(Date.now() - 1000 * 60 * 60 * 3)},
 		});
-		await this.em.flush();
 	}
 }

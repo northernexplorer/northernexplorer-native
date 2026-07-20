@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import {defineConfig} from '@mikro-orm/postgresql';
 import {ReflectMetadataProvider} from '@mikro-orm/decorators/legacy';
 import dotenv from 'dotenv';
-
 import {entities} from './core/entities';
 
 dotenv.config();

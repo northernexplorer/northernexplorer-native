@@ -1,10 +1,13 @@
-import {Repositories} from '../../core/repositories';
 import {Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Repositories} from '../../core/repositories';
+import {BaseController} from '../../core/BaseController';
 
 type Route<M extends keyof ROUTES['system']['StatusController']> = RouteDefinition<'system', 'StatusController'>[M];
 
-export class StatusController {
-	constructor(private repos: Repositories) {}
+export class StatusController extends BaseController {
+	constructor(repos: Repositories) {
+		super(repos);
+	}
 
 	public getOnlineStatus(): Response<Route<'getOnlineStatus'>> {
 		return true;

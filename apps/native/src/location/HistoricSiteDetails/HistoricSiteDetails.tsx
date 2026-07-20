@@ -1,15 +1,15 @@
 import React from 'react';
 import {View, Text, Image} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
-import {styles} from '~/location/HistoricSiteDetails/styles';
 import {getUrl} from '@northernexplorer/tools';
+import {styles} from '~/location/HistoricSiteDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
 
 export function HistoricSiteDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
-	const {data, loading, error} = useApiFetch('location', 'HistoricSiteController', 'getHistoricSiteById', {id: parseInt(id)});
+	const {data, loading, error} = useApiFetch('location', 'HistoricSiteController', 'getHistoricSiteById', {id});
 	if (loading) return <Spinner />;
 
 	if (error || !data) {
@@ -21,7 +21,7 @@ export function HistoricSiteDetails() {
 			<Image source={{uri: getUrl({path: data.image, serverUrl: config.SERVER_URL})}} style={styles.banner} />
 			<View style={styles.content}>
 				<Text style={styles.breadcrumbs}>
-					{data.country.name} › {data.region.name}
+					{data.country?.name} › {data.region?.name}
 				</Text>
 
 				<Text style={styles.title}>{data.name}</Text>

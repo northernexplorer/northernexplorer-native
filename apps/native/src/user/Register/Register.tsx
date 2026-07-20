@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import {View, Text, TextInput, Pressable, Switch, ScrollView} from 'react-native';
-import styles from '~/user/styles';
 import {Link, router} from 'expo-router';
+import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {FormField} from '~/layout/Layout/components/FormField';
+import {isValidEmail} from '~/user/isValidEmail';
 
 const initialFormData = {
 	firstName: '',
@@ -43,7 +44,7 @@ export function Register() {
 		if (formData.firstName.trim().length < 2) newErrors.firstName = 'First name is too short';
 		if (formData.lastName.trim().length < 2) newErrors.lastName = 'Last name is too short';
 		if (formData.username.trim().length < 6) newErrors.username = 'Username must be at least 6 characters';
-		if (!formData.email.includes('@')) newErrors.email = 'Invalid email address';
+		if (!isValidEmail(formData.email)) newErrors.email = 'Invalid email address';
 		if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
 
 		if (formData.password !== formData.confirmPassword) {

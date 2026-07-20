@@ -1,14 +1,17 @@
-import {Repositories} from '../../core/repositories';
 import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Repositories} from '../../core/repositories';
 import {AuthContext} from '../../index';
 import {PermissionService} from '../services/PermisionService';
+import {BaseController} from '../../core/BaseController';
 
 type Route<M extends keyof ROUTES['user']['SessionController']> = RouteDefinition<'user', 'SessionController'>[M];
 
-export class SessionController {
-	private permissionService = new PermissionService();
+export class SessionController extends BaseController {
+	constructor(repos: Repositories) {
+		super(repos);
+	}
 
-	constructor(private repos: Repositories) {}
+	private permissionService = new PermissionService();
 
 	async getSessions(params: Params<Route<'getSessions'>>, auth?: AuthContext): Promise<Response<Route<'getSessions'>>> {
 		const user = await this.repos.user.getByUsername(params.username);
@@ -46,7 +49,7 @@ export class SessionController {
 		});
 
 		await this.repos.session.delete(session);
-		await this.repos.session.getEntityManager().flush();
+		await this.flush();
 
 		return {success: true};
 	}

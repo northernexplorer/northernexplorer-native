@@ -1,26 +1,14 @@
-import {User} from '../entities/User';
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {EditProfileParams} from '@northernexplorer/types';
 import {hash, compare} from 'bcrypt';
+import {User} from '../entities/User';
 
 export class UserRepository extends EntityRepository<User> {
 	async findByIdentifier(identifier: string): Promise<User | null> {
 		return this.findOne({$or: [{email: identifier}, {username: identifier}]});
 	}
 
-	async updateProfile(id: number, data: User): Promise<void> {
-		const user = await this.findOneOrFail({id});
-		this.assign(user, data);
-		await this.em.flush();
-	}
-
-	async updatePassword(id: number, passwordHash: string): Promise<void> {
-		const user = await this.findOneOrFail({id});
-		user.passwordHash = passwordHash;
-		await this.em.flush();
-	}
-
-	async update(id: number, data: EditProfileParams): Promise<void> {
+	async update(id: string, data: EditProfileParams): Promise<void> {
 		const user = await this.findOneOrFail({id});
 		this.assign(user, {
 			firstName: data.firstName,
@@ -28,7 +16,6 @@ export class UserRepository extends EntityRepository<User> {
 			username: data.username,
 			email: data.email,
 		});
-		await this.em.flush();
 	}
 
 	async hashPassword(userPassword: string) {
@@ -38,7 +25,7 @@ export class UserRepository extends EntityRepository<User> {
 	async checkPassword(userInput: string, storedHash: string) {
 		return compare(userInput, storedHash);
 	}
-	async getById(id: number) {
+	async getById(id: string) {
 		return this.findOneOrFail({id});
 	}
 	async getByUsername(username: string) {
