@@ -1,55 +1,59 @@
 import React, {useEffect, useState} from 'react';
 import {Pressable, Text, ScrollView, StyleSheet, View, Platform} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
-import {SubscriptionLevelsResponse} from '@northernexplorer/types';
-import {formatMoney} from '@northernexplorer/tools';
+import Purchases, {PurchasesOffering, PurchasesPackage} from 'react-native-purchases';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
-import {useApiMutation} from '~/core/useApiMutation';
-import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
 
 type RouteParams = {
 	username: string;
 };
 
-function ChangeSubscription() {
+export function ChangeSubscription() {
 	const authentication = useAuthentication();
 	const {username} = useLocalSearchParams<RouteParams>();
-	const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<string>('');
-	const {data, loading} = useApiFetch('user', 'SubscriptionLevelController', 'getSubscriptionLevels', {});
-	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
+	const [offering, setOffering] = useState<PurchasesOffering | null>(null);
+	const [selectedPackage, setSelectedPackage] = useState<PurchasesPackage | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [isPurchasing, setIsPurchasing] = useState(false);
 
-	const {mutate, loading: mutationLoading} = useApiMutation('user', 'SubscriptionController', 'changeSubscription');
 	const isWeb = Platform.OS === 'web';
 
 	useEffect(() => {
-		if (subscriptionData?.subscriptionLevel.id) {
-			setSelectedSubscriptionId(subscriptionData.subscriptionLevel.id);
-		}
-	}, [subscriptionData]);
+		const fetchOfferings = async () => {
+			try {
+				const offerings = await Purchases.getOfferings();
+				if (offerings.current !== null) {
+					setOffering(offerings.current);
+				}
+			} catch (e) {
+				console.error('Error fetching offerings', e);
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchOfferings();
+	}, []);
 
 	if (!authentication) return <Redirect href="/profile/login" />;
-	if (loading || !data) return <Spinner />;
-	if (subscriptionLoading || !subscriptionData) return <Spinner />;
+	if (loading) return <Spinner />;
 
-	const validateForm = async () => {
-		await handleSubmit();
-	};
+	const handlePurchase = async () => {
+		if (!selectedPackage) return;
+		setIsPurchasing(true);
 
-	const handleSubmit = async () => {
-		const response = await mutate({username, subscriptionLevelId: selectedSubscriptionId});
-		if (response?.success) {
+		try {
+			const {customerInfo} = await Purchases.purchasePackage(selectedPackage);
+
 			router.replace(`/profile/${username}`);
+		} catch (e) {
+			console.error('Purchase failed', e);
+		} finally {
+			setIsPurchasing(false);
 		}
 	};
 
-	const displayProperties: (keyof SubscriptionLevelsResponse)[] = ['shortDescription', 'cost'];
-	const disabledChangeButton = subscriptionData.subscriptionLevel.id === selectedSubscriptionId;
-	const formatHeader = (key: string) => {
-		const result = key.replace(/([A-Z])/g, ' $1');
-		return result.charAt(0).toUpperCase() + result.slice(1);
-	};
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
 			{isWeb && (
@@ -57,57 +61,52 @@ function ChangeSubscription() {
 					<Text style={styles.noticeText}>Subscription management is only available within the Northern Explorer app.</Text>
 				</View>
 			)}
+
 			<View style={tableStyles.tableContainer}>
 				<View style={tableStyles.tableRow}>
 					<Text style={[tableStyles.cell, {flex: 2}]}></Text>
-					{data?.map(plan => (
-						<Text key={plan.id} style={tableStyles.headerCell}>
-							{plan.name}
+					{offering?.availablePackages.map(pkg => (
+						<Text key={pkg.identifier} style={tableStyles.headerCell}>
+							{pkg.product.title}
 						</Text>
 					))}
 				</View>
-				{displayProperties.map(prop => (
-					<View key={prop} style={tableStyles.tableRow}>
-						<Text style={[tableStyles.cell, {flex: 2}]}>{formatHeader(prop)}</Text>
-						{data?.map(plan => {
-							const value = prop === 'cost' ? formatMoney(plan[prop] as number) : String(plan[prop]);
 
-							return (
-								<Text key={`${plan.id}-${prop}`} style={tableStyles.cell}>
-									{value}
-								</Text>
-							);
-						})}
-					</View>
-				))}
+				<View style={tableStyles.tableRow}>
+					<Text style={[tableStyles.cell, {flex: 2}]}>Cost</Text>
+					{offering?.availablePackages.map(pkg => (
+						<Text key={pkg.identifier} style={tableStyles.cell}>
+							{pkg.product.priceString}
+						</Text>
+					))}
+				</View>
+
 				<View style={tableStyles.tableRow}>
 					<Text style={[tableStyles.cell, {flex: 2, fontWeight: 'bold'}]}>Select</Text>
-					{data?.map(plan => (
-						<Pressable key={`select-${plan.id}`} style={tableStyles.cell} onPress={() => setSelectedSubscriptionId(plan.id)}>
-							<View style={[tableStyles.radioCircle, selectedSubscriptionId === plan.id && tableStyles.radioSelected]} />
+					{offering?.availablePackages.map(pkg => (
+						<Pressable key={pkg.identifier} style={tableStyles.cell} onPress={() => setSelectedPackage(pkg)}>
+							<View style={[tableStyles.radioCircle, selectedPackage?.identifier === pkg.identifier && tableStyles.radioSelected]} />
 						</Pressable>
 					))}
 				</View>
 			</View>
+
 			<Pressable
-				style={[styles.button, (mutationLoading || disabledChangeButton || isWeb) && {opacity: 0.6}]}
-				onPress={validateForm}
-				disabled={mutationLoading || disabledChangeButton || isWeb}
+				style={[styles.button, (isPurchasing || !selectedPackage || isWeb) && {opacity: 0.6}]}
+				onPress={handlePurchase}
+				disabled={isPurchasing || !selectedPackage || isWeb}
 			>
-				<Text style={styles.buttonText}>{mutationLoading ? 'Updating Subscription...' : 'Change Subscription'}</Text>
+				<Text style={styles.buttonText}>{isPurchasing ? 'Processing...' : 'Change Subscription'}</Text>
 			</Pressable>
 
 			<Link href={`/profile/${username}`} asChild>
-				<Pressable style={styles.secondaryButton} disabled={mutationLoading}>
+				<Pressable style={styles.secondaryButton} disabled={isPurchasing}>
 					<Text style={styles.secondaryButtonText}>Cancel</Text>
 				</Pressable>
 			</Link>
 		</ScrollView>
 	);
 }
-
-export default ChangeSubscription;
-
 const tableStyles = StyleSheet.create({
 	tableContainer: {
 		padding: 10,
