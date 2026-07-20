@@ -1719,6 +1719,23 @@
     redux-thunk "^3.1.0"
     reselect "^5.1.0"
 
+"@revenuecat/purchases-js-hybrid-mappings@18.21.0":
+  version "18.21.0"
+  resolved "https://registry.yarnpkg.com/@revenuecat/purchases-js-hybrid-mappings/-/purchases-js-hybrid-mappings-18.21.0.tgz#e23248e387fdd758eba8ab02bb0947cce7b46729"
+  integrity sha512-mj4JgMc1TodduDpGWPgwX8qj3Tf81pZwUznSCac9BTUTpFK5DIzYzmo6T5pyX2mweduZhW8nKjesUmYnhz9uGA==
+  dependencies:
+    "@revenuecat/purchases-js" "1.47.1"
+
+"@revenuecat/purchases-js@1.47.1":
+  version "1.47.1"
+  resolved "https://registry.yarnpkg.com/@revenuecat/purchases-js/-/purchases-js-1.47.1.tgz#dfef21d5f79345a937740afec30c03855344bfc4"
+  integrity sha512-ctc7H6GB+PvJnp4p3cn/CEDQu93aSvAQrZdgXA/bq88DSWBmWU0sjgJ+EUrIkCqidj+jPzKtE9L1BzordTTEVw==
+
+"@revenuecat/purchases-typescript-internal@18.21.0":
+  version "18.21.0"
+  resolved "https://registry.yarnpkg.com/@revenuecat/purchases-typescript-internal/-/purchases-typescript-internal-18.21.0.tgz#6c411fcafb6ae91b1ebd6dc024ff94711b2e996d"
+  integrity sha512-cjU1Nw8IkX+ZiXSiJ89CXuy3XWEDspPWFqFSscfrqdDwmkfMdX1zIzrvoMYW5dTdP00jikTL3Vu1e4OKfO9bFA==
+
 "@rtsao/scc@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@rtsao/scc/-/scc-1.1.0.tgz#927dd2fae9bc3361403ac2c7a00c32ddce9ad7e8"
@@ -6327,6 +6344,14 @@ react-native-markdown-display@^7.0.2:
     markdown-it "^10.0.0"
     prop-types "^15.7.2"
     react-native-fit-image "^1.5.5"
+
+react-native-purchases@^10.4.3:
+  version "10.4.3"
+  resolved "https://registry.yarnpkg.com/react-native-purchases/-/react-native-purchases-10.4.3.tgz#8adfb82c9866b9bb223721802474c98ab1812166"
+  integrity sha512-pHcht1YwcCxlgfUx0bZAJdqjlvKCx+yez5YU1x2MqNn+b+Z2gdThu65Vrc7c9gl+ZaB49te4qF9ii6V4NSNsYw==
+  dependencies:
+    "@revenuecat/purchases-js-hybrid-mappings" "18.21.0"
+    "@revenuecat/purchases-typescript-internal" "18.21.0"
 
 react-native-safe-area-context@~5.7.0:
   version "5.7.0"
