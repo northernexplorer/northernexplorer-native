@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Pressable, Text, ScrollView, StyleSheet, View, Platform} from 'react-native';
+import {Pressable, Text, ScrollView, StyleSheet, View} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import Purchases, {PurchasesOffering, PurchasesPackage} from 'react-native-purchases';
 import styles from '~/user/styles';
@@ -13,22 +13,19 @@ type RouteParams = {
 export function ChangeSubscription() {
 	const authentication = useAuthentication();
 	const {username} = useLocalSearchParams<RouteParams>();
+
 	const [offering, setOffering] = useState<PurchasesOffering | null>(null);
 	const [selectedPackage, setSelectedPackage] = useState<PurchasesPackage | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [isPurchasing, setIsPurchasing] = useState(false);
 
-	const isWeb = Platform.OS === 'web';
-
 	useEffect(() => {
 		const fetchOfferings = async () => {
 			try {
 				const offerings = await Purchases.getOfferings();
-				if (offerings.current !== null) {
-					setOffering(offerings.current);
-				}
+				setOffering(offerings.current);
 			} catch (e) {
-				console.error('Error fetching offerings', e);
+				console.error('Error fetching RevenueCat offerings', e);
 			} finally {
 				setLoading(false);
 			}
@@ -39,11 +36,12 @@ export function ChangeSubscription() {
 	if (!authentication) return <Redirect href="/profile/login" />;
 	if (loading) return <Spinner />;
 
-	const handlePurchase = () => {
+	const handleSubmit = async () => {
 		if (!selectedPackage) return;
 		setIsPurchasing(true);
-
 		try {
+			// RevenueCat handles the store transaction natively
+			await Purchases.purchasePackage(selectedPackage);
 			router.replace(`/profile/${username}`);
 		} catch (e) {
 			console.error('Purchase failed', e);
@@ -52,36 +50,36 @@ export function ChangeSubscription() {
 		}
 	};
 
+	const packages = offering?.availablePackages || [];
+	const disabledChangeButton = !selectedPackage;
+
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-			{isWeb && (
-				<View style={styles.noticeBackground}>
-					<Text style={styles.noticeText}>Subscription management is only available within the Northern Explorer app.</Text>
-				</View>
-			)}
-
 			<View style={tableStyles.tableContainer}>
+				{/* Header Row */}
 				<View style={tableStyles.tableRow}>
 					<Text style={[tableStyles.cell, {flex: 2}]}></Text>
-					{offering?.availablePackages.map(pkg => (
+					{packages.map(pkg => (
 						<Text key={pkg.identifier} style={tableStyles.headerCell}>
 							{pkg.product.title}
 						</Text>
 					))}
 				</View>
 
+				{/* Cost Row */}
 				<View style={tableStyles.tableRow}>
 					<Text style={[tableStyles.cell, {flex: 2}]}>Cost</Text>
-					{offering?.availablePackages.map(pkg => (
+					{packages.map(pkg => (
 						<Text key={pkg.identifier} style={tableStyles.cell}>
 							{pkg.product.priceString}
 						</Text>
 					))}
 				</View>
 
+				{/* Selection Row */}
 				<View style={tableStyles.tableRow}>
 					<Text style={[tableStyles.cell, {flex: 2, fontWeight: 'bold'}]}>Select</Text>
-					{offering?.availablePackages.map(pkg => (
+					{packages.map(pkg => (
 						<Pressable key={pkg.identifier} style={tableStyles.cell} onPress={() => setSelectedPackage(pkg)}>
 							<View style={[tableStyles.radioCircle, selectedPackage?.identifier === pkg.identifier && tableStyles.radioSelected]} />
 						</Pressable>
@@ -90,9 +88,9 @@ export function ChangeSubscription() {
 			</View>
 
 			<Pressable
-				style={[styles.button, (isPurchasing || !selectedPackage || isWeb) && {opacity: 0.6}]}
-				onPress={handlePurchase}
-				disabled={isPurchasing || !selectedPackage || isWeb}
+				style={[styles.button, (isPurchasing || disabledChangeButton) && {opacity: 0.6}]}
+				onPress={handleSubmit}
+				disabled={isPurchasing || disabledChangeButton}
 			>
 				<Text style={styles.buttonText}>{isPurchasing ? 'Processing...' : 'Change Subscription'}</Text>
 			</Pressable>
@@ -105,6 +103,7 @@ export function ChangeSubscription() {
 		</ScrollView>
 	);
 }
+
 const tableStyles = StyleSheet.create({
 	tableContainer: {
 		padding: 10,

@@ -6345,13 +6345,6 @@ react-native-markdown-display@^7.0.2:
     prop-types "^15.7.2"
     react-native-fit-image "^1.5.5"
 
-react-native-purchases-ui@^10.4.3:
-  version "10.4.3"
-  resolved "https://registry.yarnpkg.com/react-native-purchases-ui/-/react-native-purchases-ui-10.4.3.tgz#c322151e17412ecfc9acb476a9e229e1db0d8dbe"
-  integrity sha512-o/QRj/ZaLtqRZBJVi0R7L17CfVltex3K9jn8f5Xf0P8Rin3n7LRjJ803XuakFswUB4X4Le7Qi9we4KeucV1+XQ==
-  dependencies:
-    "@revenuecat/purchases-typescript-internal" "18.21.0"
-
 react-native-purchases@^10.4.3:
   version "10.4.3"
   resolved "https://registry.yarnpkg.com/react-native-purchases/-/react-native-purchases-10.4.3.tgz#8adfb82c9866b9bb223721802474c98ab1812166"
