@@ -84,7 +84,7 @@ function ChangeSubscription() {
 				</View>
 			</View>
 			<Pressable
-				style={[styles.button, (mutationLoading || disabledChangeButton || true) && {opacity: 0.6}]}
+				style={[styles.button, (mutationLoading || disabledChangeButton) && {opacity: 0.6}]}
 				onPress={validateForm}
 				disabled={mutationLoading || disabledChangeButton}
 			>
