@@ -14,6 +14,20 @@ const styles = StyleSheet.create({
 		paddingVertical: 14,
 		alignItems: 'center',
 	},
+	noticeBackground: {
+		backgroundColor: '#fffaf3',
+		borderWidth: 1,
+		borderColor: '#573a08',
+		borderRadius: 8,
+		paddingVertical: 14,
+		alignItems: 'center',
+	},
+	noticeText: {
+		fontSize: 15,
+		textAlign: 'center',
+		lineHeight: 22,
+		color: '#573a08',
+	},
 	label: {
 		fontSize: 15,
 		fontWeight: '600',

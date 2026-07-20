@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Pressable, Text, ScrollView, StyleSheet, View} from 'react-native';
+import {Pressable, Text, ScrollView, StyleSheet, View, Platform} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import {SubscriptionLevelsResponse} from '@northernexplorer/types';
 import {formatMoney} from '@northernexplorer/tools';
@@ -21,6 +21,7 @@ function ChangeSubscription() {
 	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
 
 	const {mutate, loading: mutationLoading} = useApiMutation('user', 'SubscriptionController', 'changeSubscription');
+	const isWeb = Platform.OS === 'web';
 
 	useEffect(() => {
 		if (subscriptionData?.subscriptionLevel.id) {
@@ -51,6 +52,11 @@ function ChangeSubscription() {
 	};
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+			{isWeb && (
+				<View style={styles.noticeBackground}>
+					<Text style={styles.noticeText}>Subscription management is only available within the Northern Explorer app.</Text>
+				</View>
+			)}
 			<View style={tableStyles.tableContainer}>
 				<View style={tableStyles.tableRow}>
 					<Text style={[tableStyles.cell, {flex: 2}]}></Text>
@@ -84,9 +90,9 @@ function ChangeSubscription() {
 				</View>
 			</View>
 			<Pressable
-				style={[styles.button, (mutationLoading || disabledChangeButton) && {opacity: 0.6}]}
+				style={[styles.button, (mutationLoading || disabledChangeButton || isWeb) && {opacity: 0.6}]}
 				onPress={validateForm}
-				disabled={mutationLoading || disabledChangeButton}
+				disabled={mutationLoading || disabledChangeButton || isWeb}
 			>
 				<Text style={styles.buttonText}>{mutationLoading ? 'Updating Subscription...' : 'Change Subscription'}</Text>
 			</Pressable>
