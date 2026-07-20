@@ -39,13 +39,11 @@ export function ChangeSubscription() {
 	if (!authentication) return <Redirect href="/profile/login" />;
 	if (loading) return <Spinner />;
 
-	const handlePurchase = async () => {
+	const handlePurchase = () => {
 		if (!selectedPackage) return;
 		setIsPurchasing(true);
 
 		try {
-			const {customerInfo} = await Purchases.purchasePackage(selectedPackage);
-
 			router.replace(`/profile/${username}`);
 		} catch (e) {
 			console.error('Purchase failed', e);
