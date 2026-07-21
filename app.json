@@ -1,0 +1,8 @@
+{
+  "android": {
+    "package": "com.shaynethiessen.northernexplorermonorepo"
+  },
+  "ios": {
+    "bundleIdentifier": "com.shaynethiessen.northernexplorermonorepo"
+  }
+}
