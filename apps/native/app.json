@@ -7,6 +7,9 @@
 		"orientation": "portrait",
 		"icon": "./assets/icon.png",
 		"userInterfaceStyle": "light",
+		"splash": {
+			"backgroundColor": "#1a1a1a"
+		},
 		"ios": {
 			"supportsTablet": true,
 			"bundleIdentifier": "org.northernexplorer.app"
@@ -17,14 +20,15 @@
 		},
 		"android": {
 			"adaptiveIcon": {
-				"backgroundColor": "#E6F4FE",
+				"backgroundColor": "#1a1a1a",
 				"foregroundImage": "./assets/android-icon-foreground.png",
 				"backgroundImage": "./assets/android-icon-background.png",
 				"monochromeImage": "./assets/android-icon-monochrome.png"
 			},
 			"predictiveBackGestureEnabled": false,
 			"package": "org.northernexplorer.app",
-			"permissions": ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"]
+			"permissions": ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"],
+			"versionCode": 4
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"
