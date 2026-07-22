@@ -28,7 +28,6 @@ export function ProfileDetails({username}: Props) {
 			<ProfileField label="Email Address" value={data.email} />
 			<ProfileField label="Status" value={data.isActive ? 'Active' : 'Inactive'} />
 			<ProfileField label="Registed On" value={new Date(data.createdAt).toLocaleDateString()} />
-			<ProfileField label="Last Login" value={data.lastLoginAt ? new Date(data.lastLoginAt).toLocaleString() : 'Never'} />
 			<Link href={`/profile/${username}/edit-profile`} asChild>
 				<Pressable style={styles.button}>
 					<Text style={styles.buttonText}>Edit Profile</Text>
