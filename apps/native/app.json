@@ -7,12 +7,12 @@
 		"orientation": "portrait",
 		"icon": "./assets/icon.png",
 		"userInterfaceStyle": "light",
-		"splash": {
-			"backgroundColor": "#1a1a1a"
-		},
 		"ios": {
 			"supportsTablet": true,
-			"bundleIdentifier": "org.northernexplorer.app"
+			"bundleIdentifier": "org.northernexplorer.app",
+			"splash": {
+				"backgroundColor": "#1a1a1a"
+			}
 		},
 		"packagerOpts": {
 			"config": "metro.config.js",
@@ -28,7 +28,10 @@
 			"predictiveBackGestureEnabled": false,
 			"package": "org.northernexplorer.app",
 			"permissions": ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"],
-			"versionCode": 4
+			"versionCode": 4,
+			"splash": {
+				"backgroundColor": "#1a1a1a"
+			}
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"
