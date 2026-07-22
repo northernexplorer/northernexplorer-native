@@ -1371,12 +1371,12 @@
   resolved "https://registry.yarnpkg.com/@mikro-orm/decorators/-/decorators-7.1.6.tgz#0f21ea67f1752f1dc087d32d4607d0de9758c468"
   integrity sha512-6pnkyYg6keb25NAdAa/adkOIqDEfI2YkzfugqA62b1QVbSVlMxqyS6VW4BAHf/9XtJMczJBRKVRuPBsXnrQZRA==
 
-"@mikro-orm/postgresql@^7.1.6":
-  version "7.1.6"
-  resolved "https://registry.yarnpkg.com/@mikro-orm/postgresql/-/postgresql-7.1.6.tgz#7d013298a91e661e91472804604861b98b228806"
-  integrity sha512-9JUN0PfNXoZIaZTVlBgMmn1ekA8qPDJE2/qTWNqLZZsEk7a8KnrvLvtYKHIUfpabLjoCaJOxhyhg8UszWMzzCQ==
+"@mikro-orm/postgresql@^7.1.7":
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/postgresql/-/postgresql-7.1.7.tgz#2acfbecb5c0003903e236a42b4d7bd5d750d96e6"
+  integrity sha512-Pfl2yxs5mtibLPAk8/83kup+M48p3kv7xMgzTgM7OBrz49DqnNe7pKx8Npw3buVxLNM5Tbn+Ue9yo1ls5rFmwA==
   dependencies:
-    "@mikro-orm/sql" "7.1.6"
+    "@mikro-orm/sql" "7.1.7"
     kysely "0.29.3"
     pg "8.22.0"
     pg-cursor "2.21.0"
@@ -1384,10 +1384,10 @@
     postgres-date "2.1.0"
     postgres-interval "4.1.0"
 
-"@mikro-orm/sql@7.1.6":
-  version "7.1.6"
-  resolved "https://registry.yarnpkg.com/@mikro-orm/sql/-/sql-7.1.6.tgz#72063fb3f405f6df386e896498839eada0fed2bc"
-  integrity sha512-GPyOWd7mX0eiePvzFAW9xneulu/YA/Aa/i6E3vqoeulyG0+86N1Wh0Ow7GIu4ZAS5lm4+tFR/vOCAux/Bx5vBg==
+"@mikro-orm/sql@7.1.7":
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/sql/-/sql-7.1.7.tgz#b661a591b689eee13e85bf97b1f9826016dd9f63"
+  integrity sha512-U2zbdzTyKYHrtbLFi2KIrmUMLMC86iSuCJngacYkjTdX4J2QSWn3SKVZ/eKk2936hMhuvoAXIahcaBDrMEeAQg==
   dependencies:
     kysely "0.29.3"
 

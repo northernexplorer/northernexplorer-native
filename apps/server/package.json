@@ -14,7 +14,7 @@
 	"dependencies": {
 		"@mikro-orm/core": "^7.1.6",
 		"@mikro-orm/decorators": "^7.1.6",
-		"@mikro-orm/postgresql": "^7.1.6",
+		"@mikro-orm/postgresql": "^7.1.7",
 		"@northernexplorer/types": "*",
 		"bcrypt": "^6.0.0",
 		"cors": "^2.8.5",
