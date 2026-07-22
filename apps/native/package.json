@@ -10,11 +10,7 @@
 		"clean": "rm -rf dist node_modules/.cache .expo ios android",
 		"ios": "expo run:ios",
 		"start": "expo start",
-<<<<<<< Updated upstream
 		"test:deps": "depcheck --specials=typescript --ignores=\"~\"",
-=======
-		"test:deps": "depcheck --specials=typescript --ignores=\"~,expo-splash-screen\" ",
->>>>>>> Stashed changes
 		"web": "expo start --web"
 	},
 	"dependencies": {
