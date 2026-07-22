@@ -27,7 +27,8 @@
 		"start:migrate": "yarn workspace northernexplorer-migrate start",
 		"start:server": "yarn workspace northernexplorer-server dev",
 		"start:web": "yarn workspace northernexplorer-native web",
-		"test:deps": "depcheck --specials=typescript --ignores=\"sort-package-json,eslint-plugin-prettier,prettier,depcheck,@types/node,tsx,eslint-plugin-jsonc,@types/bcrypt,@types/jsonwebtoken\" && yarn workspaces run test:deps",
+		"test:deps": "depcheck --specials=typescript --ignores=\"sort-package-json,eslint-plugin-prettier,prettier,depcheck,@types/node,tsx,eslint-plugin-jsonc,@types/bcrypt,@types/jsonwebtoken,expo-doctor\" && yarn workspaces run test:deps",
+		"test:expo": "yarn workspace northernexplorer-native run expo-doctor",
 		"test:format": "prettier . --check",
 		"test:lint": "eslint .",
 		"test:types": "tsc --build --force"
@@ -45,6 +46,7 @@
 		"eslint-plugin-jsonc": "^3.2.0",
 		"eslint-plugin-prettier": "^5.5.6",
 		"eslint-plugin-react": "^7.37.5",
+		"expo-doctor": "^1.20.1",
 		"jsonc-eslint-parser": "^3.1.0",
 		"prettier": "^3.8.4",
 		"sort-package-json": "^4.0.0",
