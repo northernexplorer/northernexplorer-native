@@ -71,12 +71,15 @@ type GetByUsernameResponse = {
 	username: string;
 	email: string;
 	createdAt: Date;
-	lastLoginAt?: Date | null;
 	isActive: boolean;
 	// Note: We intentionally exclude passwordHash here for API security
 };
 type RefreshParams = {
 	refreshToken: string;
+};
+
+type DeleteUserParams = {
+	username: string;
 };
 
 export const UserController = {
@@ -118,6 +121,10 @@ export const UserController = {
 	},
 	resetPassword: {
 		params: {} as ResetPasswordParams,
+		response: {} as GenericResponseType,
+	},
+	deleteUser: {
+		params: {} as DeleteUserParams,
 		response: {} as GenericResponseType,
 	},
 };

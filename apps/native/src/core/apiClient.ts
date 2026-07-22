@@ -75,11 +75,9 @@ export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUT
 			res = await fetch(url.toString(), {...options, headers: retryHeaders});
 		} else {
 			authEvents.emit('FORCE_LOGOUT');
-			throw new Error('Unauthorized');
 		}
 	} else if (res.status === 401) {
 		authEvents.emit('FORCE_LOGOUT');
-		throw new Error('Unauthorized');
 	}
 
 	if (!res.ok) {

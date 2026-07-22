@@ -18,7 +18,9 @@ import {getClientIp} from './core/getClientIp';
 const app = express();
 const PORT = config.PORT;
 
-app.use(cors({origin: '*'}));
+const corsOrigin = config.CORS.split(',').map(origin => origin.toLowerCase().trim());
+
+app.use(cors({origin: corsOrigin}));
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), 'public')));
 

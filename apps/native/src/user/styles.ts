@@ -8,11 +8,19 @@ const styles = StyleSheet.create({
 		padding: 24,
 		gap: 20,
 	},
-	button: {
-		backgroundColor: '#0088cc',
+	noticeBackground: {
+		backgroundColor: '#fffaf3',
+		borderWidth: 1,
+		borderColor: '#573a08',
 		borderRadius: 8,
 		paddingVertical: 14,
 		alignItems: 'center',
+	},
+	noticeText: {
+		fontSize: 15,
+		textAlign: 'center',
+		lineHeight: 22,
+		color: '#573a08',
 	},
 	label: {
 		fontSize: 15,
@@ -26,6 +34,12 @@ const styles = StyleSheet.create({
 	},
 	field: {
 		gap: 6,
+	},
+	button: {
+		backgroundColor: '#0088cc',
+		borderRadius: 8,
+		paddingVertical: 14,
+		alignItems: 'center',
 	},
 	buttonText: {
 		color: '#fff',
@@ -41,6 +55,17 @@ const styles = StyleSheet.create({
 	},
 	secondaryButtonText: {
 		color: '#0088cc',
+		fontSize: 16,
+		fontWeight: '600',
+	},
+	negativeButton: {
+		backgroundColor: '#cc0000',
+		borderRadius: 8,
+		paddingVertical: 14,
+		alignItems: 'center',
+	},
+	negativeButtonText: {
+		color: '#fff',
 		fontSize: 16,
 		fontWeight: '600',
 	},

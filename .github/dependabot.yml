@@ -4,6 +4,17 @@ updates:
       directory: '/'
       schedule:
           interval: 'weekly'
+      groups:
+          expo-ecosystem:
+              patterns:
+                  - 'expo*'
+                  - '@expo/*'
+                  - 'react-native*'
+                  - 'react'
+          mikro-orm-ecosystem:
+              patterns:
+                  - '*mikro-orm*'
+                  - '@mikro-orm/*'
       ignore:
           - dependency-name: '*'
             update-types:
@@ -14,6 +25,11 @@ updates:
       directory: '/app'
       schedule:
           interval: 'weekly'
+      groups:
+          mikro-orm-ecosystem:
+              patterns:
+                  - '*mikro-orm*'
+                  - '@mikro-orm/*'
       ignore:
           - dependency-name: '*'
             update-types:
@@ -24,6 +40,11 @@ updates:
       directory: '/packages'
       schedule:
           interval: 'weekly'
+      groups:
+          mikro-orm-ecosystem:
+              patterns:
+                  - '*mikro-orm*'
+                  - '@mikro-orm/*'
       ignore:
           - dependency-name: '*'
             update-types:

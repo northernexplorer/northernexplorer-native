@@ -13,4 +13,6 @@ function getServerUrl(): string {
 
 export const config = {
 	SERVER_URL: getServerUrl(),
+	EXPO_PUBLIC_REVENUE_IOS_KEY: process.env.EXPO_PUBLIC_REVENUE_IOS_KEY,
+	EXPO_PUBLIC_REVENUE_ANDROID_KEY: process.env.EXPO_PUBLIC_REVENUE_ANDROID_KEY,
 };
