@@ -3038,10 +3038,10 @@ cosmiconfig@^7.1.0:
     path-type "^4.0.0"
     yaml "^1.10.0"
 
-cron-parser@^5.6.1:
-  version "5.6.1"
-  resolved "https://registry.npmjs.org/cron-parser/-/cron-parser-5.6.1.tgz"
-  integrity sha512-QBm4o1PwZiuY7KFbVvW7FLC8bozy7YWzv+Fz6KRS7sQghzcbDZCGxr/Bc5b6TQreAoSwuWVP491dIcK0THCX6A==
+cron-parser@^5.6.2:
+  version "5.6.2"
+  resolved "https://registry.yarnpkg.com/cron-parser/-/cron-parser-5.6.2.tgz#8d1815ff06ebb3605c5c3e6cd62cbb18f955101c"
+  integrity sha512-yJ/G1LVir6CnlkLI40CsampPLKl1SprGGlUagWtGJxewytRVYezv5xVyzzbT+Pvzx+VIRvZVF7/a0eEMTxdnTA==
   dependencies:
     luxon "^3.7.2"
 
@@ -5960,12 +5960,12 @@ pbf@^5.1.0:
   dependencies:
     resolve-protobuf-schema "^2.1.0"
 
-pg-boss@^12.25.1:
-  version "12.26.0"
-  resolved "https://registry.npmjs.org/pg-boss/-/pg-boss-12.26.0.tgz"
-  integrity sha512-qMLyokiG2/Ey8U3sptl0We4nRGr1iveHL/lQ7g6n7cI/ubp9HVJZJnfPf6B9jzAbpd55uSdltKL/DMkyBC0ynw==
+pg-boss@^12.26.2:
+  version "12.26.2"
+  resolved "https://registry.yarnpkg.com/pg-boss/-/pg-boss-12.26.2.tgz#900a0c01b6d4519b874c2ee2de5bc6d3ab081b80"
+  integrity sha512-ErbfHaZIzpXNnzmm17Qlu1Eyh1fpbMI7zK5YTFcQVJfAVVKRrjdmiEGFXWyVETRntcBvzNiUzlvu3GFBvVuYIQ==
   dependencies:
-    cron-parser "^5.6.1"
+    cron-parser "^5.6.2"
     pg "^8.22.0"
     serialize-error "^13.0.1"
 
