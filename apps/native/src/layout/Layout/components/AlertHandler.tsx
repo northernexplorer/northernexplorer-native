@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, Modal} from 'react-native';
 import {router} from 'expo-router';
 import {useDispatch} from 'react-redux';
@@ -25,7 +25,6 @@ const ALERT_CONFIG = {
 } as const;
 
 export function AlertHandler({children}: {children: React.ReactNode}) {
-	// Retain the last active alert content so it doesn't default back to 'error' during exit
 	const [activeAlert, setActiveAlert] = useState<AlertState>({message: null, type: 'error'});
 	const [isVisible, setIsVisible] = useState(false);
 	const dispatch = useDispatch();
@@ -33,11 +32,9 @@ export function AlertHandler({children}: {children: React.ReactNode}) {
 	useEffect(() => {
 		return alertStore.subscribe(newState => {
 			if (newState.message) {
-				// Instantly update content and open modal
 				setActiveAlert(newState);
 				setIsVisible(true);
 			} else {
-				// Close modal first; do NOT reset activeAlert content yet
 				setIsVisible(false);
 			}
 		});
