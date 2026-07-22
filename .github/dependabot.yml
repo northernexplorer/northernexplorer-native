@@ -1,38 +1,38 @@
 version: 2
 updates:
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'weekly'
-    groups:
-      expo-ecosystem:
-        patterns:
-          - 'expo*'
-          - '@expo/*'
-          - 'react-native*'
-          - 'react'
-    ignore:
-      - dependency-name: '*'
-        update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-minor'
+    - package-ecosystem: 'npm'
+      directory: '/'
+      schedule:
+          interval: 'weekly'
+      groups:
+          expo-ecosystem:
+              patterns:
+                  - 'expo*'
+                  - '@expo/*'
+                  - 'react-native*'
+                  - 'react'
+      ignore:
+          - dependency-name: '*'
+            update-types:
+                - 'version-update:semver-major'
+                - 'version-update:semver-minor'
 
-  - package-ecosystem: 'npm'
-    directory: '/app'
-    schedule:
-      interval: 'weekly'
-    ignore:
-      - dependency-name: '*'
-        update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-minor'
+    - package-ecosystem: 'npm'
+      directory: '/app'
+      schedule:
+          interval: 'weekly'
+      ignore:
+          - dependency-name: '*'
+            update-types:
+                - 'version-update:semver-major'
+                - 'version-update:semver-minor'
 
-  - package-ecosystem: 'npm'
-    directory: '/packages'
-    schedule:
-      interval: 'weekly'
-    ignore:
-      - dependency-name: '*'
-        update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-minor'
+    - package-ecosystem: 'npm'
+      directory: '/packages'
+      schedule:
+          interval: 'weekly'
+      ignore:
+          - dependency-name: '*'
+            update-types:
+                - 'version-update:semver-major'
+                - 'version-update:semver-minor'
