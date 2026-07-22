@@ -29,16 +29,16 @@ jobs:
             - run: yarn test:types
 
     expo:
-       name: Expo Doctor
-       runs-on: ubuntu-latest
-       steps:
-           - uses: actions/checkout@v5
-           - uses: actions/setup-node@v5
-             with:
-                 node-version: 24
-                 cache: yarn
-           - run: yarn install
-           - run: yarn test:expo
+        name: Expo Doctor
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 24
+                  cache: yarn
+            - run: yarn install
+            - run: yarn test:expo
 
     lint:
         name: Linting
