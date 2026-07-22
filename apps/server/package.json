@@ -5,7 +5,7 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"build": "tsc",
-		"clean": "rm -rf dist",
+		"clean": "rm -rf dist node_modules/.cache",
 		"dev": "tsx watch src/index.ts",
 		"schema": "yarn run mikro-orm schema:update -d",
 		"start": "node dist/index.js",
