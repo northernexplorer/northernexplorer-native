@@ -71,7 +71,6 @@ type GetByUsernameResponse = {
 	username: string;
 	email: string;
 	createdAt: Date;
-	lastLoginAt?: Date | null;
 	isActive: boolean;
 	// Note: We intentionally exclude passwordHash here for API security
 };
