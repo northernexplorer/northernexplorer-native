@@ -1366,10 +1366,10 @@
   resolved "https://registry.yarnpkg.com/@mikro-orm/core/-/core-7.1.6.tgz#227151d766063e70ec9d7da978704318f58a700c"
   integrity sha512-p9mMyGYS+xE0dB29fdtxTj50wuYzrevtCensCsZ6+StvwoTSA6B0ELEm/A0Cch7FfCLYORbND7ui9pW6ugE2tQ==
 
-"@mikro-orm/decorators@^7.1.6":
-  version "7.1.6"
-  resolved "https://registry.yarnpkg.com/@mikro-orm/decorators/-/decorators-7.1.6.tgz#0f21ea67f1752f1dc087d32d4607d0de9758c468"
-  integrity sha512-6pnkyYg6keb25NAdAa/adkOIqDEfI2YkzfugqA62b1QVbSVlMxqyS6VW4BAHf/9XtJMczJBRKVRuPBsXnrQZRA==
+"@mikro-orm/decorators@^7.1.7":
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/decorators/-/decorators-7.1.7.tgz#9b891b8f5c698ddaa113352ba903dd987d187268"
+  integrity sha512-qKfA6hZUMWyceNjJfqRD0SkCV7sRjpyhaHSDx7J4DLT+kME9AFCKVYPku/nIF0C2lAqHKONJbNfP6xCdXle1jA==
 
 "@mikro-orm/postgresql@^7.1.6":
   version "7.1.6"
