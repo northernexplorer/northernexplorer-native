@@ -27,7 +27,7 @@ jobs:
                   cache: yarn
             - run: yarn install
             - run: yarn test:types
-            
+
     expo:
        name: Expo Doctor
        runs-on: ubuntu-latest

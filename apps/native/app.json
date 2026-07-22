@@ -9,14 +9,7 @@
 		"userInterfaceStyle": "light",
 		"ios": {
 			"supportsTablet": true,
-			"bundleIdentifier": "org.northernexplorer.app",
-			"splash": {
-				"backgroundColor": "#1a1a1a"
-			}
-		},
-		"packagerOpts": {
-			"config": "metro.config.js",
-			"projectRoot": "../.."
+			"bundleIdentifier": "org.northernexplorer.app"
 		},
 		"android": {
 			"adaptiveIcon": {
@@ -27,11 +20,11 @@
 			},
 			"predictiveBackGestureEnabled": false,
 			"package": "org.northernexplorer.app",
-			"permissions": ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"],
-			"versionCode": 4,
-			"splash": {
-				"backgroundColor": "#1a1a1a"
-			}
+			"permissions": [
+				"android.permission.ACCESS_COARSE_LOCATION",
+				"android.permission.ACCESS_FINE_LOCATION"
+			],
+			"versionCode": 4
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"
@@ -43,6 +36,19 @@
 			}
 		},
 		"plugins": [
+			[
+				"expo-splash-screen",
+				{
+					"backgroundColor": "#1a1a1a",
+					"image": "./assets/splash-icon.png",
+					"imageWidth": 200,
+					"resizeMode": "contain",
+					"dark": {
+						"backgroundColor": "#1a1a1a",
+						"image": "./assets/splash-icon.png"
+					}
+				}
+			],
 			"expo-router",
 			[
 				"expo-location",
