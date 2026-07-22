@@ -329,8 +329,8 @@ export class UserController extends BaseController {
 		if (sessions.length > 0) {
 			await this.repos.session.nativeDelete({id: {$in: sessions.map(s => s.id)}});
 		}
-		await this.repos.subscription.nativeDelete({id: subscription.id});
 		await this.repos.user.nativeDelete({id: user.id});
+		await this.repos.subscription.nativeDelete({id: subscription.id});
 
 		await this.flush();
 
