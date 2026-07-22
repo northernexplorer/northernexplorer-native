@@ -10,4 +10,5 @@ export const config = {
 	EMAIL_API_KEY: process.env.EMAIL_API_KEY,
 	ACTIVATION_SECRET: process.env.ACTIVATION_SECRET || 'TEMP_ACTIVATION_SECRET',
 	WEB_URL: process.env.WEB_URL || 'http://localhost:8081',
+	CORS: process.env.CORS || 'http://localhost:8081,https://northernexplorer.org',
 };
