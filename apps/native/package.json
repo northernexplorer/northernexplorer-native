@@ -10,7 +10,7 @@
 		"clean": "rm -rf dist",
 		"ios": "expo run:ios",
 		"start": "expo start",
-		"test:deps": "depcheck --specials=typescript --ignores=\"~\"",
+		"test:deps": "depcheck --specials=typescript --ignores=\"~,expo-splash-screen\"",
 		"web": "expo start --web"
 	},
 	"dependencies": {
