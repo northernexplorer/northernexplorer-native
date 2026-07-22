@@ -315,6 +315,27 @@ export class UserController extends BaseController {
 			success: true,
 		};
 	}
-}
 
-export default UserController;
+	async deleteUser(params: Params<Route<'deleteUser'>>, auth?: AuthContext): Promise<Response<Route<'deleteUser'>>> {
+		const user = await this.repos.user.getByUsername(params.username);
+		this.permissionService.canAccessProfile({
+			userId: auth?.userId,
+			targetId: user.id,
+		});
+
+		const subscription = await this.repos.subscription.getById(user.subscription.id);
+		const sessions = await this.repos.session.getByUser(user);
+
+		if (sessions.length > 0) {
+			await this.repos.session.nativeDelete({id: {$in: sessions.map(s => s.id)}});
+		}
+		await this.repos.user.nativeDelete({id: user.id});
+		await this.repos.subscription.nativeDelete({id: subscription.id});
+
+		await this.flush();
+
+		return {
+			success: true,
+		};
+	}
+}

@@ -6,10 +6,11 @@ import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {ProfileDetails} from '~/user/Profile/components/ProfileDetails';
 import {Subscription} from '~/user/Profile/components/Subscription';
 import {Sessions} from '~/user/Profile/components/Sessions';
+import {Other} from '~/user/Profile/components/Other';
 
 type RouteParams = {
 	username: string;
-	tab?: 'details' | 'subscription' | 'security';
+	tab?: 'details' | 'subscription' | 'security' | 'other';
 };
 
 export function Profile() {
@@ -19,7 +20,7 @@ export function Profile() {
 
 	if (!authentication) return <Redirect href="/profile/login" />;
 
-	const switchTab = (newTab: 'details' | 'subscription' | 'security') => {
+	const switchTab = (newTab: 'details' | 'subscription' | 'security' | 'other') => {
 		router.setParams({username, tab: newTab});
 	};
 
@@ -40,11 +41,16 @@ export function Profile() {
 				<TouchableOpacity style={[styles.tabButton, tab === 'security' && styles.activeTabButton]} onPress={() => switchTab('security')}>
 					<Text style={tab === 'security' ? styles.activeTabText : styles.tabText}>Security</Text>
 				</TouchableOpacity>
+
+				<TouchableOpacity style={[styles.tabButton, tab === 'other' && styles.activeTabButton]} onPress={() => switchTab('other')}>
+					<Text style={tab === 'other' ? styles.activeTabText : styles.tabText}>Other</Text>
+				</TouchableOpacity>
 			</View>
 
 			{tab === 'details' && <ProfileDetails username={username} />}
 			{tab === 'subscription' && <Subscription username={username} />}
 			{tab === 'security' && <Sessions username={username} />}
+			{tab === 'other' && <Other username={username} />}
 		</View>
 	);
 }

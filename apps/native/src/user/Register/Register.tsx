@@ -145,7 +145,7 @@ export function Register() {
 			<View style={styles.switchRow}>
 				<Text style={styles.label}>
 					I accept the{' '}
-					<Link href="/terms-of-service" style={styles.linkText}>
+					<Link href="/support/terms-of-service" style={styles.linkText}>
 						Terms of Service
 					</Link>
 				</Text>
@@ -156,7 +156,7 @@ export function Register() {
 			<View style={styles.switchRow}>
 				<Text style={styles.label}>
 					I accept the{' '}
-					<Link href="/privacy-policy" style={styles.linkText}>
+					<Link href="/support/privacy-policy" style={styles.linkText}>
 						Privacy Policy
 					</Link>
 				</Text>

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, Modal} from 'react-native';
 import {router} from 'expo-router';
 import {useDispatch} from 'react-redux';
-import {alertStore} from '~/core/alertStore';
+import {alertStore, AlertState} from '~/core/alertStore';
 import {authEvents} from '~/core/authEvents';
 import {clearAuthentication} from '~/user/state/authentication/authenticationSlice';
 
@@ -22,16 +22,22 @@ const ALERT_CONFIG = {
 		color: '#34C759',
 		title: 'Success',
 	},
-};
+} as const;
 
 export function AlertHandler({children}: {children: React.ReactNode}) {
-	const [alert, setAlert] = useState<{message: string | null; type: 'error' | 'warning' | 'success'}>({message: null, type: 'error'});
+	const [activeAlert, setActiveAlert] = useState<AlertState>({message: null, type: 'error'});
+	const [isVisible, setIsVisible] = useState(false);
 	const dispatch = useDispatch();
 
-	const config = ALERT_CONFIG[alert.type];
-
 	useEffect(() => {
-		return alertStore.subscribe(setAlert);
+		return alertStore.subscribe(newState => {
+			if (newState.message) {
+				setActiveAlert(newState);
+				setIsVisible(true);
+			} else {
+				setIsVisible(false);
+			}
+		});
 	}, []);
 
 	useEffect(() => {
@@ -41,25 +47,54 @@ export function AlertHandler({children}: {children: React.ReactNode}) {
 				router.replace('/profile/login');
 			}
 		});
-	}, [dispatch, router]);
+	}, [dispatch]);
+
+	const handleButtonPress = (onPress?: () => void) => {
+		alertStore.clearAlert();
+		if (onPress) {
+			onPress();
+		}
+	};
+
+	const config = ALERT_CONFIG[activeAlert.type] || ALERT_CONFIG.error;
+	const displayTitle = activeAlert.title || config.title;
 
 	return (
 		<View style={styles.container}>
 			{children}
 
-			<Modal transparent visible={!!alert.message} animationType="fade">
+			<Modal transparent visible={isVisible} animationType="fade">
 				<View style={styles.overlay}>
 					<View style={styles.alertBox}>
 						<View style={[styles.iconCircle, {borderColor: config.color, backgroundColor: `${config.color}15`}]}>
 							<Text style={[styles.iconText, {color: config.color}]}>{config.icon}</Text>
 						</View>
 
-						{alert.type === 'error' && <Text style={styles.title}>{config.title}</Text>}
-						<Text style={styles.message}>{alert.message}</Text>
+						<Text style={styles.title}>{displayTitle}</Text>
+						<Text style={styles.message}>{activeAlert.message}</Text>
 
-						<TouchableOpacity style={styles.button} onPress={() => alertStore.clearAlert()}>
-							<Text style={styles.buttonText}>Dismiss</Text>
-						</TouchableOpacity>
+						{activeAlert.buttons && activeAlert.buttons.length > 0 ? (
+							<View style={styles.buttonRow}>
+								{activeAlert.buttons.map((btn, index) => {
+									const isDestructive = btn.style === 'destructive';
+									const isCancel = btn.style === 'cancel';
+
+									return (
+										<TouchableOpacity
+											key={index}
+											style={[styles.actionButton, isDestructive && styles.destructiveButton, isCancel && styles.cancelButton]}
+											onPress={() => handleButtonPress(btn.onPress)}
+										>
+											<Text style={[styles.buttonText, isDestructive && styles.destructiveButtonText]}>{btn.text}</Text>
+										</TouchableOpacity>
+									);
+								})}
+							</View>
+						) : (
+							<TouchableOpacity style={styles.button} onPress={() => alertStore.clearAlert()}>
+								<Text style={styles.buttonText}>Dismiss</Text>
+							</TouchableOpacity>
+						)}
 					</View>
 				</View>
 			</Modal>
@@ -105,7 +140,6 @@ const styles = StyleSheet.create({
 		marginBottom: 16,
 	},
 	iconText: {
-		color: '#FF3B30',
 		fontSize: 22,
 		fontWeight: '700',
 	},
@@ -134,9 +168,33 @@ const styles = StyleSheet.create({
 		width: '100%',
 		alignItems: 'center',
 	},
+	buttonRow: {
+		flexDirection: 'row',
+		gap: 12,
+		width: '100%',
+	},
+	actionButton: {
+		flex: 1,
+		backgroundColor: 'rgba(255, 255, 255, 0.12)',
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.15)',
+		paddingVertical: 14,
+		borderRadius: 12,
+		alignItems: 'center',
+	},
+	cancelButton: {
+		backgroundColor: 'transparent',
+	},
+	destructiveButton: {
+		backgroundColor: 'rgba(255, 59, 48, 0.15)',
+		borderColor: '#FF3B30',
+	},
 	buttonText: {
 		color: '#ffffff',
 		fontSize: 16,
 		fontWeight: '600',
+	},
+	destructiveButtonText: {
+		color: '#FF3B30',
 	},
 });
