@@ -4,6 +4,13 @@ updates:
       directory: '/'
       schedule:
           interval: 'weekly'
+      groups:
+          expo-ecosystem:
+              patterns:
+                  - 'expo*'
+                  - '@expo/*'
+                  - 'react-native*'
+                  - 'react'
       ignore:
           - dependency-name: '*'
             update-types:
