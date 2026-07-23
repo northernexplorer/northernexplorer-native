@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import {Pressable, Text, ScrollView, StyleSheet, View, Linking, Alert} from 'react-native';
+import {Pressable, Text, ScrollView, StyleSheet, View, Linking, Platform} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
-import Purchases from 'react-native-purchases';
+import Purchases, {LOG_LEVEL} from 'react-native-purchases';
+import Constants from 'expo-constants';
 import {formatMoney} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
 import {alertStore} from '~/core/alertStore';
+import {config} from '~/config';
 
 type RouteParams = {
 	username: string;
@@ -32,6 +34,19 @@ export function ChangeSubscription() {
 	if (loading || !data || subscriptionLoading || !subscriptionData) return <Spinner />;
 
 	const currentPlanId = subscriptionData.subscriptionLevel.id;
+
+	const configureRevenueCatIfNeeded = async () => {
+		const isConfigured = await Purchases.isConfigured();
+		if (!isConfigured) {
+			const apiKey = config.REVENUE_CAT_GOOGLE_KEY;
+
+			if (Platform.OS === 'android' && apiKey) {
+				Purchases.configure({apiKey});
+			} else {
+				throw new Error('RevenueCat API key is missing or invalid for this platform.');
+			}
+		}
+	};
 
 	const handleSubmit = async () => {
 		const selectedPlan = data.find(plan => plan.id === selectedSubscriptionId);
@@ -65,6 +80,9 @@ export function ChangeSubscription() {
 				return;
 			}
 
+			// Ensure RevenueCat is initialized before calling SDK methods
+			await configureRevenueCatIfNeeded();
+
 			// Log in to RevenueCat with your DB username to anchor the user identity
 			await Purchases.logIn(username);
 
@@ -85,6 +103,7 @@ export function ChangeSubscription() {
 
 				alertStore.showAlert({message: 'Subscription processed! Access will update shortly.', title: 'Success'}, 'success');
 				router.replace(`/profile/${username}`);
+				return; // Stop execution here so it doesn't drop through to the fallback alert below
 			}
 			alertStore.showAlert({message: 'Could not find product ID.', title: 'Purchase Error'}, 'error');
 		} catch (error: unknown) {
@@ -104,7 +123,6 @@ export function ChangeSubscription() {
 		<ScrollView contentContainerStyle={cardStyles.container} keyboardShouldPersistTaps="handled">
 			<Text style={cardStyles.subtitle}>Choose a subscription level that fits your journey.</Text>
 
-			{/* Custom UI: Vertical Stack of Subscription Cards */}
 			<View style={cardStyles.cardList}>
 				{data.map(plan => {
 					const isSelected = selectedSubscriptionId === plan.id;
