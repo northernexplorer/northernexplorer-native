@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {Pressable, Text, ScrollView, StyleSheet, View, Linking, Alert} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import Purchases from 'react-native-purchases';
-import {SubscriptionLevelsResponse} from '@northernexplorer/types';
 import {formatMoney} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -20,7 +19,6 @@ export function ChangeSubscription() {
 	const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<string>('');
 	const [isPurchasing, setIsPurchasing] = useState<boolean>(false);
 
-	// 1. Fetch available plans & user status directly from your PostgreSQL DB
 	const {data, loading} = useApiFetch('user', 'SubscriptionLevelController', 'getSubscriptionLevels', {});
 	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
 
@@ -47,41 +45,44 @@ export function ChangeSubscription() {
 			if (isFreeTier) {
 				// FREE TIER / DOWNGRADE:
 				// Direct user to Google Play to cancel auto-renew.
-				// RevenueCat's EXPIRATION webhook will automatically set their DB record to free when it expires.
-				Alert.alert('Switch to Free Plan', 'To cancel or downgrade your active paid subscription, please manage auto-renew in Google Play.', [
-					{text: 'Cancel', style: 'cancel'},
+				alertStore.showAlert(
 					{
-						text: 'Open Google Play Settings',
-						onPress: () => {
-							Linking.openURL('https://play.google.com/store/account/subscriptions');
-						},
+						message:
+							"Switch to Free Plan', 'To cancel or downgrade your active paid subscription, please manage auto-renew in Google Play.",
+						title: 'Subscription Downgrade',
+						buttons: [
+							{text: 'Confirm'},
+							{text: 'Open Google Play', onPress: () => Linking.openURL('https://play.google.com/store/account/subscriptions')},
+						],
 					},
-				]);
+					'success',
+				);
 				setIsPurchasing(false);
 				return;
 			}
 
-			// PAID TIER / UPGRADE:
-			// 1. Log in to RevenueCat with your DB username to anchor the user identity
+			// Log in to RevenueCat with your DB username to anchor the user identity
 			await Purchases.logIn(username);
 
-			// 2. Fetch Google Play store product via RevenueCat
-			const productId = selectedPlan.googleProductId || selectedPlan.id;
-			const storeProducts = await Purchases.getProducts([productId]);
-			const productToPurchase = storeProducts[0];
+			// Fetch Google Play store product via RevenueCat
+			const productId = selectedPlan.googleProductId;
+			if (productId) {
+				const storeProducts = await Purchases.getProducts([productId]);
+				const productToPurchase = storeProducts[0];
 
-			if (!productToPurchase) {
-				alertStore.showAlert({message: 'Could not find product in Google Play Store.', title: 'Purchase Error'}, 'error');
-				setIsPurchasing(false);
-				return;
+				if (!productToPurchase) {
+					alertStore.showAlert({message: 'Could not find product in Google Play Store.', title: 'Purchase Error'}, 'error');
+					setIsPurchasing(false);
+					return;
+				}
+
+				// Trigger Google Play Purchase Sheet
+				await Purchases.purchaseStoreProduct(productToPurchase);
+
+				alertStore.showAlert({message: 'Subscription processed! Access will update shortly.', title: 'Success'}, 'success');
+				router.replace(`/profile/${username}`);
 			}
-
-			// 3. Trigger Google Play Purchase Sheet
-			// (RevenueCat handles upgrades automatically)
-			await Purchases.purchaseStoreProduct(productToPurchase);
-
-			alertStore.showAlert({message: 'Subscription processed! Access will update shortly.', title: 'Success'}, 'success');
-			router.replace(`/profile/${username}`);
+			alertStore.showAlert({message: 'Could not find product ID.', title: 'Purchase Error'}, 'error');
 		} catch (error: any) {
 			if (!error.userCancelled) {
 				alertStore.showAlert({message: error?.message || 'An error occurred during transaction.', title: 'Purchase Error'}, 'error');
