@@ -21,9 +21,9 @@ export function FormField<T extends string>({fieldName, label, updateField, plac
 		<View style={styles.field}>
 			<Text style={styles.label}>{label}</Text>
 
-			<View style={[styles.inputContainer, loading && styles.disabledInput]}>
+			<View style={styles.inputContainer}>
 				<TextInput
-					style={styles.input}
+					style={[styles.input, loading && styles.disabledInput]}
 					placeholder={placeholder}
 					placeholderTextColor="#888888"
 					secureTextEntry={secureTextEntry && !isPasswordVisible}
