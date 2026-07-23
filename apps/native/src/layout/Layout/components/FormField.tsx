@@ -24,6 +24,7 @@ export function FormField<T extends string>({fieldName, label, updateField, plac
 				value={value}
 				onChangeText={val => updateField(fieldName, val)}
 				editable={!loading}
+				placeholderTextColor="#888888"
 			/>
 			{error && <Text style={styles.errorText}>{error}</Text>}
 		</View>
