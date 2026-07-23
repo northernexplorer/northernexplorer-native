@@ -47,12 +47,16 @@ export function ChangeSubscription() {
 				// Direct user to Google Play to cancel auto-renew.
 				alertStore.showAlert(
 					{
-						message:
-							"Switch to Free Plan', 'To cancel or downgrade your active paid subscription, please manage auto-renew in Google Play.",
+						message: 'To cancel or downgrade your active paid subscription, please manage auto-renew in Google Play.',
 						title: 'Subscription Downgrade',
+						type: 'success',
 						buttons: [
-							{text: 'Confirm'},
-							{text: 'Open Google Play', onPress: () => Linking.openURL('https://play.google.com/store/account/subscriptions')},
+							{
+								text: 'Open Google Play',
+								style: 'default',
+								onPress: () => Linking.openURL('https://play.google.com/store/account/subscriptions'),
+							},
+							{text: 'Okay', style: 'cancel'},
 						],
 					},
 					'success',
@@ -83,9 +87,11 @@ export function ChangeSubscription() {
 				router.replace(`/profile/${username}`);
 			}
 			alertStore.showAlert({message: 'Could not find product ID.', title: 'Purchase Error'}, 'error');
-		} catch (error: any) {
-			if (!error.userCancelled) {
-				alertStore.showAlert({message: error?.message || 'An error occurred during transaction.', title: 'Purchase Error'}, 'error');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error);
+			const isCancelled = typeof error === 'object' && error !== null && 'userCancelled' in error && Boolean(error.userCancelled);
+			if (!isCancelled) {
+				alertStore.showAlert({message: message || 'An error occurred during transaction.', title: 'Purchase Error'}, 'error');
 			}
 		} finally {
 			setIsPurchasing(false);
@@ -96,7 +102,6 @@ export function ChangeSubscription() {
 
 	return (
 		<ScrollView contentContainerStyle={cardStyles.container} keyboardShouldPersistTaps="handled">
-			<Text style={cardStyles.title}>Select Your Plan</Text>
 			<Text style={cardStyles.subtitle}>Choose a subscription level that fits your journey.</Text>
 
 			{/* Custom UI: Vertical Stack of Subscription Cards */}
