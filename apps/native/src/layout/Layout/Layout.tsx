@@ -8,13 +8,13 @@ import {Navigation} from '~/layout/Layout/components/Navigation';
 
 interface Props {
 	Content: ComponentType;
-	components?: ComponentType[];
+	sidebar?: ComponentType[];
 	title?: string;
 	fullPage?: boolean;
 	home?: boolean;
 }
 
-export function Layout({Content, components, title, fullPage, home}: Props) {
+export function Layout({Content, sidebar, title, fullPage, home}: Props) {
 	const {width} = useWindowDimensions();
 	const isMobileView = width < 1000;
 
@@ -66,7 +66,7 @@ export function Layout({Content, components, title, fullPage, home}: Props) {
 				</View>
 
 				<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : [styles.sidebarDesktop, {alignSelf: 'stretch'}]]}>
-					<Sidebar components={components} />
+					<Sidebar components={sidebar} />
 				</View>
 			</ScrollView>
 		</View>

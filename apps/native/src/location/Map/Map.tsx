@@ -10,8 +10,10 @@ import {BBox} from 'geojson';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
+import {useMap} from '~/location/state/map/useMap';
 
 export function Map() {
+	const {baseLayer} = useMap();
 	const cameraRef = useRef<CameraRef>(null);
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
 	const [zoom, setZoom] = useState(10);
@@ -55,7 +57,7 @@ export function Map() {
 		<View style={{flex: 1}}>
 			<NativeMap
 				style={{width: '100%', height: '100%'}}
-				mapStyle="https://tiles.openfreemap.org/styles/bright"
+				mapStyle={baseLayer}
 				onRegionDidChange={onRegionDidChange}
 				onPress={() => {
 					if (selectedSite) setSelectedSite(null);
