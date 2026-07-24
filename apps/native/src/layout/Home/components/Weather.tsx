@@ -10,9 +10,9 @@ type WeatherProps = {
 
 export function Weather({data}: WeatherProps) {
 	const current = data.current;
-	const condition = current?.condition;
+	const condition = current.condition;
 
-	const iconCode = String(condition?.code ?? 1000);
+	const iconCode = String(condition.code);
 	const iconName = getWeatherIcon(iconCode);
 
 	return (
@@ -24,7 +24,7 @@ export function Weather({data}: WeatherProps) {
 				<Text style={{color: 'white', fontSize: 64, fontWeight: '200'}}>{Math.round(current.temp_c)}°</Text>
 			</View>
 
-			<Text style={{color: '#ddd', fontSize: 16}}>{condition?.text}</Text>
+			<Text style={{color: '#ddd', fontSize: 16}}>{condition.text}</Text>
 
 			<View style={{marginTop: 16, gap: 6}}>
 				<Text style={styles.metric}>Wind {Math.round(current.wind_kph)} km/h</Text>
