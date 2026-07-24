@@ -1,7 +1,5 @@
-import {Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Text, TextInput, TouchableOpacity, TextInputProps, View} from 'react-native';
 import React, {useState} from 'react';
-import {Text, TextInput, TextInputProps, View} from 'react-native';
-import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 
@@ -19,9 +17,6 @@ interface Props<T extends string> {
 	importantForAutofill?: TextInputProps['importantForAutofill'];
 }
 
-export function FormField<T extends string>({fieldName, label, updateField, placeholder, error, loading, value, secureTextEntry = false}: Props<T>) {
-	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
 export function FormField<T extends string>({
 	fieldName,
 	label,
@@ -35,6 +30,8 @@ export function FormField<T extends string>({
 	textContentType,
 	importantForAutofill = 'yes',
 }: Props<T>) {
+	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
 	return (
 		<View style={styles.field}>
 			<Text style={styles.label}>{label}</Text>
@@ -43,11 +40,14 @@ export function FormField<T extends string>({
 				<TextInput
 					style={[styles.input, loading && styles.disabledInput]}
 					placeholder={placeholder}
-					placeholderTextColor="#888888"
-					secureTextEntry={secureTextEntry && !isPasswordVisible}
+					secureTextEntry={secureTextEntry}
 					value={value}
 					onChangeText={val => updateField(fieldName, val)}
 					editable={!loading}
+					placeholderTextColor="#888888"
+					autoComplete={autoComplete}
+					textContentType={textContentType}
+					importantForAutofill={importantForAutofill}
 				/>
 				{secureTextEntry && (
 					<TouchableOpacity
@@ -62,18 +62,6 @@ export function FormField<T extends string>({
 				)}
 			</View>
 
-			<TextInput
-				style={[styles.input, loading && styles.disabledInput]}
-				placeholder={placeholder}
-				secureTextEntry={secureTextEntry}
-				value={value}
-				onChangeText={val => updateField(fieldName, val)}
-				editable={!loading}
-				placeholderTextColor="#888888"
-				autoComplete={autoComplete}
-				textContentType={textContentType}
-				importantForAutofill={importantForAutofill}
-			/>
 			{error && <Text style={styles.errorText}>{error}</Text>}
 		</View>
 	);
