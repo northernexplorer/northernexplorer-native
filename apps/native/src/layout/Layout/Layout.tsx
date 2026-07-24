@@ -35,6 +35,7 @@ export function Layout({Content, components, title, fullPage, home}: Props) {
 						height: fullPage ? '100%' : 'auto',
 					},
 				]}
+				keyboardShouldPersistTaps="handled"
 			>
 				<View style={{flex: 1, width: '100%', alignSelf: 'stretch'}}>
 					<ImageBackground
