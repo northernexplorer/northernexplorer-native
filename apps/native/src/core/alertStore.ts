@@ -15,20 +15,13 @@ let listeners: Array<(state: AlertState) => void> = [];
 let state: AlertState = {message: null, type: 'error'};
 
 export const alertStore = {
-	showAlert: (
-		messageOrOptions: string | {message: string; type?: 'error' | 'warning' | 'success'; title?: string; buttons?: AlertButton[]},
-		typeArg: 'error' | 'warning' | 'success' = 'error',
-	) => {
-		if (typeof messageOrOptions === 'string') {
-			state = {message: messageOrOptions, type: typeArg};
-		} else {
-			state = {
-				message: messageOrOptions.message,
-				type: messageOrOptions.type || 'error',
-				title: messageOrOptions.title,
-				buttons: messageOrOptions.buttons,
-			};
-		}
+	showAlert: (messageOrOptions: {message: string; type: 'error' | 'warning' | 'success'; title?: string; buttons?: AlertButton[]}) => {
+		state = {
+			message: messageOrOptions.message,
+			type: messageOrOptions.type,
+			title: messageOrOptions.title,
+			buttons: messageOrOptions.buttons,
+		};
 		listeners.forEach(l => l(state));
 	},
 	clearAlert: () => {
