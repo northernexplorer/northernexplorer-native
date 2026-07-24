@@ -36,7 +36,7 @@ export function Sidebar({components}: Props) {
 				</Text>
 
 				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 12}}>
-					{coords?.lat?.toFixed(4) ?? '--'}, {coords?.lon?.toFixed(4) ?? '--'}
+					{coords?.lat.toFixed(4) ?? '--'}, {coords?.lon.toFixed(4) ?? '--'}
 				</Text>
 				{isOffline && <Text style={{color: 'white', fontSize: 12, fontWeight: '500'}}>System Currently Offline</Text>}
 			</View>

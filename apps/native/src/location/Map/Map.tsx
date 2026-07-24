@@ -43,7 +43,7 @@ export function Map() {
 	const onRegionDidChange = useCallback((e: NativeSyntheticEvent<ViewStateChangeEvent>) => {
 		const {bounds, zoom} = e.nativeEvent;
 
-		if (!Array.isArray(bounds) || bounds.length !== 4) return;
+		if (!Array.isArray(bounds)) return;
 
 		const newBounds: BBox = [bounds[0], bounds[1], bounds[2], bounds[3]];
 

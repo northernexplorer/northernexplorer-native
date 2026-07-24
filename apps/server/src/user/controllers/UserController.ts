@@ -218,14 +218,13 @@ export class UserController extends BaseController {
 
 	async refresh(params: Params<Route<'refresh'>>): Promise<Response<Route<'refresh'>>> {
 		const payload = this.tokenService.verifyRefreshToken(params.refreshToken);
-		if (!payload?.userId) throw new Error('Your session has expired. Please log in again.');
+		if (!payload.userId) throw new Error('Your session has expired. Please log in again.');
 
 		const refreshHash = this.repos.session.hashToken(params.refreshToken);
 		const session = await this.repos.session.getByRefreshHash(refreshHash);
 		if (!session) throw new Error('Your session has expired.');
 
 		const user = await this.repos.user.getById(payload.userId);
-		if (!user) throw new Error('User not found.');
 
 		const accessToken = this.tokenService.generateAccessToken({userId: user.id, email: user.email});
 		const newRefreshToken = this.tokenService.generateRefreshToken({userId: user.id});
@@ -249,7 +248,6 @@ export class UserController extends BaseController {
 		const {userId} = this.tokenService.verifyToken(params.activationToken);
 
 		const user = await this.repos.user.getById(userId);
-		if (!user) throw new Error("We couldn't find an account matching that information.");
 		if (user.isActive) throw new Error('This account is already active. Try logging in!');
 
 		user.isActive = true;
@@ -295,7 +293,6 @@ export class UserController extends BaseController {
 		const {userId} = this.tokenService.verifyToken(params.token);
 
 		const user = await this.repos.user.getById(userId);
-		if (!user) throw new Error("We couldn't find an account matching that information.");
 		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
 
 		await this.repos.user.passwordValidation({

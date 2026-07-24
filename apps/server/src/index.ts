@@ -120,7 +120,7 @@ async function bootstrap() {
 				const dataEm = orm.em.fork() as EntityManager;
 				const context = await workerInstance.getData(dataEm);
 
-				if (context && Array.isArray(context)) {
+				if (Array.isArray(context)) {
 					for (const contextItem of context) {
 						// Fork a unique, lightweight Unit of Work context for processing this specific item
 						const executionEm = orm.em.fork() as EntityManager;
