@@ -9,7 +9,7 @@ import {FormField} from '~/layout/Layout/components/FormField';
 import {useDeviceInfo} from '~/user/Login/useDeviceInfo';
 
 const initialFormData = {
-	identifier: '',
+	username: '',
 	password: '',
 	rememberMe: false,
 };
@@ -39,8 +39,8 @@ export function Login() {
 	const validateForm = async () => {
 		const newErrors: Partial<Record<FormKeys, string>> = {};
 
-		if (!formData.identifier.trim()) {
-			newErrors.identifier = 'Username or email is required';
+		if (!formData.username.trim()) {
+			newErrors.username = 'Username or email is required';
 		}
 		if (formData.password.length < 8) {
 			newErrors.password = 'Password must be at least 8 characters';
@@ -54,7 +54,7 @@ export function Login() {
 	};
 
 	const handleSubmit = async () => {
-		const response = await mutate({login: formData, device: deviceInfo});
+		const response = await mutate({login: {password: formData.password, identifier: formData.username}, device: deviceInfo});
 		if (response) {
 			dispatch(setAuthentication(response));
 			router.replace(`/profile/${response.username}`);
@@ -64,13 +64,16 @@ export function Login() {
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
 			<FormField
-				fieldName="identifier"
+				fieldName="username"
 				label="Username or Email"
 				placeholder="Username or Email"
-				value={formData.identifier}
+				value={formData.username}
 				updateField={updateField}
-				error={errors.identifier}
+				error={errors.username}
 				loading={loading}
+				autoComplete="username"
+				textContentType="username"
+				importantForAutofill="yes"
 			/>
 
 			<FormField
@@ -82,6 +85,9 @@ export function Login() {
 				error={errors.password}
 				loading={loading}
 				secureTextEntry
+				autoComplete="password"
+				textContentType="password"
+				importantForAutofill="yes"
 			/>
 
 			<View style={styles.rememberRow}>

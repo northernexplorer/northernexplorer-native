@@ -1,4 +1,4 @@
-import {Text, TextInput, View} from 'react-native';
+import {Text, TextInput, TextInputProps, View} from 'react-native';
 import React from 'react';
 import {StyleSheet} from 'react-native';
 
@@ -11,9 +11,24 @@ interface Props<T extends string> {
 	loading?: boolean;
 	value?: string;
 	secureTextEntry?: boolean;
+	autoComplete?: TextInputProps['autoComplete'];
+	textContentType?: TextInputProps['textContentType'];
+	importantForAutofill?: TextInputProps['importantForAutofill'];
 }
 
-export function FormField<T extends string>({fieldName, label, updateField, placeholder, error, loading, value, secureTextEntry = false}: Props<T>) {
+export function FormField<T extends string>({
+	fieldName,
+	label,
+	updateField,
+	placeholder,
+	error,
+	loading,
+	value,
+	secureTextEntry = false,
+	autoComplete,
+	textContentType,
+	importantForAutofill = 'yes',
+}: Props<T>) {
 	return (
 		<View style={styles.field}>
 			<Text style={styles.label}>{label}</Text>
@@ -24,6 +39,10 @@ export function FormField<T extends string>({fieldName, label, updateField, plac
 				value={value}
 				onChangeText={val => updateField(fieldName, val)}
 				editable={!loading}
+				placeholderTextColor="#888888"
+				autoComplete={autoComplete}
+				textContentType={textContentType}
+				importantForAutofill={importantForAutofill}
 			/>
 			{error && <Text style={styles.errorText}>{error}</Text>}
 		</View>
