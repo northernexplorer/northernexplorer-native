@@ -1,6 +1,5 @@
 import {ComponentType} from 'react';
 import {ImageBackground, ScrollView, Text, useWindowDimensions, View} from 'react-native';
-import {router, useRoute} from 'expo-router';
 import {styles} from './styles';
 import {getWeatherTheme} from '~/layout/Layout/getWeatherTheme';
 import {useWeather} from '~/environment/state/weather/useWeather';
@@ -15,9 +14,10 @@ interface Props {
 	title?: string;
 	fullPage?: boolean;
 	home?: boolean;
+	showOffline?: boolean;
 }
 
-export function Layout({Content, components, title, fullPage, home}: Props) {
+export function Layout({Content, components, title, fullPage, home, showOffline}: Props) {
 	const {width} = useWindowDimensions();
 	const isOffline = useIsOffline();
 	const isMobileView = width < 1000;
@@ -25,9 +25,7 @@ export function Layout({Content, components, title, fullPage, home}: Props) {
 	const weather = useWeather();
 	const theme = weather ? getWeatherTheme(weather.current.condition.code) : null;
 
-	const isHomeScreen = !!home;
-
-	const online = !(isOffline && !isHomeScreen);
+	const online = !isOffline || !!showOffline;
 
 	return (
 		<View style={{flex: 1, width: '100%', maxWidth: '100%', minWidth: 0, overflow: 'hidden'}}>
