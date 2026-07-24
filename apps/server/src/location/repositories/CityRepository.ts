@@ -17,7 +17,8 @@ export class CityRepository extends EntityRepository<CityCache> {
               LIMIT 1
       `;
 
-		const [cachedResult] = await this.em.getConnection().execute(query, [lat, lon, lat]);
+		const cachedResults = await this.em.getConnection().execute(query, [lat, lon, lat]);
+		const cachedResult = cachedResults.at(0);
 
 		if (cachedResult) {
 			const parsedData = typeof cachedResult.cityData === 'string' ? JSON.parse(cachedResult.cityData) : cachedResult.cityData;
