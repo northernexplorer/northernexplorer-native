@@ -57,8 +57,8 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 					e.message.toLowerCase().includes('load failed')); // Safari
 
 			if (!isNetworkError) {
-				const alertType = e.message.includes('session has expired') ? 'warning' : 'error';
-				alertStore.showAlert(e.message, alertType);
+				const alertType = e.message.includes('Session Expired') ? 'warning' : 'error';
+				alertStore.showAlert({message: 'Please login again.', title: e.message, type: alertType});
 			} else {
 				// Cache layer quietly serve stale/cached data
 				console.log(`Silencing alert for network failure on ${String(method)}. Relying on cache.`);
