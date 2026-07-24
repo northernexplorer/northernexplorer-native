@@ -54,7 +54,8 @@ export function Login() {
 	};
 
 	const handleSubmit = async () => {
-		const response = await mutate({login: {password: formData.password, identifier: formData.username}, device: deviceInfo});
+		const identifier = formData.username.trim().toLowerCase();
+		const response = await mutate({login: {password: formData.password, identifier}, device: deviceInfo});
 		if (response) {
 			dispatch(setAuthentication(response));
 			router.replace(`/profile/${response.username}`);

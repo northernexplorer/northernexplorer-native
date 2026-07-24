@@ -40,7 +40,7 @@ export function FormField<T extends string>({
 				<TextInput
 					style={[styles.input, loading && styles.disabledInput]}
 					placeholder={placeholder}
-					secureTextEntry={secureTextEntry}
+					secureTextEntry={secureTextEntry && !isPasswordVisible}
 					value={value}
 					onChangeText={val => updateField(fieldName, val)}
 					editable={!loading}
