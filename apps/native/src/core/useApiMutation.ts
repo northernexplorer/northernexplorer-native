@@ -5,18 +5,23 @@ import {apiClient} from '~/core/apiClient';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {alertStore} from '~/core/alertStore';
+import {useIsOffline} from '~/core/ConnectivityProvider';
 
 export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(
 	category: C,
 	controller: K,
 	method: M,
 ) {
+	const isOffline = useIsOffline();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
 
 	const mutate = async (params: GetParams<C, K, M>) => {
+		if (isOffline) {
+			return;
+		}
 		setLoading(true);
 		setError(null);
 		try {
@@ -35,15 +40,20 @@ export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTE
 				},
 			);
 		} catch (err) {
-			const e = err instanceof Error ? err : new Error('Mutation failed');
+			const e = err instanceof Error ? err : new Error(typeof err === 'string' ? err : 'Network request failed');
 			setError(e);
 
+			const msg = e.message.toLowerCase();
+
 			const isNetworkError =
-				e instanceof TypeError &&
-				(e.message.toLowerCase().includes('failed to fetch') ||
-					e.message.toLowerCase().includes('network request failed') || // React Native
-					e.message.toLowerCase().includes('networkerror') || // Firefox
-					e.message.toLowerCase().includes('load failed')); // Safari
+				msg.includes('failed to fetch') ||
+				msg.includes('network request failed') || // React Native default
+				msg.includes('fetch failed') || // Android native fetch failure
+				msg.includes('connectexception') || // Java socket error
+				msg.includes('failed to connect') || // "failed to connect to /..."
+				msg.includes('connection refused') || // Socket refusal
+				msg.includes('networkerror') || // Firefox / general
+				msg.includes('load failed'); // Safari
 
 			if (!isNetworkError) {
 				const alertType = e.message.includes('Session Expired') ? 'warning' : 'error';
