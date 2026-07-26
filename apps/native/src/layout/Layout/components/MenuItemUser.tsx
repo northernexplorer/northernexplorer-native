@@ -16,7 +16,7 @@ export function MenuItemUser({isMobileDrawer, setIsMenuOpen}: Props) {
 	const isActiveLogout = currentPath.includes('/logout');
 	const authentication = useAuthentication();
 
-	const isLoggedIn = !!(authentication?.username && authentication?.accessToken);
+	const isLoggedIn = !!(authentication?.username && authentication.accessToken);
 	const profileHref = isLoggedIn ? `/profile/${authentication.username}` : '/profile/login';
 	const logoutHref = isLoggedIn ? `/profile/${authentication.username}/logout` : '/profile/logout';
 
@@ -39,7 +39,7 @@ export function MenuItemUser({isMobileDrawer, setIsMenuOpen}: Props) {
 					<Ionicons
 						name={isLoggedIn ? 'person-circle-outline' : 'log-in'}
 						size={isMobileDrawer ? 20 : 18}
-						color={isLoggedIn ? 'rgba(100,255,100,0.6)' : 'rgba(255,255,255,0.6)'}
+						color={isLoggedIn ? 'rgba(100,255,100,0.6)' : '#d9d9d9'}
 					/>
 				</Pressable>
 			</Link>

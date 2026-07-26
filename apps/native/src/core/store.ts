@@ -2,6 +2,7 @@ import {configureStore, combineReducers} from '@reduxjs/toolkit';
 import {persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import locationReducer from '~/location/state/location/locationSlice';
+import mapReducer from '~/location/state/map/mapSlice';
 import weatherReducer from '~/environment/state/weather/weatherSlice';
 import forecastReducer from '~/environment/state/forecast/forecastSlice';
 import fieldNoteReducer from '~/environment/state/fieldNote/fieldNoteSlice';
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
 	lunar: lunarReducer,
 	city: cityReducer,
 	authentication: authenticationReducer,
+	map: mapReducer,
 });
 
 const persistConfig = {

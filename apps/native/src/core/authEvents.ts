@@ -1,4 +1,4 @@
-type AuthEvent = 'FORCE_LOGOUT';
+type AuthEvent = 'FORCE_LOGOUT' | 'OTHER';
 const listeners: ((event: AuthEvent) => void)[] = [];
 
 export const authEvents = {

@@ -9,7 +9,7 @@ export interface TokenPayload {
 export interface ActivationTokenPayload {
 	userId: string;
 	email: string;
-	purpose: 'account_activation';
+	purpose: 'account_activation' | 'password_reset';
 }
 
 export type RefreshTokenPayload = Pick<TokenPayload, 'userId'> & JwtPayload;
@@ -63,6 +63,7 @@ export class TokenService {
 		if (payload.purpose === 'account_activation') {
 			return payload;
 		}
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (payload.purpose === 'password_reset') {
 			return payload;
 		}

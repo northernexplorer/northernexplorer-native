@@ -3,17 +3,19 @@ import MapGL, {Marker} from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import useSupercluster from 'use-supercluster';
-import {useLocation} from '~/location/state/location/useLocation';
 import {Link} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {HistoricSiteType} from '@northernexplorer/types';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {config} from '~/config';
-import {useApiFetch} from '~/core/useApiFetch';
 import {BBox} from 'geojson';
 import {MapRef} from 'react-map-gl/mapbox-legacy';
+import {config} from '~/config';
+import {useApiFetch} from '~/core/useApiFetch';
+import {useLocation} from '~/location/state/location/useLocation';
+import {useMap} from '~/location/state/map/useMap';
 
 export function Map() {
+	const {baseLayer} = useMap();
 	const mapRef = useRef<MapRef>(null);
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
 	const [zoom, setZoom] = useState(10);
@@ -65,7 +67,7 @@ export function Map() {
 					latitude: coords.lat,
 					zoom: 10,
 				}}
-				mapStyle="https://tiles.openfreemap.org/styles/bright"
+				mapStyle={baseLayer}
 				onClick={() => setSelectedSite(null)}
 				onLoad={updateMapState}
 				onMove={updateMapState}
@@ -130,8 +132,8 @@ export function Map() {
 								href={{
 									pathname: '/[country]/[region]/[name]/[id]',
 									params: {
-										country: getUrlSafeString(selectedSite.country.name),
-										region: getUrlSafeString(selectedSite.region.name),
+										country: getUrlSafeString(selectedSite.country?.name),
+										region: getUrlSafeString(selectedSite.region?.name),
 										id: getUrlSafeString(selectedSite.id),
 										name: getUrlSafeString(selectedSite.name),
 									},
