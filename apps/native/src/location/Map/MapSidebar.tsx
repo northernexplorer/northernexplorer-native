@@ -74,7 +74,7 @@ export function MapSidebar() {
 							style={[styles.tileCard, isActive && styles.tileCardActive]}
 						>
 							<View style={styles.tilePreview}>
-								<MaterialCommunityIcons name={item.icon as any} size={28} color={isActive ? 'white' : 'rgba(255,255,255,0.72)'} />
+								<MaterialCommunityIcons name={item.icon} size={28} color={isActive ? 'white' : 'rgba(255,255,255,0.72)'} />
 							</View>
 							<Text style={[styles.menuText, isActive && styles.activeText]}>{item.label}</Text>
 						</TouchableOpacity>
