@@ -18,7 +18,7 @@ export class SubscriptionController extends BaseController {
 		if (!auth?.userId) return null;
 		const user = await this.repos.user.getByUsername(params.username);
 		this.permissionService.canAccessProfile({
-			userId: auth?.userId,
+			userId: auth.userId,
 			targetId: user.id,
 		});
 
