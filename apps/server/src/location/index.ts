@@ -6,6 +6,7 @@ export {CityCache} from './entities/CityCache';
 export {HistoricSite} from './entities/HistoricSite';
 export {Country} from './entities/Country';
 export {Region} from './entities/Region';
+
 export {CityRepository} from './repositories/CityRepository';
 export {HistoricSiteRepository} from './repositories/HistoricSiteRepository';
 export {CountryRepository} from './repositories/CountryRepository';

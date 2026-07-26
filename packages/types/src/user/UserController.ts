@@ -63,7 +63,7 @@ type ResetPasswordParams = {
 type GetByUsernameParams = {
 	username: string;
 };
-type GetByUsernameResponse = {
+export type GetByUsernameResponse = {
 	id: string;
 	version: number;
 	firstName: string;
