@@ -17,7 +17,7 @@ interface Props {
 	showOffline?: boolean;
 }
 
-export function Layout({Content, components, title, sidebar, fullPage, home, showOffline}: Props) {
+export function Layout({Content, title, sidebar, fullPage, home, showOffline}: Props) {
 	const {width} = useWindowDimensions();
 	const isOffline = useIsOffline();
 	const isMobileView = width < 1000;
