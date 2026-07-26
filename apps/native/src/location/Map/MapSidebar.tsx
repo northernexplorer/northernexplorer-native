@@ -8,7 +8,6 @@ import {baseLayers} from '~/location/Map/baseLayers';
 import {useMap} from '~/location/state/map/useMap';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
-import username from '~/app/profile/[username]';
 
 const LAYER_TILES = [
 	{
@@ -35,18 +34,29 @@ export function MapSidebar() {
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
 	const {baseLayer} = useMap();
+
+	const isLoggedIn = !!authentication?.username;
+
 	const {data} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {username: authentication?.username});
 
 	const canView = !!data?.map.changeStyle;
 
+	const bannerHref = isLoggedIn ? `/profile/${authentication.username}/change-subscription` : '/profile/login';
+
+	const bannerTitle = 'Upgrade Required to Access All Map Styles';
+
+	const bannerSubtitle = isLoggedIn ? 'Click to find out more' : 'Start by signing in';
+
 	return (
 		<View>
 			{!canView && (
-				<Link href={`profile/${username}/change-subscription`}>
-					<View style={styles.banner}>
-						<Text style={styles.bannerTitle}>Upgrade Required to Access All Map Styles</Text>
-						<Text style={styles.bannerSubtitle}>Click to Find out more</Text>
-					</View>
+				<Link href={bannerHref} asChild>
+					<TouchableOpacity activeOpacity={0.8}>
+						<View style={styles.banner}>
+							<Text style={styles.bannerTitle}>{bannerTitle}</Text>
+							<Text style={styles.bannerSubtitle}>{bannerSubtitle}</Text>
+						</View>
+					</TouchableOpacity>
 				</Link>
 			)}
 
