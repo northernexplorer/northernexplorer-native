@@ -1,39 +1,57 @@
+import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {Link} from 'expo-router';
 import {setBaseLayer} from '~/location/state/map/mapSlice';
 import {baseLayers} from '~/location/Map/baseLayers';
 import {useMap} from '~/location/state/map/useMap';
+import {useApiFetch} from '~/core/useApiFetch';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import username from '~/app/profile/[username]';
 
-// Define the tile visual configuration
 const LAYER_TILES = [
 	{
 		key: 'standard',
 		label: 'Standard',
 		layer: baseLayers.standard,
-		bgStyle: {backgroundColor: '#e5e7eb'},
+		icon: 'map-outline',
 	},
 	{
 		key: 'satellite',
 		label: 'Satellite',
 		layer: baseLayers.satellite,
-		bgStyle: {backgroundColor: '#1e293b'},
+		icon: 'satellite-variant',
 	},
 	{
 		key: 'terrain',
 		label: 'Terrain',
 		layer: baseLayers.terrain,
-		bgStyle: {backgroundColor: '#dcfce7'},
+		icon: 'image-filter-hdr',
 	},
 ] as const;
 
 export function MapSidebar() {
 	const dispatch = useDispatch();
+	const authentication = useAuthentication();
 	const {baseLayer} = useMap();
+	const {data} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {username: authentication?.username});
+
+	const canView = !!data?.map.changeStyle;
 
 	return (
 		<View>
-			<Text>Map Style</Text>
-			<View style={styles.tileGroup}>
+			{!canView && (
+				<Link href={`profile/${username}/change-subscription`}>
+					<View style={styles.banner}>
+						<Text style={styles.bannerTitle}>Upgrade Required to Access All Map Styles</Text>
+						<Text style={styles.bannerSubtitle}>Click to Find out more</Text>
+					</View>
+				</Link>
+			)}
+
+			<Text style={styles.heading}>Map Style</Text>
+			<View style={[styles.tileGroup, !canView && styles.disabledGroup]}>
 				{LAYER_TILES.map(item => {
 					const isActive = JSON.stringify(baseLayer) === JSON.stringify(item.layer);
 
@@ -41,13 +59,14 @@ export function MapSidebar() {
 						<TouchableOpacity
 							key={item.key}
 							activeOpacity={0.8}
+							disabled={!canView}
 							onPress={() => dispatch(setBaseLayer(item.layer))}
 							style={[styles.tileCard, isActive && styles.tileCardActive]}
 						>
-							<View style={[styles.tilePreview, item.bgStyle]}>
-								<Text style={styles.previewText}>{item.key === 'satellite' ? '🛰️' : item.key === 'terrain' ? '🏔️' : '🗺️'}</Text>
+							<View style={styles.tilePreview}>
+								<MaterialCommunityIcons name={item.icon as any} size={28} color={isActive ? 'white' : 'rgba(255,255,255,0.72)'} />
 							</View>
-							<Text style={[styles.tileLabel, isActive && styles.tileLabelActive]}>{item.label}</Text>
+							<Text style={[styles.menuText, isActive && styles.activeText]}>{item.label}</Text>
 						</TouchableOpacity>
 					);
 				})}
@@ -57,46 +76,68 @@ export function MapSidebar() {
 }
 
 const styles = StyleSheet.create({
-	header: {
-		fontSize: 11,
-		fontWeight: '700',
-		textTransform: 'uppercase',
-		color: '#64748b',
+	heading: {
+		color: 'white',
+		fontSize: 18,
+		fontWeight: '600',
+		marginTop: 16,
 		marginBottom: 8,
-		letterSpacing: 0.5,
 	},
 	tileGroup: {
 		flexDirection: 'row',
 		gap: 8,
 	},
+	disabledGroup: {
+		opacity: 0.4,
+		pointerEvents: 'none',
+	},
 	tileCard: {
 		alignItems: 'center',
-		borderRadius: 8,
-		borderWidth: 2,
-		borderColor: 'transparent',
-		padding: 2,
+		borderRadius: 12,
+		borderWidth: 1,
+		borderColor: 'rgba(255,255,255,0.08)',
+		backgroundColor: 'rgba(255,255,255,0.04)',
+		padding: 4,
 	},
 	tileCardActive: {
-		borderColor: '#2563eb',
+		backgroundColor: 'rgba(255,255,255,0.12)',
+		borderColor: 'rgba(255,255,255,0.2)',
 	},
 	tilePreview: {
-		width: 75,
-		height: 75,
-		borderRadius: 6,
+		width: 65,
+		height: 65,
+		borderRadius: 8,
+		backgroundColor: 'rgba(255,255,255,0.04)',
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
-	previewText: {
-		fontSize: 20,
-	},
-	tileLabel: {
+	menuText: {
+		color: 'rgba(255,255,255,0.72)',
 		fontSize: 11,
-		fontWeight: '500',
-		color: '#334155',
 		marginTop: 4,
+		marginBottom: 2,
 	},
-	tileLabelActive: {
-		fontWeight: '700',
-		color: '#2563eb',
+	activeText: {
+		color: 'white',
+		fontWeight: '600',
+	},
+	banner: {
+		backgroundColor: 'rgba(255,255,255,0.04)',
+		borderRadius: 12,
+		borderWidth: 1,
+		borderColor: '#333333',
+		padding: 12,
+		marginBottom: 12,
+	},
+	bannerTitle: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: 'white',
+		marginBottom: 2,
+	},
+	bannerSubtitle: {
+		fontSize: 13,
+		lineHeight: 18,
+		color: 'rgba(255,255,255,0.78)',
 	},
 });
