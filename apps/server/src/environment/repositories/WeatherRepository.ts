@@ -23,7 +23,7 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
 
 		const rawResults = (await this.em.getConnection().execute(query)) as unknown as RawInternalWeatherRow[];
 
-		const cachedRecord = rawResults[0];
+		const cachedRecord = rawResults.at(0);
 		if (cachedRecord) {
 			return typeof cachedRecord.weatherData === 'string' ? JSON.parse(cachedRecord.weatherData) : cachedRecord.weatherData;
 		}

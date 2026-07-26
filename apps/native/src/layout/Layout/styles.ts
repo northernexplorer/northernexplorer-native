@@ -61,7 +61,7 @@ export const styles = StyleSheet.create({
 		height: 56,
 	},
 	brandText: {
-		color: 'rgba(255,255,255,0.7)',
+		color: '#d9d9d9',
 		fontSize: 20,
 		fontWeight: '600',
 	},

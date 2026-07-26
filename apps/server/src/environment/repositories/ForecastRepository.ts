@@ -23,7 +23,7 @@ export class ForecastRepository extends EntityRepository<ForecastCache> {
 
 		const rawResults = (await this.em.getConnection().execute(query)) as unknown as RawInternalForecastRow[];
 
-		const cachedResult = rawResults[0];
+		const cachedResult = rawResults.at(0);
 
 		if (cachedResult) {
 			return typeof cachedResult.forecastData === 'string' ? JSON.parse(cachedResult.forecastData) : cachedResult.forecastData;

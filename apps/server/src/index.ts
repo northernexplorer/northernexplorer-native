@@ -55,7 +55,7 @@ export function handle<T extends object>(ControllerClass: ControllerConstructor<
 				const token = authHeader.substring(7);
 				currentUser = {...currentUser, ...tokenService.verifyAccessToken(token)};
 			} catch {
-				res.status(401).json({error: 'Your login session has expired. Please log in again.'});
+				res.status(401).json({error: 'Session Expired'});
 				return;
 			}
 		}
@@ -120,7 +120,7 @@ async function bootstrap() {
 				const dataEm = orm.em.fork() as EntityManager;
 				const context = await workerInstance.getData(dataEm);
 
-				if (context && Array.isArray(context)) {
+				if (Array.isArray(context)) {
 					for (const contextItem of context) {
 						// Fork a unique, lightweight Unit of Work context for processing this specific item
 						const executionEm = orm.em.fork() as EntityManager;

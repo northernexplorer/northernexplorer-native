@@ -1,4 +1,4 @@
-import {Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Text, TextInput, TouchableOpacity, TextInputProps, View} from 'react-native';
 import React, {useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
@@ -12,9 +12,24 @@ interface Props<T extends string> {
 	loading?: boolean;
 	value?: string;
 	secureTextEntry?: boolean;
+	autoComplete?: TextInputProps['autoComplete'];
+	textContentType?: TextInputProps['textContentType'];
+	importantForAutofill?: TextInputProps['importantForAutofill'];
 }
 
-export function FormField<T extends string>({fieldName, label, updateField, placeholder, error, loading, value, secureTextEntry = false}: Props<T>) {
+export function FormField<T extends string>({
+	fieldName,
+	label,
+	updateField,
+	placeholder,
+	error,
+	loading,
+	value,
+	secureTextEntry = false,
+	autoComplete,
+	textContentType,
+	importantForAutofill = 'yes',
+}: Props<T>) {
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
 	return (
@@ -25,11 +40,14 @@ export function FormField<T extends string>({fieldName, label, updateField, plac
 				<TextInput
 					style={[styles.input, loading && styles.disabledInput]}
 					placeholder={placeholder}
-					placeholderTextColor="#888888"
 					secureTextEntry={secureTextEntry && !isPasswordVisible}
 					value={value}
 					onChangeText={val => updateField(fieldName, val)}
 					editable={!loading}
+					placeholderTextColor="#888888"
+					autoComplete={autoComplete}
+					textContentType={textContentType}
+					importantForAutofill={importantForAutofill}
 				/>
 				{secureTextEntry && (
 					<TouchableOpacity
