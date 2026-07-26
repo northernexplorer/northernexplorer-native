@@ -10,14 +10,14 @@ import {Offline} from '~/layout/Layout/components/Offline';
 
 interface Props {
 	Content: ComponentType;
-	components?: ComponentType[];
+	sidebar?: ComponentType[];
 	title?: string;
 	fullPage?: boolean;
 	home?: boolean;
 	showOffline?: boolean;
 }
 
-export function Layout({Content, components, title, fullPage, home, showOffline}: Props) {
+export function Layout({Content, title, sidebar, fullPage, home, showOffline}: Props) {
 	const {width} = useWindowDimensions();
 	const isOffline = useIsOffline();
 	const isMobileView = width < 1000;
@@ -75,7 +75,7 @@ export function Layout({Content, components, title, fullPage, home, showOffline}
 				</View>
 
 				<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : [styles.sidebarDesktop, {alignSelf: 'stretch'}]]}>
-					<Sidebar components={components} />
+					<Sidebar components={sidebar} />
 				</View>
 			</ScrollView>
 		</View>
