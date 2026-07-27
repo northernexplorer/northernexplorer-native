@@ -57,13 +57,13 @@ export function AlertHandler({children}: {children: React.ReactNode}) {
 	};
 
 	const config = ALERT_CONFIG[activeAlert.type];
-	const displayTitle = activeAlert.title || config.title;
+	const displayTitle = activeAlert.title;
 
 	return (
 		<View style={styles.container}>
 			{children}
 
-			<Modal transparent visible={isVisible} animationType="fade">
+			<Modal transparent visible={isVisible} animationType="fade" onRequestClose={() => handleButtonPress()}>
 				<View style={styles.overlay}>
 					<View style={styles.alertBox}>
 						<View style={[styles.iconCircle, {borderColor: config.color, backgroundColor: `${config.color}15`}]}>
@@ -81,7 +81,7 @@ export function AlertHandler({children}: {children: React.ReactNode}) {
 
 									return (
 										<TouchableOpacity
-											key={index}
+											key={btn.text || index}
 											style={[styles.actionButton, isDestructive && styles.destructiveButton, isCancel && styles.cancelButton]}
 											onPress={() => handleButtonPress(btn.onPress)}
 										>
@@ -91,7 +91,7 @@ export function AlertHandler({children}: {children: React.ReactNode}) {
 								})}
 							</View>
 						) : (
-							<TouchableOpacity style={styles.button} onPress={() => alertStore.clearAlert()}>
+							<TouchableOpacity style={styles.button} onPress={() => handleButtonPress()}>
 								<Text style={styles.buttonText}>Dismiss</Text>
 							</TouchableOpacity>
 						)}
@@ -132,9 +132,7 @@ const styles = StyleSheet.create({
 		width: 48,
 		height: 48,
 		borderRadius: 24,
-		backgroundColor: 'rgba(255, 59, 48, 0.1)',
 		borderWidth: 1,
-		borderColor: '#FF3B30',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginBottom: 16,

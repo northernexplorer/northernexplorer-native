@@ -1,6 +1,7 @@
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Pressable} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import React from 'react';
+import {Link} from 'expo-router';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
@@ -27,7 +28,7 @@ const getIconForClient = (client: string) => {
 	return 'globe-outline';
 };
 
-export function Sessions({username}: Props) {
+export function Security({username}: Props) {
 	const auth = useAuthentication();
 	const {data, loading, refetch} = useApiFetch('user', 'SessionController', 'getSessions', {
 		username,
@@ -98,6 +99,11 @@ export function Sessions({username}: Props) {
 					)}
 				</View>
 			))}
+			<Link href={`/profile/${username}/change-password`} asChild>
+				<Pressable style={styles.button}>
+					<Text style={styles.buttonText}>Change Password</Text>
+				</Pressable>
+			</Link>
 		</View>
 	);
 }

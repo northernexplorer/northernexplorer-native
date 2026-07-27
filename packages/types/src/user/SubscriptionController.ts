@@ -1,5 +1,3 @@
-import {GenericResponseType} from '../GenericResponseType';
-
 type SubscriptionParams = {username: string};
 type GetPermissionParams = {username?: string};
 type PermissionResponse = {
@@ -13,8 +11,7 @@ type SubscriptionResponse = {
 		id: string;
 		version: number;
 		startDate: Date;
-		endDate: Date | null;
-		renewalDate: Date;
+		renewalDate?: Date | null;
 	};
 	subscriptionLevel: {
 		id: string;
@@ -26,11 +23,6 @@ type SubscriptionResponse = {
 	};
 };
 
-type ChangeSubscriptionParams = {
-	username: string;
-	subscriptionLevelId: string;
-};
-
 export const SubscriptionController = {
 	getByUsername: {
 		params: {} as SubscriptionParams,
@@ -39,9 +31,5 @@ export const SubscriptionController = {
 	getPermissions: {
 		params: {} as GetPermissionParams,
 		response: {} as PermissionResponse | null | undefined,
-	},
-	changeSubscription: {
-		params: {} as ChangeSubscriptionParams,
-		response: {} as GenericResponseType,
 	},
 };

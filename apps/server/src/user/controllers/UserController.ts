@@ -39,15 +39,7 @@ export class UserController extends BaseController {
 
 		const subscriptionLevel = await this.repos.subscriptionLevel.getByName('Pathfinder');
 
-		const startDate = new Date();
-		const renewalDate = new Date();
-		renewalDate.setMonth(startDate.getMonth() + 1);
-
-		const subscription = new Subscription({
-			subscriptionLevel,
-			startDate,
-			renewalDate,
-		});
+		const subscription = new Subscription({subscriptionLevel});
 		this.persist(subscription);
 
 		const user = new User({

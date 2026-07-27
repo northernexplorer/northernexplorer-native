@@ -11,4 +11,5 @@ export const config = {
 	ACTIVATION_SECRET: process.env.ACTIVATION_SECRET || 'TEMP_ACTIVATION_SECRET',
 	WEB_URL: process.env.WEB_URL || 'http://localhost:8081',
 	CORS: process.env.CORS || 'http://localhost:8081,https://northernexplorer.org',
+	REVENUE_CAT_ACCESS_CODE: process.env.REVENUE_CAT_ACCESS_CODE || 'TEMP_REVENUE_CAT_ACCESS_CODE',
 };

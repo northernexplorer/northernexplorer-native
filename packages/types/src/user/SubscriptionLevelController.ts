@@ -6,6 +6,7 @@ export type SubscriptionLevelsResponse = {
 	cost: number;
 	description: string;
 	shortDescription: string;
+	googleProductId?: string | null;
 };
 
 export const SubscriptionLevelController = {

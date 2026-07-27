@@ -60,7 +60,7 @@ export function handle<T extends object>(ControllerClass: ControllerConstructor<
 			}
 		}
 
-		const params = {...req.query, ...req.params, ...req.body};
+		const params = {...req.query, ...req.params, ...req.body, secret: req.headers['secret']};
 
 		try {
 			const result = await (method as (p: unknown, ctx: unknown) => Promise<unknown>).call(controller, params, currentUser);

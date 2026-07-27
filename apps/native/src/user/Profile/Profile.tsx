@@ -5,7 +5,7 @@ import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {ProfileDetails} from '~/user/Profile/components/ProfileDetails';
 import {Subscription} from '~/user/Profile/components/Subscription';
-import {Sessions} from '~/user/Profile/components/Sessions';
+import {Security} from '~/user/Profile/components/Security';
 import {Other} from '~/user/Profile/components/Other';
 
 type RouteParams = {
@@ -49,7 +49,7 @@ export function Profile() {
 
 			{tab === 'details' && <ProfileDetails username={username} />}
 			{tab === 'subscription' && <Subscription username={username} />}
-			{tab === 'security' && <Sessions username={username} />}
+			{tab === 'security' && <Security username={username} />}
 			{tab === 'other' && <Other username={username} />}
 		</View>
 	);

@@ -7,6 +7,7 @@ type SubscriptionLevelInput = {
 	shortDescription: string;
 	enabled: boolean;
 	cost: number;
+	googleProductId?: string | null;
 };
 
 @Entity()
@@ -26,6 +27,9 @@ export class SubscriptionLevel {
 	@Property({type: 'text'})
 	shortDescription: string;
 
+	@Property({type: 'text', nullable: true})
+	googleProductId?: string | null;
+
 	@Property({type: 'boolean'})
 	enabled: boolean;
 
@@ -38,5 +42,6 @@ export class SubscriptionLevel {
 		this.shortDescription = data.shortDescription;
 		this.enabled = data.enabled;
 		this.cost = data.cost;
+		this.googleProductId = data.googleProductId;
 	}
 }
