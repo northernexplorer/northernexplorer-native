@@ -65,7 +65,8 @@ export class SubscriptionController extends BaseController {
 			case 'PRODUCT_CHANGE':
 			case 'UNCANCELLATION': {
 				if (!productId) break;
-				const level = await this.repos.subscriptionLevel.getByGoogleProductId(productId);
+				const baseProductId = productId.split(':')[0];
+				const level = await this.repos.subscriptionLevel.getByGoogleProductId(baseProductId);
 				const expirationDate = expirationAtMs
 					? new Date(Number(expirationAtMs))
 					: new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
