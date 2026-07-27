@@ -3,7 +3,6 @@ import {Repositories} from '../../core/repositories';
 import {PermissionService} from '../services/PermisionService';
 import {AuthContext} from '../../index';
 import {BaseController} from '../../core/BaseController';
-import {SubscriptionLevel} from '../entities/SubscriptionLevel';
 import {config} from '../../config';
 
 type Route<M extends keyof ROUTES['user']['SubscriptionController']> = RouteDefinition<'user', 'SubscriptionController'>[M];
