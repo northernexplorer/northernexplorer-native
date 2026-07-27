@@ -1,8 +1,8 @@
 import {Entity, ManyToOne, OneToMany, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
-import { Collection } from '@mikro-orm/core';
+import {Collection} from '@mikro-orm/core';
+import {Review} from '../../features';
 import {Region} from './Region';
 import {Country} from './Country';
-import { Review } from '../../features';
 
 @Entity()
 export class HistoricSite {
@@ -39,8 +39,8 @@ export class HistoricSite {
 	@ManyToOne(() => Region)
 	region!: Region;
 
-     @OneToMany(() => Review,review => review.HistoricSite)
-     reviews = new Collection<Review>(this)
+	@OneToMany(() => Review, review => review.historicSite)
+	reviews = new Collection<Review>(this);
 
 	@Property({type: 'datetime'})
 	createdAt = new Date();

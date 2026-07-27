@@ -1,7 +1,7 @@
 import {RegionType} from '@northernexplorer/types';
-import {HistoricSite} from '../entities/HistoricSite';
 import {EntityRepository} from '@mikro-orm/postgresql';
-import { ReviewType } from '../../../../../packages/types/src/features/Review';
+import {ReviewType} from '@northernexplorer/types';
+import {HistoricSite} from '../entities/HistoricSite';
 
 interface HistoricSiteRawRow {
 	id: string;
@@ -14,13 +14,13 @@ interface HistoricSiteRawRow {
 	endDate: string | number;
 	country: {id: string; name: string};
 	region: RegionType;
-	reviews:ReviewType
+	reviews: ReviewType;
 	distanceMeters: number;
 }
 
 export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 	async getHistoricSiteDetails(id: string) {
-		const site = await this.findOne({id:id}, {populate: ['country', 'region','reviews']});
+		const site = await this.findOne({id: id}, {populate: ['country', 'region', 'reviews']});
 
 		if (!site) throw new Error('Historic site not found.');
 
@@ -92,7 +92,7 @@ LEFT JOIN "user" u
 			image: site.image,
 			country: site.country,
 			region: site.region,
-			review:site.reviews,
+			review: site.reviews,
 			lat: Number(site.lat),
 			lon: Number(site.lon),
 			startDate: site.startDate ? Number(site.startDate) : null,

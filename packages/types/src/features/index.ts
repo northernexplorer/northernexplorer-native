@@ -1,4 +1,4 @@
-import { ReviewController } from "./ReviewController";
+import {ReviewController} from './ReviewController';
 export const features = {ReviewController};
 
-export * from './ReviewController'
+export * from './ReviewController';
