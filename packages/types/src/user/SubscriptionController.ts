@@ -13,7 +13,7 @@ type SubscriptionResponse = {
 		id: string;
 		version: number;
 		startDate: Date;
-		renewalDate: Date;
+		renewalDate?: Date | null;
 	};
 	subscriptionLevel: {
 		id: string;

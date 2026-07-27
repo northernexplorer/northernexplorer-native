@@ -6,7 +6,7 @@ type SubscriptionInput = {
 	subscriptionLevel: SubscriptionLevel;
 	startDate?: Date;
 	endDate?: Date | null;
-	renewalDate?: Date;
+	renewalDate?: Date | null;
 };
 
 @Entity()
@@ -23,8 +23,8 @@ export class Subscription {
 	@Property({type: 'datetime'})
 	startDate = new Date();
 
-	@Property({type: 'datetime'})
-	renewalDate = new Date();
+	@Property({type: 'datetime', nullable: true})
+	renewalDate?: Date | null;
 
 	constructor(data: SubscriptionInput) {
 		this.subscriptionLevel = data.subscriptionLevel;
