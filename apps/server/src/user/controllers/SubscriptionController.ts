@@ -28,11 +28,7 @@ export class SubscriptionController extends BaseController {
 
 		return {
 			map: {
-				changeStyle:
-					subscriptionLevel.name === 'Explorer' ||
-					subscriptionLevel.name === 'Trailblazer' ||
-					subscriptionLevel.name === 'Pioneer' ||
-					subscriptionLevel.name === 'Legend',
+				changeStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 			},
 		};
 	}
