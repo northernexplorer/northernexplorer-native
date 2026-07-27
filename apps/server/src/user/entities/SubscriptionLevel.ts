@@ -1,5 +1,7 @@
-import {Entity, Property, PrimaryKey} from '@mikro-orm/decorators/legacy';
+import {Entity, Property, PrimaryKey, ManyToMany} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
+import {Collection} from '@mikro-orm/core';
+import {SubscriptionFeature} from './SubscriptionFeature';
 
 type SubscriptionLevelInput = {
 	name: string;
@@ -35,6 +37,9 @@ export class SubscriptionLevel {
 
 	@Property({type: 'double'})
 	cost: number;
+
+	@ManyToMany(() => SubscriptionFeature, 'subscriptionLevels', {owner: true})
+	features = new Collection<SubscriptionFeature>(this);
 
 	constructor(data: SubscriptionLevelInput) {
 		this.name = data.name;
