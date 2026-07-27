@@ -1,3 +1,3 @@
-import {CleanUsersHeartbeat, RenewSubscriptionHeartbeat} from '../user';
+import {CleanUsersHeartbeat} from '../user';
 
-export const heartbeats = [CleanUsersHeartbeat, RenewSubscriptionHeartbeat];
+export const heartbeats = [CleanUsersHeartbeat];

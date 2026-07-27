@@ -23,16 +23,12 @@ export class Subscription {
 	@Property({type: 'datetime'})
 	startDate = new Date();
 
-	@Property({type: 'datetime', nullable: true})
-	endDate: Date | null = null;
-
 	@Property({type: 'datetime'})
 	renewalDate = new Date();
 
 	constructor(data: SubscriptionInput) {
 		this.subscriptionLevel = data.subscriptionLevel;
 		if (data.startDate) this.startDate = data.startDate;
-		if (data.endDate !== undefined) this.endDate = data.endDate;
 		if (data.renewalDate) this.renewalDate = data.renewalDate;
 	}
 }

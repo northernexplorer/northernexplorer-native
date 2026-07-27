@@ -25,7 +25,6 @@ export function Subscription({username}: Props) {
 			<ProfileField label="Type" value={data.subscriptionLevel.name} />
 			<ProfileField label="Start Date" value={new Date(data.subscription.startDate).toLocaleDateString()} />
 			<ProfileField label="Renewal Date" value={new Date(data.subscription.renewalDate).toLocaleDateString()} />
-			{data.subscription.endDate && <ProfileField label="End Date" value={new Date(data.subscription.endDate).toLocaleDateString()} />}
 			<ProfileField label="Cost" value={formatMoney(data.subscriptionLevel.cost)} />
 			<ProfileField label="Description" value={data.subscriptionLevel.description} />
 			<Link href={`/profile/${username}/change-subscription`} asChild>
