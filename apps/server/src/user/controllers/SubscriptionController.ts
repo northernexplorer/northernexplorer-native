@@ -56,7 +56,7 @@ export class SubscriptionController extends BaseController {
 			type?: string;
 			app_user_id?: string;
 			product_id?: string;
-			expiration_at_ms?: number;
+			expiration_at_ms?: number | string;
 		};
 		secret?: string;
 	}) {
@@ -71,7 +71,6 @@ export class SubscriptionController extends BaseController {
 		const user = await this.repos.user.getByUsername(username);
 		const userSubscription = await this.repos.subscription.getById(user.subscription.id);
 
-		// Calculate end date using RevenueCat timestamp if provided, or fallback to +1 month
 		const now = new Date();
 
 		switch (type) {
@@ -81,9 +80,13 @@ export class SubscriptionController extends BaseController {
 			case 'UNCANCELLATION': {
 				if (!productId) break;
 				const level = await this.repos.subscriptionLevel.getByGoogleProductId(productId);
-				const expirationDate = expirationAtMs ? new Date(expirationAtMs) : new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+				const expirationDate = expirationAtMs
+					? new Date(Number(expirationAtMs))
+					: new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+
 				userSubscription.subscriptionLevel = level;
-				userSubscription.startDate = new Date();
+				userSubscription.startDate = now;
+
 				userSubscription.renewalDate = expirationDate;
 				break;
 			}
@@ -98,7 +101,6 @@ export class SubscriptionController extends BaseController {
 
 			case 'CANCELLATION': {
 				// User turned off auto-renew in Google Play.
-				// Do NOT revoke tier or change subscriptionLevel yet.
 				// Access remains active until EXPIRATION is triggered by RevenueCat.
 				break;
 			}
@@ -106,6 +108,7 @@ export class SubscriptionController extends BaseController {
 			default:
 				break;
 		}
+
 		await this.flush();
 
 		return {success: true};
