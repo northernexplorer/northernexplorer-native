@@ -56,7 +56,7 @@ export function AlertHandler({children}: {children: React.ReactNode}) {
 		}
 	};
 
-	const config = ALERT_CONFIG[activeAlert.type || 'error'];
+	const config = ALERT_CONFIG[activeAlert.type];
 	const displayTitle = activeAlert.title;
 
 	return (
