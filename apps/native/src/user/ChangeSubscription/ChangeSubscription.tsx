@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Pressable, Text, ScrollView, StyleSheet, View, Linking, Platform} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
-import Purchases, {LOG_LEVEL} from 'react-native-purchases';
-import Constants from 'expo-constants';
+import Purchases from 'react-native-purchases';
 import {formatMoney} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -25,7 +24,7 @@ export function ChangeSubscription() {
 	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
 
 	useEffect(() => {
-		if (subscriptionData?.subscriptionLevel?.id) {
+		if (subscriptionData?.subscriptionLevel.id) {
 			setSelectedSubscriptionId(subscriptionData.subscriptionLevel.id);
 		}
 	}, [subscriptionData]);
@@ -60,22 +59,19 @@ export function ChangeSubscription() {
 			if (isFreeTier) {
 				// FREE TIER / DOWNGRADE:
 				// Direct user to Google Play to cancel auto-renew.
-				alertStore.showAlert(
-					{
-						message: 'To cancel or downgrade your active paid subscription, please manage auto-renew in Google Play.',
-						title: 'Subscription Downgrade',
-						type: 'success',
-						buttons: [
-							{
-								text: 'Open Google Play',
-								style: 'default',
-								onPress: () => Linking.openURL('https://play.google.com/store/account/subscriptions'),
-							},
-							{text: 'Okay', style: 'cancel'},
-						],
-					},
-					'success',
-				);
+				alertStore.showAlert({
+					message: 'To cancel or downgrade your active paid subscription, please manage auto-renew in Google Play.',
+					title: 'Subscription Downgrade',
+					type: 'success',
+					buttons: [
+						{
+							text: 'Open Google Play',
+							style: 'default',
+							onPress: () => Linking.openURL('https://play.google.com/store/account/subscriptions'),
+						},
+						{text: 'Okay', style: 'cancel'},
+					],
+				});
 				setIsPurchasing(false);
 				return;
 			}
@@ -90,10 +86,10 @@ export function ChangeSubscription() {
 			const productId = selectedPlan.googleProductId;
 			if (productId) {
 				const storeProducts = await Purchases.getProducts([productId]);
-				const productToPurchase = storeProducts[0];
+				const productToPurchase = storeProducts.at(0);
 
 				if (!productToPurchase) {
-					alertStore.showAlert({message: 'Could not find product in Google Play Store.', title: 'Purchase Error'}, 'error');
+					alertStore.showAlert({message: 'Could not find product in Google Play Store.', title: 'Purchase Error', type: 'error'});
 					setIsPurchasing(false);
 					return;
 				}
@@ -101,16 +97,16 @@ export function ChangeSubscription() {
 				// Trigger Google Play Purchase Sheet
 				await Purchases.purchaseStoreProduct(productToPurchase);
 
-				alertStore.showAlert({message: 'Subscription processed! Access will update shortly.', title: 'Success'}, 'success');
+				alertStore.showAlert({message: 'Subscription processed! Access will update shortly.', title: 'Success', type: 'success'});
 				router.replace(`/profile/${username}`);
 				return; // Stop execution here so it doesn't drop through to the fallback alert below
 			}
-			alertStore.showAlert({message: 'Could not find product ID.', title: 'Purchase Error'}, 'error');
+			alertStore.showAlert({message: 'Could not find product ID.', title: 'Purchase Error', type: 'error'});
 		} catch (error: unknown) {
 			const message = error instanceof Error ? error.message : String(error);
 			const isCancelled = typeof error === 'object' && error !== null && 'userCancelled' in error && Boolean(error.userCancelled);
 			if (!isCancelled) {
-				alertStore.showAlert({message: message || 'An error occurred during transaction.', title: 'Purchase Error'}, 'error');
+				alertStore.showAlert({message: message || 'An error occurred during transaction.', title: 'Purchase Error', type: 'error'});
 			}
 		} finally {
 			setIsPurchasing(false);

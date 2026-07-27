@@ -13,4 +13,12 @@ export class SubscriptionLevelRepository extends EntityRepository<SubscriptionLe
 	async getAll() {
 		return this.find({enabled: true}, {orderBy: {cost: 'asc'}});
 	}
+
+	getByGoogleProductId(productId: string) {
+		return this.findOneOrFail({googleProductId: productId});
+	}
+
+	getFree() {
+		return this.findOneOrFail({cost: 0});
+	}
 }

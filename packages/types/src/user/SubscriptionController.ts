@@ -26,11 +26,6 @@ type SubscriptionResponse = {
 	};
 };
 
-type ChangeSubscriptionParams = {
-	username: string;
-	subscriptionLevelId: string;
-};
-
 export const SubscriptionController = {
 	getByUsername: {
 		params: {} as SubscriptionParams,
@@ -39,9 +34,5 @@ export const SubscriptionController = {
 	getPermissions: {
 		params: {} as GetPermissionParams,
 		response: {} as PermissionResponse | null | undefined,
-	},
-	changeSubscription: {
-		params: {} as ChangeSubscriptionParams,
-		response: {} as GenericResponseType,
 	},
 };
