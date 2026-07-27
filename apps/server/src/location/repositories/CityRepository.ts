@@ -5,24 +5,26 @@ import {config} from '../../config';
 export class CityRepository extends EntityRepository<CityCache> {
 	async getCityCache(lat: number, lon: number) {
 		const query = `
-          SELECT city_data as "cityData", updated_at as "updatedAt", distance_meters as "distanceMeters"
-          FROM (
-                   SELECT city_data, updated_at,
-                          (6371000 * acos( cos(radians(${lat})) * cos(radians(lat)) * cos(radians(lon) - radians(${lon})) + sin(radians(${lat})) * sin(radians(lat)) )) AS distance_meters
-                   FROM city_cache
-                   WHERE updated_at >= NOW() - INTERVAL '60 days'
-               ) AS search_results
-          WHERE distance_meters <= 5000
-          ORDER BY distance_meters ASC
-              LIMIT 1
-      `;
+			SELECT city_data as "cityData", updated_at as "updatedAt", distance_meters as "distanceMeters"
+			FROM (
+					 SELECT city_data, updated_at,
+				            (6371000 * acos(
+								cos(radians(?)) * cos(radians(lat)) * cos(radians(lon) - radians(?)) +
+					            sin(radians(?)) * sin(radians(lat))
+				                       )) AS distance_meters
+				     FROM city_cache
+				     WHERE updated_at >= NOW() - INTERVAL '60 days'
+				 ) AS search_results
+			WHERE distance_meters <= 5000
+			ORDER BY distance_meters ASC
+				LIMIT 1
+		`;
 
-		const [cachedResult] = await this.em.getConnection().execute(query, [lat, lon, lat]);
+		const cachedResults = await this.em.getConnection().execute(query, [lat, lon, lat]);
+		const cachedResult = cachedResults.at(0);
 
 		if (cachedResult) {
-			const parsedData = typeof cachedResult.cityData === 'string' ? JSON.parse(cachedResult.cityData) : cachedResult.cityData;
-
-			return parsedData[0];
+			return typeof cachedResult.cityData === 'string' ? JSON.parse(cachedResult.cityData)[0] : cachedResult.cityData[0];
 		}
 
 		const apiUrl = `https://api.weatherapi.com/v1/search.json?key=${config.WEATHER_API_KEY}&q=${lat},${lon}`;

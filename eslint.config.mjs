@@ -57,6 +57,7 @@ export default [
 			'react/jsx-curly-brace-presence': ['error', {props: 'never', children: 'never'}],
 
 			// Added Type-Aware Rules
+			'@typescript-eslint/no-unnecessary-condition': 'error',
 			'@typescript-eslint/await-thenable': 'error',
 			'@typescript-eslint/require-await': 'error',
 			'import/order': [

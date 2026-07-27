@@ -28,7 +28,6 @@ export function useLocationBootstrap() {
 			setError(null);
 
 			try {
-				// --- Core Location Logic ---
 				const permissions = await getForegroundPermissionsAsync();
 				let granted = permissions.granted;
 				if (!granted && permissions.canAskAgain) {

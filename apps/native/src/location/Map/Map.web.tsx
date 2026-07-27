@@ -12,8 +12,10 @@ import {MapRef} from 'react-map-gl/mapbox-legacy';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
+import {useMap} from '~/location/state/map/useMap';
 
 export function Map() {
+	const {baseLayer} = useMap();
 	const mapRef = useRef<MapRef>(null);
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
 	const [zoom, setZoom] = useState(10);
@@ -65,7 +67,7 @@ export function Map() {
 					latitude: coords.lat,
 					zoom: 10,
 				}}
-				mapStyle="https://tiles.openfreemap.org/styles/bright"
+				mapStyle={baseLayer}
 				onClick={() => setSelectedSite(null)}
 				onLoad={updateMapState}
 				onMove={updateMapState}

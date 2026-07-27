@@ -5,21 +5,27 @@ import {getWeatherTheme} from '~/layout/Layout/getWeatherTheme';
 import {useWeather} from '~/environment/state/weather/useWeather';
 import {Sidebar} from '~/layout/Layout/components/Sidebar';
 import {Navigation} from '~/layout/Layout/components/Navigation';
+import {useIsOffline} from '~/core/ConnectivityProvider';
+import {Offline} from '~/layout/Layout/components/Offline';
 
 interface Props {
 	Content: ComponentType;
-	components?: ComponentType[];
+	sidebar?: ComponentType[];
 	title?: string;
 	fullPage?: boolean;
 	home?: boolean;
+	showOffline?: boolean;
 }
 
-export function Layout({Content, components, title, fullPage, home}: Props) {
+export function Layout({Content, title, sidebar, fullPage, home, showOffline}: Props) {
 	const {width} = useWindowDimensions();
+	const isOffline = useIsOffline();
 	const isMobileView = width < 1000;
 
 	const weather = useWeather();
 	const theme = weather ? getWeatherTheme(weather.current.condition.code) : null;
+
+	const online = !isOffline || !!showOffline;
 
 	return (
 		<View style={{flex: 1, width: '100%', maxWidth: '100%', minWidth: 0, overflow: 'hidden'}}>
@@ -35,37 +41,41 @@ export function Layout({Content, components, title, fullPage, home}: Props) {
 						height: fullPage ? '100%' : 'auto',
 					},
 				]}
+				keyboardShouldPersistTaps="handled"
 			>
 				<View style={{flex: 1, width: '100%', alignSelf: 'stretch'}}>
-					<ImageBackground
-						style={[styles.background, {alignSelf: 'stretch', flex: 1}]}
-						source={home ? theme?.image : undefined}
-						imageStyle={{
-							width: '100%',
-							height: '100%',
-						}}
-					>
-						{home && <View style={styles.darkOverlay} />}
-
-						<View
-							style={{
-								flex: 1,
-								padding: fullPage ? 0 : 10,
-								display: 'flex',
-								flexDirection: 'column',
+					{online && (
+						<ImageBackground
+							style={[styles.background, {alignSelf: 'stretch', flex: 1}]}
+							source={home ? theme?.image : undefined}
+							imageStyle={{
+								width: '100%',
+								height: '100%',
 							}}
 						>
-							{title && <Text style={[styles.title, fullPage && {paddingHorizontal: 10, paddingTop: 10}]}>{title}</Text>}
+							{home && <View style={styles.darkOverlay} />}
 
-							<View style={{flex: 1, display: 'flex', width: '100%'}}>
-								<Content />
+							<View
+								style={{
+									flex: 1,
+									padding: fullPage ? 0 : 10,
+									display: 'flex',
+									flexDirection: 'column',
+								}}
+							>
+								{title && <Text style={[styles.title, fullPage && {paddingHorizontal: 10, paddingTop: 10}]}>{title}</Text>}
+
+								<View style={{flex: 1, display: 'flex', width: '100%'}}>
+									<Content />
+								</View>
 							</View>
-						</View>
-					</ImageBackground>
+						</ImageBackground>
+					)}
+					{!online && <Offline />}
 				</View>
 
 				<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : [styles.sidebarDesktop, {alignSelf: 'stretch'}]]}>
-					<Sidebar components={components} />
+					<Sidebar components={sidebar} />
 				</View>
 			</ScrollView>
 		</View>
