@@ -20,6 +20,8 @@ export function ChangeSubscription() {
 	const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<string>('');
 	const [isPurchasing, setIsPurchasing] = useState<boolean>(false);
 
+	const isNativePlatform = Platform.OS === 'android' || Platform.OS === 'ios';
+
 	const {data, loading} = useApiFetch('user', 'SubscriptionLevelController', 'getSubscriptionLevels', {});
 	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
 
@@ -37,9 +39,9 @@ export function ChangeSubscription() {
 	const configureRevenueCatIfNeeded = async () => {
 		const isConfigured = await Purchases.isConfigured();
 		if (!isConfigured) {
-			const apiKey = config.REVENUE_CAT_GOOGLE_KEY;
+			const apiKey = Platform.OS === 'android' ? config.REVENUE_CAT_GOOGLE_KEY : undefined;
 
-			if (Platform.OS === 'android' && apiKey) {
+			if (apiKey) {
 				Purchases.configure({apiKey});
 			} else {
 				throw new Error('RevenueCat API key is missing or invalid for this platform.');
@@ -48,6 +50,8 @@ export function ChangeSubscription() {
 	};
 
 	const handleSubmit = async () => {
+		if (!isNativePlatform) return;
+
 		const selectedPlan = data.find(plan => plan.id === selectedSubscriptionId);
 		if (!selectedPlan) return;
 
@@ -58,16 +62,21 @@ export function ChangeSubscription() {
 
 			if (isFreeTier) {
 				// FREE TIER / DOWNGRADE:
-				// Direct user to Google Play to cancel auto-renew.
+				// Direct user to Google Play / App Store to cancel auto-renew.
+				const storeUrl =
+					Platform.OS === 'android'
+						? 'https://play.google.com/store/account/subscriptions'
+						: 'https://apps.apple.com/account/subscriptions';
+
 				alertStore.showAlert({
-					message: 'To cancel or downgrade your active paid subscription, please manage auto-renew in Google Play.',
+					message: `To cancel or downgrade your active paid subscription, please manage auto-renew in your ${Platform.OS === 'android' ? 'Google Play' : 'App Store'} settings.`,
 					title: 'Subscription Downgrade',
 					type: 'success',
 					buttons: [
 						{
-							text: 'Open Google Play',
+							text: Platform.OS === 'android' ? 'Open Google Play' : 'Open App Store',
 							style: 'default',
-							onPress: () => Linking.openURL('https://play.google.com/store/account/subscriptions'),
+							onPress: () => Linking.openURL(storeUrl),
 						},
 						{text: 'Okay', style: 'cancel'},
 					],
@@ -82,19 +91,19 @@ export function ChangeSubscription() {
 			// Log in to RevenueCat with your DB username to anchor the user identity
 			await Purchases.logIn(username);
 
-			// Fetch Google Play store product via RevenueCat
-			const productId = selectedPlan.googleProductId;
+			// Fetch store product via RevenueCat
+			const productId = Platform.OS === 'android' ? selectedPlan.googleProductId : undefined;
 			if (productId) {
 				const storeProducts = await Purchases.getProducts([productId]);
 				const productToPurchase = storeProducts.at(0);
 
 				if (!productToPurchase) {
-					alertStore.showAlert({message: 'Could not find product in Google Play Store.', title: 'Purchase Error', type: 'error'});
+					alertStore.showAlert({message: 'Could not find product in store.', title: 'Purchase Error', type: 'error'});
 					setIsPurchasing(false);
 					return;
 				}
 
-				// Trigger Google Play Purchase Sheet
+				// Trigger In-App Purchase Sheet
 				await Purchases.purchaseStoreProduct(productToPurchase);
 
 				alertStore.showAlert({message: 'Subscription processed! Access will update shortly.', title: 'Success', type: 'success'});
@@ -117,7 +126,15 @@ export function ChangeSubscription() {
 
 	return (
 		<ScrollView contentContainerStyle={cardStyles.container} keyboardShouldPersistTaps="handled">
-			<Text style={cardStyles.subtitle}>Choose a subscription level that fits your journey.</Text>
+			{isNativePlatform && <Text style={cardStyles.subtitle}>Choose a subscription level that fits your journey.</Text>}
+
+			{!isNativePlatform && (
+				<View style={cardStyles.unsupportedBanner}>
+					<Text style={cardStyles.unsupportedBannerText}>
+						Subscription management is only available within the Android or iOS mobile apps.
+					</Text>
+				</View>
+			)}
 
 			<View style={cardStyles.cardList}>
 				{data.map(plan => {
@@ -127,7 +144,8 @@ export function ChangeSubscription() {
 					return (
 						<Pressable
 							key={plan.id}
-							style={[cardStyles.card, isSelected && cardStyles.cardSelected]}
+							disabled={!isNativePlatform}
+							style={[cardStyles.card, isSelected && cardStyles.cardSelected, !isNativePlatform && cardStyles.cardDisabled]}
 							onPress={() => setSelectedSubscriptionId(plan.id)}
 						>
 							<View style={cardStyles.cardHeader}>
@@ -153,12 +171,18 @@ export function ChangeSubscription() {
 			</View>
 
 			<Pressable
-				style={[styles.button, (isPurchasing || isCurrentPlanSelected) && {opacity: 0.6}]}
+				style={[styles.button, (isPurchasing || isCurrentPlanSelected || !isNativePlatform) && {opacity: 0.6}]}
 				onPress={handleSubmit}
-				disabled={isPurchasing || isCurrentPlanSelected}
+				disabled={isPurchasing || isCurrentPlanSelected || !isNativePlatform}
 			>
 				<Text style={styles.buttonText}>
-					{isPurchasing ? 'Processing...' : isCurrentPlanSelected ? 'Current Plan Selected' : 'Confirm Subscription'}
+					{!isNativePlatform
+						? 'Subscriptions Unavailable on Web'
+						: isPurchasing
+							? 'Processing...'
+							: isCurrentPlanSelected
+								? 'Current Plan Selected'
+								: 'Confirm Subscription'}
 				</Text>
 			</Pressable>
 
@@ -189,6 +213,19 @@ const cardStyles = StyleSheet.create({
 		marginBottom: 20,
 		marginTop: 4,
 	},
+	unsupportedBanner: {
+		backgroundColor: '#fff3cd',
+		borderColor: '#ffeeba',
+		borderWidth: 1,
+		borderRadius: 8,
+		padding: 12,
+		marginBottom: 16,
+	},
+	unsupportedBannerText: {
+		color: '#856404',
+		fontSize: 14,
+		textAlign: 'center',
+	},
 	cardList: {
 		gap: 12,
 		marginBottom: 24,
@@ -199,6 +236,9 @@ const cardStyles = StyleSheet.create({
 		padding: 16,
 		borderWidth: 2,
 		borderColor: '#e0e0e0',
+	},
+	cardDisabled: {
+		opacity: 0.6,
 	},
 	cardSelected: {
 		borderColor: '#0088cc',

@@ -24,7 +24,10 @@ export function Subscription({username}: Props) {
 		<View style={styles.container}>
 			<ProfileField label="Type" value={data.subscriptionLevel.name} />
 			<ProfileField label="Start Date" value={new Date(data.subscription.startDate).toLocaleDateString()} />
-			<ProfileField label="Renewal Date" value={new Date(data.subscription.renewalDate).toLocaleDateString()} />
+			<ProfileField
+				label="Renewal Date"
+				value={data.subscription.renewalDate ? new Date(data.subscription.renewalDate).toLocaleDateString() : 'Never Expires'}
+			/>
 			<ProfileField label="Cost" value={formatMoney(data.subscriptionLevel.cost)} />
 			<ProfileField label="Description" value={data.subscriptionLevel.description} />
 			<Link href={`/profile/${username}/change-subscription`} asChild>
