@@ -46,20 +46,11 @@ export class SubscriptionController extends BaseController {
 		return {subscription, subscriptionLevel};
 	}
 
-	async revenueCatUpgrade(params: {
-		event?: {
-			type?: string;
-			app_user_id?: string;
-			product_id?: string;
-			expiration_at_ms?: number | string;
-		};
-		secret?: string;
-	}) {
+	async revenueCatUpgrade(params: Params<Route<'revenueCatUpgrade'>>) {
 		if (params.secret !== config.REVENUE_CAT_ACCESS_CODE) throw new Error('Unauthorized');
-		const {event} = params;
-		if (!event) throw new Error('Invalid webhook payload');
+		if (!params.event) throw new Error('Invalid webhook payload');
 
-		const {type, app_user_id: username, product_id: productId, expiration_at_ms: expirationAtMs} = event;
+		const {type, app_user_id: username, product_id: productId, expiration_at_ms: expirationAtMs} = params.event;
 
 		if (!username) throw new Error('Missing app_user_id in webhook event');
 

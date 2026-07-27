@@ -1,3 +1,5 @@
+import {GenericResponseType} from '../GenericResponseType';
+
 type SubscriptionParams = {username: string};
 type GetPermissionParams = {username?: string};
 type PermissionResponse = {
@@ -23,6 +25,16 @@ type SubscriptionResponse = {
 	};
 };
 
+type RevenueCatParams = {
+	event?: {
+		type?: string;
+		app_user_id?: string;
+		product_id?: string;
+		expiration_at_ms?: number | string;
+	};
+	secret?: string;
+};
+
 export const SubscriptionController = {
 	getByUsername: {
 		params: {} as SubscriptionParams,
@@ -31,5 +43,9 @@ export const SubscriptionController = {
 	getPermissions: {
 		params: {} as GetPermissionParams,
 		response: {} as PermissionResponse | null | undefined,
+	},
+	revenueCatUpgrade: {
+		params: {} as RevenueCatParams,
+		response: {} as GenericResponseType,
 	},
 };
