@@ -20,7 +20,7 @@ interface Props {
 
 export function Layout({Content, title, sidebar, fullPage, home, showOffline}: Props) {
 	const {width} = useWindowDimensions();
-	const isOffline = useIsOffline();
+	const {isOffline, isRequiredAppUpdate} = useIsOffline();
 	const isMobileView = width < 1000;
 	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 

@@ -9,7 +9,7 @@ export class StatusController extends BaseController {
 		super(repos);
 	}
 
-	public getOnlineStatus(): Response<Route<'getOnlineStatus'>> {
-		return true;
+	public getStatus(): Response<Route<'getStatus'>> {
+		return {online: true, upgradeRequired: false};
 	}
 }

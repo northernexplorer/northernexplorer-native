@@ -1,6 +1,6 @@
 export const StatusController = {
-	getOnlineStatus: {
+	getStatus: {
 		params: {} as {tick: number},
-		response: null as unknown as boolean,
+		response: {} as {online: boolean; upgradeRequired: boolean},
 	},
 };

@@ -12,4 +12,6 @@ export const config = {
 	WEB_URL: process.env.WEB_URL || 'http://localhost:8081',
 	CORS: process.env.CORS || 'http://localhost:8081,https://northernexplorer.org',
 	REVENUE_CAT_ACCESS_CODE: process.env.REVENUE_CAT_ACCESS_CODE || 'TEMP_REVENUE_CAT_ACCESS_CODE',
+	REQUIRED_ANDROID_VERSION: process.env.REQUIRED_ANDROID_VERSION || '1',
+	REQUIRED_IOS_VERSION: process.env.REQUIRED_IOS_VERSION || '1',
 };

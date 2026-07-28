@@ -12,7 +12,7 @@ export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTE
 	controller: K,
 	method: M,
 ) {
-	const isOffline = useIsOffline();
+	const {isOffline} = useIsOffline();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
 	const dispatch = useDispatch();
