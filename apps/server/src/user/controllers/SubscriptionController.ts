@@ -27,8 +27,9 @@ export class SubscriptionController extends BaseController {
 		const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
 
 		return {
-			map: {
-				changeStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+			navigation: {
+				useCompass: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				changeMapStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 			},
 		};
 	}

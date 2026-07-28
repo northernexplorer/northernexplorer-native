@@ -11,6 +11,8 @@ import {styles} from '~/layout/Home/styles';
 import {HistoricSitePreview} from '~/layout/Home/components/HistoricSitePreview';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
+import {Compass} from '~/layout/Home/components/Compass';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 export function Home() {
 	const weather = useWeather();
@@ -18,14 +20,16 @@ export function Home() {
 	const lunar = useLunar();
 	const fieldNote = useFieldNote();
 	const coords = useLocation();
+	const authentication = useAuthentication();
 
-	// Only query when valid coordinates exist
-	const historicSites = useApiFetch(
+	const {data: historicSiteData} = useApiFetch(
 		'location',
 		'HistoricSiteController',
 		'getNearbyHistoricSites',
 		coords ? {lat: coords.lat, lon: coords.lon, limit: 5} : null,
 	);
+
+	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {username: authentication?.username});
 
 	const {width} = useWindowDimensions();
 	const isMobileView = width < 1000;
@@ -41,6 +45,8 @@ export function Home() {
 		);
 	}
 
+	const canUseCompass = !!permissionData?.navigation.useCompass;
+
 	return (
 		<ScrollView style={{flex: 1}} contentContainerStyle={{paddingBottom: 24}} showsVerticalScrollIndicator={false}>
 			{isMobileView ? (
@@ -49,14 +55,19 @@ export function Home() {
 						<View style={styles.weatherSection}>
 							<Weather data={weather} />
 						</View>
-
 						<View style={styles.mobileLunarSection}>
 							<Lunar data={lunar} />
 						</View>
 					</View>
-
-					<View style={styles.mobileFieldNoteSection}>
-						<FieldNote data={fieldNote} />
+					<View style={styles.mobileHeroRow}>
+						<View style={styles.mobileFieldNoteSection}>
+							<FieldNote data={fieldNote} />
+						</View>
+						{canUseCompass && (
+							<View style={styles.mobileCompassSection}>
+								<Compass />
+							</View>
+						)}
 					</View>
 				</View>
 			) : (
@@ -64,14 +75,17 @@ export function Home() {
 					<View style={styles.weatherSection}>
 						<Weather data={weather} />
 					</View>
-
 					<View style={styles.fieldNote}>
 						<FieldNote data={fieldNote} />
 					</View>
-
 					<View style={styles.lunarSection}>
 						<Lunar data={lunar} />
 					</View>
+					{canUseCompass && (
+						<View style={styles.compassSection}>
+							<Compass />
+						</View>
+					)}
 				</View>
 			)}
 
@@ -82,11 +96,11 @@ export function Home() {
 
 			<Text style={styles.exploreHeader}>Start Exploring...</Text>
 			<View style={styles.historicSitesSection}>
-				{!historicSites?.data ? (
+				{!historicSiteData ? (
 					<ActivityIndicator size="small" color="#ffffff" style={{marginVertical: 20}} />
 				) : (
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12, paddingHorizontal: 16}}>
-						{historicSites.data.map(site => (
+						{historicSiteData.map(site => (
 							<HistoricSitePreview
 								key={site.id}
 								name={site.name}

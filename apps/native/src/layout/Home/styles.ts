@@ -26,6 +26,9 @@ export const styles = StyleSheet.create({
 	lunarSection: {
 		width: 140,
 	},
+	compassSection: {
+		width: 140,
+	},
 	// Glassmorphism card container
 	tile: {
 		marginRight: 12,
@@ -105,13 +108,19 @@ export const styles = StyleSheet.create({
 	// Mobile layouts
 	mobileHeroRow: {
 		flexDirection: 'row',
+		alignItems: 'stretch',
 		gap: 12,
+		width: '100%',
 	},
 	mobileLunarSection: {
 		width: 130,
 	},
+	mobileCompassSection: {
+		width: 130,
+	},
 	mobileFieldNoteSection: {
-		marginTop: 12,
+		flex: 1,
+		minWidth: 0,
 	},
 	metricPill: {
 		flexDirection: 'row',
