@@ -11,7 +11,7 @@ interface Props {
 export function Sidebar({components}: Props) {
 	const coords = useLocation();
 	const city = useCity();
-	const isOffline = useIsOffline();
+	const {isOffline} = useIsOffline();
 
 	return (
 		<View style={{flex: 1, padding: 20}}>

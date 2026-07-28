@@ -6363,6 +6363,11 @@ react-map-gl@^8.1.1:
     "@vis.gl/react-mapbox" "8.1.1"
     "@vis.gl/react-maplibre" "8.1.1"
 
+react-native-device-info@^15.0.2:
+  version "15.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-15.0.2.tgz#c7de1bb6baeb07e1bab70159ad540c5705cb8dc0"
+  integrity sha512-dd71eXG2l3Cwp66IvKNadMTB8fhU3PEjyVddI97sYan+D4bgIAUmgGDhbSOFvHcGavksb2U17kiQYaDiK2WK2g==
+
 react-native-drawer-layout@^4.2.2:
   version "4.2.5"
   resolved "https://registry.npmjs.org/react-native-drawer-layout/-/react-native-drawer-layout-4.2.5.tgz"
