@@ -2,11 +2,11 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 
-export function Offline() {
+export function Update() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.iconBadge}>
-				<MaterialCommunityIcons name="wifi-off" size={32} color="#d9d9d9" />
+				<MaterialCommunityIcons name="download" size={32} color="#d9d9d9" />
 			</View>
 
 			<Text style={styles.title}>Update Required</Text>
@@ -14,7 +14,7 @@ export function Offline() {
 
 			<View style={styles.pill}>
 				<View style={styles.statusDot} />
-				<Text style={styles.pillText}>Viewing cached mode</Text>
+				<Text style={styles.pillText}>Version out of date</Text>
 			</View>
 		</View>
 	);

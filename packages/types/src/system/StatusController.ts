@@ -1,6 +1,6 @@
 export const StatusController = {
 	getStatus: {
-		params: {} as {tick: number},
+		params: {} as {tick: number; androidVersion: string; iosVersion: string},
 		response: {} as {online: boolean; upgradeRequired: boolean},
 	},
 };

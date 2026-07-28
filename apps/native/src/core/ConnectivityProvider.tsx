@@ -1,5 +1,7 @@
 import React, {createContext, useContext, useState, useEffect} from 'react';
 import NetInfo from '@react-native-community/netinfo';
+import {Platform} from 'react-native';
+import {getBuildNumber} from 'react-native-device-info';
 import {apiClient} from '~/core/apiClient';
 
 interface ConnectivityState {
@@ -26,9 +28,12 @@ export function ConnectivityProvider({children}: {children: React.ReactNode}) {
 					'getStatus',
 					{
 						tick: Date.now(),
+						iosVersion: Platform.OS === 'ios' ? getBuildNumber() : '',
+						androidVersion: Platform.OS === 'android' ? getBuildNumber() : '',
 					},
 					'GET',
 				);
+				console.log(response);
 				setIsServerReachable(String(response.online).toLowerCase() === 'true');
 				setIsRequiredAppUpdate(String(response.upgradeRequired).toLowerCase() === 'true');
 			} catch {
