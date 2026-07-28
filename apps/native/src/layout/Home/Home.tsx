@@ -18,17 +18,22 @@ export function Home() {
 	const lunar = useLunar();
 	const fieldNote = useFieldNote();
 	const coords = useLocation();
-	const historicSites = useApiFetch('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
-		lat: coords?.lat || 0,
-		lon: coords?.lon || 0,
-		limit: 5,
-	});
+
+	// Only query when valid coordinates exist
+	const historicSites = useApiFetch(
+		'location',
+		'HistoricSiteController',
+		'getNearbyHistoricSites',
+		coords ? {lat: coords.lat, lon: coords.lon, limit: 5} : null,
+	);
+
 	const {width} = useWindowDimensions();
 	const isMobileView = width < 1000;
 
-	const isReady = !!weather && !!forecast && !!lunar && !!fieldNote && !!historicSites;
+	// Critical weather data readiness check
+	const isCoreReady = !!weather && !!forecast && !!lunar && !!fieldNote;
 
-	if (!isReady) {
+	if (!isCoreReady) {
 		return (
 			<View style={styles.loadingContainer}>
 				<ActivityIndicator size="large" color="#ffffff" />
@@ -37,9 +42,9 @@ export function Home() {
 	}
 
 	return (
-		<>
+		<ScrollView style={{flex: 1}} contentContainerStyle={{paddingBottom: 24}} showsVerticalScrollIndicator={false}>
 			{isMobileView ? (
-				<>
+				<View style={{gap: 12}}>
 					<View style={styles.mobileHeroRow}>
 						<View style={styles.weatherSection}>
 							<Weather data={weather} />
@@ -53,7 +58,7 @@ export function Home() {
 					<View style={styles.mobileFieldNoteSection}>
 						<FieldNote data={fieldNote} />
 					</View>
-				</>
+				</View>
 			) : (
 				<View style={styles.heroRow}>
 					<View style={styles.weatherSection}>
@@ -69,26 +74,32 @@ export function Home() {
 					</View>
 				</View>
 			)}
+
 			<Text style={styles.exploreHeader}>Plan Ahead...</Text>
 			<View style={styles.forecastSection}>
 				<Forecast data={forecast} />
 			</View>
+
 			<Text style={styles.exploreHeader}>Start Exploring...</Text>
 			<View style={styles.historicSitesSection}>
-				<ScrollView horizontal showsHorizontalScrollIndicator={false}>
-					{historicSites.data?.map(site => (
-						<HistoricSitePreview
-							key={site.name}
-							name={site.name}
-							description={site.description}
-							image={site.image}
-							country={site.country?.name}
-							region={site.region?.name}
-							id={site.id}
-						/>
-					))}
-				</ScrollView>
+				{!historicSites?.data ? (
+					<ActivityIndicator size="small" color="#ffffff" style={{marginVertical: 20}} />
+				) : (
+					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12, paddingHorizontal: 16}}>
+						{historicSites.data.map(site => (
+							<HistoricSitePreview
+								key={site.id}
+								name={site.name}
+								description={site.description}
+								image={site.image}
+								country={site.country?.name}
+								region={site.region?.name}
+								id={site.id}
+							/>
+						))}
+					</ScrollView>
+				)}
 			</View>
-		</>
+		</ScrollView>
 	);
 }

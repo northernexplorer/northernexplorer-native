@@ -28,39 +28,23 @@ export function HistoricSitePreview({id, name, description, image, country, regi
 			}}
 			asChild
 		>
-			<Pressable>
-				<View style={[styles.tile, {width: 160, height: 175, overflow: 'hidden'}]}>
-					<Image
-						source={{uri: getUrl({path: image, serverUrl: config.SERVER_URL})}}
-						style={{
-							width: '100%',
-							height: 90,
-						}}
-						resizeMode="cover"
-					/>
-					<View style={{padding: 10, flex: 1, justifyContent: 'flex-start'}}>
-						<Text
-							style={{
-								color: 'rgba(255,255,255,0.9)',
-								fontSize: 14,
-								fontWeight: '600',
-							}}
-							numberOfLines={1}
-						>
-							{name}
-						</Text>
-
-						<Text
-							style={{
-								color: 'rgba(255,255,255,0.6)',
-								fontSize: 12,
-								marginTop: 6,
-								lineHeight: 16,
-							}}
-							numberOfLines={2}
-						>
-							{description}
-						</Text>
+			<Pressable style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
+				<View style={[styles.tile, styles.siteCard]}>
+					<Image source={{uri: getUrl({path: image, serverUrl: config.SERVER_URL})}} style={styles.siteImage} resizeMode="cover" />
+					<View style={styles.siteContent}>
+						<View>
+							<Text style={styles.siteTitle} numberOfLines={1}>
+								{name}
+							</Text>
+							<Text style={styles.siteDesc} numberOfLines={2}>
+								{description}
+							</Text>
+						</View>
+						{region ? (
+							<Text style={{color: 'rgba(255,255,255,0.35)', fontSize: 10, fontWeight: '600', textTransform: 'uppercase'}}>
+								{region}
+							</Text>
+						) : null}
 					</View>
 				</View>
 			</Pressable>

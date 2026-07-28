@@ -3,87 +3,16 @@ import {StyleSheet, Platform} from 'react-native';
 export const styles = StyleSheet.create({
 	hero: {
 		width: '100%',
-	},
-	section: {
-		marginTop: 20,
-		width: '100%',
-	},
-	container: {
-		flex: 1,
-		paddingTop: 60,
-		paddingHorizontal: 20,
-	},
-	inner: {
-		width: '100%',
-		maxWidth: 1100,
-	},
-	grid: {
-		width: '100%',
-		flexDirection: Platform.select({
-			web: 'row',
-			default: 'column',
-		}),
-		gap: 20,
-		alignItems: 'stretch',
-	},
-	panel: {
-		flex: 1,
-		borderRadius: 20,
-		padding: 16,
-		backgroundColor: 'rgba(0,0,0,0.6)',
-	},
-	city: {
-		color: 'rgba(255,255,255,0.7)',
-		fontSize: 18,
-	},
-	temp: {
-		color: 'white',
-		fontSize: 86,
-		fontWeight: '200',
-		letterSpacing: -2,
-	},
-	condition: {
-		color: 'rgba(255,255,255,0.6)',
-		fontSize: 16,
-		marginTop: 6,
-	},
-	tile: {
-		marginRight: 10,
-		backgroundColor: 'rgba(255,255,255,0.2)',
-		borderRadius: 12,
-		flexShrink: 0,
-		overflow: 'hidden',
-	},
-	hourDay: {
-		color: 'rgba(255,255,255,0.5)',
-		fontSize: 12,
-	},
-	hourTemp: {
-		color: 'white',
-		fontSize: 18,
-		marginTop: 6,
-	},
-	forecastSection: {
-		marginTop: 16,
-		width: '100%',
-	},
-	loadingContainer: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	sidebar: {
-		width: Platform.OS === 'web' ? 320 : '100%',
+		backgroundColor: 'rgba(255, 255, 255, 0.05)',
+		borderRadius: 24,
 		padding: 20,
-		borderTopWidth: Platform.OS === 'web' ? 0 : 1,
-		borderLeftWidth: Platform.OS === 'web' ? 1 : 0,
-		borderColor: 'rgba(255,255,255,0.1)',
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.1)',
 	},
-	metric: {color: '#aaa'},
 	heroRow: {
 		flexDirection: 'row',
-		alignItems: 'flex-start',
-		gap: 32,
+		alignItems: 'stretch',
+		gap: 16,
 		width: '100%',
 	},
 	weatherSection: {
@@ -91,37 +20,111 @@ export const styles = StyleSheet.create({
 		minWidth: 0,
 	},
 	fieldNote: {
-		width: 320,
-		marginHorizontal: 32,
+		flex: 1,
+		minWidth: 280,
 	},
 	lunarSection: {
-		width: 160,
-	},
-	mobileSection: {
-		width: '100%',
-		marginHorizontal: 0,
-		marginTop: 20,
-	},
-	mobileHeroRow: {
-		flexDirection: 'row',
-		alignItems: 'flex-start',
-	},
-	mobileLunarSection: {
 		width: 140,
-		marginLeft: 16,
 	},
-	mobileFieldNoteSection: {
-		marginTop: 20,
+	// Glassmorphism card container
+	tile: {
+		marginRight: 12,
+		backgroundColor: 'rgba(255, 255, 255, 0.06)',
+		borderRadius: 16,
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.1)',
+		flexShrink: 0,
+		overflow: 'hidden',
+	},
+	// Forecast Tile
+	forecastTile: {
+		width: 84,
+		paddingVertical: 14,
+		paddingHorizontal: 8,
+		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	hourDay: {
+		color: 'rgba(255, 255, 255, 0.6)',
+		fontSize: 13,
+		fontWeight: '600',
+		textTransform: 'uppercase',
+		letterSpacing: 0.5,
+	},
+	hourTemp: {
+		color: '#ffffff',
+		fontSize: 16,
+		fontWeight: '700',
+	},
+	// Historic Site Card
+	siteCard: {
+		width: 200,
+		height: 220,
+	},
+	siteImage: {
+		width: '100%',
+		height: 120,
+	},
+	siteContent: {
+		padding: 12,
+		flex: 1,
+		justifyContent: 'space-between',
+	},
+	siteTitle: {
+		color: '#ffffff',
+		fontSize: 14,
+		fontWeight: '600',
+		letterSpacing: -0.2,
+	},
+	siteDesc: {
+		color: 'rgba(255, 255, 255, 0.55)',
+		fontSize: 12,
+		marginTop: 4,
+		lineHeight: 16,
+	},
+	// Section Headers
+	exploreHeader: {
+		color: '#ffffff',
+		fontSize: 18,
+		fontWeight: '700',
+		letterSpacing: -0.3,
+		marginTop: 28,
+		marginBottom: 14,
+	},
+	forecastSection: {
+		width: '100%',
 	},
 	historicSitesSection: {
-		marginTop: 16,
 		width: '100%',
 	},
-	exploreHeader: {
-		color: 'rgba(255,255,255,0.9)',
-		fontSize: 18,
-		fontWeight: '600',
-		marginTop: 20,
-		marginBottom: 12,
+	loadingContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	// Mobile layouts
+	mobileHeroRow: {
+		flexDirection: 'row',
+		gap: 12,
+	},
+	mobileLunarSection: {
+		width: 130,
+	},
+	mobileFieldNoteSection: {
+		marginTop: 12,
+	},
+	metricPill: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		backgroundColor: 'rgba(255, 255, 255, 0.08)',
+		paddingHorizontal: 10,
+		paddingVertical: 4,
+		borderRadius: 20,
+	},
+	metricText: {
+		color: 'rgba(255, 255, 255, 0.75)',
+		fontSize: 12,
+		fontWeight: '500',
 	},
 });
