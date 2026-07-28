@@ -19,5 +19,9 @@ export const m20260727b: string[] = [
 	`insert into "subscription_feature" ("id", "label") values (gen_random_uuid(), 'Map Base Layers (Satellite, Terrain)');`,
 	`insert into "subscription_level_features" ("subscription_level_id", "subscription_feature_id") select sl."id", sf."id" from "subscription_level" sl cross join "subscription_feature" sf where sf."label" = 'Map Base Layers (Satellite, Terrain)' and sl."cost" != 0;`,
 
+	// 5. Insert 'Compass Heading' and associate with NON-FREE levels
+	`insert into "subscription_feature" ("id", "label") values (gen_random_uuid(), 'Compass Widget');`,
+	`insert into "subscription_level_features" ("subscription_level_id", "subscription_feature_id") select sl."id", sf."id" from "subscription_level" sl cross join "subscription_feature" sf where sf."label" = 'Compass Widget' and sl."cost" != 0;`,
+
 	`update "subscription_level" set "name" = 'Core', "description" = 'Basic features, free forever' where lower("name") = 'basic';`,
 ];
