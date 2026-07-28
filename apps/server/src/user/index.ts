@@ -10,6 +10,7 @@ export {User} from './entities/User';
 
 export {SessionRepository} from './repositories/SessionRepository';
 export {SubscriptionRepository} from './repositories/SubscriptionRepository';
+export {SubscriptionFeatureRepository} from './repositories/SubscriptionFeatureRepository';
 export {SubscriptionLevelRepository} from './repositories/SubscriptionLevelRepository';
 export {UserRepository} from './repositories/UserRepository';
 

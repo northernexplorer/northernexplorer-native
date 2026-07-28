@@ -6,7 +6,6 @@ import {SubscriptionFeature} from './SubscriptionFeature';
 type SubscriptionLevelInput = {
 	name: string;
 	description: string;
-	shortDescription: string;
 	enabled: boolean;
 	cost: number;
 	googleProductId?: string | null;
@@ -26,9 +25,6 @@ export class SubscriptionLevel {
 	@Property({type: 'text'})
 	description: string;
 
-	@Property({type: 'text'})
-	shortDescription: string;
-
 	@Property({type: 'text', nullable: true})
 	googleProductId?: string | null;
 
@@ -44,7 +40,6 @@ export class SubscriptionLevel {
 	constructor(data: SubscriptionLevelInput) {
 		this.name = data.name;
 		this.description = data.description;
-		this.shortDescription = data.shortDescription;
 		this.enabled = data.enabled;
 		this.cost = data.cost;
 		this.googleProductId = data.googleProductId;

@@ -61,8 +61,6 @@ export function ChangeSubscription() {
 			const isFreeTier = selectedPlan.cost === 0;
 
 			if (isFreeTier) {
-				// FREE TIER / DOWNGRADE:
-				// Direct user to Google Play / App Store to cancel auto-renew.
 				const storeUrl =
 					Platform.OS === 'android'
 						? 'https://play.google.com/store/account/subscriptions'
@@ -85,13 +83,9 @@ export function ChangeSubscription() {
 				return;
 			}
 
-			// Ensure RevenueCat is initialized before calling SDK methods
 			await configureRevenueCatIfNeeded();
-
-			// Log in to RevenueCat with your DB username to anchor the user identity
 			await Purchases.logIn(username);
 
-			// Fetch store product via RevenueCat
 			const productId = Platform.OS === 'android' ? selectedPlan.googleProductId : undefined;
 			if (productId) {
 				const storeProducts = await Purchases.getProducts([productId]);
@@ -103,12 +97,11 @@ export function ChangeSubscription() {
 					return;
 				}
 
-				// Trigger In-App Purchase Sheet
 				await Purchases.purchaseStoreProduct(productToPurchase);
 
 				alertStore.showAlert({message: 'Subscription processed! Access will update shortly.', title: 'Success', type: 'success'});
 				router.replace(`/profile/${username}`);
-				return; // Stop execution here so it doesn't drop through to the fallback alert below
+				return;
 			}
 			alertStore.showAlert({message: 'Could not find product ID.', title: 'Purchase Error', type: 'error'});
 		} catch (error: unknown) {
@@ -164,7 +157,15 @@ export function ChangeSubscription() {
 
 							<Text style={cardStyles.planCost}>{plan.cost === 0 ? 'Free' : `${formatMoney(plan.cost)} / month`}</Text>
 
-							{plan.shortDescription ? <Text style={cardStyles.planDescription}>{plan.shortDescription}</Text> : null}
+							<Text style={cardStyles.planDescription}>{plan.description}</Text>
+							<View style={cardStyles.featureList}>
+								{plan.features.map(feature => (
+									<View key={feature.id} style={cardStyles.featureRow}>
+										<Text style={cardStyles.checkmark}>✓</Text>
+										<Text style={cardStyles.featureText}>{feature.label}</Text>
+									</View>
+								))}
+							</View>
 						</Pressable>
 					);
 				})}
@@ -305,5 +306,27 @@ const cardStyles = StyleSheet.create({
 	},
 	cancelButton: {
 		marginTop: 12,
+	},
+	featureList: {
+		marginTop: 12,
+		paddingTop: 12,
+		borderTopWidth: 1,
+		borderTopColor: '#eef2f5',
+		gap: 6,
+	},
+	featureRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	checkmark: {
+		fontSize: 14,
+		fontWeight: 'bold',
+		color: '#137333',
+	},
+	featureText: {
+		fontSize: 13,
+		color: '#444',
+		flexShrink: 1,
 	},
 });
