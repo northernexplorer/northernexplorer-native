@@ -47,7 +47,7 @@ export function MapSidebar() {
 
 	const bannerSubtitle = isLoggedIn ? 'Click to find out more' : 'Start by signing in';
 
-	if (!data) return null;
+	if (!permissionData) return null;
 
 	return (
 		<View>
