@@ -14,7 +14,7 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	method: M,
 	params: GetParams<C, K, M> | null,
 ) {
-	const isOffline = useIsOffline();
+	const {isOffline} = useIsOffline();
 	const [data, setData] = useState<GetResponse<C, K, M> | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);
@@ -70,7 +70,7 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 
 			if (!isNetworkError) {
 				const alertType = e.message.includes('Session Expired') ? 'warning' : 'error';
-				alertStore.showAlert({message: 'Please login again.', title: e.message, type: alertType});
+				alertStore.showAlert({message: e.message, type: alertType});
 			} else {
 				// Cache layer quietly serve stale/cached data
 				console.log(`Silencing alert for network failure on ${String(method)}. Relying on cache.`);
