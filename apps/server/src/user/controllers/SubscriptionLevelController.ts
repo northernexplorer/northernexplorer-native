@@ -10,6 +10,16 @@ export class SubscriptionLevelController extends BaseController {
 	}
 
 	async getSubscriptionLevels(): Promise<Response<Route<'getSubscriptionLevels'>>> {
-		return this.repos.subscriptionLevel.getAll();
+		const subscriptionLevels = await this.repos.subscriptionLevel.getAll();
+		const features = await this.repos.subscriptionFeature.getAll();
+
+		return subscriptionLevels.map(level => {
+			const levelFeatures = features.filter(feature => feature.subscriptionLevels.getItems().some(sl => sl.id === level.id));
+
+			return {
+				...level,
+				features: levelFeatures,
+			};
+		});
 	}
 }

@@ -79,8 +79,7 @@ export class SubscriptionController extends BaseController {
 			}
 
 			case 'EXPIRATION': {
-				const level = await this.repos.subscriptionLevel.getFree();
-				userSubscription.subscriptionLevel = level;
+				userSubscription.subscriptionLevel = await this.repos.subscriptionLevel.getFree();
 				userSubscription.startDate = new Date();
 				userSubscription.renewalDate = null;
 				break;
