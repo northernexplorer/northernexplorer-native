@@ -21,7 +21,7 @@
 		"dotenv": "^17.4.2",
 		"express": "^4.21.0",
 		"jsonwebtoken": "^9.0.3",
-		"pg-boss": "^12.26.2",
+		"pg-boss": "^12.26.3",
 		"reflect-metadata": "^0.2.2",
 		"resend": "^6.17.2",
 		"uuid": "^14.0.1"
