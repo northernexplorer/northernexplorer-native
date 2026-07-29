@@ -43,3 +43,8 @@ else
     echo "Error: .nvmrc not found at $PROJECT_ROOT/.nvmrc"
     exit 1
 fi
+
+# Enable Corepack and prepare Yarn
+echo "Enabling Corepack and setting up Yarn..."
+corepack enable
+corepack prepare yarn@stable --activate
