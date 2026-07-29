@@ -6014,10 +6014,10 @@ pbf@^5.1.0:
   dependencies:
     resolve-protobuf-schema "^2.1.0"
 
-pg-boss@^12.26.2:
-  version "12.26.2"
-  resolved "https://registry.yarnpkg.com/pg-boss/-/pg-boss-12.26.2.tgz#900a0c01b6d4519b874c2ee2de5bc6d3ab081b80"
-  integrity sha512-ErbfHaZIzpXNnzmm17Qlu1Eyh1fpbMI7zK5YTFcQVJfAVVKRrjdmiEGFXWyVETRntcBvzNiUzlvu3GFBvVuYIQ==
+pg-boss@^12.26.3:
+  version "12.26.3"
+  resolved "https://registry.yarnpkg.com/pg-boss/-/pg-boss-12.26.3.tgz#2e22c75271f60d31e0c9d17c2abbab5ffa59ea40"
+  integrity sha512-slpR0zeMXzX3c+gAI6035XzJfNfUYndCdvxudJojB2S1LZEMxT31xBBEVm7shEcJQ35Vj2ik+w2Hf7lmLuvrZQ==
   dependencies:
     cron-parser "^5.6.2"
     pg "^8.22.0"
