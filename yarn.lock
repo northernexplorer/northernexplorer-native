@@ -8213,7 +8213,7 @@ __metadata:
     dotenv: "npm:^17.4.2"
     express: "npm:^4.21.0"
     jsonwebtoken: "npm:^9.0.3"
-    pg-boss: "npm:^12.26.2"
+    pg-boss: "npm:^12.26.3"
     reflect-metadata: "npm:^0.2.2"
     resend: "npm:^6.17.2"
     uuid: "npm:^14.0.1"
@@ -8542,16 +8542,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-boss@npm:^12.26.2":
-  version: 12.26.2
-  resolution: "pg-boss@npm:12.26.2"
+"pg-boss@npm:^12.26.3":
+  version: 12.26.3
+  resolution: "pg-boss@npm:12.26.3"
   dependencies:
     cron-parser: "npm:^5.6.2"
     pg: "npm:^8.22.0"
     serialize-error: "npm:^13.0.1"
   bin:
     pg-boss: dist/cli.js
-  checksum: 10c0/3f8f4119fc8edb1f58b58728c776b5a5b1a5e5444fc4336cee0a435c6951770d923ffb583295c5f186cc55d56578cb540e43242aa3a0a70c06af2885c2a873c8
+  checksum: 10c0/45bc46f20682b807a6a7f500ec8fd247e7441c6b3ca341197728a8e7eb35c044d0b9b260e42285440bcd1a191b1038371988cea1635d763054b822e632ffda09
   languageName: node
   linkType: hard
 
