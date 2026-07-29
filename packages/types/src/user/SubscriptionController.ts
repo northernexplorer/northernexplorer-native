@@ -3,8 +3,9 @@ import {GenericResponseType} from '../GenericResponseType';
 type SubscriptionParams = {username: string};
 type GetPermissionParams = {username?: string};
 type PermissionResponse = {
-	map: {
-		changeStyle: boolean;
+	navigation: {
+		useCompass: boolean;
+		changeMapStyle: boolean;
 	};
 };
 
