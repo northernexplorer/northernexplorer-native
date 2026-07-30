@@ -1,8 +1,8 @@
 import React, {useState, useMemo, useRef, useCallback} from 'react';
-import {View, Text, StyleSheet, Image, NativeSyntheticEvent} from 'react-native';
+import {View, Text, StyleSheet, Image, NativeSyntheticEvent, Pressable} from 'react-native';
 import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
 import useSupercluster from 'use-supercluster';
-import {Link} from 'expo-router';
+import {useRouter} from 'expo-router'; // 1. Import useRouter
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {HistoricSiteType} from '@northernexplorer/types';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
@@ -13,6 +13,7 @@ import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
 
 export function Map() {
+	const router = useRouter();
 	const {baseLayer} = useMap();
 	const cameraRef = useRef<CameraRef>(null);
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
@@ -53,6 +54,21 @@ export function Map() {
 		setZoom(zoom);
 	}, []);
 
+	const handleNavigateToSite = useCallback(
+		(site: HistoricSiteType) => {
+			router.push({
+				pathname: '/[country]/[region]/[name]/[id]',
+				params: {
+					country: getUrlSafeString(site.country?.name),
+					region: getUrlSafeString(site.region?.name),
+					id: getUrlSafeString(site.id),
+					name: getUrlSafeString(site.name),
+				},
+			});
+		},
+		[router],
+	);
+
 	return (
 		<View style={{flex: 1}}>
 			<NativeMap
@@ -87,7 +103,6 @@ export function Map() {
 									}
 								}}
 							>
-								{/* No TouchableOpacity needed anymore */}
 								<View style={styles.clusterMarker}>
 									<Text style={styles.clusterText}>{point_count}</Text>
 								</View>
@@ -118,36 +133,31 @@ export function Map() {
 				})}
 
 				{selectedSite && (
-					<Marker lngLat={[selectedSite.lon, selectedSite.lat]} anchor="bottom" offset={[0, -65]}>
+					<Marker
+						key={`popup-${selectedSite.id}`}
+						lngLat={[selectedSite.lon, selectedSite.lat]}
+						anchor="bottom"
+						offset={[0, -65]}
+						onPress={() => handleNavigateToSite(selectedSite)}
+						style={{cursor: 'pointer'}}
+					>
 						<View style={styles.popupContainer}>
-							<Link
-								href={{
-									pathname: '/[country]/[region]/[name]/[id]',
-									params: {
-										country: getUrlSafeString(selectedSite.country?.name),
-										region: getUrlSafeString(selectedSite.region?.name),
-										id: getUrlSafeString(selectedSite.id),
-										name: getUrlSafeString(selectedSite.name),
-									},
-								}}
-							>
-								{selectedSite.image && (
-									<Image
-										source={{
-											uri: getUrl({
-												path: selectedSite.image,
-												serverUrl: config.SERVER_URL,
-											}),
-										}}
-										style={styles.popupImage}
-									/>
-								)}
+							{selectedSite.image && (
+								<Image
+									source={{
+										uri: getUrl({
+											path: selectedSite.image,
+											serverUrl: config.SERVER_URL,
+										}),
+									}}
+									style={styles.popupImage}
+								/>
+							)}
 
-								<View style={styles.popupContent}>
-									<Text style={styles.popupTitle}>{selectedSite.name}</Text>
-									<Text style={styles.popupDescription}>{selectedSite.description}</Text>
-								</View>
-							</Link>
+							<View style={styles.popupContent}>
+								<Text style={styles.popupTitle}>{selectedSite.name}</Text>
+								<Text style={styles.popupDescription}>{selectedSite.description}</Text>
+							</View>
 
 							<View style={styles.popupArrow} />
 						</View>
