@@ -11,10 +11,12 @@ export class Review {
 
 	@Property({type: 'number', version: true})
 	version = 1;
+    
+	@Property({type:'string'})
+	description!:string
 
 	@ManyToOne(() => User)
 	user!: User;
-
 	@Property({type: 'datetime'})
 	createdAt = new Date();
 	@Property({type: 'datetime'})
@@ -24,4 +26,5 @@ export class Review {
 
 	@Enum(() => ReviewRatingEnum)
 	rating!: ReviewRatingEnum;
+
 }

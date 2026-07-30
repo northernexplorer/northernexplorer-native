@@ -2,6 +2,8 @@ import {RegionType} from '@northernexplorer/types';
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {ReviewType} from '@northernexplorer/types';
 import {HistoricSite} from '../entities/HistoricSite';
+import { ReviewSummary } from '@northernexplorer/types';
+
 
 interface HistoricSiteRawRow {
 	id: string;
@@ -18,13 +20,45 @@ interface HistoricSiteRawRow {
 	distanceMeters: number;
 }
 
+type HistoricSiteDetailsResponse = {
+	id: string;
+	name: string;
+	description: string;
+	image: string;
+	lat: number;
+	lon: number;
+	country: {id: string; name: string};
+	region: RegionType;
+	reviews: ReviewSummary[];
+};
+
 export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
-	async getHistoricSiteDetails(id: string) {
-		const site = await this.findOne({id: id}, {populate: ['country', 'region', 'reviews']});
+	async getHistoricSiteDetails(id: string):Promise<HistoricSiteDetailsResponse> {
+		const site = await this.findOneOrFail({id: id}, {populate: ['country', 'region', 'reviews', 'reviews.user']});
 
 		if (!site) throw new Error('Historic site not found.');
 
-		return site;
+		return {
+			id: site.id,
+		name: site.name,
+		description: site.description,
+		image: site.image,
+		lat: site.lat,
+		lon: site.lon,
+		country: site.country,
+		region: site.region,
+		reviews: site.reviews.map(review => ({
+			id: review.id,
+			description: review.description,
+			rating: review.rating,
+			user: {
+				id: review.user.id,
+				username: review.user.username,
+				score: review.user.score,
+			},
+		})),
+	
+		}
 	}
 
 	async getClosestHistoricSites(lat: number, lon: number, limit: number) {
@@ -51,6 +85,7 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
     json_build_object(
 	   'id', rev.id,
             'rating', rev.rating,
+			'description',rev.description,
             'user', json_build_object(
                 'id', u.id,
                 'name', u.username

@@ -10,13 +10,21 @@ export class ReviewRepository extends EntityRepository<Review> {
 
 		return {
 			id: review.id,
-			user: review.user.username,
-			historicSite: review.historicSite.name,
+			 user: {
+    id: review.user.id,
+    username: review.user.username,
+	score:review.user.score
+  },
+  historicSite: {
+    id: review.historicSite.id,
+    name: review.historicSite.name
+  },
 			rating: review.rating,
+			description:review.description
 		};
 	}
 
-	async createReview(userId: string, HistoricSiteId: string, rating: ReviewRatingEnum) {
+	async createReview(userId: string, HistoricSiteId: string, rating: ReviewRatingEnum,description:string) {
 		const user = await this.em.findOneOrFail(User, userId);
 
 		const historicSite = await this.em.findOneOrFail(HistoricSite, HistoricSiteId);
@@ -24,6 +32,7 @@ export class ReviewRepository extends EntityRepository<Review> {
 		const review = this.em.create(Review, {
 			user,
 			rating,
+			description,
 			historicSite,
 			version: 1,
 			createdAt: new Date(),
@@ -37,6 +46,7 @@ export class ReviewRepository extends EntityRepository<Review> {
 		return {
 			id: review.id,
 			rating: review.rating,
+			description:review.description,
 			user: {
 				id: user.id,
 				name: user.username,

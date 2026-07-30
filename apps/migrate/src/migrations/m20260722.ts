@@ -15,5 +15,6 @@ export const m20260722 = [
     );
 
     ALTER TABLE "user" add column "score" integer NOT NULL default 0
+  
     `,
 ];

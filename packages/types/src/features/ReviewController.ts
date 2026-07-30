@@ -1,9 +1,24 @@
+
+import {  UserSummary } from "../user";
+
 export type ReviewType = {
 	id: string;
-	user: string;
-	historicSite: string;
-	rating: ReviewRatingEnum;
+	user: {
+  id: string;
+  username: string;
+  score: number;
 };
+	historicSite: { id: string; name: string; }
+	rating: ReviewRatingEnum;
+	description:string
+};
+
+export type ReviewSummary = {
+ id: string;
+	user: UserSummary;
+	rating: ReviewRatingEnum;
+	description:string
+}
 
 export enum ReviewRatingEnum {
 	TERRIBLE = 1,
@@ -23,6 +38,7 @@ export const ReviewController = {
 			userId: string;
 			historicSiteId: string;
 			rating: ReviewRatingEnum;
+			description:string
 		},
 		response: null as unknown as ReviewType,
 	},
