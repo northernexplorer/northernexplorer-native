@@ -160,7 +160,7 @@ async function bootstrap() {
 					Object.entries(methods).forEach(([methodName]) => {
 						const path = `/api/${ControllerClass.name}/${methodName}`;
 
-						console.log(`Registering: ANY ${path}`);
+						console.log(`Registering: ${path}`);
 
 						app.all(path, handle(ControllerClass, methodName as keyof InstanceType<typeof ControllerClass> & string));
 					});
