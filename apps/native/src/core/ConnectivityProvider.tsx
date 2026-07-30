@@ -33,7 +33,6 @@ export function ConnectivityProvider({children}: {children: React.ReactNode}) {
 					},
 					'GET',
 				);
-				console.log(response);
 				setIsServerReachable(String(response.online).toLowerCase() === 'true');
 				setIsRequiredAppUpdate(String(response.upgradeRequired).toLowerCase() === 'true');
 			} catch {

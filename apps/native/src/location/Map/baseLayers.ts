@@ -1,7 +1,7 @@
 import {MapStyleObject} from '~/location/state/map/mapSlice';
 import {config} from '~/config';
 
-const apiKey = config.ARCGIS_API_KEY;
+const apiKey = config.EXPO_PUBLIC_ARCGIS_API_KEY;
 
 export const baseLayers: Record<string, MapStyleObject> = {
 	standard: {

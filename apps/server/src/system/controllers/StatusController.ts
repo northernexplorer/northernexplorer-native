@@ -12,7 +12,6 @@ export class StatusController extends BaseController {
 
 	public getStatus(params: Params<Route<'getStatus'>>): Response<Route<'getStatus'>> {
 		let upgradeRequired = false;
-		console.log(params);
 
 		if (params.androidVersion && config.REQUIRED_ANDROID_VERSION) {
 			if (parseInt(params.androidVersion, 10) < Number(config.REQUIRED_ANDROID_VERSION)) {
