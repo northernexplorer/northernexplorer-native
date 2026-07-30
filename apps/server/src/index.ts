@@ -60,7 +60,14 @@ export function handle<T extends object>(ControllerClass: ControllerConstructor<
 			}
 		}
 
-		const params = {...req.query, ...req.params, ...req.body};
+		const secretHeader = authHeader?.match(/^secret\s+(.+)$/i)?.[1]?.trim() || (req.headers['secret'] as string) || req.body?.secret;
+
+		const params = {
+			...req.query,
+			...req.params,
+			...req.body,
+			secret: secretHeader,
+		};
 
 		try {
 			const result = await (method as (p: unknown, ctx: unknown) => Promise<unknown>).call(controller, params, currentUser);

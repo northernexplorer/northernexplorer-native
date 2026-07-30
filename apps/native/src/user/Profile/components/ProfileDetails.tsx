@@ -35,11 +35,6 @@ export function ProfileDetails({username}: Props) {
 					<Text style={styles.buttonText}>Edit Profile</Text>
 				</Pressable>
 			</Link>
-			<Link href={`/profile/${username}/change-password`} asChild>
-				<Pressable style={styles.secondaryButton}>
-					<Text style={styles.secondaryButtonText}>Change Password</Text>
-				</Pressable>
-			</Link>
 		</View>
 	);
 }

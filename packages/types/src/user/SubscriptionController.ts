@@ -3,8 +3,9 @@ import {GenericResponseType} from '../GenericResponseType';
 type SubscriptionParams = {username: string};
 type GetPermissionParams = {username?: string};
 type PermissionResponse = {
-	map: {
-		changeStyle: boolean;
+	navigation: {
+		useCompass: boolean;
+		changeMapStyle: boolean;
 	};
 };
 
@@ -13,8 +14,7 @@ type SubscriptionResponse = {
 		id: string;
 		version: number;
 		startDate: Date;
-		endDate: Date | null;
-		renewalDate: Date;
+		renewalDate?: Date | null;
 	};
 	subscriptionLevel: {
 		id: string;
@@ -26,9 +26,14 @@ type SubscriptionResponse = {
 	};
 };
 
-type ChangeSubscriptionParams = {
-	username: string;
-	subscriptionLevelId: string;
+type RevenueCatParams = {
+	event?: {
+		type?: string;
+		app_user_id?: string;
+		product_id?: string;
+		expiration_at_ms?: number | string;
+	};
+	secret?: string;
 };
 
 export const SubscriptionController = {
@@ -40,8 +45,8 @@ export const SubscriptionController = {
 		params: {} as GetPermissionParams,
 		response: {} as PermissionResponse | null | undefined,
 	},
-	changeSubscription: {
-		params: {} as ChangeSubscriptionParams,
+	revenueCatUpgrade: {
+		params: {} as RevenueCatParams,
 		response: {} as GenericResponseType,
 	},
 };

@@ -1,3 +1,5 @@
+import {SubscriptionFeature} from './SubscriptionFeatureController';
+
 export type SubscriptionLevelsResponse = {
 	id: string;
 	version: number;
@@ -5,7 +7,8 @@ export type SubscriptionLevelsResponse = {
 	enabled: boolean;
 	cost: number;
 	description: string;
-	shortDescription: string;
+	googleProductId?: string | null;
+	features: SubscriptionFeature[];
 };
 
 export const SubscriptionLevelController = {

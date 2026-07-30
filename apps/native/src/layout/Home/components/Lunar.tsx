@@ -18,11 +18,14 @@ export function Lunar({data}: {data: LunarCycleType}) {
 	const icon = getMoonIcon(data);
 
 	return (
-		<View style={{width: 160}}>
-			<View style={{alignItems: 'center', marginBottom: 10}}>
-				<MaterialCommunityIcons name={icon} size={72} color="rgba(255,255,255,0.9)" />
-				<Text style={styles.condition}>{data.phase_name}</Text>
-			</View>
+		<View style={[styles.tile, {padding: 16, alignItems: 'center', justifyContent: 'center', flex: 1, marginRight: 0}]}>
+			<MaterialCommunityIcons name={icon} size={56} color="#ffffff" style={{marginBottom: 8}} />
+			<Text style={{color: '#ffffff', fontSize: 13, fontWeight: '600', textAlign: 'center'}} numberOfLines={1}>
+				{data.phase_name}
+			</Text>
+			<Text style={{color: 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>
+				{Math.round(data.illumination_percentage)}% Illum.
+			</Text>
 		</View>
 	);
 }

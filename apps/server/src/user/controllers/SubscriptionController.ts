@@ -3,6 +3,7 @@ import {Repositories} from '../../core/repositories';
 import {PermissionService} from '../services/PermisionService';
 import {AuthContext} from '../../index';
 import {BaseController} from '../../core/BaseController';
+import {config} from '../../config';
 
 type Route<M extends keyof ROUTES['user']['SubscriptionController']> = RouteDefinition<'user', 'SubscriptionController'>[M];
 
@@ -26,12 +27,9 @@ export class SubscriptionController extends BaseController {
 		const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
 
 		return {
-			map: {
-				changeStyle:
-					subscriptionLevel.name === 'Explorer' ||
-					subscriptionLevel.name === 'Trailblazer' ||
-					subscriptionLevel.name === 'Pioneer' ||
-					subscriptionLevel.name === 'Legend',
+			navigation: {
+				useCompass: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				changeMapStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 			},
 		};
 	}
@@ -49,23 +47,54 @@ export class SubscriptionController extends BaseController {
 		return {subscription, subscriptionLevel};
 	}
 
-	async changeSubscription(params: Params<Route<'changeSubscription'>>, auth?: AuthContext): Promise<Response<Route<'changeSubscription'>>> {
-		const user = await this.repos.user.getByUsername(params.username);
-		this.permissionService.canAccessProfile({
-			userId: auth?.userId,
-			targetId: user.id,
-		});
+	async revenueCatUpgrade(params: Params<Route<'revenueCatUpgrade'>>) {
+		if (params.secret !== config.REVENUE_CAT_ACCESS_CODE) throw new Error('Unauthorized');
+		if (!params.event) throw new Error('Invalid webhook payload');
 
-		const subscription = await this.repos.subscription.getById(user.subscription.id);
-		const newSubscriptionLevel = await this.repos.subscriptionLevel.getById(params.subscriptionLevelId);
+		const {type, app_user_id: username, product_id: productId, expiration_at_ms: expirationAtMs} = params.event;
 
-		const startDate = new Date();
-		const renewalDate = new Date();
-		renewalDate.setMonth(startDate.getMonth() + 1);
+		if (!username) throw new Error('Missing app_user_id in webhook event');
 
-		subscription.subscriptionLevel = newSubscriptionLevel;
-		subscription.startDate = startDate;
-		subscription.renewalDate = renewalDate;
+		const user = await this.repos.user.getByUsername(username);
+		const userSubscription = await this.repos.subscription.getById(user.subscription.id);
+
+		const now = new Date();
+
+		switch (type) {
+			case 'INITIAL_PURCHASE':
+			case 'RENEWAL':
+			case 'PRODUCT_CHANGE':
+			case 'UNCANCELLATION': {
+				if (!productId) break;
+				const baseProductId = productId.split(':')[0];
+				const level = await this.repos.subscriptionLevel.getByGoogleProductId(baseProductId);
+				const expirationDate = expirationAtMs
+					? new Date(Number(expirationAtMs))
+					: new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+
+				userSubscription.subscriptionLevel = level;
+				userSubscription.startDate = now;
+
+				userSubscription.renewalDate = expirationDate;
+				break;
+			}
+
+			case 'EXPIRATION': {
+				userSubscription.subscriptionLevel = await this.repos.subscriptionLevel.getFree();
+				userSubscription.startDate = new Date();
+				userSubscription.renewalDate = null;
+				break;
+			}
+
+			case 'CANCELLATION': {
+				// User turned off auto-renew in Google Play.
+				// Access remains active until EXPIRATION is triggered by RevenueCat.
+				break;
+			}
+
+			default:
+				break;
+		}
 
 		await this.flush();
 

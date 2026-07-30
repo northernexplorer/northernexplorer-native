@@ -4,31 +4,33 @@ import {WeatherType} from '@northernexplorer/types';
 import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
 import {styles} from '~/layout/Home/styles';
 
-type WeatherProps = {
-	data: WeatherType;
-};
-
-export function Weather({data}: WeatherProps) {
+export function Weather({data}: {data: WeatherType}) {
 	const current = data.current;
 	const condition = current.condition;
-
-	const iconCode = String(condition.code);
-	const iconName = getWeatherIcon(iconCode);
+	const iconName = getWeatherIcon(String(condition.code));
 
 	return (
 		<View style={styles.hero}>
-			<Text style={{color: 'white', fontSize: 20, opacity: 0.8}}>{data.location.name}</Text>
+			<Text style={{color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8}}>
+				{data.location.name}
+			</Text>
 
-			<View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 8, gap: 16}}>
-				<MaterialCommunityIcons name={iconName} size={64} color="#fff" />
-				<Text style={{color: 'white', fontSize: 64, fontWeight: '200'}}>{Math.round(current.temp_c)}°</Text>
+			<View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 4, gap: 12}}>
+				<MaterialCommunityIcons name={iconName} size={52} color="#ffffff" />
+				<Text style={{color: '#ffffff', fontSize: 56, fontWeight: '200', letterSpacing: -1}}>{Math.round(current.temp_c)}°</Text>
 			</View>
 
-			<Text style={{color: '#ddd', fontSize: 16}}>{condition.text}</Text>
+			<Text style={{color: '#ffffff', fontSize: 15, fontWeight: '500', marginBottom: 14}}>{condition.text}</Text>
 
-			<View style={{marginTop: 16, gap: 6}}>
-				<Text style={styles.metric}>Wind {Math.round(current.wind_kph)} km/h</Text>
-				<Text style={styles.metric}>Humidity {current.humidity}%</Text>
+			<View style={{flexDirection: 'row', gap: 8, flexWrap: 'wrap'}}>
+				<View style={styles.metricPill}>
+					<MaterialCommunityIcons name="weather-windy" size={14} color="rgba(255,255,255,0.7)" />
+					<Text style={styles.metricText}>{Math.round(current.wind_kph)} km/h</Text>
+				</View>
+				<View style={styles.metricPill}>
+					<MaterialCommunityIcons name="water-outline" size={14} color="rgba(255,255,255,0.7)" />
+					<Text style={styles.metricText}>{current.humidity}%</Text>
+				</View>
 			</View>
 		</View>
 	);

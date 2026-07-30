@@ -37,9 +37,9 @@ export function MapSidebar() {
 
 	const isLoggedIn = !!authentication?.username;
 
-	const {data} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {username: authentication?.username});
+	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {username: authentication?.username});
 
-	const canView = !!data?.map.changeStyle;
+	const canChangeMapStyle = !!permissionData?.navigation.changeMapStyle;
 
 	const bannerHref = isLoggedIn ? `/profile/${authentication.username}/change-subscription` : '/profile/login';
 
@@ -47,9 +47,11 @@ export function MapSidebar() {
 
 	const bannerSubtitle = isLoggedIn ? 'Click to find out more' : 'Start by signing in';
 
+	if (!permissionData) return null;
+
 	return (
 		<View>
-			{!canView && (
+			{!canChangeMapStyle && (
 				<Link href={bannerHref} asChild>
 					<TouchableOpacity activeOpacity={0.8}>
 						<View style={styles.banner}>
@@ -61,7 +63,7 @@ export function MapSidebar() {
 			)}
 
 			<Text style={styles.heading}>Map Style</Text>
-			<View style={[styles.tileGroup, !canView && styles.disabledGroup]}>
+			<View style={[styles.tileGroup, !canChangeMapStyle && styles.disabledGroup]}>
 				{LAYER_TILES.map(item => {
 					const isActive = JSON.stringify(baseLayer) === JSON.stringify(item.layer);
 
@@ -69,7 +71,7 @@ export function MapSidebar() {
 						<TouchableOpacity
 							key={item.key}
 							activeOpacity={0.8}
-							disabled={!canView}
+							disabled={!canChangeMapStyle}
 							onPress={() => dispatch(setBaseLayer(item.layer))}
 							style={[styles.tileCard, isActive && styles.tileCardActive]}
 						>

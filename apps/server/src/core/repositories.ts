@@ -6,6 +6,7 @@ import {
 	Session,
 	SessionRepository,
 	Subscription,
+	SubscriptionFeatureRepository,
 	SubscriptionLevel,
 	SubscriptionLevelRepository,
 	SubscriptionRepository,
@@ -14,6 +15,7 @@ import {
 } from '../user';
 import {Migration} from '../system';
 import {MigrationRepository} from '../system/repositories/MigrationRepository';
+import {SubscriptionFeature} from '../user/entities/SubscriptionFeature';
 
 export type Repositories = ReturnType<typeof repositories>;
 
@@ -30,6 +32,7 @@ export function repositories(em: EntityManager) {
 		migration: new MigrationRepository(em, Migration),
 		session: new SessionRepository(em, Session),
 		subscription: new SubscriptionRepository(em, Subscription),
+		subscriptionFeature: new SubscriptionFeatureRepository(em, SubscriptionFeature),
 		subscriptionLevel: new SubscriptionLevelRepository(em, SubscriptionLevel),
 	};
 }

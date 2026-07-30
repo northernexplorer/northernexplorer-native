@@ -1,5 +1,6 @@
-import {ComponentType} from 'react';
-import {ImageBackground, ScrollView, Text, useWindowDimensions, View} from 'react-native';
+import {ComponentType, useState} from 'react';
+import {ImageBackground, Pressable, ScrollView, Text, useWindowDimensions, View} from 'react-native';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {styles} from './styles';
 import {getWeatherTheme} from '~/layout/Layout/getWeatherTheme';
 import {useWeather} from '~/environment/state/weather/useWeather';
@@ -7,6 +8,7 @@ import {Sidebar} from '~/layout/Layout/components/Sidebar';
 import {Navigation} from '~/layout/Layout/components/Navigation';
 import {useIsOffline} from '~/core/ConnectivityProvider';
 import {Offline} from '~/layout/Layout/components/Offline';
+import {Update} from '~/layout/Layout/components/Update';
 
 interface Props {
 	Content: ComponentType;
@@ -19,13 +21,17 @@ interface Props {
 
 export function Layout({Content, title, sidebar, fullPage, home, showOffline}: Props) {
 	const {width} = useWindowDimensions();
-	const isOffline = useIsOffline();
+	const {isOffline, isRequiredAppUpdate} = useIsOffline();
 	const isMobileView = width < 1000;
+	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
 	const weather = useWeather();
 	const theme = weather ? getWeatherTheme(weather.current.condition.code) : null;
 
 	const online = !isOffline || !!showOffline;
+	const isMobileFullPage = fullPage && isMobileView;
+
+	if (isRequiredAppUpdate) return <Update />;
 
 	return (
 		<View style={{flex: 1, width: '100%', maxWidth: '100%', minWidth: 0, overflow: 'hidden'}}>
@@ -43,7 +49,7 @@ export function Layout({Content, title, sidebar, fullPage, home, showOffline}: P
 				]}
 				keyboardShouldPersistTaps="handled"
 			>
-				<View style={{flex: 1, width: '100%', alignSelf: 'stretch'}}>
+				<View style={{flex: 1, width: '100%', alignSelf: 'stretch', position: 'relative'}}>
 					{online && (
 						<ImageBackground
 							style={[styles.background, {alignSelf: 'stretch', flex: 1}]}
@@ -72,11 +78,63 @@ export function Layout({Content, title, sidebar, fullPage, home, showOffline}: P
 						</ImageBackground>
 					)}
 					{!online && <Offline />}
+
+					{/* Mobile FullPage Floating Sidebar Button & Card */}
+					{isMobileFullPage && sidebar && sidebar.length > 0 && (
+						<>
+							<Pressable
+								onPress={() => setIsSidebarVisible(prev => !prev)}
+								style={{
+									position: 'absolute',
+									bottom: 20,
+									right: 20,
+									zIndex: 20,
+									backgroundColor: '#1a1a1a',
+									borderWidth: 1,
+									borderColor: '#333333',
+									width: 48,
+									height: 48,
+									borderRadius: 12,
+									justifyContent: 'center',
+									alignItems: 'center',
+									elevation: 6,
+								}}
+							>
+								<MaterialCommunityIcons name={isSidebarVisible ? 'close' : 'view-dashboard-outline'} size={24} color="#ffffff" />
+							</Pressable>
+
+							{isSidebarVisible && (
+								<View
+									style={{
+										position: 'absolute',
+										bottom: 76,
+										left: 12,
+										right: 12,
+										maxHeight: '60%',
+										backgroundColor: '#1a1a1a',
+										borderRadius: 12,
+										borderWidth: 1,
+										borderColor: '#333333',
+										padding: 16,
+										zIndex: 15,
+										elevation: 8,
+									}}
+								>
+									<ScrollView nestedScrollEnabled style={{maxHeight: '100%'}}>
+										<Sidebar components={sidebar} />
+									</ScrollView>
+								</View>
+							)}
+						</>
+					)}
 				</View>
 
-				<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : [styles.sidebarDesktop, {alignSelf: 'stretch'}]]}>
-					<Sidebar components={sidebar} />
-				</View>
+				{/* Standard Sidebar for non-mobile or non-fullPage */}
+				{!isMobileFullPage && (
+					<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : [styles.sidebarDesktop, {alignSelf: 'stretch'}]]}>
+						<Sidebar components={sidebar} />
+					</View>
+				)}
 			</ScrollView>
 		</View>
 	);
