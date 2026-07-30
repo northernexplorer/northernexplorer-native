@@ -1,8 +1,8 @@
 import React, {useState, useMemo, useRef, useCallback} from 'react';
-import {View, Text, StyleSheet, Image, NativeSyntheticEvent, Pressable} from 'react-native';
+import {View, Text, StyleSheet, Image, NativeSyntheticEvent} from 'react-native';
 import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
 import useSupercluster from 'use-supercluster';
-import {useRouter} from 'expo-router'; // 1. Import useRouter
+import {useRouter} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {HistoricSiteType} from '@northernexplorer/types';
 import {MaterialCommunityIcons} from '@expo/vector-icons';

@@ -1,24 +1,27 @@
 import {MapStyleObject} from '~/location/state/map/mapSlice';
+import {config} from '~/config';
+
+const apiKey = config.ARCGIS_API_KEY;
 
 export const baseLayers: Record<string, MapStyleObject> = {
 	standard: {
 		version: 8,
 		sources: {
-			'carto-voyager': {
+			'esri-navigation': {
 				type: 'raster',
 				tiles: [
-					'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-					'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+					`https://static-map-tiles-api.arcgis.com/arcgis/rest/services/static-basemap-tiles-service/v1/arcgis/navigation/static/tile/{z}/{y}/{x}?token=${apiKey}`,
 				],
 				tileSize: 256,
 				maxzoom: 19,
+				attribution: 'Tiles &copy; Esri, HERE, Garmin, FAO, NOAA, USGS',
 			},
 		},
 		layers: [
 			{
-				id: 'carto-voyager-layer',
+				id: 'esri-navigation-layer',
 				type: 'raster',
-				source: 'carto-voyager',
+				source: 'esri-navigation',
 				minzoom: 0,
 				maxzoom: 22,
 			},
@@ -29,9 +32,11 @@ export const baseLayers: Record<string, MapStyleObject> = {
 		sources: {
 			'esri-satellite': {
 				type: 'raster',
-				tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+				tiles: [`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}?token=${apiKey}`],
 				tileSize: 256,
 				maxzoom: 19,
+				attribution:
+					'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
 			},
 		},
 		layers: [
@@ -49,9 +54,11 @@ export const baseLayers: Record<string, MapStyleObject> = {
 		sources: {
 			'esri-topo': {
 				type: 'raster',
-				tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
+				tiles: [`https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}?token=${apiKey}`],
 				tileSize: 256,
 				maxzoom: 19,
+				attribution:
+					'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
 			},
 		},
 		layers: [
