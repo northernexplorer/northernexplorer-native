@@ -13,7 +13,7 @@ export function ReviewDetails({data, loading}: ReviewDetailsProps) {
 	if (loading) return <Spinner />;
 
 	if (data.reviews?.length === 0) {
-		return <Text style={styles.errorText}>No Reviews yet...</Text>;
+		return <Text style={styles.body}>No Reviews yet...</Text>;
 	}
 
 	return (

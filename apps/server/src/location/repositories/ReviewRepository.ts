@@ -1,8 +1,7 @@
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {ReviewRatingEnum} from '@northernexplorer/types';
-import {Review} from '../entities/ReviewEntity';
 import {User} from '../../user';
-import {HistoricSite} from '../../location';
+import {HistoricSite, Review} from '../index';
 
 export class ReviewRepository extends EntityRepository<Review> {
 	async getReviewsById(id: string) {

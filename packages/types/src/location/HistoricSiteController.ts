@@ -1,6 +1,6 @@
-import {ReviewSummary} from '../features';
 import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
+import {ReviewSummary} from './ReviewController';
 
 export type HistoricSiteType = {
 	id: string;
