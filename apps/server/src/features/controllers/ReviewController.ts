@@ -18,9 +18,9 @@ export class ReviewController extends BaseController {
 	}
 
 	public async createNewReview(params: Params<Route<'createNewReview'>>) {
-		const {userId, historicSiteId, rating,description} = params;
+		const {userId, historicSiteId, rating, description} = params;
 
-		const review = await this.repos.review.createReview(userId, historicSiteId, rating,description);
+		const review = await this.repos.review.createReview(userId, historicSiteId, rating, description);
 
 		await this.flush();
 

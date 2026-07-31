@@ -1,6 +1,5 @@
 import {GenericResponseType} from '../GenericResponseType';
 
-
 export type UserAuthenticationType = {
 	userId: string;
 	email: string;
@@ -71,17 +70,17 @@ export type GetByUsernameResponse = {
 	lastName: string;
 	username: string;
 	email: string;
-	score:string;
+	score: number;
 	createdAt: Date;
 	isActive: boolean;
 	// Note: We intentionally exclude passwordHash here for API security
 };
 
 export type UserSummary = {
-	id:string,
-	username:string,
-	score:number
-}
+	id: string;
+	username: string;
+	score: number;
+};
 type RefreshParams = {
 	refreshToken: string;
 };

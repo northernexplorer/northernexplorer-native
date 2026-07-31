@@ -1,8 +1,6 @@
+import {ReviewSummary} from '../features';
 import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
-import { ReviewSummary } from '../features';
-
-
 
 export type HistoricSiteType = {
 	id: string;
@@ -12,7 +10,7 @@ export type HistoricSiteType = {
 	lat: number;
 	lon: number;
 	country?: CountryType;
-	reviews?:ReviewSummary[];
+	reviews?: ReviewSummary[];
 	region?: RegionType;
 	startDate?: number | null;
 	endDate?: number | null;

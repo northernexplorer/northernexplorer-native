@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 		alignItems: 'center',
 	},
-	
+
 	metaLabel: {
 		color: '#1a1a1a',
 		fontSize: 13,
@@ -51,26 +51,23 @@ export const styles = StyleSheet.create({
 		padding: 24,
 	},
 
-
-
-	reviewCard:{
-		
-		borderColor:'black',
+	reviewCard: {
+		borderColor: 'black',
 		flexDirection: 'column',
 		flexWrap: 'wrap',
 		alignItems: 'flex-start',
 	},
-	
-	userName:{
-		fontSize:20,
-     fontWeight:600
+
+	userName: {
+		fontSize: 20,
+		fontWeight: 600,
 	},
-	score:{
-     fontSize:15
+	score: {
+		fontSize: 15,
 	},
-	description:{
-		marginTop:30,
-        	fontSize:20,
-     fontWeight:300
-	}
+	description: {
+		marginTop: 30,
+		fontSize: 20,
+		fontWeight: 300,
+	},
 });

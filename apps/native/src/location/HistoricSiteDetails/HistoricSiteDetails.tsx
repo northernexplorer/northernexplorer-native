@@ -2,11 +2,11 @@ import React from 'react';
 import {View, Text, Image} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
 import {getUrl} from '@northernexplorer/tools';
+import {ReviewDetails} from './Reviews';
 import {styles} from '~/location/HistoricSiteDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/components/Spinner';
-import { ReviewDetails } from './Reviews';
 
 export function HistoricSiteDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
@@ -16,7 +16,6 @@ export function HistoricSiteDetails() {
 	if (error || !data) {
 		return <Text style={styles.errorText}>{error?.message || 'This historic location profile details could not be found.'}</Text>;
 	}
-
 
 	return (
 		<View>
@@ -40,9 +39,8 @@ export function HistoricSiteDetails() {
 				<View style={styles.divider} />
 
 				<Text style={styles.body}>{data.description}</Text>
-				  <View style={styles.divider} />
-				<ReviewDetails data={data} loading={loading} error={error}/>
-				
+				<View style={styles.divider} />
+				<ReviewDetails data={data} loading={loading} error={error} />
 			</View>
 		</View>
 	);
