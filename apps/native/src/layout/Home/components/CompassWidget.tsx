@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {View, Text, Platform, Animated, Easing} from 'react-native';
+import {View, Text, Platform, Animated, Easing, Pressable} from 'react-native';
 import * as Location from 'expo-location';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Link} from 'expo-router';
@@ -71,10 +71,19 @@ export function CompassWidget() {
 	if (!isAvailable) {
 		return (
 			<Link href="/location/compass" asChild>
-				<View style={[styles.tile, {padding: 16, alignItems: 'center', justifyContent: 'center', flex: 1, marginRight: 0}]}>
+				<Pressable
+					style={{
+						...styles.tile,
+						padding: 16,
+						alignItems: 'center',
+						justifyContent: 'center',
+						flex: 1,
+						marginRight: 0,
+					}}
+				>
 					<MaterialCommunityIcons name="compass-off-outline" size={48} color="rgba(255,255,255,0.4)" />
 					<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 8, textAlign: 'center'}}>Compass Unavailable</Text>
-				</View>
+				</Pressable>
 			</Link>
 		);
 	}
@@ -84,7 +93,16 @@ export function CompassWidget() {
 
 	return (
 		<Link href="/location/compass" asChild>
-			<View style={[styles.tile, {padding: 16, alignItems: 'center', justifyContent: 'center', flex: 1, marginRight: 0}]}>
+			<Pressable
+				style={{
+					...styles.tile,
+					padding: 16,
+					alignItems: 'center',
+					justifyContent: 'center',
+					flex: 1,
+					marginRight: 0,
+				}}
+			>
 				<View style={{width: 56, height: 56, alignItems: 'center', justifyContent: 'center'}}>
 					<Animated.View style={{transform: [{rotate}]}}>
 						<MaterialCommunityIcons name="compass-outline" size={54} color={needsCalibration ? '#f59e0b' : '#ffffff'} />
@@ -96,9 +114,9 @@ export function CompassWidget() {
 				</Text>
 
 				<Text style={{color: needsCalibration ? '#f59e0b' : 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>
-					{needsCalibration ? 'Calibrate Required' : 'Heading'}
+					{needsCalibration ? 'Calibration Required' : 'Heading'}
 				</Text>
-			</View>
+			</Pressable>
 		</Link>
 	);
 }
