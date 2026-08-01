@@ -1,42 +1,150 @@
-import {View, Text} from 'react-native';
+import React from 'react';
+import {View, Text, StyleSheet, SafeAreaView, ScrollView} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
-import {styles} from '~/layout/Home/styles';
 import {useWeather} from '~/environment/state/weather';
 import {Spinner} from '~/layout/Layout/components/Spinner';
 
 export function Weather() {
 	const weather = useWeather();
 
-	if (!weather) return <Spinner />;
+	if (!weather) {
+		return (
+			<SafeAreaView style={styles.container}>
+				<View style={styles.centerContainer}>
+					<Spinner />
+				</View>
+			</SafeAreaView>
+		);
+	}
 
 	const current = weather.current;
 	const condition = current.condition;
 	const iconName = getWeatherIcon(String(condition.code));
 
 	return (
-		<View style={styles.hero}>
-			<Text style={{color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8}}>
-				{weather.location.name}
-			</Text>
+		<SafeAreaView style={styles.container}>
+			<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+				{/* Location Header */}
+				<Text style={styles.locationName}>{weather.location.name}</Text>
 
-			<View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 4, gap: 12}}>
-				<MaterialCommunityIcons name={iconName} size={52} color="#ffffff" />
-				<Text style={{color: '#ffffff', fontSize: 56, fontWeight: '200', letterSpacing: -1}}>{Math.round(current.temp_c)}°</Text>
-			</View>
-
-			<Text style={{color: '#ffffff', fontSize: 15, fontWeight: '500', marginBottom: 14}}>{condition.text}</Text>
-
-			<View style={{flexDirection: 'row', gap: 8, flexWrap: 'wrap'}}>
-				<View style={styles.metricPill}>
-					<MaterialCommunityIcons name="weather-windy" size={14} color="rgba(255,255,255,0.7)" />
-					<Text style={styles.metricText}>{Math.round(current.wind_kph)} km/h</Text>
+				{/* Hero Weather Condition & Temperature */}
+				<View style={styles.heroSection}>
+					<MaterialCommunityIcons name={iconName} size={110} color="#0f172a" />
+					<Text style={styles.temperature}>{Math.round(current.temp_c)}°</Text>
 				</View>
-				<View style={styles.metricPill}>
-					<MaterialCommunityIcons name="water-outline" size={14} color="rgba(255,255,255,0.7)" />
-					<Text style={styles.metricText}>{current.humidity}%</Text>
+
+				{/* Condition Text */}
+				<Text style={styles.conditionText}>{condition.text}</Text>
+
+				{/* Key Metrics Row */}
+				<View style={styles.metricsContainer}>
+					<View style={styles.metricCard}>
+						<MaterialCommunityIcons name="weather-windy" size={20} color="#0284c7" />
+						<View style={styles.metricInfo}>
+							<Text style={styles.metricLabel}>Wind</Text>
+							<Text style={styles.metricValue}>{Math.round(current.wind_kph)} km/h</Text>
+						</View>
+					</View>
+
+					<View style={styles.metricCard}>
+						<MaterialCommunityIcons name="water-outline" size={20} color="#0284c7" />
+						<View style={styles.metricInfo}>
+							<Text style={styles.metricLabel}>Humidity</Text>
+							<Text style={styles.metricValue}>{current.humidity}%</Text>
+						</View>
+					</View>
+
+					{current.feelslike_c !== undefined && (
+						<View style={styles.metricCard}>
+							<MaterialCommunityIcons name="thermometer" size={20} color="#0284c7" />
+							<View style={styles.metricInfo}>
+								<Text style={styles.metricLabel}>Feels Like</Text>
+								<Text style={styles.metricValue}>{Math.round(current.feelslike_c)}°</Text>
+							</View>
+						</View>
+					)}
 				</View>
-			</View>
-		</View>
+			</ScrollView>
+		</SafeAreaView>
 	);
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
+	centerContainer: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	scrollContent: {
+		alignItems: 'center',
+		paddingHorizontal: 24,
+		paddingVertical: 32,
+	},
+	locationName: {
+		color: '#475569',
+		fontSize: 14,
+		fontWeight: '700',
+		textTransform: 'uppercase',
+		letterSpacing: 1.2,
+		marginBottom: 16,
+	},
+	heroSection: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 16,
+		marginVertical: 12,
+	},
+	temperature: {
+		color: '#0f172a',
+		fontSize: 88,
+		fontWeight: '200',
+		letterSpacing: -2,
+	},
+	conditionText: {
+		color: '#1e293b',
+		fontSize: 22,
+		fontWeight: '600',
+		marginBottom: 32,
+		textAlign: 'center',
+	},
+	metricsContainer: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'center',
+		gap: 12,
+		width: '100%',
+		maxWidth: 400,
+	},
+	metricCard: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+		borderRadius: 16,
+		backgroundColor: 'rgba(255, 255, 255, 0.7)',
+		minWidth: 140,
+		borderWidth: StyleSheet.hairlineWidth,
+		borderColor: 'rgba(0, 0, 0, 0.05)',
+	},
+	metricInfo: {
+		flexDirection: 'column',
+	},
+	metricLabel: {
+		color: '#64748b',
+		fontSize: 11,
+		fontWeight: '600',
+		textTransform: 'uppercase',
+	},
+	metricValue: {
+		color: '#0f172a',
+		fontSize: 15,
+		fontWeight: '700',
+		marginTop: 2,
+	},
+});

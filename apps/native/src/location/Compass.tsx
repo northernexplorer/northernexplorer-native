@@ -1,8 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {View, Text, Platform, Animated, Easing} from 'react-native';
+import {View, Text, Platform, Animated, Easing, StyleSheet, SafeAreaView} from 'react-native';
 import * as Location from 'expo-location';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {styles} from '~/layout/Home/styles';
 import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
 
 export function Compass() {
@@ -67,33 +66,97 @@ export function Compass() {
 		outputRange: ['0deg', '360deg'],
 	});
 
-	if (!isAvailable) {
-		return (
-			<View style={[styles.tile, {padding: 16, alignItems: 'center', justifyContent: 'center', flex: 1, marginRight: 0}]}>
-				<MaterialCommunityIcons name="compass-off-outline" size={48} color="rgba(255,255,255,0.4)" />
-				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 8, textAlign: 'center'}}>Compass Unavailable</Text>
-			</View>
-		);
-	}
-
 	const cardinal = getCardinalDirection(heading);
 	const needsCalibration = accuracy <= 1;
 
+	if (!isAvailable) {
+		return (
+			<SafeAreaView style={styles.container}>
+				<View style={styles.centerContainer}>
+					<MaterialCommunityIcons name="compass-off-outline" size={80} color="#94a3b8" />
+					<Text style={styles.unavailableTitle}>Compass Unavailable</Text>
+					<Text style={styles.unavailableSubtext}>Sensors are unavailable or location permissions were not granted.</Text>
+				</View>
+			</SafeAreaView>
+		);
+	}
+
 	return (
-		<View style={[styles.tile, {padding: 16, alignItems: 'center', justifyContent: 'center', flex: 1, marginRight: 0}]}>
-			<View style={{width: 56, height: 56, alignItems: 'center', justifyContent: 'center'}}>
-				<Animated.View style={{transform: [{rotate}]}}>
-					<MaterialCommunityIcons name="compass-outline" size={54} color={needsCalibration ? '#f59e0b' : '#ffffff'} />
-				</Animated.View>
+		<SafeAreaView style={styles.container}>
+			<View style={styles.centerContainer}>
+				{/* Expanded Compass Dial */}
+				<View style={styles.compassContainer}>
+					<Animated.View style={{transform: [{rotate}]}}>
+						<MaterialCommunityIcons name="compass-outline" size={220} color={needsCalibration ? '#d97706' : '#0f172a'} />
+					</Animated.View>
+				</View>
+
+				{/* Primary Readout */}
+				<Text style={styles.headingReadout}>
+					{heading}° <Text style={styles.cardinalText}>{cardinal}</Text>
+				</Text>
+
+				{/* Status Line */}
+				<View style={styles.statusBadge}>
+					<Text style={[styles.statusText, {color: needsCalibration ? '#d97706' : '#64748b'}]}>
+						{needsCalibration ? 'Calibrate Required' : 'Heading'}
+					</Text>
+				</View>
 			</View>
-
-			<Text style={{color: '#ffffff', fontSize: 14, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>
-				{heading}° {cardinal}
-			</Text>
-
-			<Text style={{color: needsCalibration ? '#f59e0b' : 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>
-				{needsCalibration ? 'Calibrate Required' : 'Heading'}
-			</Text>
-		</View>
+		</SafeAreaView>
 	);
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
+	centerContainer: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingHorizontal: 24,
+	},
+	compassContainer: {
+		width: 240,
+		height: 240,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginBottom: 32,
+	},
+	headingReadout: {
+		color: '#0f172a',
+		fontSize: 52,
+		fontWeight: '800',
+		letterSpacing: -1,
+		textAlign: 'center',
+	},
+	cardinalText: {
+		color: '#0284c7',
+		fontWeight: '600',
+	},
+	statusBadge: {
+		marginTop: 8,
+		paddingHorizontal: 12,
+		paddingVertical: 4,
+		borderRadius: 16,
+		backgroundColor: 'rgba(0, 0, 0, 0.05)',
+	},
+	statusText: {
+		fontSize: 13,
+		fontWeight: '600',
+	},
+	unavailableTitle: {
+		color: '#0f172a',
+		fontSize: 20,
+		fontWeight: '700',
+		marginTop: 16,
+	},
+	unavailableSubtext: {
+		color: '#64748b',
+		fontSize: 14,
+		marginTop: 8,
+		textAlign: 'center',
+		maxWidth: 280,
+	},
+});

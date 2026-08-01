@@ -16,7 +16,7 @@ export function ForecastWidget({data}: {data: ForecastType}) {
 				const localDate = new Date(`${f.date}T00:00:00`);
 
 				return (
-					<Link key={f.date_epoch} href="/environment/weather" asChild>
+					<Link key={f.date_epoch} href="/environment/forecast" asChild>
 						<Pressable
 							style={{
 								...styles.tile,
