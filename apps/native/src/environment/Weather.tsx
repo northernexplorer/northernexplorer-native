@@ -26,40 +26,43 @@ export function Weather() {
 	return (
 		<SafeAreaView style={styles.container}>
 			<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-				{/* Location Header */}
-				<Text style={styles.locationName}>{weather.location.name}</Text>
+				<View style={styles.centerContainer}>
+					{/* Location Header */}
+					<Text style={styles.locationName}>{weather.location.name}</Text>
 
-				{/* Hero Weather Condition & Temperature */}
-				<View style={styles.heroSection}>
-					<MaterialCommunityIcons name={iconName} size={110} color="#0f172a" />
-					<Text style={styles.temperature}>{Math.round(current.temp_c)}°</Text>
-				</View>
-
-				{/* Condition Text */}
-				<Text style={styles.conditionText}>{condition.text}</Text>
-
-				{/* Key Metrics Row */}
-				<View style={styles.metricsContainer}>
-					<View style={styles.metricCard}>
-						<MaterialCommunityIcons name="weather-windy" size={20} color="#0284c7" />
-						<View style={styles.metricInfo}>
-							<Text style={styles.metricLabel}>Wind</Text>
-							<Text style={styles.metricValue}>{Math.round(current.wind_kph)} km/h</Text>
-						</View>
+					{/* Hero Weather Condition & Temperature */}
+					<View style={styles.heroSection}>
+						<MaterialCommunityIcons name={iconName} size={110} color="#0f172a" />
+						<Text style={styles.temperature}>{Math.round(current.temp_c)}°</Text>
 					</View>
 
-					<View style={styles.metricCard}>
-						<MaterialCommunityIcons name="water-outline" size={20} color="#0284c7" />
-						<View style={styles.metricInfo}>
-							<Text style={styles.metricLabel}>Humidity</Text>
-							<Text style={styles.metricValue}>{current.humidity}%</Text>
+					{/* Condition Text */}
+					<Text style={styles.conditionText}>{condition.text}</Text>
+
+					{/* Key Metrics Row */}
+					<View style={styles.metricsContainer}>
+						<View style={styles.metricCard}>
+							<MaterialCommunityIcons name="weather-windy" size={20} color="#0284c7" />
+							<View style={styles.metricInfo}>
+								<Text style={styles.metricLabel}>Wind</Text>
+								<Text style={styles.metricValue}>{Math.round(current.wind_kph)} km/h</Text>
+							</View>
 						</View>
-					</View>
-					<View style={styles.metricCard}>
-						<MaterialCommunityIcons name="thermometer" size={20} color="#0284c7" />
-						<View style={styles.metricInfo}>
-							<Text style={styles.metricLabel}>Feels Like</Text>
-							<Text style={styles.metricValue}>{Math.round(current.feelslike_c)}°</Text>
+
+						<View style={styles.metricCard}>
+							<MaterialCommunityIcons name="water-outline" size={20} color="#0284c7" />
+							<View style={styles.metricInfo}>
+								<Text style={styles.metricLabel}>Humidity</Text>
+								<Text style={styles.metricValue}>{current.humidity}%</Text>
+							</View>
+						</View>
+
+						<View style={styles.metricCard}>
+							<MaterialCommunityIcons name="thermometer" size={20} color="#0284c7" />
+							<View style={styles.metricInfo}>
+								<Text style={styles.metricLabel}>Feels Like</Text>
+								<Text style={styles.metricValue}>{Math.round(current.feelslike_c)}°</Text>
+							</View>
 						</View>
 					</View>
 				</View>
@@ -76,9 +79,10 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
+		width: '100%',
 	},
 	scrollContent: {
-		alignItems: 'center',
+		flexGrow: 1,
 		paddingHorizontal: 24,
 		paddingVertical: 32,
 	},

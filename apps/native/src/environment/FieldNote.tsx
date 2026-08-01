@@ -21,21 +21,25 @@ export function FieldNote() {
 	return (
 		<SafeAreaView style={styles.container}>
 			<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-				{/* Top Tag Header */}
-				<View style={styles.tagBadge}>
-					<MaterialCommunityIcons name="book-open-variant" size={14} color="#0284c7" />
-					<Text style={styles.tagText}>Field Note</Text>
-				</View>
+				<View style={styles.centerContainer}>
+					<View style={styles.contentWrapper}>
+						{/* Top Tag Header */}
+						<View style={styles.tagBadge}>
+							<MaterialCommunityIcons name="book-open-variant" size={14} color="#0284c7" />
+							<Text style={styles.tagText}>Field Note</Text>
+						</View>
 
-				{/* Title / Quote */}
-				<Text style={styles.title}>"{fieldNote.title}"</Text>
+						{/* Title / Quote */}
+						<Text style={styles.title}>"{fieldNote.title}"</Text>
 
-				{/* Body Text */}
-				{fieldNote.body ? (
-					<View style={styles.bodyContainer}>
-						<Text style={styles.body}>{fieldNote.body}</Text>
+						{/* Body Text */}
+						{fieldNote.body ? (
+							<View style={styles.bodyContainer}>
+								<Text style={styles.body}>{fieldNote.body}</Text>
+							</View>
+						) : null}
 					</View>
-				) : null}
+				</View>
 			</ScrollView>
 		</SafeAreaView>
 	);
@@ -49,10 +53,15 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
+		width: '100%',
 	},
 	scrollContent: {
+		flexGrow: 1,
 		paddingHorizontal: 24,
 		paddingVertical: 32,
+	},
+	contentWrapper: {
+		width: '100%',
 	},
 	tagBadge: {
 		flexDirection: 'row',
