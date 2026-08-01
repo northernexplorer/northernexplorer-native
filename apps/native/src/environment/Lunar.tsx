@@ -51,11 +51,7 @@ export function Lunar() {
 
 						{/* Waxing / Waning Status */}
 						<View style={styles.metricCard}>
-							<MaterialCommunityIcons
-								name={lunar.is_waxing ? "chart-line-variant" : "chart-line-stacked"}
-								size={20}
-								color="#0284c7"
-							/>
+							<MaterialCommunityIcons name={lunar.is_waxing ? 'chart-line-variant' : 'chart-line-stacked'} size={20} color="#0284c7" />
 							<View style={styles.metricInfo}>
 								<Text style={styles.metricLabel}>Cycle Trend</Text>
 								<Text style={styles.metricValue}>{lunar.is_waxing ? 'Waxing' : 'Waning'}</Text>

@@ -23,21 +23,23 @@ export function FieldNote() {
 			<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 				<View style={styles.centerContainer}>
 					<View style={styles.contentWrapper}>
-						{/* Top Tag Header */}
-						<View style={styles.tagBadge}>
-							<MaterialCommunityIcons name="book-open-variant" size={14} color="#0284c7" />
-							<Text style={styles.tagText}>Field Note</Text>
+						{/* Subtle Top Meta Row */}
+						<View style={styles.metaRow}>
+							<MaterialCommunityIcons name="compass-rose" size={18} color="#0284c7" />
+							<Text style={styles.headerLabel}>FIELD NOTE</Text>
 						</View>
 
-						{/* Title / Quote */}
-						<Text style={styles.title}>"{fieldNote.title}"</Text>
+						{/* Accent-bordered Callout Block */}
+						<View style={styles.quoteBlock}>
+							<MaterialCommunityIcons name="format-quote-open" size={32} color="#0284c7" style={styles.quoteIcon} />
+							<Text style={styles.title}>{fieldNote.title}</Text>
+						</View>
+
+						{/* Divider */}
+						{fieldNote.body ? <View style={styles.divider} /> : null}
 
 						{/* Body Text */}
-						{fieldNote.body ? (
-							<View style={styles.bodyContainer}>
-								<Text style={styles.body}>{fieldNote.body}</Text>
-							</View>
-						) : null}
+						{fieldNote.body ? <Text style={styles.body}>{fieldNote.body}</Text> : null}
 					</View>
 				</View>
 			</ScrollView>
@@ -62,38 +64,42 @@ const styles = StyleSheet.create({
 	},
 	contentWrapper: {
 		width: '100%',
+		maxWidth: 400,
 	},
-	tagBadge: {
+	metaRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
-		alignSelf: 'flex-start',
-		paddingHorizontal: 10,
-		paddingVertical: 5,
-		borderRadius: 12,
-		backgroundColor: 'rgba(2, 132, 199, 0.08)',
+		gap: 8,
 		marginBottom: 16,
 	},
-	tagText: {
-		color: '#0284c7',
+	headerLabel: {
+		color: '#64748b',
 		fontSize: 12,
-		fontWeight: '700',
-		textTransform: 'uppercase',
-		letterSpacing: 0.8,
+		fontWeight: '800',
+		letterSpacing: 1.5,
+	},
+	quoteBlock: {
+		borderLeftWidth: 3,
+		borderLeftColor: '#0284c7',
+		paddingLeft: 16,
+		paddingVertical: 4,
+	},
+	quoteIcon: {
+		marginBottom: 4,
+		opacity: 0.8,
 	},
 	title: {
 		color: '#0f172a',
-		fontSize: 28,
-		lineHeight: 36,
+		fontSize: 24,
+		lineHeight: 32,
 		fontWeight: '700',
-		fontStyle: 'italic',
 		letterSpacing: -0.3,
 	},
-	bodyContainer: {
-		marginTop: 20,
-		paddingTop: 20,
-		borderTopWidth: StyleSheet.hairlineWidth,
-		borderTopColor: 'rgba(15, 23, 42, 0.1)',
+	divider: {
+		height: StyleSheet.hairlineWidth,
+		backgroundColor: 'rgba(15, 23, 42, 0.1)',
+		marginVertical: 24,
+		width: '100%',
 	},
 	body: {
 		color: '#334155',
