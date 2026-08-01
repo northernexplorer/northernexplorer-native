@@ -4,7 +4,7 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {styles} from '~/layout/Home/styles';
 import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
 
-export function Forecast({data}: {data: ForecastType}) {
+export function ForecastWidget({data}: {data: ForecastType}) {
 	const daily = data.forecast.forecastday.slice(0, 5);
 
 	return (

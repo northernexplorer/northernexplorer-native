@@ -4,7 +4,7 @@ import {WeatherType} from '@northernexplorer/types';
 import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
 import {styles} from '~/layout/Home/styles';
 
-export function Weather({data}: {data: WeatherType}) {
+export function WeatherWidget({data}: {data: WeatherType}) {
 	const current = data.current;
 	const condition = current.condition;
 	const iconName = getWeatherIcon(String(condition.code));

@@ -3,7 +3,7 @@ import {View, Text} from 'react-native';
 import {FieldNoteType} from '@northernexplorer/types';
 import {styles} from '~/layout/Home/styles';
 
-export function FieldNote({data}: {data: FieldNoteType}) {
+export function FieldNoteWidget({data}: {data: FieldNoteType}) {
 	return (
 		<View style={[styles.tile, {padding: 18, flex: 1, justifyContent: 'center', marginRight: 0}]}>
 			<Text

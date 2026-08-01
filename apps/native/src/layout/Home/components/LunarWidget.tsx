@@ -14,7 +14,7 @@ function getMoonIcon(data: LunarCycleType) {
 	return 'moon-full';
 }
 
-export function Lunar({data}: {data: LunarCycleType}) {
+export function LunarWidget({data}: {data: LunarCycleType}) {
 	const icon = getMoonIcon(data);
 
 	return (

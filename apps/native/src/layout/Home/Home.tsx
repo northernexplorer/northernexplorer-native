@@ -1,17 +1,17 @@
 import {View, ActivityIndicator, useWindowDimensions, Text, ScrollView} from 'react-native';
-import {Weather} from './components/Weather';
-import {Forecast} from './components/Forecast';
-import {Lunar} from './components/Lunar';
-import {FieldNote} from './components/FieldNote';
+import {WeatherWidget} from './components/WeatherWidget';
+import {ForecastWidget} from './components/ForecastWidget';
+import {LunarWidget} from './components/LunarWidget';
+import {FieldNoteWidget} from './components/FieldNoteWidget';
 import {useWeather} from '~/environment/state/weather/useWeather';
 import {useForecast} from '~/environment/state/forecast/useForecast';
 import {useLunar} from '~/environment/state/lunar/useLunar';
 import {useFieldNote} from '~/environment/state/fieldNote/useFieldNote';
 import {styles} from '~/layout/Home/styles';
-import {HistoricSitePreview} from '~/layout/Home/components/HistoricSitePreview';
+import {HistoricSitePreviewWidget} from '~/layout/Home/components/HistoricSitePreviewWidget';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Compass} from '~/layout/Home/components/Compass';
+import {CompassWidget} from '~/layout/Home/components/CompassWidget';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 export function Home() {
@@ -53,19 +53,19 @@ export function Home() {
 				<View style={{gap: 12}}>
 					<View style={styles.mobileHeroRow}>
 						<View style={styles.weatherSection}>
-							<Weather data={weather} />
+							<WeatherWidget data={weather} />
 						</View>
 						<View style={styles.mobileLunarSection}>
-							<Lunar data={lunar} />
+							<LunarWidget data={lunar} />
 						</View>
 					</View>
 					<View style={styles.mobileHeroRow}>
 						<View style={styles.mobileFieldNoteSection}>
-							<FieldNote data={fieldNote} />
+							<FieldNoteWidget data={fieldNote} />
 						</View>
 						{canUseCompass && (
 							<View style={styles.mobileCompassSection}>
-								<Compass />
+								<CompassWidget />
 							</View>
 						)}
 					</View>
@@ -73,17 +73,17 @@ export function Home() {
 			) : (
 				<View style={styles.heroRow}>
 					<View style={styles.weatherSection}>
-						<Weather data={weather} />
+						<WeatherWidget data={weather} />
 					</View>
 					<View style={styles.fieldNote}>
-						<FieldNote data={fieldNote} />
+						<FieldNoteWidget data={fieldNote} />
 					</View>
 					<View style={styles.lunarSection}>
-						<Lunar data={lunar} />
+						<LunarWidget data={lunar} />
 					</View>
 					{canUseCompass && (
 						<View style={styles.compassSection}>
-							<Compass />
+							<CompassWidget />
 						</View>
 					)}
 				</View>
@@ -91,7 +91,7 @@ export function Home() {
 
 			<Text style={styles.exploreHeader}>Plan Ahead...</Text>
 			<View style={styles.forecastSection}>
-				<Forecast data={forecast} />
+				<ForecastWidget data={forecast} />
 			</View>
 
 			<Text style={styles.exploreHeader}>Start Exploring...</Text>
@@ -101,7 +101,7 @@ export function Home() {
 				) : (
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12, paddingHorizontal: 16}}>
 						{historicSiteData.map(site => (
-							<HistoricSitePreview
+							<HistoricSitePreviewWidget
 								key={site.id}
 								name={site.name}
 								description={site.description}

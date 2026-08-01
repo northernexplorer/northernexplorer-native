@@ -10,7 +10,7 @@ function getCardinalDirection(heading: number): string {
 	return directions[index];
 }
 
-export function Compass() {
+export function CompassWidget() {
 	const [heading, setHeading] = useState<number>(0);
 	const [accuracy, setAccuracy] = useState<number>(3); // 3 = High accuracy, 1 = Low
 	const [isAvailable, setIsAvailable] = useState<boolean>(true);
@@ -97,7 +97,7 @@ export function Compass() {
 			</Text>
 
 			<Text style={{color: needsCalibration ? '#f59e0b' : 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>
-				{needsCalibration ? 'Calibrate (Figure 8)' : 'Heading'}
+				{needsCalibration ? 'Calibrate Required' : 'Heading'}
 			</Text>
 		</View>
 	);
