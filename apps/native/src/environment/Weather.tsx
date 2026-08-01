@@ -1,5 +1,6 @@
 import React from 'react';
-import {View, Text, StyleSheet, SafeAreaView, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
 import {useWeather} from '~/environment/state/weather';
@@ -54,16 +55,13 @@ export function Weather() {
 							<Text style={styles.metricValue}>{current.humidity}%</Text>
 						</View>
 					</View>
-
-					{current.feelslike_c !== undefined && (
-						<View style={styles.metricCard}>
-							<MaterialCommunityIcons name="thermometer" size={20} color="#0284c7" />
-							<View style={styles.metricInfo}>
-								<Text style={styles.metricLabel}>Feels Like</Text>
-								<Text style={styles.metricValue}>{Math.round(current.feelslike_c)}°</Text>
-							</View>
+					<View style={styles.metricCard}>
+						<MaterialCommunityIcons name="thermometer" size={20} color="#0284c7" />
+						<View style={styles.metricInfo}>
+							<Text style={styles.metricLabel}>Feels Like</Text>
+							<Text style={styles.metricValue}>{Math.round(current.feelslike_c)}°</Text>
 						</View>
-					)}
+					</View>
 				</View>
 			</ScrollView>
 		</SafeAreaView>

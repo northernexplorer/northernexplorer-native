@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {View, Text, Platform, Animated, Easing, StyleSheet, SafeAreaView} from 'react-native';
+import {View, Text, Platform, Animated, Easing, StyleSheet} from 'react-native';
 import * as Location from 'expo-location';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
 
