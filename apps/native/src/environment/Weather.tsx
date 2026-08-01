@@ -39,16 +39,32 @@ export function Weather() {
 					{/* Condition Text */}
 					<Text style={styles.conditionText}>{condition.text}</Text>
 
-					{/* Key Metrics Row */}
+					{/* Key Metrics Grid */}
 					<View style={styles.metricsContainer}>
+						{/* Wind & Gusts */}
 						<View style={styles.metricCard}>
 							<MaterialCommunityIcons name="weather-windy" size={20} color="#0284c7" />
 							<View style={styles.metricInfo}>
 								<Text style={styles.metricLabel}>Wind</Text>
-								<Text style={styles.metricValue}>{Math.round(current.wind_kph)} km/h</Text>
+								<Text style={styles.metricValue}>
+									{Math.round(current.wind_kph)} km/h {current.wind_dir}
+								</Text>
+								{current.gust_kph > current.wind_kph && (
+									<Text style={styles.metricSubtext}>Gusts {Math.round(current.gust_kph)} km/h</Text>
+								)}
 							</View>
 						</View>
 
+						{/* Feels Like */}
+						<View style={styles.metricCard}>
+							<MaterialCommunityIcons name="thermometer" size={20} color="#0284c7" />
+							<View style={styles.metricInfo}>
+								<Text style={styles.metricLabel}>Feels Like</Text>
+								<Text style={styles.metricValue}>{Math.round(current.feelslike_c)}°</Text>
+							</View>
+						</View>
+
+						{/* Humidity */}
 						<View style={styles.metricCard}>
 							<MaterialCommunityIcons name="water-outline" size={20} color="#0284c7" />
 							<View style={styles.metricInfo}>
@@ -57,11 +73,48 @@ export function Weather() {
 							</View>
 						</View>
 
+						{/* UV Index */}
 						<View style={styles.metricCard}>
-							<MaterialCommunityIcons name="thermometer" size={20} color="#0284c7" />
+							<MaterialCommunityIcons name="white-balance-sunny" size={20} color="#0284c7" />
 							<View style={styles.metricInfo}>
-								<Text style={styles.metricLabel}>Feels Like</Text>
-								<Text style={styles.metricValue}>{Math.round(current.feelslike_c)}°</Text>
+								<Text style={styles.metricLabel}>UV Index</Text>
+								<Text style={styles.metricValue}>{current.uv}</Text>
+							</View>
+						</View>
+
+						{/* Pressure */}
+						<View style={styles.metricCard}>
+							<MaterialCommunityIcons name="gauge" size={20} color="#0284c7" />
+							<View style={styles.metricInfo}>
+								<Text style={styles.metricLabel}>Pressure</Text>
+								<Text style={styles.metricValue}>{current.pressure_mb} hPa</Text>
+							</View>
+						</View>
+
+						{/* Visibility */}
+						<View style={styles.metricCard}>
+							<MaterialCommunityIcons name="eye-outline" size={20} color="#0284c7" />
+							<View style={styles.metricInfo}>
+								<Text style={styles.metricLabel}>Visibility</Text>
+								<Text style={styles.metricValue}>{current.vis_km} km</Text>
+							</View>
+						</View>
+
+						{/* Precipitation */}
+						<View style={styles.metricCard}>
+							<MaterialCommunityIcons name="weather-rainy" size={20} color="#0284c7" />
+							<View style={styles.metricInfo}>
+								<Text style={styles.metricLabel}>Precipitation</Text>
+								<Text style={styles.metricValue}>{current.precip_mm} mm</Text>
+							</View>
+						</View>
+
+						{/* Cloud Cover */}
+						<View style={styles.metricCard}>
+							<MaterialCommunityIcons name="weather-cloudy" size={20} color="#0284c7" />
+							<View style={styles.metricInfo}>
+								<Text style={styles.metricLabel}>Cloud Cover</Text>
+								<Text style={styles.metricValue}>{current.cloud}%</Text>
 							</View>
 						</View>
 					</View>
@@ -120,7 +173,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		gap: 12,
 		width: '100%',
-		maxWidth: 400,
+		maxWidth: 420,
 	},
 	metricCard: {
 		flexDirection: 'row',
@@ -130,12 +183,14 @@ const styles = StyleSheet.create({
 		paddingVertical: 12,
 		borderRadius: 16,
 		backgroundColor: 'rgba(255, 255, 255, 0.7)',
-		minWidth: 140,
+		width: '48%',
+		minWidth: 150,
 		borderWidth: StyleSheet.hairlineWidth,
 		borderColor: 'rgba(0, 0, 0, 0.05)',
 	},
 	metricInfo: {
 		flexDirection: 'column',
+		flexShrink: 1,
 	},
 	metricLabel: {
 		color: '#64748b',
@@ -145,8 +200,13 @@ const styles = StyleSheet.create({
 	},
 	metricValue: {
 		color: '#0f172a',
-		fontSize: 15,
+		fontSize: 14,
 		fontWeight: '700',
 		marginTop: 2,
+	},
+	metricSubtext: {
+		color: '#64748b',
+		fontSize: 11,
+		marginTop: 1,
 	},
 });
