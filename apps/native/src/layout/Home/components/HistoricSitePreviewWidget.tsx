@@ -14,7 +14,7 @@ type Props = {
 	region?: string | null;
 };
 
-export function HistoricSitePreview({id, name, description, image, country, region}: Props) {
+export function HistoricSitePreviewWidget({id, name, description, image, country, region}: Props) {
 	return (
 		<Link
 			href={{
