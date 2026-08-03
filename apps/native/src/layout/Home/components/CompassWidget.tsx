@@ -1,16 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {View, Text, Platform, Animated, Easing} from 'react-native';
+import {View, Text, Platform, Animated, Easing, Pressable} from 'react-native';
 import * as Location from 'expo-location';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {Link} from 'expo-router';
 import {styles} from '~/layout/Home/styles';
+import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
 
-function getCardinalDirection(heading: number): string {
-	const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-	const index = Math.round(((heading %= 360) < 0 ? heading + 360 : heading) / 45) % 8;
-	return directions[index];
-}
-
-export function Compass() {
+export function CompassWidget() {
 	const [heading, setHeading] = useState<number>(0);
 	const [accuracy, setAccuracy] = useState<number>(3); // 3 = High accuracy, 1 = Low
 	const [isAvailable, setIsAvailable] = useState<boolean>(true);
@@ -74,10 +70,21 @@ export function Compass() {
 
 	if (!isAvailable) {
 		return (
-			<View style={[styles.tile, {padding: 16, alignItems: 'center', justifyContent: 'center', flex: 1, marginRight: 0}]}>
-				<MaterialCommunityIcons name="compass-off-outline" size={48} color="rgba(255,255,255,0.4)" />
-				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 8, textAlign: 'center'}}>Compass Unavailable</Text>
-			</View>
+			<Link href="/location/compass" asChild>
+				<Pressable
+					style={{
+						...styles.tile,
+						padding: 16,
+						alignItems: 'center',
+						justifyContent: 'center',
+						flex: 1,
+						marginRight: 0,
+					}}
+				>
+					<MaterialCommunityIcons name="compass-off-outline" size={48} color="rgba(255,255,255,0.4)" />
+					<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 8, textAlign: 'center'}}>Compass Unavailable</Text>
+				</Pressable>
+			</Link>
 		);
 	}
 
@@ -85,20 +92,31 @@ export function Compass() {
 	const needsCalibration = accuracy <= 1;
 
 	return (
-		<View style={[styles.tile, {padding: 16, alignItems: 'center', justifyContent: 'center', flex: 1, marginRight: 0}]}>
-			<View style={{width: 56, height: 56, alignItems: 'center', justifyContent: 'center'}}>
-				<Animated.View style={{transform: [{rotate}]}}>
-					<MaterialCommunityIcons name="compass-outline" size={54} color={needsCalibration ? '#f59e0b' : '#ffffff'} />
-				</Animated.View>
-			</View>
+		<Link href="/location/compass" asChild>
+			<Pressable
+				style={{
+					...styles.tile,
+					padding: 16,
+					alignItems: 'center',
+					justifyContent: 'center',
+					flex: 1,
+					marginRight: 0,
+				}}
+			>
+				<View style={{width: 56, height: 56, alignItems: 'center', justifyContent: 'center'}}>
+					<Animated.View style={{transform: [{rotate}]}}>
+						<MaterialCommunityIcons name="compass-outline" size={54} color={needsCalibration ? '#f59e0b' : '#ffffff'} />
+					</Animated.View>
+				</View>
 
-			<Text style={{color: '#ffffff', fontSize: 14, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>
-				{heading}° {cardinal}
-			</Text>
+				<Text style={{color: '#ffffff', fontSize: 14, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>
+					{heading}° {cardinal}
+				</Text>
 
-			<Text style={{color: needsCalibration ? '#f59e0b' : 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>
-				{needsCalibration ? 'Calibrate (Figure 8)' : 'Heading'}
-			</Text>
-		</View>
+				<Text style={{color: needsCalibration ? '#f59e0b' : 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>
+					{needsCalibration ? 'Calibration Required' : 'Heading'}
+				</Text>
+			</Pressable>
+		</Link>
 	);
 }

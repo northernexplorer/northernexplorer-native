@@ -10,3 +10,4 @@ These are the different software requirements to wrong the project
 ## API Keys
 weatherapi.com
 resend.com
+arcgis.com
