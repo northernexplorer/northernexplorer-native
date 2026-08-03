@@ -1,4 +1,4 @@
-import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Params, PublishStatusEnum, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {config} from '../../config';
@@ -39,10 +39,12 @@ export class StatusController extends BaseController {
 		});
 
 		const users = await this.repos.user.count({});
-		const historicSites = await this.repos.historicSite.count({});
+		const historicSitesPublished = await this.repos.historicSite.count({status: PublishStatusEnum.Published});
+		const historicSitesDraft = await this.repos.historicSite.count({status: PublishStatusEnum.Draft});
 		return {
 			users,
-			historicSites,
+			historicSitesPublished,
+			historicSitesDraft,
 		};
 	}
 }

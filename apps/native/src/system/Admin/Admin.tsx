@@ -15,13 +15,22 @@ export function Admin() {
 
 	return (
 		<View style={styles.grid}>
-			{/* Historic Sites Card */}
+			{/* Published Sites Card */}
 			<View style={styles.card}>
 				<View style={[styles.iconBadge, {backgroundColor: '#e8f5e9'}]}>
 					<Ionicons name="map-outline" size={24} color="#2e7d32" />
 				</View>
-				<Text style={styles.statValue}>{data?.historicSites ?? 0}</Text>
-				<Text style={styles.statLabel}>Historic Sites</Text>
+				<Text style={styles.statValue}>{data?.historicSitesPublished ?? 0}</Text>
+				<Text style={styles.statLabel}>Published Sites</Text>
+			</View>
+
+			{/* Draft Sites Card */}
+			<View style={styles.card}>
+				<View style={[styles.iconBadge, {backgroundColor: '#fff3e0'}]}>
+					<Ionicons name="document-text-outline" size={24} color="#e65100" />
+				</View>
+				<Text style={styles.statValue}>{data?.historicSitesDraft ?? 0}</Text>
+				<Text style={styles.statLabel}>Draft Sites</Text>
 			</View>
 
 			{/* Users Card */}
@@ -40,7 +49,6 @@ const styles = StyleSheet.create({
 	header: {
 		marginBottom: 24,
 	},
-
 	grid: {
 		flexDirection: 'row',
 		gap: 16,
