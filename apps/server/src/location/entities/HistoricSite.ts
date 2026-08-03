@@ -58,6 +58,8 @@ export class HistoricSite {
 	@Property({type: 'datetime'})
 	updatedAt = new Date();
 
+
+
 	constructor(data: HistoricSiteInput) {
 		this.name = data.name;
 		this.description = data.description;

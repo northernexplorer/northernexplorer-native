@@ -47,7 +47,6 @@ export class UserController extends BaseController {
 			firstName: params.firstName,
 			lastName: params.lastName,
 			username: params.username,
-			createdAt: new Date(),
 			isActive: false,
 			passwordHash,
 			subscription,
@@ -117,6 +116,7 @@ export class UserController extends BaseController {
 			userId: user.id,
 			email: user.email,
 			username: user.username,
+			roles: user.roles,
 			accessToken,
 			refreshToken,
 		};
@@ -233,6 +233,7 @@ export class UserController extends BaseController {
 			username: user.username,
 			accessToken,
 			refreshToken: newRefreshToken,
+			roles: user.roles,
 		};
 	}
 
@@ -278,6 +279,7 @@ export class UserController extends BaseController {
 			username: user.username,
 			accessToken,
 			refreshToken,
+			roles: user.roles,
 		};
 	}
 

@@ -30,11 +30,15 @@ export const styles = StyleSheet.create({
 		backgroundColor: '#e9e9e9',
 	},
 	title: {
-		fontSize: 26,
+		fontSize: 28,
 		fontWeight: '700',
 		color: '#1a1a1a',
-		marginBottom: 20,
-		letterSpacing: 0.5,
+		textAlign: 'center',
+	},
+	subtitle: {
+		fontSize: 14,
+		color: '#6c757d',
+		marginTop: 4,
 		textAlign: 'center',
 	},
 	navbarContainer: {

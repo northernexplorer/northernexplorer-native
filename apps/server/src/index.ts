@@ -5,7 +5,7 @@ import express, {Request, Response} from 'express';
 import cors from 'cors';
 import {MikroORM, RequestContext} from '@mikro-orm/core';
 import {EntityManager} from '@mikro-orm/postgresql';
-import {ROUTES} from '@northernexplorer/types';
+import {RolesEnum, ROUTES} from '@northernexplorer/types';
 import {PgBoss} from 'pg-boss';
 import ormConfig from './mikro-orm.config';
 import {config} from './config';
@@ -33,6 +33,7 @@ export interface AuthContext {
 	email?: string;
 	refreshToken?: string;
 	ipAddress: string;
+	roles?: RolesEnum[];
 }
 
 export function handle<T extends object>(ControllerClass: ControllerConstructor<any>, methodName: keyof T & string) {
@@ -53,7 +54,9 @@ export function handle<T extends object>(ControllerClass: ControllerConstructor<
 		if (authHeader?.startsWith('Bearer ')) {
 			try {
 				const token = authHeader.substring(7);
-				currentUser = {...currentUser, ...tokenService.verifyAccessToken(token)};
+				const decodedToken = tokenService.verifyAccessToken(token);
+				const user = await repos.user.getById(decodedToken.userId);
+				currentUser = {...currentUser, ...decodedToken, roles: user.roles};
 			} catch {
 				res.status(401).json({error: 'Session Expired'});
 				return;
