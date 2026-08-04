@@ -109,12 +109,7 @@ export function Compass() {
 							<Text style={[styles.cardinalLabel, styles.westLabel]}>W</Text>
 
 							{/* North Pointer Tip (Red / Amber if calibrating) */}
-							<View
-								style={[
-									styles.needleTipNorth,
-									{borderBottomColor: needsCalibration ? '#d97706' : '#ef4444'},
-								]}
-							/>
+							<View style={[styles.needleTipNorth, {borderBottomColor: needsCalibration ? '#d97706' : '#ef4444'}]} />
 
 							{/* South Pointer Tip (Muted Silver) */}
 							<View style={styles.needleTipSouth} />
