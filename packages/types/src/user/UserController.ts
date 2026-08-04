@@ -1,11 +1,16 @@
 import {GenericResponseType} from '../GenericResponseType';
 
+export enum RolesEnum {
+	Admin = 'Admin',
+}
+
 export type UserAuthenticationType = {
 	userId: string;
 	email: string;
 	username: string;
 	accessToken: string;
 	refreshToken: string;
+	roles?: RolesEnum[];
 };
 type RegisterParams = {
 	firstName: string;

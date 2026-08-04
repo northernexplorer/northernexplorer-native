@@ -1,9 +1,30 @@
-import {Entity, ManyToOne, OneToMany, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
+
+import {Entity, ManyToOne, OneToMany, PrimaryKey, Property,Enum} from '@mikro-orm/decorators/legacy';
 import {Collection} from '@mikro-orm/core';
+
 import {v4} from 'uuid';
+import {PublishStatusEnum} from '@northernexplorer/types';
 import {Region} from './Region';
 import {Country} from './Country';
+
 import {Review} from './Review';
+
+
+type HistoricSiteInput = {
+	name: string;
+	description: string;
+	image: string;
+	lat: number;
+	lon: number;
+	country: Country;
+	region: Region;
+	startDate?: number | null;
+	endDate?: number | null;
+	createdAt?: Date;
+	updatedAt?: Date;
+	status: PublishStatusEnum;
+};
+
 
 @Entity()
 export class HistoricSite {
@@ -48,4 +69,24 @@ export class HistoricSite {
 
 	@Property({type: 'datetime'})
 	updatedAt = new Date();
+
+
+	@Enum({items: () => PublishStatusEnum, type: 'enum'})
+	status: PublishStatusEnum;
+
+	constructor(data: HistoricSiteInput) {
+		this.name = data.name;
+		this.description = data.description;
+		this.image = data.image;
+		this.lat = data.lat;
+		this.lon = data.lon;
+		this.country = data.country;
+		this.region = data.region;
+		this.status = data.status;
+
+		if (data.startDate !== undefined) this.startDate = data.startDate;
+		if (data.endDate !== undefined) this.endDate = data.endDate;
+		if (data.createdAt) this.createdAt = data.createdAt;
+		if (data.updatedAt) this.updatedAt = data.updatedAt;
+	}
 }

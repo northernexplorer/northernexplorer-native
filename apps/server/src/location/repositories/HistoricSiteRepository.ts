@@ -1,4 +1,6 @@
-import {RegionType} from '@northernexplorer/types';
+
+import {CountryType, PublishStatusEnum, RegionType} from '@northernexplorer/types';
+
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {ReviewType} from '@northernexplorer/types';
 import {ReviewSummary} from '@northernexplorer/types';
@@ -13,10 +15,11 @@ interface HistoricSiteRawRow {
 	lon: string | number;
 	startDate: string | number;
 	endDate: string | number;
-	country: {id: string; name: string};
+	country: CountryType
 	region: RegionType;
 	reviews: ReviewType;
 	distanceMeters: number;
+	status: PublishStatusEnum;
 }
 
 type HistoricSiteDetailsResponse = {
@@ -26,7 +29,7 @@ type HistoricSiteDetailsResponse = {
 	image: string;
 	lat: number;
 	lon: number;
-	country: {id: string; name: string};
+	country: CountryType;
 	region: RegionType;
 	reviews: ReviewSummary[];
 };
@@ -130,6 +133,7 @@ LEFT JOIN "user" u
 			lon: Number(site.lon),
 			startDate: site.startDate ? Number(site.startDate) : null,
 			endDate: site.endDate ? Number(site.endDate) : null,
+			status: site.status,
 		}));
 	}
 }

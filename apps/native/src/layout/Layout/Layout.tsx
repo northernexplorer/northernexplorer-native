@@ -14,12 +14,13 @@ interface Props {
 	Content: ComponentType;
 	sidebar?: ComponentType[];
 	title?: string;
+	subtitle?: string;
 	fullPage?: boolean;
 	home?: boolean;
 	showOffline?: boolean;
 }
 
-export function Layout({Content, title, sidebar, fullPage, home, showOffline}: Props) {
+export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline}: Props) {
 	const {width} = useWindowDimensions();
 	const {isOffline, isRequiredAppUpdate} = useIsOffline();
 	const isMobileView = width < 1000;
@@ -69,7 +70,10 @@ export function Layout({Content, title, sidebar, fullPage, home, showOffline}: P
 									flexDirection: 'column',
 								}}
 							>
-								{title && <Text style={[styles.title, fullPage && {paddingHorizontal: 10, paddingTop: 10}]}>{title}</Text>}
+								<View style={{paddingBottom: 10}}>
+									{title && <Text style={styles.title}>{title}</Text>}
+									{subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+								</View>
 
 								<View style={{flex: 1, display: 'flex', width: '100%'}}>
 									<Content />

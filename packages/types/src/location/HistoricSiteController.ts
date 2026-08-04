@@ -2,6 +2,11 @@ import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
 import {ReviewSummary} from './ReviewController';
 
+export enum PublishStatusEnum {
+	Published = 'Published',
+	Draft = 'Draft',
+}
+
 export type HistoricSiteType = {
 	id: string;
 	name: string;
@@ -14,6 +19,7 @@ export type HistoricSiteType = {
 	region?: RegionType;
 	startDate?: number | null;
 	endDate?: number | null;
+	status: PublishStatusEnum;
 };
 
 export const HistoricSiteController = {
