@@ -1,8 +1,8 @@
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {ReviewRatingEnum} from '@northernexplorer/types';
-import { Review } from '../../location';
-import { User,UserRepository } from '../../user';
-import {HistoricSite, HistoricSiteRepository } from '../../location';
+import {Review} from '../../location';
+import {User, UserRepository} from '../../user';
+import {HistoricSite, HistoricSiteRepository} from '../../location';
 export class ReviewRepository extends EntityRepository<Review> {
 	async getReviewsById(id: string) {
 		const review = await this.findOneOrFail({id}, {populate: ['user', 'historicSite']});
@@ -23,13 +23,13 @@ export class ReviewRepository extends EntityRepository<Review> {
 		};
 	}
 
-	async createReview( userId: string,  historicSiteId: string, rating: ReviewRatingEnum,  description: string,) {
-		const HistoricSiteRepository = this.em.getRepository(HistoricSite) as HistoricSiteRepository
+	async createReview(userId: string, historicSiteId: string, rating: ReviewRatingEnum, description: string) {
+		const HistoricSiteRepository = this.em.getRepository(HistoricSite) as HistoricSiteRepository;
 
-		const UserRepository = this.em.getRepository(User) as UserRepository
-	
-		const user = await UserRepository.findOneOrFail({id:userId})
-		const historicSite = await HistoricSiteRepository.findOneOrFail({id:historicSiteId})
+		const UserRepository = this.em.getRepository(User) as UserRepository;
+
+		const user = await UserRepository.findOneOrFail({id: userId});
+		const historicSite = await HistoricSiteRepository.findOneOrFail({id: historicSiteId});
 
 		const review = new Review({
 			user,

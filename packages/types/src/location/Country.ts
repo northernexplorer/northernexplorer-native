@@ -5,4 +5,3 @@ export type CountryType = {
 	name: string;
 	regions: RegionType[];
 };
-

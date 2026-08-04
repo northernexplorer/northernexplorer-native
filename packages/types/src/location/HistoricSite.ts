@@ -1,5 +1,5 @@
 import {RegionType} from './Region';
-import { CountryType } from './Country';
+import {CountryType} from './Country';
 
 export type HistoricSiteType = {
 	id: number;
@@ -13,4 +13,3 @@ export type HistoricSiteType = {
 	startDate?: number | null;
 	endDate?: number | null;
 };
-

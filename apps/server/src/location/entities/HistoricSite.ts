@@ -1,15 +1,14 @@
 import {Entity, ManyToOne, OneToMany, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
 import {Collection} from '@mikro-orm/core';
+import {v4} from 'uuid';
 import {Region} from './Region';
 import {Country} from './Country';
-import { v4 } from 'uuid';
 import {Review} from './Review';
 
 @Entity()
 export class HistoricSite {
 	@PrimaryKey({type: 'uuid'})
 	id = v4();
-
 
 	@Property({type: 'integer', version: true})
 	version = 1;
