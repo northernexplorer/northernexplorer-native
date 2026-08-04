@@ -93,11 +93,36 @@ export function Compass() {
 	return (
 		<SafeAreaView style={styles.container}>
 			<View style={styles.centerContainer}>
-				{/* Expanded Compass Dial */}
+				{/* Expanded Compass Dial Assembly */}
 				<View style={styles.compassContainer}>
-					<Animated.View style={{transform: [{rotate}]}}>
-						<MaterialCommunityIcons name="compass-outline" size={220} color={needsCalibration ? '#d97706' : '#0f172a'} />
-					</Animated.View>
+					{/* Fixed Top Pointer (Device Heading Marker) */}
+					<View style={styles.topHeadingPointer} />
+
+					{/* Outer Static Housing Ring */}
+					<View style={styles.outerRing}>
+						{/* Rotating Compass Dial Assembly */}
+						<Animated.View style={[styles.dialContainer, {transform: [{rotate}]}]}>
+							{/* Cardinal Labels on Dial Face */}
+							<Text style={[styles.cardinalLabel, styles.northLabel]}>N</Text>
+							<Text style={[styles.cardinalLabel, styles.eastLabel]}>E</Text>
+							<Text style={[styles.cardinalLabel, styles.southLabel]}>S</Text>
+							<Text style={[styles.cardinalLabel, styles.westLabel]}>W</Text>
+
+							{/* North Pointer Tip (Red / Amber if calibrating) */}
+							<View
+								style={[
+									styles.needleTipNorth,
+									{borderBottomColor: needsCalibration ? '#d97706' : '#ef4444'},
+								]}
+							/>
+
+							{/* South Pointer Tip (Muted Silver) */}
+							<View style={styles.needleTipSouth} />
+
+							{/* Pivot Cap */}
+							<View style={styles.centerPivot} />
+						</Animated.View>
+					</View>
 				</View>
 
 				{/* Primary Readout */}
@@ -108,7 +133,7 @@ export function Compass() {
 				{/* Status Line */}
 				<View style={styles.statusBadge}>
 					<Text style={[styles.statusText, {color: needsCalibration ? '#d97706' : '#64748b'}]}>
-						{needsCalibration ? 'Calibrate Required' : 'Heading'}
+						{needsCalibration ? 'Calibration Required' : 'Heading'}
 					</Text>
 				</View>
 			</View>
@@ -127,11 +152,93 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 24,
 	},
 	compassContainer: {
-		width: 240,
-		height: 240,
+		width: 260,
+		height: 260,
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginBottom: 32,
+		position: 'relative',
+	},
+	topHeadingPointer: {
+		position: 'absolute',
+		top: -4,
+		width: 0,
+		height: 0,
+		borderLeftWidth: 8,
+		borderRightWidth: 8,
+		borderBottomWidth: 12,
+		borderLeftColor: 'transparent',
+		borderRightColor: 'transparent',
+		borderBottomColor: '#0284c7',
+		zIndex: 20,
+	},
+	outerRing: {
+		width: 240,
+		height: 240,
+		borderRadius: 120,
+		borderWidth: 2,
+		borderColor: 'rgba(15, 23, 42, 0.15)',
+		backgroundColor: 'rgba(15, 23, 42, 0.02)',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	dialContainer: {
+		width: 230,
+		height: 230,
+		borderRadius: 115,
+		alignItems: 'center',
+		justifyContent: 'center',
+		position: 'relative',
+	},
+	cardinalLabel: {
+		position: 'absolute',
+		fontSize: 14,
+		fontWeight: '800',
+		color: '#64748b',
+	},
+	northLabel: {
+		top: 8,
+		color: '#ef4444',
+	},
+	eastLabel: {
+		right: 12,
+	},
+	southLabel: {
+		bottom: 8,
+	},
+	westLabel: {
+		left: 12,
+	},
+	needleTipNorth: {
+		position: 'absolute',
+		top: 32,
+		width: 0,
+		height: 0,
+		borderLeftWidth: 12,
+		borderRightWidth: 12,
+		borderBottomWidth: 80,
+		borderLeftColor: 'transparent',
+		borderRightColor: 'transparent',
+	},
+	needleTipSouth: {
+		position: 'absolute',
+		bottom: 32,
+		width: 0,
+		height: 0,
+		borderLeftWidth: 12,
+		borderRightWidth: 12,
+		borderTopWidth: 80,
+		borderLeftColor: 'transparent',
+		borderRightColor: 'transparent',
+		borderTopColor: '#cbd5e1',
+	},
+	centerPivot: {
+		width: 14,
+		height: 14,
+		borderRadius: 7,
+		backgroundColor: '#0f172a',
+		borderWidth: 2,
+		borderColor: '#ffffff',
+		zIndex: 10,
 	},
 	headingReadout: {
 		color: '#0f172a',
