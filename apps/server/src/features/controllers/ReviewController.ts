@@ -1,7 +1,7 @@
 import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
-
+import { AuthContext } from '../..';
 type Route<M extends keyof ROUTES['features']['ReviewController']> = RouteDefinition<'features', 'ReviewController'>[M];
 
 export class ReviewController extends BaseController {
@@ -17,13 +17,27 @@ export class ReviewController extends BaseController {
 		return review;
 	}
 
-	public async createNewReview(params: Params<Route<'createNewReview'>>) {
-		const {userId, historicSiteId, rating, description} = params;
+	public async createNewReview(params: Params<Route<'createNewReview'>>,auth?:AuthContext) {
+		
+             if(!auth?.userId){
+				throw new Error("You must be logged in")
+			 }	
+             
+			 if(auth.userId !== params.userId){
+				throw new Error("Unauthorized Request")
+			 }
 
-		const review = await this.repos.review.createReview(userId, historicSiteId, rating, description);
+		const {userId, historicSiteId, rating, description} = params;
+         
+		 
+
+			const review = await this.repos.review.createReview(userId, historicSiteId, rating, description);
 
 		await this.flush();
 
 		return review;
+
+
+		
 	}
 }

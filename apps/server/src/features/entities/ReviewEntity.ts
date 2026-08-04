@@ -4,6 +4,15 @@ import {ReviewRatingEnum} from '@northernexplorer/types';
 import {User} from '../../user';
 import {HistoricSite} from '../../location';
 
+ 
+type ReviewType = {
+	 user: User,
+  historicSite: HistoricSite,
+  rating: ReviewRatingEnum,
+  description:string,
+}
+
+
 @Entity()
 export class Review {
 	@PrimaryKey({type: 'uuid'})
@@ -26,4 +35,14 @@ export class Review {
 
 	@Enum(() => ReviewRatingEnum)
 	rating!: ReviewRatingEnum;
+
+   constructor(data: ReviewType) {
+		this.description = data.description,
+        this.user = data.user,
+		this.historicSite = data.historicSite
+		this.rating = data.rating
+	}
+
 }
+
+	

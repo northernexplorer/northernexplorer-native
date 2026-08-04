@@ -3,6 +3,7 @@ import {environment} from './environment';
 import {user} from './user';
 import {system} from './system';
 import {features} from './features';
+
 export interface ApiMethod<P = unknown, R = unknown> {
 	params: P;
 	response: R;

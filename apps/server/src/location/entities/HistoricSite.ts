@@ -3,11 +3,12 @@ import {Collection} from '@mikro-orm/core';
 import {Review} from '../../features';
 import {Region} from './Region';
 import {Country} from './Country';
-
+import { v4 } from 'uuid';
 @Entity()
 export class HistoricSite {
-	@PrimaryKey({type: 'integer'})
-	id!: string;
+	@PrimaryKey({type: 'uuid'})
+	id = v4();
+
 
 	@Property({type: 'integer', version: true})
 	version = 1;

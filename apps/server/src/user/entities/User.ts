@@ -6,7 +6,6 @@ type UserInput = {
 	firstName: string;
 	lastName: string;
 	username: string;
-	score?: number;
 	email: string;
 	passwordHash: string;
 	isActive: boolean;
@@ -31,7 +30,7 @@ export class User {
 	@Property({type: 'text', unique: true})
 	username: string;
 
-	@Property({type: 'integer', default: 0})
+	@Property({type: 'integer'})
 	score: number = 0;
 
 	@Property({type: 'text', unique: true})
@@ -53,7 +52,6 @@ export class User {
 		this.firstName = data.firstName;
 		this.lastName = data.lastName;
 		this.username = data.username;
-		this.score = data.score ?? 0;
 		this.email = data.email;
 		this.passwordHash = data.passwordHash;
 		this.isActive = data.isActive;

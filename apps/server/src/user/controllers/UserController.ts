@@ -110,9 +110,11 @@ export class UserController extends BaseController {
 			platform: params.device.platform,
 		});
 
+		
+
 		this.persist(session);
 		await this.flush();
-
+  
 		return {
 			userId: user.id,
 			email: user.email,
@@ -120,6 +122,7 @@ export class UserController extends BaseController {
 			accessToken,
 			refreshToken,
 		};
+
 	}
 
 	async logout(params: Params<Route<'logout'>>): Promise<Response<Route<'logout'>>> {
