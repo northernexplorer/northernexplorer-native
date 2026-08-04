@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 export const styles = StyleSheet.create({
 	hero: {
 		width: '100%',
-		backgroundColor: 'rgba(255, 255, 255, 0.05)',
+		backgroundColor: 'rgba(255, 255, 255, 0.1)',
 		borderRadius: 24,
 		padding: 20,
 		borderWidth: 1,
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
 	// Glassmorphism card container
 	tile: {
 		marginRight: 12,
-		backgroundColor: 'rgba(255, 255, 255, 0.06)',
+		backgroundColor: 'rgba(255, 255, 255, 0.1)',
 		borderRadius: 16,
 		borderWidth: 1,
 		borderColor: 'rgba(255, 255, 255, 0.1)',
