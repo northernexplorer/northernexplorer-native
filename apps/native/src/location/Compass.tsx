@@ -1,8 +1,9 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useRef, useCallback} from 'react';
 import {View, Text, Platform, Animated, Easing, StyleSheet} from 'react-native';
 import * as Location from 'expo-location';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {useFocusEffect} from 'expo-router';
 import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -18,54 +19,62 @@ export function Compass() {
 	const targetDegrees = useRef<number>(0);
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {username: authentication?.username});
 
-	useEffect(() => {
-		let subscription: Location.LocationSubscription | null = null;
-		let mounted = true;
+	useFocusEffect(
+		useCallback(() => {
+			let subscription: Location.LocationSubscription | null = null;
+			let mounted = true;
 
-		const setupFusedCompass = async () => {
-			if (Platform.OS === 'web') {
-				if (mounted) setIsAvailable(false);
-				return;
-			}
+			const setupFusedCompass = async () => {
+				if (Platform.OS === 'web') {
+					if (mounted) setIsAvailable(false);
+					return;
+				}
 
-			const {status} = await Location.requestForegroundPermissionsAsync();
-			if (status !== 'granted') {
-				if (mounted) setIsAvailable(false);
-				return;
-			}
+				const {status} = await Location.requestForegroundPermissionsAsync();
+				if (status !== 'granted') {
+					if (mounted) setIsAvailable(false);
+					return;
+				}
 
-			subscription = await Location.watchHeadingAsync(headingData => {
-				if (!mounted) return;
+				const sub = await Location.watchHeadingAsync(headingData => {
+					if (!mounted) return;
 
-				const rawAngle = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
-				const rounded = Math.round(rawAngle);
+					const rawAngle = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
+					const rounded = Math.round(rawAngle);
 
-				setAccuracy(headingData.accuracy);
-				setHeading(rounded);
+					setAccuracy(headingData.accuracy);
+					setHeading(rounded);
 
-				// Calculate shortest path for dial rotation (-heading)
-				let delta = -rounded - targetDegrees.current;
-				if (delta > 180) delta -= 360;
-				if (delta < -180) delta += 360;
+					// Calculate shortest path for dial rotation (-heading)
+					let delta = -rounded - targetDegrees.current;
+					if (delta > 180) delta -= 360;
+					if (delta < -180) delta += 360;
 
-				targetDegrees.current += delta;
+					targetDegrees.current += delta;
 
-				Animated.timing(animatedDegrees, {
-					toValue: targetDegrees.current,
-					duration: 100,
-					easing: Easing.out(Easing.quad),
-					useNativeDriver: true,
-				}).start();
-			});
-		};
+					Animated.timing(animatedDegrees, {
+						toValue: targetDegrees.current,
+						duration: 100,
+						easing: Easing.out(Easing.quad),
+						useNativeDriver: true,
+					}).start();
+				});
 
-		setupFusedCompass();
+				if (!mounted) {
+					sub.remove();
+				} else {
+					subscription = sub;
+				}
+			};
 
-		return () => {
-			mounted = false;
-			subscription?.remove();
-		};
-	}, []);
+			setupFusedCompass();
+
+			return () => {
+				mounted = false;
+				subscription?.remove();
+			};
+		}, []),
+	);
 
 	const rotate = animatedDegrees.interpolate({
 		inputRange: [0, 360],
