@@ -1,4 +1,4 @@
-import {CountryType, RegionType} from '@northernexplorer/types';
+import {CountryType, PublishStatusEnum, RegionType} from '@northernexplorer/types';
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {HistoricSite} from '../entities/HistoricSite';
 
@@ -14,6 +14,7 @@ interface HistoricSiteRawRow {
 	country: CountryType;
 	region: RegionType;
 	distanceMeters: number;
+	status: PublishStatusEnum;
 }
 
 export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
@@ -27,37 +28,38 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 
 	async getClosestHistoricSites(lat: number, lon: number, limit: number) {
 		const query = `
-            SELECT id, name, description, image, lat, lon, country  , region ,
-                   start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
-            FROM (
-                     SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, 
-					  json_build_object(
-                'id', c.id,
-                'name', c.name
-            ) as country,
-          json_build_object(
-    'id', r.id,
-    'name', r.name,
-    'country',
-        json_build_object(
-            'id', c.id,
-            'name', c.name
-        )
-) AS region,
-					 h.start_date, h.end_date,
-                            (6371000 * acos(
-                                cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
-                                sin(radians(?)) * sin(radians(h.lat))
-                                       )) AS distance_meters
-                     FROM historic_site h
-					 JOIN country c
-					 ON h.country_id = c.id
-					 JOIN region r
-					 ON h.region_id = r.id
-                 ) AS spatial_search
-            ORDER BY distanceMeters ASC
-                LIMIT ?
-        `;
+			SELECT id, name, description, image, lat, lon, country, region, status,
+			       start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
+			FROM (
+					 SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, h.status,
+				            json_build_object(
+								'id', c.id,
+					            'name', c.name
+				            ) as country,
+				            json_build_object(
+								'id', r.id,
+					            'name', r.name,
+					            'country',
+					            json_build_object(
+									'id', c.id,
+						            'name', c.name
+					            )
+				            ) AS region,
+				            h.start_date, h.end_date,
+				            (6371000 * acos(
+								cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
+					            sin(radians(?)) * sin(radians(h.lat))
+				                       )) AS distance_meters
+				     FROM historic_site h
+							  JOIN country c
+								   ON h.country_id = c.id
+					          JOIN region r
+								   ON h.region_id = r.id
+				     WHERE h.status = 'Published'
+				 ) AS spatial_search
+			ORDER BY distanceMeters ASC
+				LIMIT ?
+		`;
 
 		const rawResults = (await this.em.getConnection().execute(query, [lat, lon, lat, limit])) as unknown as HistoricSiteRawRow[];
 
@@ -72,6 +74,7 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 			lon: Number(site.lon),
 			startDate: site.startDate ? Number(site.startDate) : null,
 			endDate: site.endDate ? Number(site.endDate) : null,
+			status: site.status,
 		}));
 	}
 }

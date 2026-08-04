@@ -1,18 +1,31 @@
-import React, {useState} from 'react';
-import {View, Pressable, useWindowDimensions, Modal} from 'react-native';
+import React, {ComponentProps, useState} from 'react';
+import {Modal, Pressable, useWindowDimensions, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {RolesEnum} from '@northernexplorer/types';
 import {styles} from '~/layout/Layout/styles';
 import {MenuItemDefault} from '~/layout/Layout/components/MenuItemDefault';
 import {MenuBranding} from '~/layout/Layout/components/MenuBranding';
 import {MenuItemUser} from '~/layout/Layout/components/MenuItemUser';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
-const MENU_ITEMS = [
-	{label: 'Dashboard', route: '/', icon: 'grid-outline' as const},
-	{label: 'Map', route: '/map', icon: 'map' as const},
+type Icon = ComponentProps<typeof MenuItemDefault>['icon'];
+
+type MenuItem = {
+	label: string;
+	route: string;
+	icon: Icon;
+	role?: RolesEnum;
+};
+
+const MENU_ITEMS: MenuItem[] = [
+	{label: 'Dashboard', route: '/', icon: 'grid-outline'},
+	{label: 'Map', route: '/map', icon: 'map'},
+	{label: 'Admin', route: '/admin', icon: 'shield-checkmark', role: RolesEnum.Admin},
 ];
 
 export function Navigation() {
+	const authentication = useAuthentication();
 	const {width} = useWindowDimensions();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -21,16 +34,19 @@ export function Navigation() {
 	const renderLinks = (isMobileDrawer = false) => (
 		<View style={isMobileDrawer ? styles.drawerLinks : styles.desktopLinks}>
 			{MENU_ITEMS.map(item => {
-				return (
-					<MenuItemDefault
-						key={item.route}
-						route={item.route}
-						icon={item.icon}
-						isMobileDrawer={isMobileDrawer}
-						label={item.label}
-						setIsMenuOpen={setIsMenuOpen}
-					/>
-				);
+				if (!item.role || authentication?.roles?.includes(item.role)) {
+					return (
+						<MenuItemDefault
+							key={item.route}
+							route={item.route}
+							icon={item.icon}
+							isMobileDrawer={isMobileDrawer}
+							label={item.label}
+							setIsMenuOpen={setIsMenuOpen}
+						/>
+					);
+				}
+				return null;
 			})}
 		</View>
 	);
