@@ -1,9 +1,10 @@
 import {Entity, ManyToOne, OneToMany, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
 import {Collection} from '@mikro-orm/core';
-import {Review} from '../../features';
 import {Region} from './Region';
 import {Country} from './Country';
 import { v4 } from 'uuid';
+import {Review} from './Review';
+
 @Entity()
 export class HistoricSite {
 	@PrimaryKey({type: 'uuid'})

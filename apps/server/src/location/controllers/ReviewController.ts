@@ -2,6 +2,7 @@ import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import { AuthContext } from '../..';
+
 type Route<M extends keyof ROUTES['location']['ReviewController']> = RouteDefinition<'location', 'ReviewController'>[M];
 
 export class ReviewController extends BaseController {

@@ -2,7 +2,7 @@ import {Entity, Enum, ManyToOne, PrimaryKey, Property} from '@mikro-orm/decorato
 import {v4} from 'uuid';
 import {ReviewRatingEnum} from '@northernexplorer/types';
 import {User} from '../../user';
-import {HistoricSite} from '../../location';
+import {HistoricSite} from '../index';
 
  
 type ReviewType = {
@@ -26,10 +26,13 @@ export class Review {
 
 	@ManyToOne(() => User)
 	user!: User;
+
 	@Property({type: 'datetime'})
 	createdAt = new Date();
+
 	@Property({type: 'datetime'})
 	updatedAt = new Date();
+
 	@ManyToOne(() => HistoricSite)
 	historicSite!: HistoricSite;
 
