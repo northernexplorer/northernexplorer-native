@@ -1,6 +1,7 @@
 import {ComponentType, useState} from 'react';
 import {ImageBackground, Pressable, ScrollView, Text, useWindowDimensions, View} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {styles} from './styles';
 import {getWeatherTheme} from '~/layout/Layout/getWeatherTheme';
 import {useWeather} from '~/environment/state/weather/useWeather';
@@ -22,6 +23,7 @@ interface Props {
 
 export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline}: Props) {
 	const {width} = useWindowDimensions();
+	const insets = useSafeAreaInsets();
 	const {isOffline, isRequiredAppUpdate} = useIsOffline();
 	const isMobileView = width < 1000;
 	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
@@ -31,6 +33,9 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 
 	const online = !isOffline || !!showOffline;
 	const isMobileFullPage = fullPage && isMobileView;
+
+	const floatingButtonBottom = (insets.bottom || 0) + 20;
+	const floatingMenuBottom = (insets.bottom || 0) + 76;
 
 	if (isRequiredAppUpdate) return <Update />;
 
@@ -90,7 +95,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 								onPress={() => setIsSidebarVisible(prev => !prev)}
 								style={{
 									position: 'absolute',
-									bottom: 20,
+									bottom: floatingButtonBottom,
 									right: 20,
 									zIndex: 20,
 									backgroundColor: '#1a1a1a',
@@ -111,7 +116,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 								<View
 									style={{
 										position: 'absolute',
-										bottom: 76,
+										bottom: floatingMenuBottom,
 										left: 12,
 										right: 12,
 										maxHeight: '60%',
