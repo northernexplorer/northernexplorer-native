@@ -34,7 +34,6 @@ export const ReviewController = {
 	},
 	createNewReview: {
 		params: {} as {
-			userId: string;
 			historicSiteId: string;
 			rating: ReviewRatingEnum;
 			description: string;

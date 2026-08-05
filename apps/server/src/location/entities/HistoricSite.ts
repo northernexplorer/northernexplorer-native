@@ -16,8 +16,6 @@ type HistoricSiteInput = {
 	region: Region;
 	startDate?: number | null;
 	endDate?: number | null;
-	createdAt?: Date;
-	updatedAt?: Date;
 	status: PublishStatusEnum;
 };
 
@@ -29,20 +27,20 @@ export class HistoricSite {
 	@Property({type: 'integer', version: true})
 	version = 1;
 
-	@Property({type: 'string', unique: true, length: 255})
-	name!: string;
+	@Property({type: 'text', unique: true, length: 255})
+	name: string;
 
 	@Property({type: 'text'})
 	description!: string;
 
 	@Property({type: 'text'})
-	image!: string;
+	image: string;
 
 	@Property({type: 'double'})
-	lat!: number;
+	lat: number;
 
 	@Property({type: 'double'})
-	lon!: number;
+	lon: number;
 
 	@Property({type: 'double', nullable: true})
 	startDate?: number | null;
@@ -51,10 +49,10 @@ export class HistoricSite {
 	endDate?: number | null;
 
 	@ManyToOne(() => Country)
-	country!: Country;
+	country: Country;
 
 	@ManyToOne(() => Region)
-	region!: Region;
+	region: Region;
 
 	@OneToMany(() => Review, review => review.historicSite)
 	reviews = new Collection<Review>(this);
@@ -77,10 +75,7 @@ export class HistoricSite {
 		this.country = data.country;
 		this.region = data.region;
 		this.status = data.status;
-
-		if (data.startDate !== undefined) this.startDate = data.startDate;
-		if (data.endDate !== undefined) this.endDate = data.endDate;
-		if (data.createdAt) this.createdAt = data.createdAt;
-		if (data.updatedAt) this.updatedAt = data.updatedAt;
+		this.startDate = data.startDate;
+		this.endDate = data.endDate;
 	}
 }

@@ -1,4 +1,5 @@
 import {RolesEnum} from '@northernexplorer/types';
+import {AuthContext} from '../../index';
 
 export class PermissionService {
 	canAccessProfile({userId, targetId}: {userId?: string; targetId: string | number}) {
@@ -13,5 +14,11 @@ export class PermissionService {
 		if (!roles.includes(RolesEnum.Admin)) throw new Error("You don't have permission to access the admin page.");
 
 		return {userId};
+	}
+
+	isLoggedIn(auth?: AuthContext) {
+		if (!auth?.userId || !auth.email) throw new Error('You must be logged in to access this resource');
+
+		return {userId: auth.userId};
 	}
 }

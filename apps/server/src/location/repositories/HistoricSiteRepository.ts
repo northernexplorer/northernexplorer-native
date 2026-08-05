@@ -134,4 +134,8 @@ LEFT JOIN "user" u
 			status: site.status,
 		}));
 	}
+
+	async getById(id: string) {
+		return this.findOneOrFail({id});
+	}
 }
