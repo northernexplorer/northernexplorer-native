@@ -2,11 +2,11 @@ import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
+import {getUrlSafeString} from '@northernexplorer/tools';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/elements/Spinner';
 import {Column, Table} from '~/layout/Layout/elements/Table';
-import {getUrlSafeString} from '@northernexplorer/tools';
 
 export function PublishedHistoricSites() {
 	const router = useRouter();
