@@ -75,10 +75,12 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 									flexDirection: 'column',
 								}}
 							>
-								<View style={{paddingBottom: 10}}>
-									{title && <Text style={styles.title}>{title}</Text>}
-									{subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-								</View>
+								{!fullPage && (
+									<View style={{paddingBottom: 10}}>
+										{title && <Text style={styles.title}>{title}</Text>}
+										{subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+									</View>
+								)}
 
 								<View style={{flex: 1, display: 'flex', width: '100%'}}>
 									<Content />

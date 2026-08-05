@@ -15,9 +15,8 @@ export class SubscriptionController extends BaseController {
 	private permissionService = new PermissionService();
 
 	async getPermissions(params: Params<Route<'getPermissions'>>, auth?: AuthContext): Promise<Response<Route<'getPermissions'>>> {
-		if (!params.username) return null;
 		if (!auth?.userId) return null;
-		const user = await this.repos.user.getByUsername(params.username);
+		const user = await this.repos.user.getById(auth.userId);
 		this.permissionService.canAccessProfile({targetId: user.id}, auth);
 
 		const subscription = await this.repos.subscription.getById(user.subscription.id);
