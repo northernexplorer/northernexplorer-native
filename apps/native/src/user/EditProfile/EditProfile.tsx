@@ -5,8 +5,8 @@ import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/components/Spinner';
-import {FormField} from '~/layout/Layout/components/FormField';
+import {Spinner} from '~/layout/Layout/elements/Spinner';
+import {FormField} from '~/layout/Layout/elements/FormField';
 import {isValidEmail} from '~/user/isValidEmail';
 
 type RouteParams = {

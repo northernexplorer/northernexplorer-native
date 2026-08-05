@@ -5,7 +5,7 @@ import {useDispatch} from 'react-redux';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
-import {FormField} from '~/layout/Layout/components/FormField';
+import {FormField} from '~/layout/Layout/elements/FormField';
 import {useDeviceInfo} from '~/user/Login/useDeviceInfo';
 
 const initialFormData = {

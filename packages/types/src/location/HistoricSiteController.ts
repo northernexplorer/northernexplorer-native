@@ -31,4 +31,12 @@ export const HistoricSiteController = {
 		params: {} as {id: string},
 		response: null as unknown as HistoricSiteType,
 	},
+	getDrafts: {
+		params: {} as Record<string, undefined>,
+		response: {} as HistoricSiteType[],
+	},
+	getPublished: {
+		params: {} as Record<string, undefined>,
+		response: {} as HistoricSiteType[],
+	},
 };

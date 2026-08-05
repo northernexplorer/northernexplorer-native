@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useFieldNote} from '~/environment/state/fieldNote/useFieldNote';
-import {Spinner} from '~/layout/Layout/components/Spinner';
+import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 export function FieldNote() {
 	const fieldNote = useFieldNote();

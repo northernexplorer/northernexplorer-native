@@ -4,7 +4,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
 import {useForecast} from '~/environment/state/forecast/useForecast';
-import {Spinner} from '~/layout/Layout/components/Spinner';
+import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 export function Forecast() {
 	const forecast = useForecast();

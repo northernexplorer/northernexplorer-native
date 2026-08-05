@@ -4,7 +4,7 @@ import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
-import {FormField} from '~/layout/Layout/components/FormField';
+import {FormField} from '~/layout/Layout/elements/FormField';
 
 const initialFormData = {
 	currentPassword: '',

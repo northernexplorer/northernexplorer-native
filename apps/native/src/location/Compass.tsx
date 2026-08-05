@@ -7,7 +7,8 @@ import {useFocusEffect} from 'expo-router';
 import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
-import {ProFeatureOnly} from '~/layout/Layout/components/ProFeatureOnly';
+import {ProFeatureOnly} from '~/layout/Layout/elements/ProFeatureOnly';
+import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 export function Compass() {
 	const [heading, setHeading] = useState<number>(0);
@@ -85,6 +86,7 @@ export function Compass() {
 	const needsCalibration = accuracy <= 1;
 	const canUseCompass = !!permissionData?.navigation.useCompass;
 
+	if (!permissionData) return <Spinner />;
 	if (!canUseCompass) return <ProFeatureOnly />;
 
 	if (!isAvailable) {

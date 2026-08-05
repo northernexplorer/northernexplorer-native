@@ -6,7 +6,7 @@ import {ReviewDetails} from './Reviews';
 import {styles} from '~/location/HistoricSiteDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/components/Spinner';
+import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 export function HistoricSiteDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();

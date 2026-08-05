@@ -1,12 +1,13 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {Redirect} from 'expo-router';
+import {View, Text, StyleSheet, Pressable} from 'react-native';
+import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/components/Spinner';
+import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 export function Admin() {
+	const router = useRouter();
 	const authentication = useAuthentication();
 	const {data, loading} = useApiFetch('system', 'StatusController', 'getOverview', {});
 
@@ -16,31 +17,34 @@ export function Admin() {
 	return (
 		<View style={styles.grid}>
 			{/* Published Sites Card */}
-			<View style={styles.card}>
+			<Pressable
+				style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
+				onPress={() => router.push('/admin/published-historic-sites')}
+			>
 				<View style={[styles.iconBadge, {backgroundColor: '#e8f5e9'}]}>
 					<Ionicons name="map-outline" size={24} color="#2e7d32" />
 				</View>
 				<Text style={styles.statValue}>{data?.historicSitesPublished ?? 0}</Text>
 				<Text style={styles.statLabel}>Published Sites</Text>
-			</View>
+			</Pressable>
 
 			{/* Draft Sites Card */}
-			<View style={styles.card}>
+			<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/draft-historic-sites')}>
 				<View style={[styles.iconBadge, {backgroundColor: '#fff3e0'}]}>
 					<Ionicons name="document-text-outline" size={24} color="#e65100" />
 				</View>
 				<Text style={styles.statValue}>{data?.historicSitesDraft ?? 0}</Text>
 				<Text style={styles.statLabel}>Draft Sites</Text>
-			</View>
+			</Pressable>
 
 			{/* Users Card */}
-			<View style={styles.card}>
+			<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/users')}>
 				<View style={[styles.iconBadge, {backgroundColor: '#e3f2fd'}]}>
 					<Ionicons name="people-outline" size={24} color="#1565c0" />
 				</View>
 				<Text style={styles.statValue}>{data?.users ?? 0}</Text>
 				<Text style={styles.statLabel}>Registered Users</Text>
-			</View>
+			</Pressable>
 		</View>
 	);
 }
@@ -66,6 +70,10 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.05,
 		shadowRadius: 8,
 		elevation: 2,
+	},
+	cardPressed: {
+		opacity: 0.7,
+		transform: [{scale: 0.98}],
 	},
 	iconBadge: {
 		width: 44,

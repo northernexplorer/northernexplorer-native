@@ -3,7 +3,7 @@ import {Link} from 'expo-router';
 import React from 'react';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/components/Spinner';
+import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 type Props = {
 	username: string;

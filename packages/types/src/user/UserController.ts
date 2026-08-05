@@ -68,7 +68,7 @@ type ResetPasswordParams = {
 type GetByUsernameParams = {
 	username: string;
 };
-export type GetByUsernameResponse = {
+export type UserType = {
 	id: string;
 	version: number;
 	firstName: string;
@@ -78,6 +78,7 @@ export type GetByUsernameResponse = {
 	score: number;
 	createdAt: Date;
 	isActive: boolean;
+	roles?: RolesEnum[];
 	// Note: We intentionally exclude passwordHash here for API security
 };
 
@@ -121,7 +122,7 @@ export const UserController = {
 	},
 	getByUsername: {
 		params: {} as GetByUsernameParams,
-		response: {} as GetByUsernameResponse,
+		response: {} as UserType,
 	},
 	refresh: {
 		params: {} as RefreshParams,
@@ -138,5 +139,9 @@ export const UserController = {
 	deleteUser: {
 		params: {} as DeleteUserParams,
 		response: {} as GenericResponseType,
+	},
+	getAll: {
+		params: {} as Record<string, undefined>,
+		response: {} as UserType[],
 	},
 };
