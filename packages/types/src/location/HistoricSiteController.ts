@@ -19,7 +19,7 @@ export type HistoricSiteType = {
 	region?: RegionType;
 	startDate?: number | null;
 	endDate?: number | null;
-	status: PublishStatusEnum;
+	status?: PublishStatusEnum;
 };
 
 export const HistoricSiteController = {

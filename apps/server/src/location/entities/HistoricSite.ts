@@ -1,14 +1,10 @@
-
-import {Entity, ManyToOne, OneToMany, PrimaryKey, Property,Enum} from '@mikro-orm/decorators/legacy';
+import {Entity, ManyToOne, OneToMany, PrimaryKey, Property, Enum} from '@mikro-orm/decorators/legacy';
 import {Collection} from '@mikro-orm/core';
-
 import {v4} from 'uuid';
 import {PublishStatusEnum} from '@northernexplorer/types';
 import {Region} from './Region';
 import {Country} from './Country';
-
 import {Review} from './Review';
-
 
 type HistoricSiteInput = {
 	name: string;
@@ -24,7 +20,6 @@ type HistoricSiteInput = {
 	updatedAt?: Date;
 	status: PublishStatusEnum;
 };
-
 
 @Entity()
 export class HistoricSite {
@@ -69,7 +64,6 @@ export class HistoricSite {
 
 	@Property({type: 'datetime'})
 	updatedAt = new Date();
-
 
 	@Enum({items: () => PublishStatusEnum, type: 'enum'})
 	status: PublishStatusEnum;

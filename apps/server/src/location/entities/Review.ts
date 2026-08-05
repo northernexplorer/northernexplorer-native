@@ -4,7 +4,7 @@ import {ReviewRatingEnum} from '@northernexplorer/types';
 import {User} from '../../user';
 import {HistoricSite} from '../index';
 
-type ReviewType = {
+type ReviewInput = {
 	user: User;
 	historicSite: HistoricSite;
 	rating: ReviewRatingEnum;
@@ -37,8 +37,7 @@ export class Review {
 	@Enum(() => ReviewRatingEnum)
 	rating!: ReviewRatingEnum;
 
-	constructor(data: ReviewType) {
-		((this.description = data.description), (this.user = data.user), (this.historicSite = data.historicSite));
-		this.rating = data.rating;
+	constructor(data: ReviewInput) {
+		Object.assign(this, data);
 	}
 }

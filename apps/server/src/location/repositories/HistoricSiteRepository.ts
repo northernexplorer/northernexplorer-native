@@ -1,6 +1,4 @@
-
 import {CountryType, PublishStatusEnum, RegionType} from '@northernexplorer/types';
-
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {ReviewType} from '@northernexplorer/types';
 import {ReviewSummary} from '@northernexplorer/types';
@@ -15,7 +13,7 @@ interface HistoricSiteRawRow {
 	lon: string | number;
 	startDate: string | number;
 	endDate: string | number;
-	country: CountryType
+	country: CountryType;
 	region: RegionType;
 	reviews: ReviewType;
 	distanceMeters: number;
