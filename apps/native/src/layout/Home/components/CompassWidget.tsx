@@ -1,67 +1,75 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useRef, useCallback} from 'react';
 import {View, Text, Platform, Animated, Easing, Pressable} from 'react-native';
 import * as Location from 'expo-location';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {Link} from 'expo-router';
+import {Link, useFocusEffect} from 'expo-router';
 import {styles} from '~/layout/Home/styles';
 import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
 
 export function CompassWidget() {
 	const [heading, setHeading] = useState<number>(0);
-	const [accuracy, setAccuracy] = useState<number>(3); // 3 = High accuracy, 1 = Low
+	const [accuracy, setAccuracy] = useState<number>(3);
 	const [isAvailable, setIsAvailable] = useState<boolean>(true);
 
 	const animatedDegrees = useRef(new Animated.Value(0)).current;
 	const targetDegrees = useRef<number>(0);
 
-	useEffect(() => {
-		let subscription: Location.LocationSubscription | null = null;
-		let mounted = true;
+	useFocusEffect(
+		useCallback(() => {
+			let subscription: Location.LocationSubscription | null = null;
+			let mounted = true;
 
-		const setupFusedCompass = async () => {
-			if (Platform.OS === 'web') {
-				if (mounted) setIsAvailable(false);
-				return;
-			}
+			const setupFusedCompass = async () => {
+				if (Platform.OS === 'web') {
+					if (mounted) setIsAvailable(false);
+					return;
+				}
 
-			const {status} = await Location.requestForegroundPermissionsAsync();
-			if (status !== 'granted') {
-				if (mounted) setIsAvailable(false);
-				return;
-			}
+				const {status} = await Location.requestForegroundPermissionsAsync();
+				if (status !== 'granted') {
+					if (mounted) setIsAvailable(false);
+					return;
+				}
 
-			subscription = await Location.watchHeadingAsync(headingData => {
-				if (!mounted) return;
+				const sub = await Location.watchHeadingAsync(headingData => {
+					if (!mounted) return;
 
-				const rawAngle = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
-				const rounded = Math.round(rawAngle);
+					const rawAngle = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
+					const rounded = Math.round(rawAngle);
 
-				setAccuracy(headingData.accuracy);
-				setHeading(rounded);
+					setAccuracy(headingData.accuracy);
+					setHeading(rounded);
 
-				// Calculate shortest path for dial rotation (-heading)
-				let delta = -rounded - targetDegrees.current;
-				if (delta > 180) delta -= 360;
-				if (delta < -180) delta += 360;
+					let delta = -rounded - targetDegrees.current;
+					if (delta > 180) delta -= 360;
+					if (delta < -180) delta += 360;
 
-				targetDegrees.current += delta;
+					targetDegrees.current += delta;
 
-				Animated.timing(animatedDegrees, {
-					toValue: targetDegrees.current,
-					duration: 100,
-					easing: Easing.out(Easing.quad),
-					useNativeDriver: true,
-				}).start();
-			});
-		};
+					Animated.timing(animatedDegrees, {
+						toValue: targetDegrees.current,
+						duration: 100,
+						easing: Easing.out(Easing.quad),
+						useNativeDriver: true,
+					}).start();
+				});
 
-		setupFusedCompass();
+				// Safety check: If component unmounted while awaiting watchHeadingAsync
+				if (!mounted) {
+					sub.remove();
+				} else {
+					subscription = sub;
+				}
+			};
 
-		return () => {
-			mounted = false;
-			subscription?.remove();
-		};
-	}, []);
+			setupFusedCompass();
+
+			return () => {
+				mounted = false;
+				subscription?.remove();
+			};
+		}, []),
+	);
 
 	const rotate = animatedDegrees.interpolate({
 		inputRange: [0, 360],
@@ -104,7 +112,6 @@ export function CompassWidget() {
 				}}
 			>
 				<View style={{width: 64, height: 64, alignItems: 'center', justifyContent: 'center'}}>
-					{/* Fixed Top Heading Indicator (Points straight up) */}
 					<View
 						style={{
 							position: 'absolute',
@@ -121,7 +128,6 @@ export function CompassWidget() {
 						}}
 					/>
 
-					{/* Outer Ring */}
 					<View
 						style={{
 							width: 56,
@@ -132,7 +138,6 @@ export function CompassWidget() {
 							alignItems: 'center',
 						}}
 					>
-						{/* Rotating Inner Needle & Dial */}
 						<Animated.View
 							style={{
 								width: 48,
@@ -142,7 +147,6 @@ export function CompassWidget() {
 								transform: [{rotate}],
 							}}
 						>
-							{/* North Arrow Tip (Red) */}
 							<View
 								style={{
 									position: 'absolute',
@@ -158,7 +162,6 @@ export function CompassWidget() {
 								}}
 							/>
 
-							{/* South Arrow Tip (Subtle Muted) */}
 							<View
 								style={{
 									position: 'absolute',
@@ -174,7 +177,6 @@ export function CompassWidget() {
 								}}
 							/>
 
-							{/* Center Pivot Point */}
 							<View
 								style={{
 									width: 6,
