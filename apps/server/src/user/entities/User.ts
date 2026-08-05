@@ -30,6 +30,9 @@ export class User {
 	@Property({type: 'text', unique: true})
 	username: string;
 
+	@Property({type: 'integer'})
+	score: number = 0;
+
 	@Property({type: 'text', unique: true})
 	email: string;
 

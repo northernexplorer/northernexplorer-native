@@ -1,5 +1,7 @@
 import {CountryType, PublishStatusEnum, RegionType} from '@northernexplorer/types';
 import {EntityRepository} from '@mikro-orm/postgresql';
+import {ReviewType} from '@northernexplorer/types';
+import {ReviewSummary} from '@northernexplorer/types';
 import {HistoricSite} from '../entities/HistoricSite';
 
 interface HistoricSiteRawRow {
@@ -13,17 +15,47 @@ interface HistoricSiteRawRow {
 	endDate: string | number;
 	country: CountryType;
 	region: RegionType;
+	reviews: ReviewType;
 	distanceMeters: number;
 	status: PublishStatusEnum;
 }
 
+type HistoricSiteDetailsResponse = {
+	id: string;
+	name: string;
+	description: string;
+	image: string;
+	lat: number;
+	lon: number;
+	country: CountryType;
+	region: RegionType;
+	reviews: ReviewSummary[];
+};
+
 export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
-	async getHistoricSiteDetails(id: string) {
-		const site = await this.findOne({id: String(id)}, {populate: ['country', 'region']});
+	async getHistoricSiteDetails(id: string): Promise<HistoricSiteDetailsResponse> {
+		const site = await this.findOneOrFail({id: id}, {populate: ['country', 'region', 'reviews', 'reviews.user']});
 
-		if (!site) throw new Error('Historic site not found.');
-
-		return site;
+		return {
+			id: site.id,
+			name: site.name,
+			description: site.description,
+			image: site.image,
+			lat: site.lat,
+			lon: site.lon,
+			country: site.country,
+			region: site.region,
+			reviews: site.reviews.map(review => ({
+				id: review.id,
+				description: review.description,
+				rating: review.rating,
+				user: {
+					id: review.user.id,
+					username: review.user.username,
+					score: review.user.score,
+				},
+			})),
+		};
 	}
 
 	async getClosestHistoricSites(lat: number, lon: number, limit: number) {
@@ -70,11 +102,16 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 			image: site.image,
 			country: site.country,
 			region: site.region,
+			review: site.reviews,
 			lat: Number(site.lat),
 			lon: Number(site.lon),
 			startDate: site.startDate ? Number(site.startDate) : null,
 			endDate: site.endDate ? Number(site.endDate) : null,
 			status: site.status,
 		}));
+	}
+
+	async getById(id: string) {
+		return this.findOneOrFail({id});
 	}
 }

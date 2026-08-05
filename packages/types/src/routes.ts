@@ -2,7 +2,6 @@ import {location} from './location';
 import {environment} from './environment';
 import {user} from './user';
 import {system} from './system';
-
 export interface ApiMethod<P = unknown, R = unknown> {
 	params: P;
 	response: R;

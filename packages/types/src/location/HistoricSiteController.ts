@@ -1,5 +1,6 @@
 import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
+import {ReviewSummary} from './ReviewController';
 
 export enum PublishStatusEnum {
 	Published = 'Published',
@@ -14,10 +15,11 @@ export type HistoricSiteType = {
 	lat: number;
 	lon: number;
 	country?: CountryType;
+	reviews?: ReviewSummary[];
 	region?: RegionType;
 	startDate?: number | null;
 	endDate?: number | null;
-	status: PublishStatusEnum;
+	status?: PublishStatusEnum;
 };
 
 export const HistoricSiteController = {

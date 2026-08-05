@@ -1,4 +1,17 @@
 {
 	"files": [],
-	"references": [{"path": "./apps/migrate"}, {"path": "./apps/server"}, {"path": "./apps/native"}, {"path": "./packages/types"}]
+	"references": [
+		{
+			"path": "./apps/migrate"
+		},
+		{
+			"path": "./apps/server"
+		},
+		{
+			"path": "./apps/native"
+		},
+		{
+			"path": "./packages/types"
+		}
+	]
 }

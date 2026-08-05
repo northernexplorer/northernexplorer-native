@@ -14,7 +14,7 @@ export function ProfileDetails({username}: Props) {
 	});
 	if (loading || !data) return <Spinner />;
 
-	const ProfileField = ({label, value}: {label: string; value: string}) => (
+	const ProfileField = ({label, value}: {label: string; value: string | number}) => (
 		<View style={styles.field}>
 			<Text style={styles.label}>{label}</Text>
 			<Text style={styles.value}>{value}</Text>
@@ -26,7 +26,9 @@ export function ProfileDetails({username}: Props) {
 			<ProfileField label="Last Name" value={data.lastName} />
 			<ProfileField label="Username" value={data.username} />
 			<ProfileField label="Email Address" value={data.email} />
+			<ProfileField label="review score" value={data.score} />
 			<ProfileField label="Status" value={data.isActive ? 'Active' : 'Inactive'} />
+
 			<ProfileField label="Registed On" value={new Date(data.createdAt).toLocaleDateString()} />
 			<Link href={`/profile/${username}/edit-profile`} asChild>
 				<Pressable style={styles.button}>
