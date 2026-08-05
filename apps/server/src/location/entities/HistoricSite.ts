@@ -31,7 +31,7 @@ export class HistoricSite {
 	name: string;
 
 	@Property({type: 'text'})
-	description!: string;
+	description: string;
 
 	@Property({type: 'text'})
 	image: string;

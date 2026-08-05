@@ -20,10 +20,10 @@ export class Review {
 	version = 1;
 
 	@Property({type: 'string'})
-	description!: string;
+	description: string;
 
 	@ManyToOne(() => User)
-	user!: User;
+	user: User;
 
 	@Property({type: 'datetime'})
 	createdAt = new Date();
@@ -32,12 +32,15 @@ export class Review {
 	updatedAt = new Date();
 
 	@ManyToOne(() => HistoricSite)
-	historicSite!: HistoricSite;
+	historicSite: HistoricSite;
 
 	@Enum(() => ReviewRatingEnum)
-	rating!: ReviewRatingEnum;
+	rating: ReviewRatingEnum;
 
 	constructor(data: ReviewInput) {
-		Object.assign(this, data);
+		this.description = data.description;
+		this.user = data.user;
+		this.historicSite = data.historicSite;
+		this.rating = data.rating;
 	}
 }
