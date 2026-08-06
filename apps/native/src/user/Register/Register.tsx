@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {View, Text, TextInput, Pressable, Switch, ScrollView} from 'react-native';
 import {Link, router} from 'expo-router';
+import {FormField} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
-import {FormField} from '~/layout/Layout/elements/FormField';
 import {isValidEmail} from '~/user/isValidEmail';
 
 const initialFormData = {

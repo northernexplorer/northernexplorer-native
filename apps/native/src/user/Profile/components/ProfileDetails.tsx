@@ -1,9 +1,9 @@
 import {View, Text, Pressable} from 'react-native';
 import {Link} from 'expo-router';
 import React from 'react';
+import {Spinner} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 type Props = {
 	username: string;

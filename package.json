@@ -20,6 +20,7 @@
 		"dev:organize": "dev/organize.sh",
 		"dev:setup": "dev/setup.sh",
 		"dev:start": "dev/start.sh",
+		"fix:expo": "yarn workspace northernexplorer-native expo install --check",
 		"native": "yarn workspace northernexplorer-native",
 		"server": "yarn workspace northernexplorer-server",
 		"start:android": "yarn workspace northernexplorer-native android",

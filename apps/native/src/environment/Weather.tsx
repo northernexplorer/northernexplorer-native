@@ -2,9 +2,9 @@ import React from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {Spinner} from '@northernexplorer/tools';
 import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
 import {useWeather} from '~/environment/state/weather';
-import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 export function Weather() {
 	const weather = useWeather();

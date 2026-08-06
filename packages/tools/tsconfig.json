@@ -5,6 +5,7 @@
 		"outDir": "./dist",
 		"rootDir": ".",
 		"declaration": true,
-		"noEmit": false
+		"noEmit": false,
+		"jsx": "react-jsx"
 	}
 }

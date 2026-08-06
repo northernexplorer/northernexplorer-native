@@ -4,10 +4,10 @@ import * as Location from 'expo-location';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useFocusEffect} from 'expo-router';
+import {ProFeatureOnly} from '@northernexplorer/tools';
+import {Spinner} from '@northernexplorer/tools';
 import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
 import {useApiFetch} from '~/core/useApiFetch';
-import {ProFeatureOnly} from '~/layout/Layout/elements/ProFeatureOnly';
-import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 export function Compass() {
 	const [heading, setHeading] = useState<number>(0);
