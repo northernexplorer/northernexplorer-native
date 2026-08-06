@@ -2015,7 +2015,7 @@ __metadata:
   dependencies:
     "@expo/vector-icons": "npm:^15.0.2"
     "@react-native-community/datetimepicker": "npm:^9.1.0"
-    react: "npm:19.2.3"
+    react: "npm:19.2.8"
     react-native: "npm:0.86.2"
     react-native-safe-area-context: "npm:~5.7.0"
   languageName: unknown
@@ -8192,7 +8192,7 @@ __metadata:
     expo-splash-screen: "npm:~57.0.5"
     geojson: "npm:^0.5.0"
     maplibre-gl: "npm:^5.24.0"
-    react: "npm:19.2.3"
+    react: "npm:19.2.8"
     react-dom: "npm:19.2.3"
     react-map-gl: "npm:^8.1.1"
     react-native: "npm:0.86.2"
@@ -9286,10 +9286,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:19.2.3":
-  version: 19.2.3
-  resolution: "react@npm:19.2.3"
-  checksum: 10c0/094220b3ba3a76c1b668f972ace1dd15509b157aead1b40391d1c8e657e720c201d9719537375eff08f5e0514748c0319063392a6f000e31303aafc4471f1436
+"react@npm:19.2.8":
+  version: 19.2.8
+  resolution: "react@npm:19.2.8"
+  checksum: 10c0/5f86bdb56426652fd6d989d30a6f2e603c057272c47c9ca3a3fbe190a3a39ee9ccce937d63cfc039717abed1b8891d6a499134bc35311acc07eafdacd86537cd
   languageName: node
   linkType: hard
 
