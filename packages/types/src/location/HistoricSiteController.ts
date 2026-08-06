@@ -15,22 +15,23 @@ export type HistoricSiteType = {
 	image: string;
 	lat: number;
 	lon: number;
-	country?: CountryType;
+	country: CountryType;
 	reviews?: ReviewSummary[];
-	region?: RegionType;
+	region: RegionType;
 	startDate?: number | null;
 	endDate?: number | null;
 	status: PublishStatusEnum;
 };
 
 export type HistoricSiteEditType = {
+	id: string;
 	name: string;
 	description: string;
 	image: string;
 	lat: number;
 	lon: number;
-	countryId: CountryType;
-	regionId: RegionType;
+	countryId: string;
+	regionId: string;
 	startDate?: Date;
 	endDate?: Date;
 	status: PublishStatusEnum;

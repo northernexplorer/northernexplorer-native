@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
 import {Link, router, useLocalSearchParams} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {CountryType, HistoricSiteEditType, PublishStatusEnum, RegionType} from '@northernexplorer/types';
 import {styles as detailStyles} from '~/location/HistoricSiteDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -14,10 +15,14 @@ import {useApiMutation} from '~/core/useApiMutation';
 type FormState = {
 	name: string;
 	description: string;
+	image: string;
 	lat: string;
 	lon: string;
+	countryId: string;
+	regionId: string;
 	startDate?: Date;
 	endDate?: Date;
+	status: PublishStatusEnum;
 };
 
 type FormKeys = keyof FormState;
@@ -27,13 +32,18 @@ export function HistoricSiteEdit() {
 	const {data, loading} = useApiFetch('location', 'HistoricSiteController', 'getHistoricSiteById', {id});
 	const {mutate, loading: mutationLoading} = useApiMutation('location', 'HistoricSiteController', 'edit', {});
 
+	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const [form, setForm] = useState<FormState>({
 		name: '',
 		description: '',
+		image: '',
 		lat: '',
 		lon: '',
-		startDate: new Date(),
-		endDate: new Date(),
+		countryId: '',
+		regionId: '',
+		startDate: undefined,
+		endDate: undefined,
+		status: PublishStatusEnum.Draft,
 	});
 
 	useEffect(() => {
@@ -41,47 +51,76 @@ export function HistoricSiteEdit() {
 			setForm({
 				name: data.name,
 				description: data.description,
+				image: data.image,
 				lat: String(data.lat),
 				lon: String(data.lon),
+				countryId: data.country.id,
+				regionId: data.region.id,
 				startDate: data.startDate ? new Date(data.startDate) : undefined,
 				endDate: data.endDate ? new Date(data.endDate) : undefined,
+				status: data.status,
 			});
 		}
 	}, [data]);
 
 	if (loading || !data) return <Spinner />;
 
-	const updateField = <K extends FieldKey>(name: K, value: FormState[K]) => {
+	const updateField = <K extends FormKeys>(name: K, value: FormState[K]) => {
 		setForm(prev => ({...prev, [name]: value}));
+		if (errors[name]) {
+			setErrors(prev => ({...prev, [name]: undefined}));
+		}
 	};
 
 	const validateForm = async () => {
 		const newErrors: Partial<Record<FormKeys, string>> = {};
 
-		if (formData.firstName.trim().length < 2) newErrors.firstName = 'First name is too short';
-		if (formData.lastName.trim().length < 2) newErrors.lastName = 'Last name is too short';
-		if (formData.username.trim().length < 6) newErrors.username = 'Username must be at least 6 characters';
-		if (!isValidEmail(formData.email)) newErrors.email = 'Invalid email address';
-		if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
+		if (!form.name.trim()) newErrors.name = 'Site name is required';
+		if (!form.description.trim()) newErrors.description = 'Description is required';
 
-		if (formData.password !== formData.confirmPassword) {
-			newErrors.confirmPassword = 'Passwords do not match';
+		const parsedLat = parseFloat(form.lat);
+		if (isNaN(parsedLat) || parsedLat < -90 || parsedLat > 90) {
+			newErrors.lat = 'Latitude must be between -90 and 90';
 		}
 
-		if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the terms of service';
-		if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'You must accept the privacy policy';
+		const parsedLon = parseFloat(form.lon);
+		if (isNaN(parsedLon) || parsedLon < -180 || parsedLon > 180) {
+			newErrors.lon = 'Longitude must be between -180 and 180';
+		}
 
 		setErrors(newErrors);
 
 		if (Object.keys(newErrors).length === 0) {
-			await handleSubmit();
+			await handleSubmit(parsedLat, parsedLon);
 		}
 	};
 
-	const handleSubmit = async () => {
-		const response = await mutate(formData);
+	const handleSubmit = async (parsedLat: number, parsedLon: number) => {
+		const payload: HistoricSiteEditType = {
+			id: data.id,
+			name: form.name,
+			description: form.description,
+			image: form.image,
+			lat: parsedLat,
+			lon: parsedLon,
+			countryId: form.countryId,
+			regionId: form.regionId,
+			startDate: form.startDate,
+			endDate: form.endDate,
+			status: form.status,
+		};
+
+		const response = await mutate(payload);
 		if (response?.success) {
-			router.replace('/profile/email-confirmation');
+			router.replace({
+				pathname: '/[country]/[region]/[name]/[id]',
+				params: {
+					country: getUrlSafeString(data.country?.name),
+					region: getUrlSafeString(data.region?.name),
+					id: getUrlSafeString(data.id),
+					name: getUrlSafeString(form.name),
+				},
+			});
 		}
 	};
 
@@ -103,6 +142,17 @@ export function HistoricSiteEdit() {
 						placeholder="Enter site name"
 						value={form.name}
 						updateField={updateField}
+						error={errors.name}
+						loading={mutationLoading}
+					/>
+
+					<FormField
+						fieldName="image"
+						label="Image Path"
+						placeholder="Path or URL to image"
+						value={form.image}
+						updateField={updateField}
+						error={errors.image}
 						loading={mutationLoading}
 					/>
 
@@ -114,6 +164,7 @@ export function HistoricSiteEdit() {
 								placeholder="e.g. 54.1234"
 								value={form.lat}
 								updateField={updateField}
+								error={errors.lat}
 								loading={mutationLoading}
 							/>
 						</View>
@@ -124,6 +175,7 @@ export function HistoricSiteEdit() {
 								placeholder="e.g. -94.5678"
 								value={form.lon}
 								updateField={updateField}
+								error={errors.lon}
 								loading={mutationLoading}
 							/>
 						</View>
@@ -136,11 +188,19 @@ export function HistoricSiteEdit() {
 								label="Start Date"
 								value={form.startDate}
 								updateField={updateField}
+								error={errors.startDate}
 								loading={mutationLoading}
 							/>
 						</View>
 						<View style={formStyles.halfWidth}>
-							<DateField fieldName="endDate" label="End Date" value={form.endDate} updateField={updateField} loading={mutationLoading} />
+							<DateField
+								fieldName="endDate"
+								label="End Date"
+								value={form.endDate}
+								updateField={updateField}
+								error={errors.endDate}
+								loading={mutationLoading}
+							/>
 						</View>
 					</View>
 
@@ -150,6 +210,7 @@ export function HistoricSiteEdit() {
 						placeholder="Enter site history and details..."
 						value={form.description}
 						updateField={updateField}
+						error={errors.description}
 						loading={mutationLoading}
 						numberOfLines={6}
 					/>
