@@ -1,5 +1,5 @@
 import {RolesEnum} from '@northernexplorer/types';
-import {AuthContext} from '../../index';
+import {AuthContext} from '../../core/types';
 
 export class PermissionService {
 	canAccessProfile({targetId}: {targetId: string}, auth?: AuthContext) {

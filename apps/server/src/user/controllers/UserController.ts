@@ -5,7 +5,7 @@ import {TokenService} from '../services/TokenService';
 import {PermissionService} from '../services/PermisionService';
 import {EmailSendService} from '../../system/services/EmailSendService';
 import {config} from '../../config';
-import {AuthContext} from '../../index';
+import {AuthContext} from '../../core/types';
 import {BaseController} from '../../core/BaseController';
 import {Subscription} from '../entities/Subscription';
 import {User} from '../entities/User';

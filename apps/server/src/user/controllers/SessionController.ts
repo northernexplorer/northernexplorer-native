@@ -1,6 +1,6 @@
 import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
-import {AuthContext} from '../../index';
+import {AuthContext} from '../../core/types';
 import {PermissionService} from '../services/PermisionService';
 import {BaseController} from '../../core/BaseController';
 

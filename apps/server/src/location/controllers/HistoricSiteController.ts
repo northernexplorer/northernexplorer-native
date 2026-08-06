@@ -1,7 +1,7 @@
 import {Params, PublishStatusEnum, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
-import {AuthContext} from '../../index';
+import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 
 type Route<M extends keyof ROUTES['location']['HistoricSiteController']> = RouteDefinition<'location', 'HistoricSiteController'>[M];

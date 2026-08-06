@@ -2,7 +2,7 @@ import {Params, PublishStatusEnum, Response, RouteDefinition, ROUTES} from '@nor
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {config} from '../../config';
-import {AuthContext} from '../../index';
+import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 
 type Route<M extends keyof ROUTES['system']['StatusController']> = RouteDefinition<'system', 'StatusController'>[M];
