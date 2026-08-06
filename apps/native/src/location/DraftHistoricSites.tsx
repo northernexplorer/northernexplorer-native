@@ -3,6 +3,7 @@ import {View, Text, Image, StyleSheet} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {getUrlSafeString} from '@northernexplorer/tools';
+import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/elements/Spinner';
@@ -14,6 +15,7 @@ export function DraftHistoricSites() {
 	const {data: sites, loading} = useApiFetch('location', 'HistoricSiteController', 'getDrafts', {});
 
 	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 
 	type SiteItem = NonNullable<typeof sites>[number];
@@ -53,10 +55,10 @@ export function DraftHistoricSites() {
 			render: site => (
 				<View style={{paddingRight: 12}}>
 					<Text style={styles.cellText} numberOfLines={1}>
-						{site.region?.name ?? '—'}
+						{site.region.name}
 					</Text>
 					<Text style={styles.cellSubtext} numberOfLines={1}>
-						{site.country?.name ?? '—'}
+						{site.country.name}
 					</Text>
 				</View>
 			),
@@ -83,9 +85,7 @@ export function DraftHistoricSites() {
 			emptyText="No published historic sites found."
 			emptyIcon="map-outline"
 			onRowPress={site =>
-				router.push(
-					`/${getUrlSafeString(site.country?.name)}/${getUrlSafeString(site.region?.name)}/${getUrlSafeString(site.name)}/${site.id}`,
-				)
+				router.push(`/${getUrlSafeString(site.country.name)}/${getUrlSafeString(site.region.name)}/${getUrlSafeString(site.name)}/${site.id}`)
 			}
 		/>
 	);

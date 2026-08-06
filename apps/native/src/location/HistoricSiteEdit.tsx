@@ -1,16 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import {ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
-import {Link, router, useLocalSearchParams} from 'expo-router';
+import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
-import {CountryType, HistoricSiteEditType, PublishStatusEnum, RegionType} from '@northernexplorer/types';
+import {HistoricSiteEditType, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {styles as detailStyles} from '~/location/HistoricSiteDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/elements/Spinner';
 import {FormField} from '~/layout/Layout/elements/FormField';
 import {TextAreaField} from '~/layout/Layout/elements/TextAreaField';
-import {DateField} from '~/layout/Layout/elements/DateField';
+import {DropdownField} from '~/layout/Layout/elements/DropdownField';
 import {useApiMutation} from '~/core/useApiMutation';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 type FormState = {
 	name: string;
@@ -20,17 +21,23 @@ type FormState = {
 	lon: string;
 	countryId: string;
 	regionId: string;
-	startDate?: Date;
-	endDate?: Date;
+	startDate: string;
+	endDate: string;
 	status: PublishStatusEnum;
 };
 
 type FormKeys = keyof FormState;
 
+const STATUS_OPTIONS = [
+	{label: 'Draft', value: PublishStatusEnum.Draft},
+	{label: 'Published', value: PublishStatusEnum.Published},
+];
+
 export function HistoricSiteEdit() {
 	const {id} = useLocalSearchParams<{id: string}>();
+	const authentication = useAuthentication();
 	const {data, loading} = useApiFetch('location', 'HistoricSiteController', 'getHistoricSiteById', {id});
-	const {mutate, loading: mutationLoading} = useApiMutation('location', 'HistoricSiteController', 'edit', {});
+	const {mutate, loading: mutationLoading} = useApiMutation('location', 'HistoricSiteController', 'edit');
 
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const [form, setForm] = useState<FormState>({
@@ -41,8 +48,8 @@ export function HistoricSiteEdit() {
 		lon: '',
 		countryId: '',
 		regionId: '',
-		startDate: undefined,
-		endDate: undefined,
+		startDate: '',
+		endDate: '',
 		status: PublishStatusEnum.Draft,
 	});
 
@@ -56,13 +63,15 @@ export function HistoricSiteEdit() {
 				lon: String(data.lon),
 				countryId: data.country.id,
 				regionId: data.region.id,
-				startDate: data.startDate ? new Date(data.startDate) : undefined,
-				endDate: data.endDate ? new Date(data.endDate) : undefined,
+				startDate: data.startDate != null ? String(data.startDate) : '',
+				endDate: data.endDate != null ? String(data.endDate) : '',
 				status: data.status,
 			});
 		}
 	}, [data]);
 
+	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading || !data) return <Spinner />;
 
 	const updateField = <K extends FormKeys>(name: K, value: FormState[K]) => {
@@ -105,8 +114,8 @@ export function HistoricSiteEdit() {
 			lon: parsedLon,
 			countryId: form.countryId,
 			regionId: form.regionId,
-			startDate: form.startDate,
-			endDate: form.endDate,
+			startDate: form.startDate.trim() ? Number(form.startDate) : undefined,
+			endDate: form.endDate.trim() ? Number(form.endDate) : undefined,
 			status: form.status,
 		};
 
@@ -115,8 +124,8 @@ export function HistoricSiteEdit() {
 			router.replace({
 				pathname: '/[country]/[region]/[name]/[id]',
 				params: {
-					country: getUrlSafeString(data.country?.name),
-					region: getUrlSafeString(data.region?.name),
+					country: getUrlSafeString(data.country.name),
+					region: getUrlSafeString(data.region.name),
 					id: getUrlSafeString(data.id),
 					name: getUrlSafeString(form.name),
 				},
@@ -130,7 +139,7 @@ export function HistoricSiteEdit() {
 
 			<View style={detailStyles.content}>
 				<Text style={detailStyles.breadcrumbs}>
-					{data.country?.name} › {data.region?.name}
+					{data.country.name} › {data.region.name}
 				</Text>
 
 				<Text style={formStyles.heading}>Edit Historic Site</Text>
@@ -159,6 +168,31 @@ export function HistoricSiteEdit() {
 					<View style={formStyles.row}>
 						<View style={formStyles.halfWidth}>
 							<FormField
+								fieldName="countryId"
+								label="Country ID"
+								placeholder="Country UUID"
+								value={form.countryId}
+								updateField={updateField}
+								error={errors.countryId}
+								loading={mutationLoading}
+							/>
+						</View>
+						<View style={formStyles.halfWidth}>
+							<FormField
+								fieldName="regionId"
+								label="Region ID"
+								placeholder="Region UUID"
+								value={form.regionId}
+								updateField={updateField}
+								error={errors.regionId}
+								loading={mutationLoading}
+							/>
+						</View>
+					</View>
+
+					<View style={formStyles.row}>
+						<View style={formStyles.halfWidth}>
+							<FormField
 								fieldName="lat"
 								label="Latitude"
 								placeholder="e.g. 54.1234"
@@ -183,9 +217,10 @@ export function HistoricSiteEdit() {
 
 					<View style={formStyles.row}>
 						<View style={formStyles.halfWidth}>
-							<DateField
+							<FormField
 								fieldName="startDate"
-								label="Start Date"
+								label="Start Year"
+								placeholder="e.g. 1784"
 								value={form.startDate}
 								updateField={updateField}
 								error={errors.startDate}
@@ -193,9 +228,10 @@ export function HistoricSiteEdit() {
 							/>
 						</View>
 						<View style={formStyles.halfWidth}>
-							<DateField
+							<FormField
 								fieldName="endDate"
-								label="End Date"
+								label="End Year"
+								placeholder="e.g. 1821"
 								value={form.endDate}
 								updateField={updateField}
 								error={errors.endDate}
@@ -216,13 +252,23 @@ export function HistoricSiteEdit() {
 					/>
 				</View>
 
+				<DropdownField
+					fieldName="status"
+					label="Status"
+					value={form.status}
+					options={STATUS_OPTIONS}
+					updateField={updateField}
+					error={errors.status}
+					loading={mutationLoading}
+				/>
+
 				<View style={formStyles.buttonRow}>
 					<Link
 						href={{
 							pathname: '/[country]/[region]/[name]/[id]',
 							params: {
-								country: getUrlSafeString(data.country?.name),
-								region: getUrlSafeString(data.region?.name),
+								country: getUrlSafeString(data.country.name),
+								region: getUrlSafeString(data.region.name),
 								id: getUrlSafeString(data.id),
 								name: getUrlSafeString(data.name),
 							},

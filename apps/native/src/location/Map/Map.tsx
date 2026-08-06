@@ -59,8 +59,8 @@ export function Map() {
 			router.push({
 				pathname: '/[country]/[region]/[name]/[id]',
 				params: {
-					country: getUrlSafeString(site.country?.name),
-					region: getUrlSafeString(site.region?.name),
+					country: getUrlSafeString(site.country.name),
+					region: getUrlSafeString(site.region.name),
 					id: getUrlSafeString(site.id),
 					name: getUrlSafeString(site.name),
 				},

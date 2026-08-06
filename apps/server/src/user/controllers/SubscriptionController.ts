@@ -1,4 +1,4 @@
-import {Params, Response, RolesEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {PermissionService} from '../services/PermisionService';
 import {AuthContext} from '../../index';

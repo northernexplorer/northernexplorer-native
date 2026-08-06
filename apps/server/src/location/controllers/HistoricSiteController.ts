@@ -65,4 +65,26 @@ export class HistoricSiteController extends BaseController {
 			country: site.country,
 		}));
 	}
+
+	async edit(params: Params<Route<'edit'>>, auth?: AuthContext): Promise<Response<Route<'edit'>>> {
+		this.permissionService.canAccessAdmin(auth);
+
+		const {id, countryId, regionId, startDate, endDate, ...updates} = params;
+
+		const historicSite = await this.repos.historicSite.getById(id);
+		const country = await this.repos.country.getById(countryId);
+		const region = await this.repos.region.getById(regionId);
+
+		historicSite.edit({
+			...updates,
+			country,
+			region,
+			startDate,
+			endDate,
+		});
+
+		await this.flush();
+
+		return {success: true};
+	}
 }

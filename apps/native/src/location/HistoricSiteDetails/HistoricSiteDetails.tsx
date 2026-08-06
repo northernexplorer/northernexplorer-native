@@ -23,15 +23,15 @@ export function HistoricSiteDetails() {
 			<View style={styles.content}>
 				<View style={styles.headerRow}>
 					<Text style={styles.breadcrumbs}>
-						{data.country?.name} › {data.region?.name}
+						{data.country.name} › {data.region.name}
 					</Text>
 					{auth?.roles?.includes(RolesEnum.Admin) && (
 						<Link
 							href={{
 								pathname: '/[country]/[region]/[name]/[id]/edit',
 								params: {
-									country: getUrlSafeString(data.country?.name),
-									region: getUrlSafeString(data.region?.name),
+									country: getUrlSafeString(data.country.name),
+									region: getUrlSafeString(data.region.name),
 									id: getUrlSafeString(data.id),
 									name: getUrlSafeString(data.name),
 								},

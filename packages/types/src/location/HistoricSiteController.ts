@@ -1,7 +1,7 @@
+import {GenericResponseType} from '../GenericResponseType';
 import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
 import {ReviewSummary} from './ReviewController';
-import {GenericResponseType} from "../GenericResponseType";
 
 export enum PublishStatusEnum {
 	Published = 'Published',
@@ -18,8 +18,8 @@ export type HistoricSiteType = {
 	country: CountryType;
 	reviews?: ReviewSummary[];
 	region: RegionType;
-	startDate?: number | null;
-	endDate?: number | null;
+	startDate?: number;
+	endDate?: number;
 	status: PublishStatusEnum;
 };
 
@@ -32,8 +32,8 @@ export type HistoricSiteEditType = {
 	lon: number;
 	countryId: string;
 	regionId: string;
-	startDate?: Date;
-	endDate?: Date;
+	startDate?: number;
+	endDate?: number;
 	status: PublishStatusEnum;
 };
 
