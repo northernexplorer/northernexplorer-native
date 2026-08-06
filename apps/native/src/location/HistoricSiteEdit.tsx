@@ -1,39 +1,25 @@
 import React from 'react';
-import {View, Text, Image, TouchableOpacity} from 'react-native';
-import {useLocalSearchParams, useRouter} from 'expo-router';
+import {View, Text, Image} from 'react-native';
+import {useLocalSearchParams} from 'expo-router';
 import {getUrl} from '@northernexplorer/tools';
-import {ReviewDetails} from './components/Reviews';
 import {styles} from '~/location/HistoricSiteDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/elements/Spinner';
 
-export function HistoricSiteDetails() {
+export function HistoricSiteEdit() {
 	const {id} = useLocalSearchParams<{id: string}>();
-	const router = useRouter();
 	const {data, loading} = useApiFetch('location', 'HistoricSiteController', 'getHistoricSiteById', {id});
-	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
 	if (loading || !data) return <Spinner />;
-
-	const handleEdit = () => {
-		router.push(`/location/edit/${id}`);
-	};
 
 	return (
 		<View>
 			<Image source={{uri: getUrl({path: data.image, serverUrl: config.SERVER_URL})}} style={styles.banner} />
 			<View style={styles.content}>
-				<View style={styles.headerRow}>
-					<Text style={styles.breadcrumbs}>
-						{data.country?.name} › {data.region?.name}
-					</Text>
-					{permissionData?.location.editHistoricSite && (
-						<TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-							<Text style={styles.editButtonText}>Edit</Text>
-						</TouchableOpacity>
-					)}
-				</View>
+				<Text style={styles.breadcrumbs}>
+					{data.country?.name} › {data.region?.name}
+				</Text>
 
 				<Text style={styles.title}>{data.name}</Text>
 
@@ -50,7 +36,6 @@ export function HistoricSiteDetails() {
 
 				<Text style={styles.body}>{data.description}</Text>
 				<View style={styles.divider} />
-				<ReviewDetails data={data} loading={loading} />
 			</View>
 		</View>
 	);

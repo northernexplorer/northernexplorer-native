@@ -1,4 +1,4 @@
-import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Params, Response, RolesEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {PermissionService} from '../services/PermisionService';
 import {AuthContext} from '../../index';
@@ -26,6 +26,9 @@ export class SubscriptionController extends BaseController {
 			navigation: {
 				useCompass: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 				changeMapStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+			},
+			location: {
+				editHistoricSite: user.roles?.includes(RolesEnum.Admin) || false,
 			},
 		};
 	}

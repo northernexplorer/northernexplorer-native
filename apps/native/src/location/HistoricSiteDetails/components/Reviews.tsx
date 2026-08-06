@@ -6,7 +6,6 @@ import {Spinner} from '~/layout/Layout/elements/Spinner';
 type ReviewDetailsProps = {
 	data: HistoricSiteType;
 	loading: boolean;
-	error: Error | null;
 };
 
 export function ReviewDetails({data, loading}: ReviewDetailsProps) {
