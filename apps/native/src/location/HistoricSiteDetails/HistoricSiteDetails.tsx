@@ -1,24 +1,21 @@
 import React from 'react';
 import {View, Text, Image, TouchableOpacity} from 'react-native';
-import {useLocalSearchParams, useRouter} from 'expo-router';
-import {getUrl} from '@northernexplorer/tools';
+import {Link, useLocalSearchParams} from 'expo-router';
+import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {RolesEnum} from '@northernexplorer/types';
 import {ReviewDetails} from './components/Reviews';
 import {styles} from '~/location/HistoricSiteDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/elements/Spinner';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 export function HistoricSiteDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
-	const router = useRouter();
+	const auth = useAuthentication();
 	const {data, loading} = useApiFetch('location', 'HistoricSiteController', 'getHistoricSiteById', {id});
-	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
 	if (loading || !data) return <Spinner />;
-
-	const handleEdit = () => {
-		router.push(`/location/edit/${id}`);
-	};
 
 	return (
 		<View>
@@ -28,10 +25,23 @@ export function HistoricSiteDetails() {
 					<Text style={styles.breadcrumbs}>
 						{data.country?.name} › {data.region?.name}
 					</Text>
-					{permissionData?.location.editHistoricSite && (
-						<TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-							<Text style={styles.editButtonText}>Edit</Text>
-						</TouchableOpacity>
+					{auth?.roles?.includes(RolesEnum.Admin) && (
+						<Link
+							href={{
+								pathname: '/[country]/[region]/[name]/[id]/edit',
+								params: {
+									country: getUrlSafeString(data.country?.name),
+									region: getUrlSafeString(data.region?.name),
+									id: getUrlSafeString(data.id),
+									name: getUrlSafeString(data.name),
+								},
+							}}
+							asChild
+						>
+							<TouchableOpacity style={styles.editButton}>
+								<Text style={styles.editButtonText}>Edit</Text>
+							</TouchableOpacity>
+						</Link>
 					)}
 				</View>
 

@@ -27,9 +27,6 @@ export class SubscriptionController extends BaseController {
 				useCompass: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 				changeMapStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 			},
-			location: {
-				editHistoricSite: user.roles?.includes(RolesEnum.Admin) || false,
-			},
 		};
 	}
 

@@ -6,9 +6,6 @@ type PermissionResponse = {
 		useCompass: boolean;
 		changeMapStyle: boolean;
 	};
-	location: {
-		editHistoricSite: boolean;
-	};
 };
 
 type SubscriptionResponse = {

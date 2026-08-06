@@ -1,6 +1,7 @@
 import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
 import {ReviewSummary} from './ReviewController';
+import {GenericResponseType} from "../GenericResponseType";
 
 export enum PublishStatusEnum {
 	Published = 'Published',
@@ -19,7 +20,20 @@ export type HistoricSiteType = {
 	region?: RegionType;
 	startDate?: number | null;
 	endDate?: number | null;
-	status?: PublishStatusEnum;
+	status: PublishStatusEnum;
+};
+
+export type HistoricSiteEditType = {
+	name: string;
+	description: string;
+	image: string;
+	lat: number;
+	lon: number;
+	countryId: CountryType;
+	regionId: RegionType;
+	startDate?: Date;
+	endDate?: Date;
+	status: PublishStatusEnum;
 };
 
 export const HistoricSiteController = {
@@ -38,5 +52,9 @@ export const HistoricSiteController = {
 	getPublished: {
 		params: {} as Record<string, undefined>,
 		response: {} as HistoricSiteType[],
+	},
+	edit: {
+		params: {} as HistoricSiteEditType,
+		response: {} as GenericResponseType,
 	},
 };
