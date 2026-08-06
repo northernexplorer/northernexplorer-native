@@ -4,8 +4,7 @@ import * as Location from 'expo-location';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useFocusEffect} from 'expo-router';
-import {ProFeatureOnly} from '@northernexplorer/tools';
-import {Spinner} from '@northernexplorer/tools';
+import {ProFeatureOnly, Spinner} from '@northernexplorer/tools';
 import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
 import {useApiFetch} from '~/core/useApiFetch';
 

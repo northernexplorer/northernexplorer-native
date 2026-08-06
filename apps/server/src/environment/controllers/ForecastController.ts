@@ -1,5 +1,4 @@
-import {ROUTES} from '@northernexplorer/types';
-import {Params, RouteDefinition, Response} from '@northernexplorer/types';
+import {ROUTES, Params, RouteDefinition, Response} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 

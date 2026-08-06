@@ -1,6 +1,5 @@
-import {Text, TextInput, TouchableOpacity, TextInputProps, View} from 'react-native';
+import {Text, TextInput, TouchableOpacity, TextInputProps, View, StyleSheet} from 'react-native';
 import React, {useState} from 'react';
-import {StyleSheet} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 
 interface Props<T extends string> {

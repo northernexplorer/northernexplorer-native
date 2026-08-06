@@ -60,6 +60,7 @@ export default [
 			'@typescript-eslint/no-unnecessary-condition': 'error',
 			'@typescript-eslint/await-thenable': 'error',
 			'@typescript-eslint/require-await': 'error',
+			'import/no-duplicates': ['error', {'prefer-inline': true}],
 			'import/order': [
 				'error',
 				{
