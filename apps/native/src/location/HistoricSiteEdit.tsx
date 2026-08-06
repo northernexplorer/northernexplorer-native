@@ -3,15 +3,14 @@ import {ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, ActivityInd
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {HistoricSiteEditType, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
-import {Spinner} from '@northernexplorer/tools';
-import {FormField} from '@northernexplorer/tools';
-import {TextAreaField} from '@northernexplorer/tools';
-import {DropdownField} from '@northernexplorer/tools';
+import {Spinner, FormField, TextAreaField, DropdownField} from '@northernexplorer/tools';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
 import {styles as detailStyles} from '~/location/HistoricSiteDetails/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
+import {RegionDropdown} from '~/layout/Layout/components/RegionDropdown';
 
 type FormState = {
 	name: string;
@@ -75,7 +74,15 @@ export function HistoricSiteEdit() {
 	if (loading || !data) return <Spinner />;
 
 	const updateField = <K extends FormKeys>(name: K, value: FormState[K]) => {
-		setForm(prev => ({...prev, [name]: value}));
+		setForm(prev => {
+			const next = {...prev, [name]: value};
+			// Reset region if country changes
+			if (name === 'countryId' && prev.countryId !== value) {
+				next.regionId = '';
+			}
+			return next;
+		});
+
 		if (errors[name]) {
 			setErrors(prev => ({...prev, [name]: undefined}));
 		}
@@ -86,6 +93,8 @@ export function HistoricSiteEdit() {
 
 		if (!form.name.trim()) newErrors.name = 'Site name is required';
 		if (!form.description.trim()) newErrors.description = 'Description is required';
+		if (!form.countryId) newErrors.countryId = 'Country is required';
+		if (!form.regionId) newErrors.regionId = 'Region is required';
 
 		const parsedLat = parseFloat(form.lat);
 		if (isNaN(parsedLat) || parsedLat < -90 || parsedLat > 90) {
@@ -165,27 +174,24 @@ export function HistoricSiteEdit() {
 						loading={mutationLoading}
 					/>
 
-					<View style={formStyles.row}>
+					<View style={[formStyles.row, {zIndex: 2000}]}>
 						<View style={formStyles.halfWidth}>
-							<FormField
+							<CountryDropdown
 								fieldName="countryId"
-								label="Country ID"
-								placeholder="Country UUID"
+								label="Country"
 								value={form.countryId}
 								updateField={updateField}
 								error={errors.countryId}
-								loading={mutationLoading}
 							/>
 						</View>
 						<View style={formStyles.halfWidth}>
-							<FormField
+							<RegionDropdown
 								fieldName="regionId"
-								label="Region ID"
-								placeholder="Region UUID"
+								label="Region"
+								countryId={form.countryId}
 								value={form.regionId}
 								updateField={updateField}
 								error={errors.regionId}
-								loading={mutationLoading}
 							/>
 						</View>
 					</View>
@@ -252,15 +258,17 @@ export function HistoricSiteEdit() {
 					/>
 				</View>
 
-				<DropdownField
-					fieldName="status"
-					label="Status"
-					value={form.status}
-					options={STATUS_OPTIONS}
-					updateField={updateField}
-					error={errors.status}
-					loading={mutationLoading}
-				/>
+				<View style={{zIndex: 1000}}>
+					<DropdownField
+						fieldName="status"
+						label="Status"
+						value={form.status}
+						options={STATUS_OPTIONS}
+						updateField={updateField}
+						error={errors.status}
+						loading={mutationLoading}
+					/>
+				</View>
 
 				<View style={formStyles.buttonRow}>
 					<Link

@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import React, {useState, useRef} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, Dimensions} from 'react-native';
 
 interface Option<T> {
 	label: string;
@@ -16,10 +16,31 @@ interface Props<T extends string, V> {
 	loading?: boolean;
 }
 
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+
 export function DropdownField<T extends string, V>({fieldName, label, value, options, updateField, error, loading}: Props<T, V>) {
 	const [isOpen, setIsOpen] = useState(false);
+	const [dropdownCoords, setDropdownCoords] = useState<{x: number; y: number; width: number}>({x: 0, y: 0, width: 0});
+	const inputRef = useRef<View>(null);
 
 	const selectedOption = options.find(opt => opt.value === value);
+
+	const toggleDropdown = () => {
+		if (loading) return;
+
+		if (!isOpen && inputRef.current) {
+			inputRef.current.measureInWindow((x, y, width, height) => {
+				setDropdownCoords({
+					x,
+					y: y + height,
+					width,
+				});
+				setIsOpen(true);
+			});
+		} else {
+			setIsOpen(false);
+		}
+	};
 
 	const handleSelect = (val: V) => {
 		updateField(fieldName, val);
@@ -27,22 +48,34 @@ export function DropdownField<T extends string, V>({fieldName, label, value, opt
 	};
 
 	return (
-		<View style={[styles.container, isOpen && styles.containerActive]}>
+		<View style={styles.container}>
 			<Text style={styles.label}>{label}</Text>
 
-			<View style={styles.fieldWrapper}>
+			<View style={styles.fieldWrapper} ref={inputRef}>
 				<TouchableOpacity
 					style={[styles.input, error ? styles.inputError : null, isOpen && styles.inputOpen, loading && styles.disabled]}
-					onPress={() => !loading && setIsOpen(!isOpen)}
+					onPress={toggleDropdown}
 					activeOpacity={0.7}
 					disabled={loading}
 				>
 					<Text style={styles.inputText}>{selectedOption ? selectedOption.label : 'Select...'}</Text>
 					<Text style={[styles.chevron, isOpen && styles.chevronOpen]}>▾</Text>
 				</TouchableOpacity>
+			</View>
 
-				{isOpen && (
-					<View style={styles.dropdownMenu}>
+			<Modal visible={isOpen} transparent animationType="none" onRequestClose={() => setIsOpen(false)}>
+				<Pressable style={styles.modalOverlay} onPress={() => setIsOpen(false)}>
+					<View
+						style={[
+							styles.dropdownMenu,
+							{
+								left: dropdownCoords.x,
+								top: dropdownCoords.y,
+								width: dropdownCoords.width,
+								maxHeight: SCREEN_HEIGHT - dropdownCoords.y - 16,
+							},
+						]}
+					>
 						{options.map((item, index) => {
 							const isSelected = item.value === value;
 							const isLast = index === options.length - 1;
@@ -58,8 +91,8 @@ export function DropdownField<T extends string, V>({fieldName, label, value, opt
 							);
 						})}
 					</View>
-				)}
-			</View>
+				</Pressable>
+			</Modal>
 
 			{error ? <Text style={styles.errorText}>{error}</Text> : null}
 		</View>
@@ -69,10 +102,6 @@ export function DropdownField<T extends string, V>({fieldName, label, value, opt
 const styles = StyleSheet.create({
 	container: {
 		gap: 6,
-		zIndex: 1,
-	},
-	containerActive: {
-		zIndex: 1000,
 	},
 	label: {
 		fontSize: 15,
@@ -115,11 +144,12 @@ const styles = StyleSheet.create({
 	disabled: {
 		opacity: 0.5,
 	},
+	modalOverlay: {
+		flex: 1,
+		backgroundColor: 'transparent',
+	},
 	dropdownMenu: {
 		position: 'absolute',
-		top: '100%',
-		left: 0,
-		right: 0,
 		backgroundColor: '#FFF',
 		borderWidth: 1,
 		borderTopWidth: 0,
