@@ -3,7 +3,7 @@ import {Pressable, Text, ScrollView} from 'react-native';
 import {Link, router, useLocalSearchParams} from 'expo-router';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
-import {FormField} from '~/layout/Layout/components/FormField';
+import {FormField} from '~/layout/Layout/elements/FormField';
 
 const initialFormData = {
 	newPassword: '',

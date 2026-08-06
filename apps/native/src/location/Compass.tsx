@@ -6,18 +6,17 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useFocusEffect} from 'expo-router';
 import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
 import {useApiFetch} from '~/core/useApiFetch';
-import {useAuthentication} from '~/user/state/authentication/useAuthentication';
-import {ProFeatureOnly} from '~/layout/Layout/components/ProFeatureOnly';
+import {ProFeatureOnly} from '~/layout/Layout/elements/ProFeatureOnly';
+import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 export function Compass() {
 	const [heading, setHeading] = useState<number>(0);
 	const [accuracy, setAccuracy] = useState<number>(3); // 3 = High accuracy, 1 = Low
 	const [isAvailable, setIsAvailable] = useState<boolean>(true);
-	const authentication = useAuthentication();
 
 	const animatedDegrees = useRef(new Animated.Value(0)).current;
 	const targetDegrees = useRef<number>(0);
-	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {username: authentication?.username});
+	const {data: permissionData, loading} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
 	useFocusEffect(
 		useCallback(() => {
@@ -85,6 +84,7 @@ export function Compass() {
 	const needsCalibration = accuracy <= 1;
 	const canUseCompass = !!permissionData?.navigation.useCompass;
 
+	if (loading) return <Spinner />;
 	if (!canUseCompass) return <ProFeatureOnly />;
 
 	if (!isAvailable) {

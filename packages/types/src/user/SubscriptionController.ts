@@ -1,7 +1,6 @@
 import {GenericResponseType} from '../GenericResponseType';
 
 type SubscriptionParams = {username: string};
-type GetPermissionParams = {username?: string};
 type PermissionResponse = {
 	navigation: {
 		useCompass: boolean;
@@ -42,7 +41,7 @@ export const SubscriptionController = {
 		response: {} as SubscriptionResponse,
 	},
 	getPermissions: {
-		params: {} as GetPermissionParams,
+		params: {} as Record<string, never>,
 		response: {} as PermissionResponse | null | undefined,
 	},
 	revenueCatUpgrade: {

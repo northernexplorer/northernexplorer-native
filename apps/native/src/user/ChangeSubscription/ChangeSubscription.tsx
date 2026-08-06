@@ -6,7 +6,7 @@ import {formatMoney} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/components/Spinner';
+import {Spinner} from '~/layout/Layout/elements/Spinner';
 import {alertStore} from '~/core/alertStore';
 import {config} from '~/config';
 

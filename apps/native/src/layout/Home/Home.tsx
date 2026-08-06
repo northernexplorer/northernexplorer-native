@@ -12,7 +12,6 @@ import {HistoricSitePreviewWidget} from '~/layout/Home/components/HistoricSitePr
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {CompassWidget} from '~/layout/Home/components/CompassWidget';
-import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 export function Home() {
 	const weather = useWeather();
@@ -20,7 +19,6 @@ export function Home() {
 	const lunar = useLunar();
 	const fieldNote = useFieldNote();
 	const coords = useLocation();
-	const authentication = useAuthentication();
 
 	const {data: historicSiteData} = useApiFetch(
 		'location',
@@ -29,7 +27,7 @@ export function Home() {
 		coords ? {lat: coords.lat, lon: coords.lon, limit: 5} : null,
 	);
 
-	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {username: authentication?.username});
+	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
 	const {width} = useWindowDimensions();
 	const isMobileView = width < 1000;

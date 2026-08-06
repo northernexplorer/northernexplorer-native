@@ -33,10 +33,7 @@ export class StatusController extends BaseController {
 	}
 
 	async getOverview(params: Params<Route<'getOverview'>>, auth?: AuthContext): Promise<Response<Route<'getOverview'>>> {
-		this.permissionService.canAccessAdmin({
-			userId: auth?.userId,
-			roles: auth?.roles,
-		});
+		this.permissionService.canAccessAdmin(auth);
 
 		const users = await this.repos.user.count({});
 		const historicSitesPublished = await this.repos.historicSite.count({status: PublishStatusEnum.Published});

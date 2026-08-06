@@ -25,10 +25,10 @@ export class UserController extends BaseController {
 	async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
 		if (params.website) throw new Error('Form submission failed. Please try again.');
 
-		const existingUserWithEmail = await this.repos.user.findByIdentifier(params.email);
+		const existingUserWithEmail = await this.repos.user.findByIdentifier(params.email.toLowerCase());
 		if (existingUserWithEmail) throw new Error('This email address is already in use.');
 
-		const existingUserWithUsername = await this.repos.user.findByIdentifier(params.username);
+		const existingUserWithUsername = await this.repos.user.findByIdentifier(params.username.toLowerCase());
 		if (existingUserWithUsername) throw new Error('This username is already taken.');
 
 		await this.repos.user.passwordValidation({
@@ -43,10 +43,10 @@ export class UserController extends BaseController {
 		this.persist(subscription);
 
 		const user = new User({
-			email: params.email,
+			email: params.email.toLowerCase(),
 			firstName: params.firstName,
 			lastName: params.lastName,
-			username: params.username,
+			username: params.username.toLowerCase(),
 			isActive: false,
 			passwordHash,
 			subscription,
@@ -55,11 +55,11 @@ export class UserController extends BaseController {
 		this.persist(user);
 		await this.flush();
 
-		const activationToken = this.tokenService.generateToken({userId: user.id, email: user.email}, 'account_activation');
+		const activationToken = this.tokenService.generateToken({userId: user.id, email: user.email.toLowerCase()}, 'account_activation');
 		const activationUrl = `${config.WEB_URL}/profile/activate?token=${activationToken}`;
 
 		await this.emailSendService.send({
-			to: user.email,
+			to: user.email.toLowerCase(),
 			subject: 'Northern Explorer: Welcome',
 			html: `
             <h1>Welcome to Northern Explorer!</h1>
@@ -77,7 +77,7 @@ export class UserController extends BaseController {
 	}
 
 	async login(params: Params<Route<'login'>>, auth?: AuthContext): Promise<Response<Route<'login'>>> {
-		const user = await this.repos.user.findByIdentifier(params.login.identifier);
+		const user = await this.repos.user.findByIdentifier(params.login.identifier.toLowerCase());
 		if (!user) throw new Error("We couldn't find an account matching that information.");
 		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
 
@@ -86,7 +86,7 @@ export class UserController extends BaseController {
 
 		const accessToken = this.tokenService.generateAccessToken({
 			userId: user.id,
-			email: user.email,
+			email: user.email.toLowerCase(),
 		});
 
 		const refreshToken = this.tokenService.generateRefreshToken({
@@ -114,8 +114,8 @@ export class UserController extends BaseController {
 
 		return {
 			userId: user.id,
-			email: user.email,
-			username: user.username,
+			email: user.email.toLowerCase(),
+			username: user.username.toLowerCase(),
 			roles: user.roles,
 			accessToken,
 			refreshToken,
@@ -132,15 +132,15 @@ export class UserController extends BaseController {
 	}
 
 	async forgotPassword(params: Params<Route<'forgotPassword'>>): Promise<Response<Route<'forgotPassword'>>> {
-		const user = await this.repos.user.findByIdentifier(params.email);
+		const user = await this.repos.user.findByIdentifier(params.email.toLowerCase());
 		if (!user) throw new Error("We couldn't find an account matching that information.");
 		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
 
-		const resetPasswordToken = this.tokenService.generateToken({userId: user.id, email: user.email}, 'password_reset');
+		const resetPasswordToken = this.tokenService.generateToken({userId: user.id, email: user.email.toLowerCase()}, 'password_reset');
 		const resetPasswordUrl = `${config.WEB_URL}/profile/reset-password?token=${resetPasswordToken}`;
 
 		await this.emailSendService.send({
-			to: user.email,
+			to: user.email.toLowerCase(),
 			subject: 'Northern Explorer: Password Reset',
 			html: `
                <h1>Reset your password</h1>
@@ -157,10 +157,7 @@ export class UserController extends BaseController {
 	}
 
 	async editProfile(params: Params<Route<'editProfile'>>, auth?: AuthContext): Promise<Response<Route<'editProfile'>>> {
-		const {targetId} = this.permissionService.canAccessProfile({
-			userId: auth?.userId,
-			targetId: params.userId,
-		});
+		const {targetId} = this.permissionService.canAccessProfile({targetId: params.userId}, auth);
 		const user = await this.repos.user.getById(targetId);
 
 		await this.repos.user.update(user.id, params);
@@ -169,11 +166,8 @@ export class UserController extends BaseController {
 	}
 
 	async changePassword(params: Params<Route<'changePassword'>>, auth?: AuthContext): Promise<Response<Route<'changePassword'>>> {
-		const user = await this.repos.user.getByUsername(params.username);
-		this.permissionService.canAccessProfile({
-			userId: auth?.userId,
-			targetId: user.id,
-		});
+		const user = await this.repos.user.getByUsername(params.username.toLowerCase());
+		this.permissionService.canAccessProfile({targetId: user.id}, auth);
 
 		await this.repos.user.passwordValidation({
 			password: params.newPassword,
@@ -196,11 +190,8 @@ export class UserController extends BaseController {
 	}
 
 	async getByUsername(params: Params<Route<'getByUsername'>>, auth?: AuthContext): Promise<Response<Route<'getByUsername'>>> {
-		const user = await this.repos.user.getByUsername(params.username);
-		this.permissionService.canAccessProfile({
-			userId: auth?.userId,
-			targetId: user.id,
-		});
+		const user = await this.repos.user.getByUsername(params.username.toLowerCase());
+		this.permissionService.canAccessProfile({targetId: user.id}, auth);
 
 		const safeUser = wrap(user).toObject();
 		delete (safeUser as Partial<typeof safeUser>).passwordHash;
@@ -218,7 +209,7 @@ export class UserController extends BaseController {
 
 		const user = await this.repos.user.getById(payload.userId);
 
-		const accessToken = this.tokenService.generateAccessToken({userId: user.id, email: user.email});
+		const accessToken = this.tokenService.generateAccessToken({userId: user.id, email: user.email.toLowerCase()});
 		const newRefreshToken = this.tokenService.generateRefreshToken({userId: user.id});
 		const newRefreshHash = this.repos.session.hashToken(newRefreshToken);
 
@@ -229,8 +220,8 @@ export class UserController extends BaseController {
 
 		return {
 			userId: user.id,
-			email: user.email,
-			username: user.username,
+			email: user.email.toLowerCase(),
+			username: user.username.toLowerCase(),
 			accessToken,
 			refreshToken: newRefreshToken,
 			roles: user.roles,
@@ -248,7 +239,7 @@ export class UserController extends BaseController {
 
 		const accessToken = this.tokenService.generateAccessToken({
 			userId: user.id,
-			email: user.email,
+			email: user.email.toLowerCase(),
 		});
 
 		const refreshToken = this.tokenService.generateRefreshToken({
@@ -275,8 +266,8 @@ export class UserController extends BaseController {
 
 		return {
 			userId: user.id,
-			email: user.email,
-			username: user.username,
+			email: user.email.toLowerCase(),
+			username: user.username.toLowerCase(),
 			accessToken,
 			refreshToken,
 			roles: user.roles,
@@ -308,11 +299,8 @@ export class UserController extends BaseController {
 	}
 
 	async deleteUser(params: Params<Route<'deleteUser'>>, auth?: AuthContext): Promise<Response<Route<'deleteUser'>>> {
-		const user = await this.repos.user.getByUsername(params.username);
-		this.permissionService.canAccessProfile({
-			userId: auth?.userId,
-			targetId: user.id,
-		});
+		const user = await this.repos.user.getByUsername(params.username.toLowerCase());
+		this.permissionService.canAccessProfile({targetId: user.id}, auth);
 
 		const subscription = await this.repos.subscription.getById(user.subscription.id);
 		const sessions = await this.repos.session.getByUser(user);
@@ -328,5 +316,10 @@ export class UserController extends BaseController {
 		return {
 			success: true,
 		};
+	}
+
+	getAll(params: Params<Route<'getAll'>>, auth?: AuthContext): Promise<Response<Route<'getAll'>>> {
+		this.permissionService.canAccessAdmin(auth);
+		return this.repos.user.getAll();
 	}
 }

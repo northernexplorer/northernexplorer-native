@@ -15,10 +15,7 @@ export class SessionController extends BaseController {
 
 	async getSessions(params: Params<Route<'getSessions'>>, auth?: AuthContext): Promise<Response<Route<'getSessions'>>> {
 		const user = await this.repos.user.getByUsername(params.username);
-		this.permissionService.canAccessProfile({
-			userId: auth?.userId,
-			targetId: user.id,
-		});
+		this.permissionService.canAccessProfile({targetId: user.id}, auth);
 
 		const sessions = await this.repos.session.getByUser(user);
 
@@ -42,11 +39,7 @@ export class SessionController extends BaseController {
 	async removeSession(params: Params<Route<'removeSession'>>, auth?: AuthContext): Promise<Response<Route<'removeSession'>>> {
 		const session = await this.repos.session.getById(params.sessionId);
 
-		// Authorization check
-		this.permissionService.canAccessProfile({
-			userId: auth?.userId,
-			targetId: session.user.id,
-		});
+		this.permissionService.canAccessProfile({targetId: session.user.id}, auth);
 
 		await this.repos.session.delete(session);
 		await this.flush();

@@ -1,6 +1,7 @@
 import {EntityRepository} from '@mikro-orm/postgresql';
-import {EditProfileParams} from '@northernexplorer/types';
+import {EditProfileParams, UserType} from '@northernexplorer/types';
 import {hash, compare} from 'bcrypt';
+import {wrap} from '@mikro-orm/core';
 import {User} from '../entities/User';
 
 export class UserRepository extends EntityRepository<User> {
@@ -63,5 +64,14 @@ export class UserRepository extends EntityRepository<User> {
 				throw new Error('The current password you entered is incorrect');
 			}
 		}
+	}
+
+	async getAll(): Promise<UserType[]> {
+		const users = await this.findAll({orderBy: {firstName: 'asc'}});
+		return users.map(user => {
+			const plain = wrap(user).toObject();
+			delete (plain as {passwordHash?: string}).passwordHash;
+			return plain as UserType;
+		});
 	}
 }

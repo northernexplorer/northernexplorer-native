@@ -37,7 +37,7 @@ export function MapSidebar() {
 
 	const isLoggedIn = !!authentication?.username;
 
-	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {username: authentication?.username});
+	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
 	const canChangeMapStyle = !!permissionData?.navigation.changeMapStyle;
 

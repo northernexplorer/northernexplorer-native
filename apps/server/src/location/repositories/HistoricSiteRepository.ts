@@ -27,6 +27,7 @@ type HistoricSiteDetailsResponse = {
 	image: string;
 	lat: number;
 	lon: number;
+	status: PublishStatusEnum;
 	country: CountryType;
 	region: RegionType;
 	reviews: ReviewSummary[];
@@ -45,6 +46,7 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 			lon: site.lon,
 			country: site.country,
 			region: site.region,
+			status: site.status,
 			reviews: site.reviews.map(review => ({
 				id: review.id,
 				description: review.description,
@@ -113,5 +115,13 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 
 	async getById(id: string) {
 		return this.findOneOrFail({id});
+	}
+
+	getDrafts() {
+		return this.find({status: PublishStatusEnum.Draft}, {orderBy: {createdAt: 'asc', name: 'asc'}, populate: ['region', 'country']});
+	}
+
+	getPublished() {
+		return this.find({status: PublishStatusEnum.Published}, {orderBy: {name: 'asc'}, populate: ['region', 'country']});
 	}
 }

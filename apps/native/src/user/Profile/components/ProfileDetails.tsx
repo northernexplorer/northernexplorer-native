@@ -3,7 +3,7 @@ import {Link} from 'expo-router';
 import React from 'react';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/components/Spinner';
+import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 type Props = {
 	username: string;
@@ -26,7 +26,7 @@ export function ProfileDetails({username}: Props) {
 			<ProfileField label="Last Name" value={data.lastName} />
 			<ProfileField label="Username" value={data.username} />
 			<ProfileField label="Email Address" value={data.email} />
-			<ProfileField label="review score" value={data.score} />
+			<ProfileField label="Score" value={data.score} />
 			<ProfileField label="Status" value={data.isActive ? 'Active' : 'Inactive'} />
 
 			<ProfileField label="Registed On" value={new Date(data.createdAt).toLocaleDateString()} />
