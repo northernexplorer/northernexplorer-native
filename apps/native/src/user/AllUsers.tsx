@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
+import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 import {Spinner} from '~/layout/Layout/elements/Spinner';
@@ -13,6 +14,7 @@ export function AllUsers() {
 	const {data: users, loading} = useApiFetch('user', 'UserController', 'getAll', {});
 
 	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 
 	type UserItem = NonNullable<typeof users>[number];

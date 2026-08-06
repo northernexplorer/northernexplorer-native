@@ -11,4 +11,8 @@ export class RegionRepository extends EntityRepository<Region> {
 			countryId: region.country.id,
 		};
 	}
+
+	async getById(id: string) {
+		return this.findOneOrFail({id});
+	}
 }

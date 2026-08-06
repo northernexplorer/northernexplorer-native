@@ -1,3 +1,4 @@
+import {GenericResponseType} from '../GenericResponseType';
 import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
 import {ReviewSummary} from './ReviewController';
@@ -14,12 +15,26 @@ export type HistoricSiteType = {
 	image: string;
 	lat: number;
 	lon: number;
-	country?: CountryType;
+	country: CountryType;
 	reviews?: ReviewSummary[];
-	region?: RegionType;
-	startDate?: number | null;
-	endDate?: number | null;
-	status?: PublishStatusEnum;
+	region: RegionType;
+	startDate?: number;
+	endDate?: number;
+	status: PublishStatusEnum;
+};
+
+export type HistoricSiteEditType = {
+	id: string;
+	name: string;
+	description: string;
+	image: string;
+	lat: number;
+	lon: number;
+	countryId: string;
+	regionId: string;
+	startDate?: number;
+	endDate?: number;
+	status: PublishStatusEnum;
 };
 
 export const HistoricSiteController = {
@@ -38,5 +53,9 @@ export const HistoricSiteController = {
 	getPublished: {
 		params: {} as Record<string, undefined>,
 		response: {} as HistoricSiteType[],
+	},
+	edit: {
+		params: {} as HistoricSiteEditType,
+		response: {} as GenericResponseType,
 	},
 };

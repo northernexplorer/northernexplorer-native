@@ -17,4 +17,8 @@ export class CountryRepository extends EntityRepository<Country> {
 			})),
 		};
 	}
+
+	async getById(id: string) {
+		return this.findOneOrFail({id});
+	}
 }

@@ -107,8 +107,8 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 			review: site.reviews,
 			lat: Number(site.lat),
 			lon: Number(site.lon),
-			startDate: site.startDate ? Number(site.startDate) : null,
-			endDate: site.endDate ? Number(site.endDate) : null,
+			startDate: site.startDate ? Number(site.startDate) : undefined,
+			endDate: site.endDate ? Number(site.endDate) : undefined,
 			status: site.status,
 		}));
 	}

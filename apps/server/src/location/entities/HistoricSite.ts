@@ -14,8 +14,8 @@ type HistoricSiteInput = {
 	lon: number;
 	country: Country;
 	region: Region;
-	startDate?: number | null;
-	endDate?: number | null;
+	startDate?: number;
+	endDate?: number;
 	status: PublishStatusEnum;
 };
 
@@ -43,10 +43,10 @@ export class HistoricSite {
 	lon: number;
 
 	@Property({type: 'double', nullable: true})
-	startDate?: number | null;
+	startDate?: number;
 
 	@Property({type: 'double', nullable: true})
-	endDate?: number | null;
+	endDate?: number;
 
 	@ManyToOne(() => Country)
 	country: Country;
@@ -77,5 +77,20 @@ export class HistoricSite {
 		this.status = data.status;
 		this.startDate = data.startDate;
 		this.endDate = data.endDate;
+	}
+
+	edit(data: Partial<HistoricSiteInput>) {
+		if (data.name !== undefined) this.name = data.name;
+		if (data.description !== undefined) this.description = data.description;
+		if (data.image !== undefined) this.image = data.image;
+		if (data.lat !== undefined) this.lat = data.lat;
+		if (data.lon !== undefined) this.lon = data.lon;
+		if (data.country !== undefined) this.country = data.country;
+		if (data.region !== undefined) this.region = data.region;
+		if (data.status !== undefined) this.status = data.status;
+		if (data.startDate !== undefined) this.startDate = data.startDate;
+		if (data.endDate !== undefined) this.endDate = data.endDate;
+
+		this.updatedAt = new Date();
 	}
 }

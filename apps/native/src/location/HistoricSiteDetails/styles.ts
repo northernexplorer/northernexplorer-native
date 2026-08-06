@@ -70,4 +70,20 @@ export const styles = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: 300,
 	},
+	headerRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+	},
+	editButton: {
+		paddingHorizontal: 12,
+		paddingVertical: 6,
+		backgroundColor: '#0088cc',
+		borderRadius: 6,
+	},
+	editButtonText: {
+		color: '#FFFFFF',
+		fontWeight: '600',
+		fontSize: 14,
+	},
 });
