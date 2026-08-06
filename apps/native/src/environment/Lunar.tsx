@@ -2,8 +2,8 @@ import React from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {Spinner} from '@northernexplorer/tools';
 import {useLunar} from '~/environment/state/lunar/useLunar';
-import {Spinner} from '~/layout/Layout/elements/Spinner';
 import {getMoonIcon} from '~/environment/lib/getMoonIcon';
 
 export function Lunar() {

@@ -2,9 +2,9 @@ import {View, Text, TouchableOpacity, Pressable} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import React from 'react';
 import {Link} from 'expo-router';
+import {Spinner} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/elements/Spinner';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
 

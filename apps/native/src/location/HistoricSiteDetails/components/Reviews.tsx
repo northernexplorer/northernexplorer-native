@@ -1,7 +1,7 @@
 import {View, Text} from 'react-native';
 import {HistoricSiteType} from '@northernexplorer/types';
+import {Spinner} from '@northernexplorer/tools';
 import {styles} from '~/location/HistoricSiteDetails/styles';
-import {Spinner} from '~/layout/Layout/elements/Spinner';
 
 type ReviewDetailsProps = {
 	data: HistoricSiteType;

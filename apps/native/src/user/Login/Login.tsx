@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 import {View, Text, Pressable, Switch, ScrollView} from 'react-native';
 import {Link, router} from 'expo-router';
 import {useDispatch} from 'react-redux';
+import {FormField} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
-import {FormField} from '~/layout/Layout/elements/FormField';
 import {useDeviceInfo} from '~/user/Login/useDeviceInfo';
 
 const initialFormData = {

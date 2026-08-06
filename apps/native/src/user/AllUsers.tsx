@@ -3,10 +3,10 @@ import {View, Text, StyleSheet} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {RolesEnum} from '@northernexplorer/types';
+import {Spinner} from '@northernexplorer/tools';
+import {Column, Table} from '@northernexplorer/tools';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/elements/Spinner';
-import {Column, Table} from '~/layout/Layout/elements/Table';
 
 export function AllUsers() {
 	const router = useRouter();

@@ -3,13 +3,13 @@ import {ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, ActivityInd
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {HistoricSiteEditType, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
-import {styles as detailStyles} from '~/location/HistoricSiteDetails/styles';
-import {config} from '~/config';
+import {Spinner} from '@northernexplorer/tools';
+import {FormField} from '@northernexplorer/tools';
+import {TextAreaField} from '@northernexplorer/tools';
+import {DropdownField} from '@northernexplorer/tools';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/elements/Spinner';
-import {FormField} from '~/layout/Layout/elements/FormField';
-import {TextAreaField} from '~/layout/Layout/elements/TextAreaField';
-import {DropdownField} from '~/layout/Layout/elements/DropdownField';
+import {config} from '~/config';
+import {styles as detailStyles} from '~/location/HistoricSiteDetails/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 

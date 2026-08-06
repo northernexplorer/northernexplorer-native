@@ -1991,6 +1991,8 @@ __metadata:
 "@northernexplorer/tools@npm:*, @northernexplorer/tools@workspace:packages/tools":
   version: 0.0.0-use.local
   resolution: "@northernexplorer/tools@workspace:packages/tools"
+  dependencies:
+    "@react-native-community/datetimepicker": "npm:^9.1.0"
   languageName: unknown
   linkType: soft
 
@@ -8154,7 +8156,6 @@ __metadata:
     "@northernexplorer/tools": "npm:*"
     "@northernexplorer/types": "npm:*"
     "@react-native-async-storage/async-storage": "npm:2.2.0"
-    "@react-native-community/datetimepicker": "npm:^9.1.0"
     "@react-native-community/netinfo": "npm:12.0.1"
     "@reduxjs/toolkit": "npm:^2.12.0"
     "@types/react": "npm:~19.2.2"

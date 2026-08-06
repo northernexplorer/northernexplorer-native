@@ -3,10 +3,10 @@ import {Pressable, Text, ScrollView, StyleSheet, View, Linking, Platform} from '
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import Purchases from 'react-native-purchases';
 import {formatMoney} from '@northernexplorer/tools';
+import {Spinner} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
-import {Spinner} from '~/layout/Layout/elements/Spinner';
 import {alertStore} from '~/core/alertStore';
 import {config} from '~/config';
 

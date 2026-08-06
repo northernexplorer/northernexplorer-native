@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import {Pressable, Text, ScrollView} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
+import {FormField} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
-import {FormField} from '~/layout/Layout/elements/FormField';
 
 const initialFormData = {
 	currentPassword: '',
