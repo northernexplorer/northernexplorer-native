@@ -1,9 +1,8 @@
 import React from 'react';
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 import {Link, useLocalSearchParams} from 'expo-router';
-import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {getUrl, getUrlSafeString, Spinner} from '@northernexplorer/tools';
 import {RolesEnum} from '@northernexplorer/types';
-import {Spinner} from '@northernexplorer/tools';
 import {ReviewDetails} from './components/Reviews';
 import {styles} from '~/location/HistoricSiteDetails/styles';
 import {config} from '~/config';

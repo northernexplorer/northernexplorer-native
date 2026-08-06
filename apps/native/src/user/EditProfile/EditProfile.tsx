@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Text, Pressable, ScrollView} from 'react-native';
 import {Link, Redirect, useLocalSearchParams, router} from 'expo-router';
-import {Spinner} from '@northernexplorer/tools';
-import {FormField} from '@northernexplorer/tools';
+import {Spinner, FormField} from '@northernexplorer/tools';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';

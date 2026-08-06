@@ -13,4 +13,7 @@ export class CountryController extends BaseController {
 		const {id} = params;
 		return this.repos.country.getCountryById(id);
 	}
+	getAll(): Promise<Response<Route<'getAll'>>> {
+		return this.repos.country.getAll();
+	}
 }

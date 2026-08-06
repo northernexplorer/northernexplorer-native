@@ -12,4 +12,8 @@ export const RegionController = {
 		params: {} as {id: string},
 		response: null as unknown as RegionType,
 	},
+	getByCountryId: {
+		params: {} as {id: string},
+		response: null as unknown as RegionType[],
+	},
 };

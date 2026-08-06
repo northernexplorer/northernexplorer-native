@@ -8,4 +8,8 @@ export const CountryController = {
 		params: {} as {id: string},
 		response: null as unknown as CountryType,
 	},
+	getAll: {
+		params: {} as Record<string, never>,
+		response: null as unknown as CountryType[],
+	},
 };
