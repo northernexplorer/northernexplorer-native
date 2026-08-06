@@ -8,7 +8,11 @@
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",
 	"dependencies": {
-		"@react-native-community/datetimepicker": "^9.1.0"
+		"@expo/vector-icons": "^15.0.2",
+		"react": "19.2.3",
+		"react-native": "0.86.2",
+		"@react-native-community/datetimepicker": "^9.1.0",
+		"react-native-safe-area-context": "~5.7.0"
 	},
 	"scripts": {
 		"build": "tsc",
