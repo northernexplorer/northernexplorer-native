@@ -158,7 +158,7 @@ export function CompassWidget() {
 									borderBottomWidth: 18,
 									borderLeftColor: 'transparent',
 									borderRightColor: 'transparent',
-									borderBottomColor: needsCalibration ? '#f59e0b' : '#ef4444',
+									borderBottomColor: '#ef4444',
 								}}
 							/>
 
