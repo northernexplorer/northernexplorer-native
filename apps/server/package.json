@@ -20,6 +20,7 @@
 		"cors": "^2.8.5",
 		"dotenv": "^17.4.2",
 		"express": "^4.21.0",
+		"express-rate-limit": "^8.6.2",
 		"jsonwebtoken": "^9.0.3",
 		"pg-boss": "^12.26.3",
 		"reflect-metadata": "^0.2.2",
