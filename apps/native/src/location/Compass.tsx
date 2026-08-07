@@ -10,12 +10,15 @@ import {useApiFetch} from '~/core/useApiFetch';
 
 export function Compass() {
 	const [heading, setHeading] = useState<number>(0);
-	const [accuracy, setAccuracy] = useState<number>(3); // 3 = High accuracy, 1 = Low
+	const [accuracy, setAccuracy] = useState<number>(3); // 3 = High, 1 = Low
 	const [isAvailable, setIsAvailable] = useState<boolean>(true);
 
 	const animatedDegrees = useRef(new Animated.Value(0)).current;
 	const targetDegrees = useRef<number>(0);
+
 	const {data: permissionData, loading} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
+
+	const needsCalibration = accuracy <= 1;
 
 	useFocusEffect(
 		useCallback(() => {
@@ -43,7 +46,6 @@ export function Compass() {
 					setAccuracy(headingData.accuracy);
 					setHeading(rounded);
 
-					// Calculate shortest path for dial rotation (-heading)
 					let delta = -rounded - targetDegrees.current;
 					if (delta > 180) delta -= 360;
 					if (delta < -180) delta += 360;
@@ -80,7 +82,6 @@ export function Compass() {
 	});
 
 	const cardinal = getCardinalDirection(heading);
-	const needsCalibration = accuracy <= 1;
 	const canUseCompass = !!permissionData?.navigation.useCompass;
 
 	if (loading) return <Spinner />;
@@ -90,7 +91,7 @@ export function Compass() {
 		return (
 			<SafeAreaView style={styles.container}>
 				<View style={styles.centerContainer}>
-					<MaterialCommunityIcons name="compass-off-outline" size={80} color="#94a3b8" />
+					<MaterialCommunityIcons name="compass-off-outline" size={72} color="#94a3b8" />
 					<Text style={styles.unavailableTitle}>Compass Unavailable</Text>
 					<Text style={styles.unavailableSubtext}>Sensors are unavailable or location permissions were not granted.</Text>
 				</View>
@@ -101,43 +102,50 @@ export function Compass() {
 	return (
 		<SafeAreaView style={styles.container}>
 			<View style={styles.centerContainer}>
-				{/* Expanded Compass Dial Assembly */}
+				{/* Compass Housing */}
 				<View style={styles.compassContainer}>
-					{/* Fixed Top Pointer (Device Heading Marker) */}
 					<View style={styles.topHeadingPointer} />
 
-					{/* Outer Static Housing Ring */}
 					<View style={styles.outerRing}>
-						{/* Rotating Compass Dial Assembly */}
 						<Animated.View style={[styles.dialContainer, {transform: [{rotate}]}]}>
-							{/* Cardinal Labels on Dial Face */}
 							<Text style={[styles.cardinalLabel, styles.northLabel]}>N</Text>
 							<Text style={[styles.cardinalLabel, styles.eastLabel]}>E</Text>
 							<Text style={[styles.cardinalLabel, styles.southLabel]}>S</Text>
 							<Text style={[styles.cardinalLabel, styles.westLabel]}>W</Text>
 
-							{/* North Pointer Tip (Red / Amber if calibrating) */}
-							<View style={[styles.needleTipNorth, {borderBottomColor: needsCalibration ? '#d97706' : '#ef4444'}]} />
-
-							{/* South Pointer Tip (Muted Silver) */}
+							<View style={[styles.needleTipNorth, {borderBottomColor: '#ef4444'}]} />
 							<View style={styles.needleTipSouth} />
-
-							{/* Pivot Cap */}
 							<View style={styles.centerPivot} />
 						</Animated.View>
 					</View>
 				</View>
 
-				{/* Primary Readout */}
+				{/* Heading Display */}
 				<Text style={styles.headingReadout}>
 					{heading}° <Text style={styles.cardinalText}>{cardinal}</Text>
 				</Text>
 
-				{/* Status Line */}
-				<View style={styles.statusBadge}>
-					<Text style={[styles.statusText, {color: needsCalibration ? '#d97706' : '#64748b'}]}>
-						{needsCalibration ? 'Calibration Required' : 'Heading'}
-					</Text>
+				{/* Calibration & Status Section */}
+				<View style={styles.statusSection}>
+					{needsCalibration ? (
+						<View style={styles.calibrationPill}>
+							<View style={styles.calibrationInfo}>
+								<View style={styles.warningDot} />
+								<Text style={styles.calibrationText}>
+									Wave device in a <Text style={styles.boldText}>figure-8</Text>
+								</Text>
+							</View>
+
+							<View style={styles.animationStage}>
+								<MaterialCommunityIcons name="cellphone" size={16} color="#f59e0b" />
+							</View>
+						</View>
+					) : (
+						<View style={styles.statusBadge}>
+							<View style={styles.activeDot} />
+							<Text style={styles.statusText}>Heading Accurate</Text>
+						</View>
+					)}
 				</View>
 			</View>
 		</SafeAreaView>
@@ -179,7 +187,7 @@ const styles = StyleSheet.create({
 		height: 240,
 		borderRadius: 120,
 		borderWidth: 2,
-		borderColor: 'rgba(15, 23, 42, 0.15)',
+		borderColor: 'rgba(15, 23, 42, 0.08)',
 		backgroundColor: 'rgba(15, 23, 42, 0.02)',
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -249,21 +257,79 @@ const styles = StyleSheet.create({
 		fontWeight: '800',
 		letterSpacing: -1,
 		textAlign: 'center',
+		marginTop: 8,
 	},
 	cardinalText: {
 		color: '#0284c7',
 		fontWeight: '600',
 	},
+	statusSection: {
+		marginTop: 16,
+		minHeight: 36,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
 	statusBadge: {
-		marginTop: 8,
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
 		paddingHorizontal: 12,
-		paddingVertical: 4,
-		borderRadius: 16,
-		backgroundColor: 'rgba(0, 0, 0, 0.05)',
+		paddingVertical: 6,
+		borderRadius: 20,
+		backgroundColor: '#1a1a1a',
+		borderWidth: 1,
+		borderColor: '#334155',
+	},
+	activeDot: {
+		width: 8,
+		height: 8,
+		borderRadius: 4,
+		backgroundColor: '#10b981',
 	},
 	statusText: {
-		fontSize: 13,
+		fontSize: 12,
 		fontWeight: '600',
+		color: '#cbd5e1',
+	},
+	calibrationPill: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 10,
+		paddingLeft: 12,
+		paddingRight: 6,
+		paddingVertical: 5,
+		borderRadius: 20,
+		backgroundColor: '#1a1a1a',
+		borderWidth: 1,
+		borderColor: '#334155',
+	},
+	calibrationInfo: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	warningDot: {
+		width: 8,
+		height: 8,
+		borderRadius: 4,
+		backgroundColor: '#f59e0b',
+	},
+	calibrationText: {
+		fontSize: 12,
+		fontWeight: '600',
+		color: '#cbd5e1',
+	},
+	boldText: {
+		fontWeight: '700',
+		color: '#f59e0b',
+	},
+	animationStage: {
+		width: 28,
+		height: 22,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'rgba(255, 255, 255, 0.06)',
+		borderRadius: 11,
 	},
 	unavailableTitle: {
 		color: '#0f172a',
