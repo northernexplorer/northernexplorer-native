@@ -12,7 +12,9 @@ export class PointOfInterestController extends BaseController {
 	}
 	private permissionService = new PermissionService();
 
-	public async getNearbyPointOfInterests(params: Params<Route<'getNearbyPointOfInterests'>>): Promise<Response<Route<'getNearbyPointOfInterests'>>> {
+	public async getNearbyPointOfInterests(
+		params: Params<Route<'getNearbyPointOfInterests'>>,
+	): Promise<Response<Route<'getNearbyPointOfInterests'>>> {
 		const {lat, lon, limit} = params;
 		return this.repos.pointOfInterest.getClosestPointOfInterests(lat, lon, limit);
 	}

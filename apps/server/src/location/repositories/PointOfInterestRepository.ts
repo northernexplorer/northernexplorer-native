@@ -16,7 +16,7 @@ interface PointOfInterestRawRow {
 	reviews: ReviewType;
 	distanceMeters: number;
 	status: PublishStatusEnum;
-	type: PointOfInterestTypeEnum[],
+	type: PointOfInterestTypeEnum[];
 }
 
 type PointOfInterestDetailsResponse = {
@@ -29,7 +29,7 @@ type PointOfInterestDetailsResponse = {
 	status: PublishStatusEnum;
 	country: CountryType;
 	region: RegionType;
-	type: PointOfInterestTypeEnum[],
+	type: PointOfInterestTypeEnum[];
 	reviews: ReviewSummary[];
 };
 
