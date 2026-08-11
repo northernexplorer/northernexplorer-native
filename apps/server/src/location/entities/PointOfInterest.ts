@@ -17,6 +17,7 @@ type PointOfInterestInput = {
 	startDate?: number;
 	endDate?: number;
 	status: PublishStatusEnum;
+	type: PointOfInterestTypeEnum;
 };
 
 @Entity()
@@ -80,6 +81,7 @@ export class PointOfInterest {
 		this.status = data.status;
 		this.startDate = data.startDate;
 		this.endDate = data.endDate;
+		this.type = data.type;
 	}
 
 	edit(data: Partial<PointOfInterestInput>) {
@@ -93,6 +95,7 @@ export class PointOfInterest {
 		if (data.status !== undefined) this.status = data.status;
 		if (data.startDate !== undefined) this.startDate = data.startDate;
 		if (data.endDate !== undefined) this.endDate = data.endDate;
+		if (data.type !== undefined) this.endDate = data.type;
 
 		this.updatedAt = new Date();
 	}

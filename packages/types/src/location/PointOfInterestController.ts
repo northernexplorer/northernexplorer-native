@@ -8,6 +8,12 @@ export enum PublishStatusEnum {
 	Draft = 'Draft',
 }
 
+export enum PointOfInterestTypeEnum {
+	Cave = 'Cave',
+	HistoricSite = 'HistoricSite',
+	Waterfall = 'Waterfall',
+}
+
 export type PointOfInterestType = {
 	id: string;
 	name: string;
@@ -21,6 +27,7 @@ export type PointOfInterestType = {
 	startDate?: number;
 	endDate?: number;
 	status: PublishStatusEnum;
+	type: PointOfInterestTypeEnum;
 };
 
 export type PointOfInterestEditType = {
