@@ -1,1 +1,1 @@
-export {HistoricSiteDetails} from './HistoricSiteDetails';
+export {PointOfInterestDetails} from './PointOfInterestDetails';

@@ -7,7 +7,7 @@ export type ReviewType = {
 		username: string;
 		score: number;
 	};
-	historicSite: {id: string; name: string};
+	pointOfInterest: {id: string; name: string};
 	rating: ReviewRatingEnum;
 	description: string;
 };
@@ -34,7 +34,7 @@ export const ReviewController = {
 	},
 	createNewReview: {
 		params: {} as {
-			historicSiteId: string;
+			pointOfInterestId: string;
 			rating: ReviewRatingEnum;
 			description: string;
 		},

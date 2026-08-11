@@ -8,7 +8,7 @@ import {useForecast} from '~/environment/state/forecast/useForecast';
 import {useLunar} from '~/environment/state/lunar/useLunar';
 import {useFieldNote} from '~/environment/state/fieldNote/useFieldNote';
 import {styles} from '~/layout/Home/styles';
-import {HistoricSitePreviewWidget} from '~/layout/Home/components/HistoricSitePreviewWidget';
+import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {CompassWidget} from '~/layout/Home/components/CompassWidget';
@@ -20,10 +20,10 @@ export function Home() {
 	const fieldNote = useFieldNote();
 	const coords = useLocation();
 
-	const {data: historicSiteData} = useApiFetch(
+	const {data: pointOfInterestData} = useApiFetch(
 		'location',
-		'HistoricSiteController',
-		'getNearbyHistoricSites',
+		'PointOfInterestController',
+		'getNearbyPointOfInterests',
 		coords ? {lat: coords.lat, lon: coords.lon, limit: 5} : null,
 	);
 
@@ -93,13 +93,13 @@ export function Home() {
 			</View>
 
 			<Text style={styles.exploreHeader}>Start Exploring...</Text>
-			<View style={styles.historicSitesSection}>
-				{!historicSiteData ? (
+			<View style={styles.pointOfInterestsSection}>
+				{!pointOfInterestData ? (
 					<ActivityIndicator size="small" color="#ffffff" style={{marginVertical: 20}} />
 				) : (
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12, paddingHorizontal: 16}}>
-						{historicSiteData.map(site => (
-							<HistoricSitePreviewWidget
+						{pointOfInterestData.map(site => (
+							<PointOfInterestPreviewWidget
 								key={site.id}
 								name={site.name}
 								description={site.description}

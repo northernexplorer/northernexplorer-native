@@ -24,12 +24,12 @@ export class ReviewController extends BaseController {
 	public async createNewReview(params: Params<Route<'createNewReview'>>, auth?: AuthContext) {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 
-		const {historicSiteId, rating, description} = params;
+		const {pointOfInterestId, rating, description} = params;
 
 		const user = await this.repos.user.getById(userId);
-		const historicSite = await this.repos.historicSite.getById(historicSiteId);
+		const pointOfInterest = await this.repos.pointOfInterest.getById(pointOfInterestId);
 
-		const review = this.repos.review.createReview(user, historicSite, rating, description);
+		const review = this.repos.review.createReview(user, pointOfInterest, rating, description);
 
 		await this.flush();
 

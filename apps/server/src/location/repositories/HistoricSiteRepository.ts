@@ -1,8 +1,8 @@
 import {CountryType, PublishStatusEnum, RegionType, ReviewType, ReviewSummary} from '@northernexplorer/types';
 import {EntityRepository} from '@mikro-orm/postgresql';
-import {HistoricSite} from '../entities/HistoricSite';
+import {PointOfInterest} from '../entities/PointOfInterest';
 
-interface HistoricSiteRawRow {
+interface PointOfInterestRawRow {
 	id: string;
 	name: string;
 	description: string;
@@ -18,7 +18,7 @@ interface HistoricSiteRawRow {
 	status: PublishStatusEnum;
 }
 
-type HistoricSiteDetailsResponse = {
+type PointOfInterestDetailsResponse = {
 	id: string;
 	name: string;
 	description: string;
@@ -31,8 +31,8 @@ type HistoricSiteDetailsResponse = {
 	reviews: ReviewSummary[];
 };
 
-export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
-	async getHistoricSiteDetails(id: string): Promise<HistoricSiteDetailsResponse> {
+export class PointOfInterestRepository extends EntityRepository<PointOfInterest> {
+	async getPointOfInterestDetails(id: string): Promise<PointOfInterestDetailsResponse> {
 		const site = await this.findOneOrFail({id: id}, {populate: ['country', 'region', 'reviews', 'reviews.user']});
 
 		return {
@@ -58,7 +58,7 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 		};
 	}
 
-	async getClosestHistoricSites(lat: number, lon: number, limit: number) {
+	async getClosestPointOfInterests(lat: number, lon: number, limit: number) {
 		const query = `
 			SELECT id, name, description, image, lat, lon, country, region, status,
 			       start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
@@ -93,7 +93,7 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 				LIMIT ?
 		`;
 
-		const rawResults = (await this.em.getConnection().execute(query, [lat, lon, lat, limit])) as unknown as HistoricSiteRawRow[];
+		const rawResults = (await this.em.getConnection().execute(query, [lat, lon, lat, limit])) as unknown as PointOfInterestRawRow[];
 
 		return rawResults.map(site => ({
 			id: site.id,

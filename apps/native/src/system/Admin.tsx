@@ -26,7 +26,7 @@ export function Admin() {
 				<View style={[styles.iconBadge, {backgroundColor: '#e8f5e9'}]}>
 					<Ionicons name="map-outline" size={24} color="#2e7d32" />
 				</View>
-				<Text style={styles.statValue}>{data?.historicSitesPublished ?? 0}</Text>
+				<Text style={styles.statValue}>{data?.pointOfInterestsPublished ?? 0}</Text>
 				<Text style={styles.statLabel}>Published Sites</Text>
 			</Pressable>
 
@@ -35,7 +35,7 @@ export function Admin() {
 				<View style={[styles.iconBadge, {backgroundColor: '#fff3e0'}]}>
 					<Ionicons name="document-text-outline" size={24} color="#e65100" />
 				</View>
-				<Text style={styles.statValue}>{data?.historicSitesDraft ?? 0}</Text>
+				<Text style={styles.statValue}>{data?.pointOfInterestsDraft ?? 0}</Text>
 				<Text style={styles.statLabel}>Draft Sites</Text>
 			</Pressable>
 

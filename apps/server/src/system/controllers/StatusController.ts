@@ -36,12 +36,12 @@ export class StatusController extends BaseController {
 		this.permissionService.canAccessAdmin(auth);
 
 		const users = await this.repos.user.count({});
-		const historicSitesPublished = await this.repos.historicSite.count({status: PublishStatusEnum.Published});
-		const historicSitesDraft = await this.repos.historicSite.count({status: PublishStatusEnum.Draft});
+		const pointOfInterestsPublished = await this.repos.pointOfInterest.count({status: PublishStatusEnum.Published});
+		const pointOfInterestsDraft = await this.repos.pointOfInterest.count({status: PublishStatusEnum.Draft});
 		return {
 			users,
-			historicSitesPublished,
-			historicSitesDraft,
+			pointOfInterestsPublished,
+			pointOfInterestsDraft,
 		};
 	}
 }

@@ -8,7 +8,7 @@ export enum PublishStatusEnum {
 	Draft = 'Draft',
 }
 
-export type HistoricSiteType = {
+export type PointOfInterestType = {
 	id: string;
 	name: string;
 	description: string;
@@ -23,7 +23,7 @@ export type HistoricSiteType = {
 	status: PublishStatusEnum;
 };
 
-export type HistoricSiteEditType = {
+export type PointOfInterestEditType = {
 	id: string;
 	name: string;
 	description: string;
@@ -37,25 +37,25 @@ export type HistoricSiteEditType = {
 	status: PublishStatusEnum;
 };
 
-export const HistoricSiteController = {
-	getNearbyHistoricSites: {
+export const PointOfInterestController = {
+	getNearbyPointOfInterests: {
 		params: {} as {lat: number; lon: number; limit: number},
-		response: null as unknown as HistoricSiteType[],
+		response: null as unknown as PointOfInterestType[],
 	},
-	getHistoricSiteById: {
+	getPointOfInterestById: {
 		params: {} as {id: string},
-		response: null as unknown as HistoricSiteType,
+		response: null as unknown as PointOfInterestType,
 	},
 	getDrafts: {
 		params: {} as Record<string, undefined>,
-		response: {} as HistoricSiteType[],
+		response: {} as PointOfInterestType[],
 	},
 	getPublished: {
 		params: {} as Record<string, undefined>,
-		response: {} as HistoricSiteType[],
+		response: {} as PointOfInterestType[],
 	},
 	edit: {
-		params: {} as HistoricSiteEditType,
+		params: {} as PointOfInterestEditType,
 		response: {} as GenericResponseType,
 	},
 };

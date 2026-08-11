@@ -1,6 +1,6 @@
 import {Layout} from '~/layout/Layout';
-import {PublishedHistoricSites} from '~/location/PublishedHistoricSites';
+import {PublishedPointOfInterests} from '~/location/PublishedPointOfInterests';
 
 export default function () {
-	return <Layout Content={PublishedHistoricSites} title="Published Historic Sites" />;
+	return <Layout Content={PublishedPointOfInterests} title="Published Point of Interests" />;
 }

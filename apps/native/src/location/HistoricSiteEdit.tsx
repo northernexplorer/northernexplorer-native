@@ -2,10 +2,10 @@ import React, {useState, useEffect} from 'react';
 import {ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import {getUrl, getUrlSafeString, Spinner, FormField, TextAreaField, DropdownField} from '@northernexplorer/tools';
-import {HistoricSiteEditType, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
+import {PointOfInterestEditType, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
-import {styles as detailStyles} from '~/location/HistoricSiteDetails/styles';
+import {styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
@@ -31,11 +31,11 @@ const STATUS_OPTIONS = [
 	{label: 'Published', value: PublishStatusEnum.Published},
 ];
 
-export function HistoricSiteEdit() {
+export function PointOfInterestEdit() {
 	const {id} = useLocalSearchParams<{id: string}>();
 	const authentication = useAuthentication();
-	const {data, loading} = useApiFetch('location', 'HistoricSiteController', 'getHistoricSiteById', {id});
-	const {mutate, loading: mutationLoading} = useApiMutation('location', 'HistoricSiteController', 'edit');
+	const {data, loading} = useApiFetch('location', 'PointOfInterestController', 'getPointOfInterestById', {id});
+	const {mutate, loading: mutationLoading} = useApiMutation('location', 'PointOfInterestController', 'edit');
 
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const [form, setForm] = useState<FormState>({
@@ -113,7 +113,7 @@ export function HistoricSiteEdit() {
 	};
 
 	const handleSubmit = async (parsedLat: number, parsedLon: number) => {
-		const payload: HistoricSiteEditType = {
+		const payload: PointOfInterestEditType = {
 			id: data.id,
 			name: form.name,
 			description: form.description,
@@ -150,7 +150,7 @@ export function HistoricSiteEdit() {
 					{data.country.name} › {data.region.name}
 				</Text>
 
-				<Text style={formStyles.heading}>Edit Historic Site</Text>
+				<Text style={formStyles.heading}>Edit Point of Interest</Text>
 
 				<View style={formStyles.formGroup}>
 					<FormField

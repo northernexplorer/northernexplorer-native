@@ -4,33 +4,33 @@ import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 
-type Route<M extends keyof ROUTES['location']['HistoricSiteController']> = RouteDefinition<'location', 'HistoricSiteController'>[M];
+type Route<M extends keyof ROUTES['location']['PointOfInterestController']> = RouteDefinition<'location', 'PointOfInterestController'>[M];
 
-export class HistoricSiteController extends BaseController {
+export class PointOfInterestController extends BaseController {
 	constructor(repos: Repositories) {
 		super(repos);
 	}
 	private permissionService = new PermissionService();
 
-	public async getNearbyHistoricSites(params: Params<Route<'getNearbyHistoricSites'>>): Promise<Response<Route<'getNearbyHistoricSites'>>> {
+	public async getNearbyPointOfInterests(params: Params<Route<'getNearbyPointOfInterests'>>): Promise<Response<Route<'getNearbyPointOfInterests'>>> {
 		const {lat, lon, limit} = params;
-		return this.repos.historicSite.getClosestHistoricSites(lat, lon, limit);
+		return this.repos.pointOfInterest.getClosestPointOfInterests(lat, lon, limit);
 	}
 
-	public async getHistoricSiteById(
-		params: Params<Route<'getHistoricSiteById'>>,
+	public async getPointOfInterestById(
+		params: Params<Route<'getPointOfInterestById'>>,
 		auth?: AuthContext,
-	): Promise<Response<Route<'getHistoricSiteById'>>> {
-		const historicSite = await this.repos.historicSite.getHistoricSiteDetails(params.id);
-		if (historicSite.status === PublishStatusEnum.Draft) {
+	): Promise<Response<Route<'getPointOfInterestById'>>> {
+		const pointOfInterest = await this.repos.pointOfInterest.getPointOfInterestDetails(params.id);
+		if (pointOfInterest.status === PublishStatusEnum.Draft) {
 			this.permissionService.canAccessAdmin(auth);
 		}
-		return historicSite;
+		return pointOfInterest;
 	}
 
 	async getPublished(params: Params<Route<'getPublished'>>, auth?: AuthContext): Promise<Response<Route<'getPublished'>>> {
 		this.permissionService.canAccessAdmin(auth);
-		const sites = await this.repos.historicSite.getPublished();
+		const sites = await this.repos.pointOfInterest.getPublished();
 
 		return sites.map(site => ({
 			id: site.id,
@@ -49,7 +49,7 @@ export class HistoricSiteController extends BaseController {
 
 	async getDrafts(params: Params<Route<'getDrafts'>>, auth?: AuthContext): Promise<Response<Route<'getDrafts'>>> {
 		this.permissionService.canAccessAdmin(auth);
-		const sites = await this.repos.historicSite.getDrafts();
+		const sites = await this.repos.pointOfInterest.getDrafts();
 
 		return sites.map(site => ({
 			id: site.id,
@@ -71,11 +71,11 @@ export class HistoricSiteController extends BaseController {
 
 		const {id, countryId, regionId, startDate, endDate, ...updates} = params;
 
-		const historicSite = await this.repos.historicSite.getById(id);
+		const pointOfInterest = await this.repos.pointOfInterest.getById(id);
 		const country = await this.repos.country.getById(countryId);
 		const region = await this.repos.region.getById(regionId);
 
-		historicSite.edit({
+		pointOfInterest.edit({
 			...updates,
 			country,
 			region,

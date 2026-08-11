@@ -5,7 +5,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import useSupercluster from 'use-supercluster';
 import {Link} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
-import {HistoricSiteType} from '@northernexplorer/types';
+import {PointOfInterestType} from '@northernexplorer/types';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {BBox} from 'geojson';
 import {MapRef} from 'react-map-gl/mapbox-legacy';
@@ -19,10 +19,10 @@ export function Map() {
 	const mapRef = useRef<MapRef>(null);
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
 	const [zoom, setZoom] = useState(10);
-	const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
+	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
 
 	const coords = useLocation();
-	const {data} = useApiFetch('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
+	const {data} = useApiFetch('location', 'PointOfInterestController', 'getNearbyPointOfInterests', {
 		lat: coords?.lat || 0,
 		lon: coords?.lon || 0,
 		limit: 500,
@@ -71,7 +71,7 @@ export function Map() {
 				onClick={() => setSelectedSite(null)}
 				onLoad={updateMapState}
 				onMove={updateMapState}
-				interactiveLayerIds={['historicSitesLayer']}
+				interactiveLayerIds={['pointOfInterestsLayer']}
 				cursor={selectedSite ? 'pointer' : 'default'}
 				minZoom={2}
 			>
@@ -101,7 +101,7 @@ export function Map() {
 					}
 
 					// Render individual site
-					const site = cluster.properties as HistoricSiteType;
+					const site = cluster.properties as PointOfInterestType;
 
 					return (
 						<Marker

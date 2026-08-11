@@ -4,7 +4,7 @@ import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from 
 import useSupercluster from 'use-supercluster';
 import {useRouter} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
-import {HistoricSiteType} from '@northernexplorer/types';
+import {PointOfInterestType} from '@northernexplorer/types';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {BBox} from 'geojson';
 import {config} from '~/config';
@@ -18,10 +18,10 @@ export function Map() {
 	const cameraRef = useRef<CameraRef>(null);
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
 	const [zoom, setZoom] = useState(10);
-	const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
+	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
 
 	const coords = useLocation();
-	const {data} = useApiFetch('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
+	const {data} = useApiFetch('location', 'PointOfInterestController', 'getNearbyPointOfInterests', {
 		lat: coords?.lat || 0,
 		lon: coords?.lon || 0,
 		limit: 500,
@@ -55,7 +55,7 @@ export function Map() {
 	}, []);
 
 	const handleNavigateToSite = useCallback(
-		(site: HistoricSiteType) => {
+		(site: PointOfInterestType) => {
 			router.push({
 				pathname: '/[country]/[region]/[name]/[id]',
 				params: {
@@ -110,7 +110,7 @@ export function Map() {
 						);
 					}
 
-					const site = cluster.properties as HistoricSiteType;
+					const site = cluster.properties as PointOfInterestType;
 					return (
 						<Marker
 							key={site.id}

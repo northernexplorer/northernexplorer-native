@@ -6,7 +6,7 @@ import {Region} from './Region';
 import {Country} from './Country';
 import {Review} from './Review';
 
-type HistoricSiteInput = {
+type PointOfInterestInput = {
 	name: string;
 	description: string;
 	image: string;
@@ -20,7 +20,7 @@ type HistoricSiteInput = {
 };
 
 @Entity()
-export class HistoricSite {
+export class PointOfInterest {
 	@PrimaryKey({type: 'uuid'})
 	id = v4();
 
@@ -54,7 +54,7 @@ export class HistoricSite {
 	@ManyToOne(() => Region)
 	region: Region;
 
-	@OneToMany(() => Review, review => review.historicSite)
+	@OneToMany(() => Review, review => review.pointOfInterest)
 	reviews = new Collection<Review>(this);
 
 	@Property({type: 'datetime'})
@@ -66,7 +66,7 @@ export class HistoricSite {
 	@Enum({items: () => PublishStatusEnum, type: 'enum'})
 	status: PublishStatusEnum;
 
-	constructor(data: HistoricSiteInput) {
+	constructor(data: PointOfInterestInput) {
 		this.name = data.name;
 		this.description = data.description;
 		this.image = data.image;
@@ -79,7 +79,7 @@ export class HistoricSite {
 		this.endDate = data.endDate;
 	}
 
-	edit(data: Partial<HistoricSiteInput>) {
+	edit(data: Partial<PointOfInterestInput>) {
 		if (data.name !== undefined) this.name = data.name;
 		if (data.description !== undefined) this.description = data.description;
 		if (data.image !== undefined) this.image = data.image;

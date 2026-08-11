@@ -2,11 +2,11 @@ import {Entity, Enum, ManyToOne, PrimaryKey, Property} from '@mikro-orm/decorato
 import {v4} from 'uuid';
 import {ReviewRatingEnum} from '@northernexplorer/types';
 import {User} from '../../user';
-import {HistoricSite} from '../index';
+import {PointOfInterest} from '../index';
 
 type ReviewInput = {
 	user: User;
-	historicSite: HistoricSite;
+	pointOfInterest: PointOfInterest;
 	rating: ReviewRatingEnum;
 	description: string;
 };
@@ -31,8 +31,8 @@ export class Review {
 	@Property({type: 'datetime'})
 	updatedAt = new Date();
 
-	@ManyToOne(() => HistoricSite)
-	historicSite: HistoricSite;
+	@ManyToOne(() => PointOfInterest)
+	pointOfInterest: PointOfInterest;
 
 	@Enum(() => ReviewRatingEnum)
 	rating: ReviewRatingEnum;
@@ -40,7 +40,7 @@ export class Review {
 	constructor(data: ReviewInput) {
 		this.description = data.description;
 		this.user = data.user;
-		this.historicSite = data.historicSite;
+		this.pointOfInterest = data.pointOfInterest;
 		this.rating = data.rating;
 	}
 }
