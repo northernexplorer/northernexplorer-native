@@ -27,7 +27,7 @@ export type PointOfInterestType = {
 	startDate?: number;
 	endDate?: number;
 	status: PublishStatusEnum;
-	type: PointOfInterestTypeEnum;
+	type: PointOfInterestTypeEnum[];
 };
 
 export type PointOfInterestEditType = {
@@ -42,6 +42,7 @@ export type PointOfInterestEditType = {
 	startDate?: number;
 	endDate?: number;
 	status: PublishStatusEnum;
+	type: PointOfInterestTypeEnum[]
 };
 
 export const PointOfInterestController = {

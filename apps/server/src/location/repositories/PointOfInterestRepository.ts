@@ -1,4 +1,4 @@
-import {CountryType, PublishStatusEnum, RegionType, ReviewType, ReviewSummary} from '@northernexplorer/types';
+import {CountryType, PublishStatusEnum, RegionType, ReviewType, ReviewSummary, PointOfInterestTypeEnum} from '@northernexplorer/types';
 import {EntityRepository} from '@mikro-orm/postgresql';
 import {PointOfInterest} from '../entities/PointOfInterest';
 
@@ -16,6 +16,7 @@ interface PointOfInterestRawRow {
 	reviews: ReviewType;
 	distanceMeters: number;
 	status: PublishStatusEnum;
+	type: PointOfInterestTypeEnum,
 }
 
 type PointOfInterestDetailsResponse = {
@@ -108,6 +109,7 @@ export class PointOfInterestRepository extends EntityRepository<PointOfInterest>
 			startDate: site.startDate ? Number(site.startDate) : undefined,
 			endDate: site.endDate ? Number(site.endDate) : undefined,
 			status: site.status,
+			type: site.type,
 		}));
 	}
 

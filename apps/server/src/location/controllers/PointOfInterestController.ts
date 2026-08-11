@@ -44,6 +44,7 @@ export class PointOfInterestController extends BaseController {
 			status: site.status,
 			region: site.region,
 			country: site.country,
+			type: site.type,
 		}));
 	}
 
@@ -63,6 +64,7 @@ export class PointOfInterestController extends BaseController {
 			status: site.status,
 			region: site.region,
 			country: site.country,
+			type: site.type,
 		}));
 	}
 
