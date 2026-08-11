@@ -1,7 +1,7 @@
 import {Entity, ManyToOne, OneToMany, PrimaryKey, Property, Enum} from '@mikro-orm/decorators/legacy';
 import {Collection} from '@mikro-orm/core';
 import {v4} from 'uuid';
-import {PublishStatusEnum} from '@northernexplorer/types';
+import {PublishStatusEnum, PointOfInterestTypeEnum} from '@northernexplorer/types';
 import {Region} from './Region';
 import {Country} from './Country';
 import {Review} from './Review';
@@ -65,6 +65,9 @@ export class PointOfInterest {
 
 	@Enum({items: () => PublishStatusEnum, type: 'enum'})
 	status: PublishStatusEnum;
+
+	@Enum({items: () => PublishStatusEnum, array: true})
+	type: PointOfInterestTypeEnum[];
 
 	constructor(data: PointOfInterestInput) {
 		this.name = data.name;
