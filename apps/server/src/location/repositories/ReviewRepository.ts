@@ -1,5 +1,5 @@
-import {BaseRepository} from '../../core/BaseRepository';
 import {ReviewRatingEnum} from '@northernexplorer/types';
+import {BaseRepository} from '../../core/BaseRepository';
 import {Review, HistoricSite} from '../../location';
 import {User} from '../../user';
 

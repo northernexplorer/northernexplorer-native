@@ -1,7 +1,7 @@
-import {BaseRepository} from '../../core/BaseRepository';
 import {EditProfileParams, UserType} from '@northernexplorer/types';
 import {hash, compare} from 'bcrypt';
 import {wrap} from '@mikro-orm/core';
+import {BaseRepository} from '../../core/BaseRepository';
 import {User} from '../entities/User';
 
 export class UserRepository extends BaseRepository<User> {
