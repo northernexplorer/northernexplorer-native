@@ -1,10 +1,10 @@
-import {EntityRepository} from '@mikro-orm/postgresql';
+import {BaseRepository} from '../../core/BaseRepository';
 import {EditProfileParams, UserType} from '@northernexplorer/types';
 import {hash, compare} from 'bcrypt';
 import {wrap} from '@mikro-orm/core';
 import {User} from '../entities/User';
 
-export class UserRepository extends EntityRepository<User> {
+export class UserRepository extends BaseRepository<User> {
 	async findByIdentifier(identifier: string): Promise<User | null> {
 		return this.findOne({$or: [{email: identifier}, {username: identifier}]});
 	}

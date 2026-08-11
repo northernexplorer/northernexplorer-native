@@ -1,5 +1,5 @@
 import {CountryType, PublishStatusEnum, RegionType, ReviewType, ReviewSummary} from '@northernexplorer/types';
-import {EntityRepository} from '@mikro-orm/postgresql';
+import {BaseRepository} from '../../core/BaseRepository';
 import {HistoricSite} from '../entities/HistoricSite';
 
 interface HistoricSiteRawRow {
@@ -31,7 +31,7 @@ type HistoricSiteDetailsResponse = {
 	reviews: ReviewSummary[];
 };
 
-export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
+export class HistoricSiteRepository extends BaseRepository<HistoricSite> {
 	async getHistoricSiteDetails(id: string): Promise<HistoricSiteDetailsResponse> {
 		const site = await this.findOneOrFail({id: id}, {populate: ['country', 'region', 'reviews', 'reviews.user']});
 
@@ -93,7 +93,7 @@ export class HistoricSiteRepository extends EntityRepository<HistoricSite> {
 				LIMIT ?
 		`;
 
-		const rawResults = (await this.em.getConnection().execute(query, [lat, lon, lat, limit])) as unknown as HistoricSiteRawRow[];
+		const rawResults = (await this.execute(query, [lat, lon, lat, limit])) as unknown as HistoricSiteRawRow[];
 
 		return rawResults.map(site => ({
 			id: site.id,

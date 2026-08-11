@@ -1,9 +1,9 @@
-import {EntityRepository} from '@mikro-orm/postgresql';
+import {BaseRepository} from '../../core/BaseRepository';
 import {Country} from '../entities/Country';
 
-export class CountryRepository extends EntityRepository<Country> {
+export class CountryRepository extends BaseRepository<Country> {
 	async getCountryById(id: string) {
-		return this.em.findOneOrFail(Country, {id: id}, {populate: ['regions']});
+		return this.findOneOrFail({id: id}, {populate: ['regions']});
 	}
 
 	async getById(id: string) {
