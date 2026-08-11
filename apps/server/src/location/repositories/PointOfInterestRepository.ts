@@ -16,7 +16,7 @@ interface PointOfInterestRawRow {
 	reviews: ReviewType;
 	distanceMeters: number;
 	status: PublishStatusEnum;
-	type: PointOfInterestTypeEnum,
+	type: PointOfInterestTypeEnum[],
 }
 
 type PointOfInterestDetailsResponse = {
@@ -29,6 +29,7 @@ type PointOfInterestDetailsResponse = {
 	status: PublishStatusEnum;
 	country: CountryType;
 	region: RegionType;
+	type: PointOfInterestTypeEnum[],
 	reviews: ReviewSummary[];
 };
 
@@ -46,6 +47,7 @@ export class PointOfInterestRepository extends EntityRepository<PointOfInterest>
 			country: site.country,
 			region: site.region,
 			status: site.status,
+			type: site.type,
 			reviews: site.reviews.map(review => ({
 				id: review.id,
 				description: review.description,
