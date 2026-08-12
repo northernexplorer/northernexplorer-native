@@ -1,4 +1,4 @@
-import {EntityRepository} from '@mikro-orm/postgresql';
+import {BaseRepository} from '../../core/BaseRepository';
 import {WeatherCache} from '../entities/WeatherCache';
 import {config} from '../../config';
 
@@ -6,7 +6,7 @@ interface RawInternalWeatherRow {
 	weatherData: string | Record<string, unknown>;
 }
 
-export class WeatherRepository extends EntityRepository<WeatherCache> {
+export class WeatherRepository extends BaseRepository<WeatherCache> {
 	async getWeatherCache(lat: number, lon: number) {
 		const query = `
       SELECT weather_data as "weatherData"
@@ -21,7 +21,7 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
         LIMIT 1
     `;
 
-		const rawResults = (await this.em.getConnection().execute(query)) as unknown as RawInternalWeatherRow[];
+		const rawResults = (await this.execute(query)) as unknown as RawInternalWeatherRow[];
 
 		const cachedRecord = rawResults.at(0);
 		if (cachedRecord) {
@@ -49,7 +49,7 @@ export class WeatherRepository extends EntityRepository<WeatherCache> {
 			weatherData: parsedJson,
 			updatedAt: new Date(),
 		});
-		this.em.persist(weatherCache);
+		this.persist(weatherCache);
 
 		await this.nativeDelete({
 			updatedAt: {$lte: new Date(Date.now() - 1000 * 60 * 60 * 3)},

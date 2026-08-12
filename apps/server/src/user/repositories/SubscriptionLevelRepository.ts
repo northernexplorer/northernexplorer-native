@@ -1,7 +1,7 @@
-import {EntityRepository} from '@mikro-orm/postgresql';
+import {BaseRepository} from '../../core/BaseRepository';
 import {SubscriptionLevel} from '../entities/SubscriptionLevel';
 
-export class SubscriptionLevelRepository extends EntityRepository<SubscriptionLevel> {
+export class SubscriptionLevelRepository extends BaseRepository<SubscriptionLevel> {
 	async getById(id: string) {
 		return this.findOneOrFail({id});
 	}

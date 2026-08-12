@@ -1,8 +1,8 @@
-import {EntityRepository} from '@mikro-orm/postgresql';
+import {BaseRepository} from '../../core/BaseRepository';
 import {CityCache} from '../entities/CityCache';
 import {config} from '../../config';
 
-export class CityRepository extends EntityRepository<CityCache> {
+export class CityRepository extends BaseRepository<CityCache> {
 	async getCityCache(lat: number, lon: number) {
 		const query = `
 			SELECT city_data as "cityData", updated_at as "updatedAt", distance_meters as "distanceMeters"
@@ -20,7 +20,7 @@ export class CityRepository extends EntityRepository<CityCache> {
 				LIMIT 1
 		`;
 
-		const cachedResults = await this.em.getConnection().execute(query, [lat, lon, lat]);
+		const cachedResults = await this.execute(query, [lat, lon, lat]);
 		const cachedResult = cachedResults.at(0);
 
 		if (cachedResult) {
@@ -49,7 +49,7 @@ export class CityRepository extends EntityRepository<CityCache> {
 			updatedAt: new Date(),
 		});
 
-		this.em.persist(cityCache);
+		this.persist(cityCache);
 
 		await this.nativeDelete({
 			updatedAt: {$lte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90)},
