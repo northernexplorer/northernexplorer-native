@@ -9,7 +9,7 @@ export abstract class BaseRepository<T extends object> extends EntityRepository<
 		return this;
 	}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async execute<R = Record<string, any>[]>(query: string, params: any[] = []): Promise<R> {
 		return this.em.getConnection().execute<R>(query, params);
 	}
