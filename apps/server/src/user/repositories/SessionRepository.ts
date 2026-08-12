@@ -1,9 +1,9 @@
 import {createHash} from 'node:crypto';
-import {EntityRepository} from '@mikro-orm/postgresql';
+import {BaseRepository} from '../../core/BaseRepository';
 import {Session} from '../entities/Session';
 import {User} from '../entities/User';
 
-export class SessionRepository extends EntityRepository<Session> {
+export class SessionRepository extends BaseRepository<Session> {
 	async getById(id: string) {
 		return this.findOneOrFail({id});
 	}
