@@ -29,7 +29,7 @@
 		"start:server": "yarn workspace northernexplorer-server dev",
 		"start:web": "yarn workspace northernexplorer-native web",
 		"test:deps": "depcheck --specials=typescript --ignores=\"sort-package-json,eslint-plugin-prettier,prettier,depcheck,@types/node,tsx,eslint-plugin-jsonc,@types/bcrypt,@types/jsonwebtoken,expo-doctor\" && yarn workspaces foreach -A run test:deps",
-		"test:expo": "yarn workspace northernexplorer-native exec expo-doctor",
+		"test:expo": "yarn workspace northernexplorer-native exec EXPO_OFFLINE=1 expo-doctor",
 		"test:format": "prettier . --check",
 		"test:lint": "eslint .",
 		"test:types": "tsc --build --force"
