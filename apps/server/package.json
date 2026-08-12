@@ -12,9 +12,9 @@
 		"test:deps": "depcheck --specials=typescript --ignores=\"@mikro-orm/cli\""
 	},
 	"dependencies": {
-		"@mikro-orm/core": "^7.1.7",
-		"@mikro-orm/decorators": "^7.1.7",
-		"@mikro-orm/postgresql": "^7.1.7",
+		"@mikro-orm/core": "^7.1.11",
+		"@mikro-orm/decorators": "^7.1.11",
+		"@mikro-orm/postgresql": "^7.1.11",
 		"@northernexplorer/types": "*",
 		"bcrypt": "^6.0.0",
 		"cors": "^2.8.5",
@@ -28,7 +28,7 @@
 		"uuid": "^14.0.1"
 	},
 	"devDependencies": {
-		"@mikro-orm/cli": "^7.1.7",
+		"@mikro-orm/cli": "^7.1.11",
 		"@types/cors": "^2.8.17",
 		"@types/express": "^4.17.21"
 	}
