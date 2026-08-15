@@ -6,13 +6,13 @@ import useSupercluster from 'use-supercluster';
 import {Link} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {PointOfInterestType} from '@northernexplorer/types';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {BBox} from 'geojson';
 import {MapRef} from 'react-map-gl/mapbox-legacy';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
+import {MapMarkerWeb} from '~/location/Map/components/MapMarkerWeb';
 
 export function Map() {
 	const {baseLayer} = useMap();
@@ -32,7 +32,7 @@ export function Map() {
 		if (!data) return [];
 		return data.map(site => ({
 			type: 'Feature',
-			properties: {cluster: false, siteId: site.id, ...site},
+			properties: {cluster: false, siteId: site.id, site},
 			geometry: {type: 'Point', coordinates: [site.lon, site.lat]},
 		}));
 	}, [data]);
@@ -100,28 +100,16 @@ export function Map() {
 						);
 					}
 
-					// Render individual site
-					const site = cluster.properties as PointOfInterestType;
-
+					const site = cluster.properties.site as PointOfInterestType;
 					return (
-						<Marker
+						<MapMarkerWeb
 							key={site.id}
+							site={site}
 							longitude={longitude}
 							latitude={latitude}
-							anchor="bottom"
-							onClick={e => {
-								e.originalEvent.stopPropagation();
-								if (selectedSite && selectedSite.id === site.id) {
-									setSelectedSite(null);
-								} else {
-									setSelectedSite(site);
-								}
-							}}
-						>
-							<div style={styles.iconCircle}>
-								<MaterialCommunityIcons name="bank" size={36} color="#1e1e1e" cursor="pointer" />
-							</div>
-						</Marker>
+							selectedSite={selectedSite}
+							setSelectedSite={setSelectedSite}
+						/>
 					);
 				})}
 

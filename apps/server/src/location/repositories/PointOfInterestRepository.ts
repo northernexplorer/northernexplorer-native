@@ -63,10 +63,10 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 	async getClosestPointOfInterests(lat: number, lon: number, limit: number) {
 		const query = `
-			SELECT id, name, description, image, lat, lon, country, region, status,
+			SELECT id, name, description, image, lat, lon, country, region, status, type,
 			       start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
 			FROM (
-					 SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, h.status,
+					 SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, h.status, h.type,
 				            json_build_object(
 								'id', c.id,
 					            'name', c.name
@@ -86,14 +86,12 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 					            sin(radians(?)) * sin(radians(h.lat))
 				                       )) AS distance_meters
 				     FROM point_of_interest h
-							  JOIN country c
-								   ON h.country_id = c.id
-					          JOIN region r
-								   ON h.region_id = r.id
+							  JOIN country c ON h.country_id = c.id
+					          JOIN region r ON h.region_id = r.id
 				     WHERE h.status = 'Published'
 				 ) AS spatial_search
 			ORDER BY distanceMeters ASC
-				LIMIT ?
+				LIMIT ?;
 		`;
 
 		const rawResults = (await this.execute(query, [lat, lon, lat, limit])) as unknown as PointOfInterestRawRow[];

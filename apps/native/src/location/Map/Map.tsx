@@ -5,12 +5,12 @@ import useSupercluster from 'use-supercluster';
 import {useRouter} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {PointOfInterestType} from '@northernexplorer/types';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {BBox} from 'geojson';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
+import {MapMarkerNative} from '~/location/Map/components/MapMarkerNative';
 
 export function Map() {
 	const router = useRouter();
@@ -31,7 +31,7 @@ export function Map() {
 		if (!data) return [];
 		return data.map(site => ({
 			type: 'Feature',
-			properties: {cluster: false, siteId: site.id, ...site},
+			properties: {cluster: false, siteId: site.id, site},
 			geometry: {type: 'Point', coordinates: [site.lon, site.lat]},
 		}));
 	}, [data]);
@@ -110,25 +110,16 @@ export function Map() {
 						);
 					}
 
-					const site = cluster.properties as PointOfInterestType;
+					const site = cluster.properties.site as PointOfInterestType;
 					return (
-						<Marker
+						<MapMarkerNative
 							key={site.id}
-							lngLat={[longitude, latitude]}
-							anchor="bottom"
-							onPress={e => {
-								e.stopPropagation();
-								if (selectedSite && selectedSite.id === site.id) {
-									setSelectedSite(null);
-								} else {
-									setSelectedSite(site);
-								}
-							}}
-						>
-							<View style={styles.iconCircle}>
-								<MaterialCommunityIcons name="bank" size={36} color="#1e1e1e" />
-							</View>
-						</Marker>
+							site={site}
+							longitude={longitude}
+							latitude={latitude}
+							selectedSite={selectedSite}
+							setSelectedSite={setSelectedSite}
+						/>
 					);
 				})}
 
