@@ -1,11 +1,11 @@
 import {ReviewRatingEnum} from '@northernexplorer/types';
+import {Review, PointOfInterest} from '../../location';
 import {BaseRepository} from '../../core/BaseRepository';
-import {Review, HistoricSite} from '../../location';
 import {User} from '../../user';
 
 export class ReviewRepository extends BaseRepository<Review> {
 	async getReviewsById(id: string) {
-		const review = await this.findOneOrFail({id}, {populate: ['user', 'historicSite']});
+		const review = await this.findOneOrFail({id}, {populate: ['user', 'pointOfInterest']});
 
 		return {
 			id: review.id,
@@ -14,21 +14,21 @@ export class ReviewRepository extends BaseRepository<Review> {
 				username: review.user.username,
 				score: review.user.score,
 			},
-			historicSite: {
-				id: review.historicSite.id,
-				name: review.historicSite.name,
+			pointOfInterest: {
+				id: review.pointOfInterest.id,
+				name: review.pointOfInterest.name,
 			},
 			rating: review.rating,
 			description: review.description,
 		};
 	}
 
-	createReview(user: User, historicSite: HistoricSite, rating: ReviewRatingEnum, description: string) {
+	createReview(user: User, pointOfInterest: PointOfInterest, rating: ReviewRatingEnum, description: string) {
 		const review = new Review({
 			user,
 			rating,
 			description,
-			historicSite,
+			pointOfInterest,
 		});
 		user.score += 10;
 
@@ -43,9 +43,9 @@ export class ReviewRepository extends BaseRepository<Review> {
 				name: user.username,
 				score: user.score,
 			},
-			HistoricSite: {
-				id: historicSite.id,
-				name: historicSite.name,
+			PointOfInterest: {
+				id: pointOfInterest.id,
+				name: pointOfInterest.name,
 			},
 		};
 	}

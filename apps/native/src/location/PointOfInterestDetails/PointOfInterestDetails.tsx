@@ -4,15 +4,15 @@ import {Link, useLocalSearchParams} from 'expo-router';
 import {getUrl, getUrlSafeString, Spinner} from '@northernexplorer/tools';
 import {RolesEnum} from '@northernexplorer/types';
 import {ReviewDetails} from './components/Reviews';
-import {styles} from '~/location/HistoricSiteDetails/styles';
+import {styles} from '~/location/PointOfInterestDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
-export function HistoricSiteDetails() {
+export function PointOfInterestDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
 	const auth = useAuthentication();
-	const {data, loading} = useApiFetch('location', 'HistoricSiteController', 'getHistoricSiteById', {id});
+	const {data, loading} = useApiFetch('location', 'PointOfInterestController', 'getPointOfInterestById', {id});
 
 	if (loading || !data) return <Spinner />;
 

@@ -1,8 +1,8 @@
-import {CountryType, PublishStatusEnum, RegionType, ReviewType, ReviewSummary} from '@northernexplorer/types';
+import {CountryType, PublishStatusEnum, RegionType, ReviewType, ReviewSummary, PointOfInterestTypeEnum} from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
-import {HistoricSite} from '../entities/HistoricSite';
+import {PointOfInterest} from '../entities/PointOfInterest';
 
-interface HistoricSiteRawRow {
+interface PointOfInterestRawRow {
 	id: string;
 	name: string;
 	description: string;
@@ -16,9 +16,10 @@ interface HistoricSiteRawRow {
 	reviews: ReviewType;
 	distanceMeters: number;
 	status: PublishStatusEnum;
+	type: PointOfInterestTypeEnum[];
 }
 
-type HistoricSiteDetailsResponse = {
+type PointOfInterestDetailsResponse = {
 	id: string;
 	name: string;
 	description: string;
@@ -28,11 +29,12 @@ type HistoricSiteDetailsResponse = {
 	status: PublishStatusEnum;
 	country: CountryType;
 	region: RegionType;
+	type: PointOfInterestTypeEnum[];
 	reviews: ReviewSummary[];
 };
 
-export class HistoricSiteRepository extends BaseRepository<HistoricSite> {
-	async getHistoricSiteDetails(id: string): Promise<HistoricSiteDetailsResponse> {
+export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
+	async getPointOfInterestDetails(id: string): Promise<PointOfInterestDetailsResponse> {
 		const site = await this.findOneOrFail({id: id}, {populate: ['country', 'region', 'reviews', 'reviews.user']});
 
 		return {
@@ -45,6 +47,7 @@ export class HistoricSiteRepository extends BaseRepository<HistoricSite> {
 			country: site.country,
 			region: site.region,
 			status: site.status,
+			type: site.type,
 			reviews: site.reviews.map(review => ({
 				id: review.id,
 				description: review.description,
@@ -58,12 +61,12 @@ export class HistoricSiteRepository extends BaseRepository<HistoricSite> {
 		};
 	}
 
-	async getClosestHistoricSites(lat: number, lon: number, limit: number) {
+	async getClosestPointOfInterests(lat: number, lon: number, limit: number) {
 		const query = `
-			SELECT id, name, description, image, lat, lon, country, region, status,
+			SELECT id, name, description, image, lat, lon, country, region, status, type,
 			       start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
 			FROM (
-					 SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, h.status,
+					 SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, h.status, h.type,
 				            json_build_object(
 								'id', c.id,
 					            'name', c.name
@@ -82,18 +85,16 @@ export class HistoricSiteRepository extends BaseRepository<HistoricSite> {
 								cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
 					            sin(radians(?)) * sin(radians(h.lat))
 				                       )) AS distance_meters
-				     FROM historic_site h
-							  JOIN country c
-								   ON h.country_id = c.id
-					          JOIN region r
-								   ON h.region_id = r.id
+				     FROM point_of_interest h
+							  JOIN country c ON h.country_id = c.id
+					          JOIN region r ON h.region_id = r.id
 				     WHERE h.status = 'Published'
 				 ) AS spatial_search
 			ORDER BY distanceMeters ASC
-				LIMIT ?
+				LIMIT ?;
 		`;
 
-		const rawResults = (await this.execute(query, [lat, lon, lat, limit])) as unknown as HistoricSiteRawRow[];
+		const rawResults = (await this.execute(query, [lat, lon, lat, limit])) as unknown as PointOfInterestRawRow[];
 
 		return rawResults.map(site => ({
 			id: site.id,
@@ -108,6 +109,7 @@ export class HistoricSiteRepository extends BaseRepository<HistoricSite> {
 			startDate: site.startDate ? Number(site.startDate) : undefined,
 			endDate: site.endDate ? Number(site.endDate) : undefined,
 			status: site.status,
+			type: site.type,
 		}));
 	}
 

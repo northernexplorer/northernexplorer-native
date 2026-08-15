@@ -1,12 +1,12 @@
 import {Entity, ManyToOne, OneToMany, PrimaryKey, Property, Enum} from '@mikro-orm/decorators/legacy';
 import {Collection} from '@mikro-orm/core';
 import {v4} from 'uuid';
-import {PublishStatusEnum} from '@northernexplorer/types';
+import {PublishStatusEnum, PointOfInterestTypeEnum} from '@northernexplorer/types';
 import {Region} from './Region';
 import {Country} from './Country';
 import {Review} from './Review';
 
-type HistoricSiteInput = {
+type PointOfInterestInput = {
 	name: string;
 	description: string;
 	image: string;
@@ -17,10 +17,11 @@ type HistoricSiteInput = {
 	startDate?: number;
 	endDate?: number;
 	status: PublishStatusEnum;
+	type: PointOfInterestTypeEnum[];
 };
 
 @Entity()
-export class HistoricSite {
+export class PointOfInterest {
 	@PrimaryKey({type: 'uuid'})
 	id = v4();
 
@@ -54,7 +55,7 @@ export class HistoricSite {
 	@ManyToOne(() => Region)
 	region: Region;
 
-	@OneToMany(() => Review, review => review.historicSite)
+	@OneToMany(() => Review, review => review.pointOfInterest)
 	reviews = new Collection<Review>(this);
 
 	@Property({type: 'datetime'})
@@ -66,7 +67,10 @@ export class HistoricSite {
 	@Enum({items: () => PublishStatusEnum, type: 'enum'})
 	status: PublishStatusEnum;
 
-	constructor(data: HistoricSiteInput) {
+	@Enum({type: () => PointOfInterestTypeEnum, items: () => PointOfInterestTypeEnum, array: true})
+	type!: PointOfInterestTypeEnum[];
+
+	constructor(data: PointOfInterestInput) {
 		this.name = data.name;
 		this.description = data.description;
 		this.image = data.image;
@@ -77,9 +81,10 @@ export class HistoricSite {
 		this.status = data.status;
 		this.startDate = data.startDate;
 		this.endDate = data.endDate;
+		this.type = data.type;
 	}
 
-	edit(data: Partial<HistoricSiteInput>) {
+	edit(data: Partial<PointOfInterestInput>) {
 		if (data.name !== undefined) this.name = data.name;
 		if (data.description !== undefined) this.description = data.description;
 		if (data.image !== undefined) this.image = data.image;
@@ -90,6 +95,7 @@ export class HistoricSite {
 		if (data.status !== undefined) this.status = data.status;
 		if (data.startDate !== undefined) this.startDate = data.startDate;
 		if (data.endDate !== undefined) this.endDate = data.endDate;
+		if (data.type !== undefined) this.type = data.type;
 
 		this.updatedAt = new Date();
 	}

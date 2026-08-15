@@ -1,0 +1,1 @@
+export {PointOfInterestDetails} from './PointOfInterestDetails';

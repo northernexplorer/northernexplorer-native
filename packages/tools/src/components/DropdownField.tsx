@@ -1,29 +1,40 @@
 import React, {useState, useRef} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, Dimensions} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, Dimensions, ScrollView} from 'react-native';
 
-interface Option<T> {
-	label: string;
-	value: T;
-}
-
-interface Props<T extends string, V> {
-	fieldName: T;
+interface Option<V> {
 	label: string;
 	value: V;
+}
+
+interface BaseProps<T extends string, V> {
+	fieldName: T;
+	label: string;
 	options: Option<V>[];
-	updateField: (name: T, value: V) => void;
 	error?: string;
 	loading?: boolean;
 }
 
+interface SingleProps<T extends string, V> extends BaseProps<T, V> {
+	isMultiSelect?: false;
+	value: V;
+	updateField: (name: T, value: V) => void;
+}
+
+interface MultiProps<T extends string, V> extends BaseProps<T, V> {
+	isMultiSelect: true;
+	value: V[];
+	updateField: (name: T, value: V[]) => void;
+}
+
+type Props<T extends string, V> = SingleProps<T, V> | MultiProps<T, V>;
+
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-export function DropdownField<T extends string, V>({fieldName, label, value, options, updateField, error, loading}: Props<T, V>) {
+export function DropdownField<T extends string, V>(props: Props<T, V>) {
+	const {fieldName, label, options, error, loading, isMultiSelect} = props;
 	const [isOpen, setIsOpen] = useState(false);
 	const [dropdownCoords, setDropdownCoords] = useState<{x: number; y: number; width: number}>({x: 0, y: 0, width: 0});
 	const inputRef = useRef<View>(null);
-
-	const selectedOption = options.find(opt => opt.value === value);
 
 	const toggleDropdown = () => {
 		if (loading) return;
@@ -42,9 +53,33 @@ export function DropdownField<T extends string, V>({fieldName, label, value, opt
 		}
 	};
 
-	const handleSelect = (val: V) => {
-		updateField(fieldName, val);
-		setIsOpen(false);
+	const isSelected = (itemValue: V): boolean => {
+		if (isMultiSelect) {
+			return props.value.includes(itemValue);
+		}
+		return props.value === itemValue;
+	};
+
+	const handleSelect = (itemValue: V) => {
+		if (isMultiSelect) {
+			const currentValues = props.value;
+			const nextValues = currentValues.includes(itemValue) ? currentValues.filter(val => val !== itemValue) : [...currentValues, itemValue];
+			props.updateField(fieldName, nextValues);
+		} else {
+			props.updateField(fieldName, itemValue);
+			setIsOpen(false);
+		}
+	};
+
+	const getDisplayText = (): string => {
+		if (isMultiSelect) {
+			const selectedLabels = options.filter(opt => props.value.includes(opt.value)).map(opt => opt.label);
+			if (selectedLabels.length === 0) return 'Select...';
+			return selectedLabels.join(', ');
+		}
+
+		const selectedOption = options.find(opt => opt.value === props.value);
+		return selectedOption ? selectedOption.label : 'Select...';
 	};
 
 	return (
@@ -58,7 +93,9 @@ export function DropdownField<T extends string, V>({fieldName, label, value, opt
 					activeOpacity={0.7}
 					disabled={loading}
 				>
-					<Text style={styles.inputText}>{selectedOption ? selectedOption.label : 'Select...'}</Text>
+					<Text style={styles.inputText} numberOfLines={1}>
+						{getDisplayText()}
+					</Text>
 					<Text style={[styles.chevron, isOpen && styles.chevronOpen]}>▾</Text>
 				</TouchableOpacity>
 			</View>
@@ -76,20 +113,23 @@ export function DropdownField<T extends string, V>({fieldName, label, value, opt
 							},
 						]}
 					>
-						{options.map((item, index) => {
-							const isSelected = item.value === value;
-							const isLast = index === options.length - 1;
-							return (
-								<TouchableOpacity
-									key={String(item.value)}
-									style={[styles.optionRow, isSelected && styles.optionRowSelected, isLast && styles.optionRowLast]}
-									onPress={() => handleSelect(item.value)}
-									activeOpacity={0.7}
-								>
-									<Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>{item.label}</Text>
-								</TouchableOpacity>
-							);
-						})}
+						<ScrollView bounces={false} nestedScrollEnabled>
+							{options.map((item, index) => {
+								const selected = isSelected(item.value);
+								const isLast = index === options.length - 1;
+								return (
+									<TouchableOpacity
+										key={String(item.value)}
+										style={[styles.optionRow, selected && styles.optionRowSelected, isLast && styles.optionRowLast]}
+										onPress={() => handleSelect(item.value)}
+										activeOpacity={0.7}
+									>
+										<Text style={[styles.optionText, selected && styles.optionTextSelected]}>{item.label}</Text>
+										{isMultiSelect ? <Text style={styles.checkbox}>{selected ? '☑' : '☐'}</Text> : null}
+									</TouchableOpacity>
+								);
+							})}
+						</ScrollView>
 					</View>
 				</Pressable>
 			</Modal>
@@ -131,8 +171,10 @@ const styles = StyleSheet.create({
 		borderBottomRightRadius: 0,
 	},
 	inputText: {
+		flex: 1,
 		fontSize: 16,
 		color: '#333',
+		marginRight: 8,
 	},
 	chevron: {
 		fontSize: 14,
@@ -163,6 +205,9 @@ const styles = StyleSheet.create({
 		elevation: 5,
 	},
 	optionRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
 		paddingHorizontal: 12,
 		paddingVertical: 12,
 		borderBottomWidth: StyleSheet.hairlineWidth,
@@ -182,6 +227,10 @@ const styles = StyleSheet.create({
 	},
 	optionTextSelected: {
 		fontWeight: '600',
+		color: '#0088cc',
+	},
+	checkbox: {
+		fontSize: 16,
 		color: '#0088cc',
 	},
 	errorText: {

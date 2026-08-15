@@ -7,10 +7,10 @@ import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 
-export function DraftHistoricSites() {
+export function DraftPointOfInterests() {
 	const router = useRouter();
 	const authentication = useAuthentication();
-	const {data: sites, loading} = useApiFetch('location', 'HistoricSiteController', 'getDrafts', {});
+	const {data: sites, loading} = useApiFetch('location', 'PointOfInterestController', 'getDrafts', {});
 
 	if (!authentication) return <Redirect href="/profile/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;

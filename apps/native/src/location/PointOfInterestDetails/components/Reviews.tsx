@@ -1,10 +1,10 @@
 import {View, Text} from 'react-native';
-import {HistoricSiteType} from '@northernexplorer/types';
+import {PointOfInterestType} from '@northernexplorer/types';
 import {Spinner} from '@northernexplorer/tools';
-import {styles} from '~/location/HistoricSiteDetails/styles';
+import {styles} from '~/location/PointOfInterestDetails/styles';
 
 type ReviewDetailsProps = {
-	data: HistoricSiteType;
+	data: PointOfInterestType;
 	loading: boolean;
 };
 

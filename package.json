@@ -22,6 +22,7 @@
 		"dev:start": "dev/start.sh",
 		"fix:expo": "yarn workspace northernexplorer-native expo install --check",
 		"native": "yarn workspace northernexplorer-native",
+		"schema": "yarn workspace northernexplorer-server schema",
 		"server": "yarn workspace northernexplorer-server",
 		"start:android": "yarn workspace northernexplorer-native android",
 		"start:ios": "yarn workspace northernexplorer-native ios",

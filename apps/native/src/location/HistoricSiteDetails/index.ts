@@ -1,1 +1,0 @@
-export {HistoricSiteDetails} from './HistoricSiteDetails';

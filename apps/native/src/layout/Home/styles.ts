@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: '700',
 	},
-	// Historic Site Card
+	// Point of Interest Card
 	siteCard: {
 		width: 200,
 		height: 220,
@@ -97,7 +97,7 @@ export const styles = StyleSheet.create({
 	forecastSection: {
 		width: '100%',
 	},
-	historicSitesSection: {
+	pointOfInterestsSection: {
 		width: '100%',
 	},
 	loadingContainer: {

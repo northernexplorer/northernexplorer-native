@@ -5,24 +5,24 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import useSupercluster from 'use-supercluster';
 import {Link} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
-import {HistoricSiteType} from '@northernexplorer/types';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {PointOfInterestType} from '@northernexplorer/types';
 import {BBox} from 'geojson';
 import {MapRef} from 'react-map-gl/mapbox-legacy';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
+import {MapMarkerWeb} from '~/location/Map/components/MapMarkerWeb';
 
 export function Map() {
 	const {baseLayer} = useMap();
 	const mapRef = useRef<MapRef>(null);
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
 	const [zoom, setZoom] = useState(10);
-	const [selectedSite, setSelectedSite] = useState<HistoricSiteType | null>(null);
+	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
 
 	const coords = useLocation();
-	const {data} = useApiFetch('location', 'HistoricSiteController', 'getNearbyHistoricSites', {
+	const {data} = useApiFetch('location', 'PointOfInterestController', 'getNearbyPointOfInterests', {
 		lat: coords?.lat || 0,
 		lon: coords?.lon || 0,
 		limit: 500,
@@ -32,7 +32,7 @@ export function Map() {
 		if (!data) return [];
 		return data.map(site => ({
 			type: 'Feature',
-			properties: {cluster: false, siteId: site.id, ...site},
+			properties: {cluster: false, siteId: site.id, site},
 			geometry: {type: 'Point', coordinates: [site.lon, site.lat]},
 		}));
 	}, [data]);
@@ -71,7 +71,7 @@ export function Map() {
 				onClick={() => setSelectedSite(null)}
 				onLoad={updateMapState}
 				onMove={updateMapState}
-				interactiveLayerIds={['historicSitesLayer']}
+				interactiveLayerIds={['pointOfInterestsLayer']}
 				cursor={selectedSite ? 'pointer' : 'default'}
 				minZoom={2}
 			>
@@ -100,28 +100,16 @@ export function Map() {
 						);
 					}
 
-					// Render individual site
-					const site = cluster.properties as HistoricSiteType;
-
+					const site = cluster.properties.site as PointOfInterestType;
 					return (
-						<Marker
+						<MapMarkerWeb
 							key={site.id}
+							site={site}
 							longitude={longitude}
 							latitude={latitude}
-							anchor="bottom"
-							onClick={e => {
-								e.originalEvent.stopPropagation();
-								if (selectedSite && selectedSite.id === site.id) {
-									setSelectedSite(null);
-								} else {
-									setSelectedSite(site);
-								}
-							}}
-						>
-							<div style={styles.iconCircle}>
-								<MaterialCommunityIcons name="bank" size={36} color="#1e1e1e" cursor="pointer" />
-							</div>
-						</Marker>
+							selectedSite={selectedSite}
+							setSelectedSite={setSelectedSite}
+						/>
 					);
 				})}
 
