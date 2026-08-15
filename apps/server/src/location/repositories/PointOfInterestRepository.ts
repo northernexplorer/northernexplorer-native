@@ -85,7 +85,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 								cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
 					            sin(radians(?)) * sin(radians(h.lat))
 				                       )) AS distance_meters
-				     FROM historic_site h
+				     FROM point_of_interest h
 							  JOIN country c
 								   ON h.country_id = c.id
 					          JOIN region r

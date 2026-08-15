@@ -67,8 +67,8 @@ export class PointOfInterest {
 	@Enum({items: () => PublishStatusEnum, type: 'enum'})
 	status: PublishStatusEnum;
 
-	@Enum({items: () => PublishStatusEnum, array: true})
-	type: PointOfInterestTypeEnum[];
+	@Enum({type: () => PointOfInterestTypeEnum, items: () => PointOfInterestTypeEnum, array: true})
+	type!: PointOfInterestTypeEnum[];
 
 	constructor(data: PointOfInterestInput) {
 		this.name = data.name;

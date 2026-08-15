@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import {getUrl, getUrlSafeString, Spinner, FormField, TextAreaField, DropdownField} from '@northernexplorer/tools';
-import {PointOfInterestEditType, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
+import {PointOfInterestEditType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
 import {styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
@@ -10,6 +10,7 @@ import {useApiMutation} from '~/core/useApiMutation';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
 import {RegionDropdown} from '~/layout/Layout/components/RegionDropdown';
+import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
 
 type FormState = {
 	name: string;
@@ -19,6 +20,7 @@ type FormState = {
 	lon: string;
 	countryId: string;
 	regionId: string;
+	type: PointOfInterestTypeEnum[];
 	startDate: string;
 	endDate: string;
 	status: PublishStatusEnum;
@@ -46,6 +48,7 @@ export function PointOfInterestEdit() {
 		lon: '',
 		countryId: '',
 		regionId: '',
+		type: [PointOfInterestTypeEnum.HistoricSite],
 		startDate: '',
 		endDate: '',
 		status: PublishStatusEnum.Draft,
@@ -61,6 +64,7 @@ export function PointOfInterestEdit() {
 				lon: String(data.lon),
 				countryId: data.country.id,
 				regionId: data.region.id,
+				type: Array.isArray(data.type) ? data.type : [PointOfInterestTypeEnum.HistoricSite],
 				startDate: data.startDate != null ? String(data.startDate) : '',
 				endDate: data.endDate != null ? String(data.endDate) : '',
 				status: data.status,
@@ -94,6 +98,7 @@ export function PointOfInterestEdit() {
 		if (!form.description.trim()) newErrors.description = 'Description is required';
 		if (!form.countryId) newErrors.countryId = 'Country is required';
 		if (!form.regionId) newErrors.regionId = 'Region is required';
+		if (form.type.length === 0) newErrors.type = 'At least one type must be selected';
 
 		const parsedLat = parseFloat(form.lat);
 		if (isNaN(parsedLat) || parsedLat < -90 || parsedLat > 90) {
@@ -122,6 +127,7 @@ export function PointOfInterestEdit() {
 			lon: parsedLon,
 			countryId: form.countryId,
 			regionId: form.regionId,
+			type: form.type,
 			startDate: form.startDate.trim() ? Number(form.startDate) : undefined,
 			endDate: form.endDate.trim() ? Number(form.endDate) : undefined,
 			status: form.status,
@@ -257,16 +263,21 @@ export function PointOfInterestEdit() {
 					/>
 				</View>
 
-				<View style={{zIndex: 1000}}>
-					<DropdownField
-						fieldName="status"
-						label="Status"
-						value={form.status}
-						options={STATUS_OPTIONS}
-						updateField={updateField}
-						error={errors.status}
-						loading={mutationLoading}
-					/>
+				<View style={formStyles.row}>
+					<View style={formStyles.halfWidth}>
+						<PointOfInterestTypeDropdown fieldName="type" label="Type" value={form.type} updateField={updateField} error={errors.type} />
+					</View>
+					<View style={formStyles.halfWidth}>
+						<DropdownField
+							fieldName="status"
+							label="Status"
+							value={form.status}
+							options={STATUS_OPTIONS}
+							updateField={updateField}
+							error={errors.status}
+							loading={mutationLoading}
+						/>
+					</View>
 				</View>
 
 				<View style={formStyles.buttonRow}>
