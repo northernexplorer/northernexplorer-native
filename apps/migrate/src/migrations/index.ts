@@ -36,7 +36,7 @@ import {m20260731} from './m20260731';
 import {m20260803} from './m20260803';
 import {m20260813} from './m20260813';
 import {m20260814} from './m20260814';
-import {m20260815} from "./m20260815";
+import {m20260815} from './m20260815';
 
 export const migrationsRegistry: Record<string, string[]> = {
 	m20260619,
