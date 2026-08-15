@@ -1,5 +1,5 @@
 import {CountryType, PublishStatusEnum, RegionType, ReviewType, ReviewSummary, PointOfInterestTypeEnum} from '@northernexplorer/types';
-import {EntityRepository} from '@mikro-orm/postgresql';
+import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
 
 interface PointOfInterestRawRow {
@@ -33,7 +33,7 @@ type PointOfInterestDetailsResponse = {
 	reviews: ReviewSummary[];
 };
 
-export class PointOfInterestRepository extends EntityRepository<PointOfInterest> {
+export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 	async getPointOfInterestDetails(id: string): Promise<PointOfInterestDetailsResponse> {
 		const site = await this.findOneOrFail({id: id}, {populate: ['country', 'region', 'reviews', 'reviews.user']});
 
@@ -96,7 +96,7 @@ export class PointOfInterestRepository extends EntityRepository<PointOfInterest>
 				LIMIT ?
 		`;
 
-		const rawResults = (await this.em.getConnection().execute(query, [lat, lon, lat, limit])) as unknown as PointOfInterestRawRow[];
+		const rawResults = (await this.execute(query, [lat, lon, lat, limit])) as unknown as PointOfInterestRawRow[];
 
 		return rawResults.map(site => ({
 			id: site.id,

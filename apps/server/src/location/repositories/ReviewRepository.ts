@@ -1,9 +1,9 @@
-import {EntityRepository} from '@mikro-orm/postgresql';
 import {ReviewRatingEnum} from '@northernexplorer/types';
 import {Review, PointOfInterest} from '../../location';
+import {BaseRepository} from '../../core/BaseRepository';
 import {User} from '../../user';
 
-export class ReviewRepository extends EntityRepository<Review> {
+export class ReviewRepository extends BaseRepository<Review> {
 	async getReviewsById(id: string) {
 		const review = await this.findOneOrFail({id}, {populate: ['user', 'pointOfInterest']});
 
@@ -32,7 +32,7 @@ export class ReviewRepository extends EntityRepository<Review> {
 		});
 		user.score += 10;
 
-		this.em.persist([review, user]);
+		this.persist([review, user]);
 
 		return {
 			id: review.id,

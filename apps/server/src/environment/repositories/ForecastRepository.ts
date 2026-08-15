@@ -1,4 +1,4 @@
-import {EntityRepository} from '@mikro-orm/postgresql';
+import {BaseRepository} from '../../core/BaseRepository';
 import {ForecastCache} from '../entities/ForecastCache';
 import {config} from '../../config';
 
@@ -6,7 +6,7 @@ interface RawInternalForecastRow {
 	forecastData: string | Record<string, unknown>;
 }
 
-export class ForecastRepository extends EntityRepository<ForecastCache> {
+export class ForecastRepository extends BaseRepository<ForecastCache> {
 	async getForecastCache(lat: number, lon: number) {
 		const query = `
       SELECT forecast_data as "forecastData", updated_at as "updatedAt", distance_meters as "distanceMeters"
@@ -21,7 +21,7 @@ export class ForecastRepository extends EntityRepository<ForecastCache> {
         LIMIT 1
     `;
 
-		const rawResults = (await this.em.getConnection().execute(query)) as unknown as RawInternalForecastRow[];
+		const rawResults = (await this.execute(query)) as unknown as RawInternalForecastRow[];
 
 		const cachedResult = rawResults.at(0);
 
@@ -50,7 +50,7 @@ export class ForecastRepository extends EntityRepository<ForecastCache> {
 			forecastData: parsedJson,
 			updatedAt: new Date(),
 		});
-		this.em.persist(forecastCache);
+		this.persist(forecastCache);
 
 		await this.nativeDelete({
 			updatedAt: {$lte: new Date(Date.now() - 1000 * 60 * 60 * 24)},
