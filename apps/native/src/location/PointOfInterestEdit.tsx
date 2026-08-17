@@ -11,6 +11,7 @@ import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
 import {RegionDropdown} from '~/layout/Layout/components/RegionDropdown';
 import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
+import {OrganizationDropdown} from '~/layout/Layout/components/OrganizationDropdown';
 
 type FormState = {
 	name: string;
@@ -24,6 +25,7 @@ type FormState = {
 	startDate: string;
 	endDate: string;
 	status: PublishStatusEnum;
+	organizationId: string;
 };
 
 type FormKeys = keyof FormState;
@@ -52,6 +54,7 @@ export function PointOfInterestEdit() {
 		startDate: '',
 		endDate: '',
 		status: PublishStatusEnum.Draft,
+		organizationId: '',
 	});
 
 	useEffect(() => {
@@ -68,6 +71,7 @@ export function PointOfInterestEdit() {
 				startDate: data.startDate != null ? String(data.startDate) : '',
 				endDate: data.endDate != null ? String(data.endDate) : '',
 				status: data.status,
+				organizationId: data.organization.id,
 			});
 		}
 	}, [data]);
@@ -131,6 +135,7 @@ export function PointOfInterestEdit() {
 			startDate: form.startDate.trim() ? Number(form.startDate) : undefined,
 			endDate: form.endDate.trim() ? Number(form.endDate) : undefined,
 			status: form.status,
+			organizationId: form.organizationId,
 		};
 
 		const response = await mutate(payload);
@@ -159,15 +164,28 @@ export function PointOfInterestEdit() {
 				<Text style={formStyles.heading}>Edit Point of Interest</Text>
 
 				<View style={formStyles.formGroup}>
-					<FormField
-						fieldName="name"
-						label="Site Name"
-						placeholder="Enter site name"
-						value={form.name}
-						updateField={updateField}
-						error={errors.name}
-						loading={mutationLoading}
-					/>
+					<View style={formStyles.row}>
+						<View style={formStyles.halfWidth}>
+							<FormField
+								fieldName="name"
+								label="Site Name"
+								placeholder="Enter site name"
+								value={form.name}
+								updateField={updateField}
+								error={errors.name}
+								loading={mutationLoading}
+							/>
+						</View>
+						<View style={formStyles.halfWidth}>
+							<OrganizationDropdown
+								fieldName="organizationId"
+								label="Organization"
+								value={form.organizationId}
+								updateField={updateField}
+								error={errors.organizationId}
+							/>
+						</View>
+					</View>
 
 					<FormField
 						fieldName="image"

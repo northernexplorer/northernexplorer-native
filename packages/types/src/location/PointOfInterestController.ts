@@ -2,6 +2,7 @@ import {GenericResponseType} from '../GenericResponseType';
 import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
 import {ReviewSummary} from './ReviewController';
+import {OrganizationType} from './OrganizationController';
 
 export enum PublishStatusEnum {
 	Published = 'Published',
@@ -28,6 +29,7 @@ export type PointOfInterestType = {
 	endDate?: number;
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
+	organization: OrganizationType;
 };
 
 export type PointOfInterestEditType = {
@@ -39,6 +41,7 @@ export type PointOfInterestEditType = {
 	lon: number;
 	countryId: string;
 	regionId: string;
+	organizationId: string;
 	startDate?: number;
 	endDate?: number;
 	status: PublishStatusEnum;

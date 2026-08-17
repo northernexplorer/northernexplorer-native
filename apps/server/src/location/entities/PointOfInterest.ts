@@ -5,6 +5,7 @@ import {PublishStatusEnum, PointOfInterestTypeEnum} from '@northernexplorer/type
 import {Region} from './Region';
 import {Country} from './Country';
 import {Review} from './Review';
+import {Organization} from './Organization';
 
 type PointOfInterestInput = {
 	name: string;
@@ -18,6 +19,7 @@ type PointOfInterestInput = {
 	endDate?: number;
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
+	organization: Organization;
 };
 
 @Entity()
@@ -70,6 +72,9 @@ export class PointOfInterest {
 	@Enum({type: () => PointOfInterestTypeEnum, items: () => PointOfInterestTypeEnum, array: true})
 	type!: PointOfInterestTypeEnum[];
 
+	@ManyToOne(() => Organization)
+	organization: Organization;
+
 	constructor(data: PointOfInterestInput) {
 		this.name = data.name;
 		this.description = data.description;
@@ -82,6 +87,7 @@ export class PointOfInterest {
 		this.startDate = data.startDate;
 		this.endDate = data.endDate;
 		this.type = data.type;
+		this.organization = data.organization;
 	}
 
 	edit(data: Partial<PointOfInterestInput>) {
@@ -96,6 +102,7 @@ export class PointOfInterest {
 		if (data.startDate !== undefined) this.startDate = data.startDate;
 		if (data.endDate !== undefined) this.endDate = data.endDate;
 		if (data.type !== undefined) this.type = data.type;
+		if (data.organization !== undefined) this.organization = data.organization;
 
 		this.updatedAt = new Date();
 	}

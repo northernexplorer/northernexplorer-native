@@ -1,4 +1,12 @@
-import {CountryType, PublishStatusEnum, RegionType, ReviewType, ReviewSummary, PointOfInterestTypeEnum} from '@northernexplorer/types';
+import {
+	CountryType,
+	PublishStatusEnum,
+	RegionType,
+	ReviewType,
+	ReviewSummary,
+	PointOfInterestTypeEnum,
+	OrganizationType,
+} from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
 
@@ -17,6 +25,7 @@ interface PointOfInterestRawRow {
 	distanceMeters: number;
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
+	organization: OrganizationType;
 }
 
 type PointOfInterestDetailsResponse = {
@@ -31,11 +40,12 @@ type PointOfInterestDetailsResponse = {
 	region: RegionType;
 	type: PointOfInterestTypeEnum[];
 	reviews: ReviewSummary[];
+	organization: OrganizationType;
 };
 
 export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
-	async getPointOfInterestDetails(id: string): Promise<PointOfInterestDetailsResponse> {
-		const site = await this.findOneOrFail({id: id}, {populate: ['country', 'region', 'reviews', 'reviews.user']});
+	async getPointOfInterestById(id: string): Promise<PointOfInterestDetailsResponse> {
+		const site = await this.findOneOrFail({id: id}, {populate: ['country', 'region', 'reviews', 'reviews.user', 'organization']});
 
 		return {
 			id: site.id,
@@ -48,6 +58,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			region: site.region,
 			status: site.status,
 			type: site.type,
+			organization: site.organization,
 			reviews: site.reviews.map(review => ({
 				id: review.id,
 				description: review.description,
@@ -110,6 +121,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			endDate: site.endDate ? Number(site.endDate) : undefined,
 			status: site.status,
 			type: site.type,
+			organization: site.organization,
 		}));
 	}
 
