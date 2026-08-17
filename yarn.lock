@@ -2033,7 +2033,6 @@ __metadata:
   resolution: "@northernexplorer/tools@workspace:packages/tools"
   dependencies:
     "@expo/vector-icons": "npm:^15.1.1"
-    "@react-native-community/datetimepicker": "npm:^9.1.0"
     react: "npm:19.2.3"
     react-native: "npm:0.86.2"
     react-native-safe-area-context: "npm:~5.7.0"
@@ -2440,25 +2439,6 @@ __metadata:
   peerDependencies:
     react-native: ^0.0.0-0 || >=0.65 <1.0
   checksum: 10c0/84900eba46a40225c4ac9bf5eb58885200dc1e789d873ecda46a2a213870cc7110536ed1fd7a74b873071f3603c093958fbd84c635d6f6d4f94bfbb616ffa0ef
-  languageName: node
-  linkType: hard
-
-"@react-native-community/datetimepicker@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "@react-native-community/datetimepicker@npm:9.1.0"
-  dependencies:
-    invariant: "npm:^2.2.4"
-  peerDependencies:
-    expo: ">=52.0.0"
-    react: "*"
-    react-native: "*"
-    react-native-windows: "*"
-  peerDependenciesMeta:
-    expo:
-      optional: true
-    react-native-windows:
-      optional: true
-  checksum: 10c0/3f31baec58c1245204a9b4057809027019aa1abb4b8caea4cb4d44ab70f5a97dfe5114a8aa315299aa47ad31971059181c355aa056d9c3a14b7892582da9f4cb
   languageName: node
   linkType: hard
 
