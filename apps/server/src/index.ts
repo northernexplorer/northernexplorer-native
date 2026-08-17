@@ -10,6 +10,7 @@ import {setupBackgroundJobs} from './core/jobs';
 import {registerRoutes} from './core/router';
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = config.PORT;
 
 const corsOrigin = config.CORS.split(',').map(origin => origin.toLowerCase().trim());
