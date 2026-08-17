@@ -16,6 +16,8 @@ export class UserRepository extends BaseRepository<User> {
 			lastName: data.lastName,
 			username: data.username,
 			email: data.email,
+			birthday: data.birthday,
+			gender: data.gender,
 		});
 	}
 

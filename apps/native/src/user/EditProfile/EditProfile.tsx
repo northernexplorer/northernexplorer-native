@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import {Text, Pressable, ScrollView} from 'react-native';
-import {Link, Redirect, useLocalSearchParams, router} from 'expo-router';
-import {Spinner, FormField} from '@northernexplorer/tools';
+import React, {useEffect, useState} from 'react';
+import {Pressable, ScrollView, Text} from 'react-native';
+import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
+import {DateField, DropdownField, FormField, Spinner} from '@northernexplorer/tools';
+import {GenderEnum} from '@northernexplorer/types';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
@@ -18,9 +19,17 @@ interface ProfileFormFields {
 	username: string;
 	email: string;
 	userId: string;
+	birthday: Date;
+	gender: GenderEnum;
 }
 
 type FormKeys = keyof ProfileFormFields;
+
+const genderOptions = [
+	{label: 'Male', value: GenderEnum.MALE},
+	{label: 'Female', value: GenderEnum.FEMALE},
+	{label: 'Other', value: GenderEnum.OTHER},
+];
 
 export function EditProfile() {
 	const authentication = useAuthentication();
@@ -42,6 +51,8 @@ export function EditProfile() {
 		username: '',
 		email: '',
 		userId: '',
+		birthday: new Date(),
+		gender: GenderEnum.MALE,
 	});
 
 	useEffect(() => {
@@ -52,6 +63,8 @@ export function EditProfile() {
 				username: data.username,
 				email: data.email,
 				userId: data.id,
+				birthday: new Date(data.birthday),
+				gender: data.gender,
 			});
 		}
 	}, [data]);
@@ -59,7 +72,7 @@ export function EditProfile() {
 	if (!authentication) return <Redirect href="/profile/login" />;
 	if (loading || !data) return <Spinner />;
 
-	const updateField = (key: FormKeys, value: string) => {
+	const updateField = (key: FormKeys, value: unknown) => {
 		setFormData(prev => ({...prev, [key]: value}));
 		if (errors[key]) {
 			setErrors(prev => {
@@ -92,7 +105,7 @@ export function EditProfile() {
 		const response = await mutate(formData);
 
 		if (response?.success) {
-			router.replace(`/profile/${username}`);
+			router.replace(`/profile/${formData.username}`);
 		}
 	};
 
@@ -137,6 +150,25 @@ export function EditProfile() {
 				value={formData.email}
 				updateField={updateField}
 				error={errors.email}
+				loading={mutationLoading}
+			/>
+
+			<DateField
+				fieldName="birthday"
+				label="Birthday"
+				value={formData.birthday}
+				updateField={updateField}
+				error={errors.birthday}
+				loading={mutationLoading}
+			/>
+
+			<DropdownField
+				fieldName="gender"
+				label="Gender"
+				value={formData.gender}
+				options={genderOptions}
+				updateField={updateField}
+				error={errors.gender}
 				loading={mutationLoading}
 			/>
 

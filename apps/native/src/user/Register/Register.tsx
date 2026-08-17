@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
 import {View, Text, TextInput, Pressable, Switch, ScrollView} from 'react-native';
 import {Link, router} from 'expo-router';
-import {FormField} from '@northernexplorer/tools';
+import {DateField, DropdownField, FormField} from '@northernexplorer/tools';
+import {GenderEnum} from '@northernexplorer/types';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
+import {useApiFetch} from '~/core/useApiFetch';
 import {isValidEmail} from '~/user/isValidEmail';
 
 const initialFormData = {
@@ -13,6 +15,8 @@ const initialFormData = {
 	email: '',
 	password: '',
 	confirmPassword: '',
+	birthday: new Date(),
+	gender: GenderEnum.MALE,
 	acceptTerms: false,
 	acceptPrivacy: false,
 	website: '',
@@ -21,13 +25,19 @@ const initialFormData = {
 type FormData = typeof initialFormData;
 type FormKeys = keyof FormData;
 
+const genderOptions = [
+	{label: 'Male', value: GenderEnum.MALE},
+	{label: 'Female', value: GenderEnum.FEMALE},
+	{label: 'Other', value: GenderEnum.OTHER},
+];
+
 export function Register() {
 	const [formData, setFormData] = useState<FormData>(initialFormData);
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 
 	const {mutate, loading} = useApiMutation('user', 'UserController', 'register');
 
-	const updateField = (key: FormKeys, value: string | boolean) => {
+	const updateField = (key: FormKeys, value: unknown) => {
 		setFormData(prev => ({...prev, [key]: value}));
 		if (errors[key]) {
 			setErrors(prev => {
@@ -117,6 +127,25 @@ export function Register() {
 				value={formData.email}
 				updateField={updateField}
 				error={errors.email}
+				loading={loading}
+			/>
+
+			<DateField
+				fieldName="birthday"
+				label="Birthday"
+				value={formData.birthday}
+				updateField={updateField}
+				error={errors.birthday}
+				loading={loading}
+			/>
+
+			<DropdownField
+				fieldName="gender"
+				label="Gender"
+				value={formData.gender}
+				options={genderOptions}
+				updateField={updateField}
+				error={errors.gender}
 				loading={loading}
 			/>
 
