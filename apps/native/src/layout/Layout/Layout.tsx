@@ -7,6 +7,7 @@ import {getWeatherTheme} from '~/layout/Layout/getWeatherTheme';
 import {useWeather} from '~/environment/state/weather/useWeather';
 import {Sidebar} from '~/layout/Layout/components/Sidebar';
 import {Navigation} from '~/layout/Layout/components/Navigation';
+import {Footer} from '~/layout/Layout/components/Footer';
 import {useIsOffline} from '~/core/ConnectivityProvider';
 import {Offline} from '~/layout/Layout/components/Offline';
 import {Update} from '~/layout/Layout/components/Update';
@@ -46,106 +47,121 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 			<ScrollView
 				scrollEnabled={!fullPage}
 				style={{flex: 1}}
-				contentContainerStyle={[
-					styles.page,
-					{
-						flexDirection: isMobileView ? 'column' : 'row',
-						height: fullPage ? '100%' : 'auto',
-					},
-				]}
+				contentContainerStyle={{
+					flexGrow: 1,
+					minHeight: fullPage ? '100%' : '100%',
+				}}
 				keyboardShouldPersistTaps="handled"
 			>
-				<View style={{flex: 1, width: '100%', alignSelf: 'stretch', position: 'relative'}}>
-					{online && (
-						<ImageBackground
-							style={[styles.background, {alignSelf: 'stretch', flex: 1}]}
-							source={home ? theme?.image : undefined}
-							imageStyle={{
-								width: '100%',
-								height: '100%',
-							}}
-						>
-							{home && <View style={styles.darkOverlay} />}
-
-							<View
-								style={{
-									flex: 1,
-									padding: fullPage ? 0 : 10,
-									display: 'flex',
-									flexDirection: 'column',
+				{/* Master Wrapper Row */}
+				<View
+					style={{
+						flex: 1,
+						flexGrow: 1,
+						width: '100%',
+						flexDirection: isMobileView ? 'column' : 'row',
+						alignItems: 'stretch',
+					}}
+				>
+					{/* Main Left Content Area */}
+					<View style={{flex: 1, minWidth: 0, flexDirection: 'column', position: 'relative'}}>
+						{online && (
+							<ImageBackground
+								style={[styles.background, {flex: 1, width: '100%'}]}
+								source={home ? theme?.image : undefined}
+								imageStyle={{
+									width: '100%',
+									height: '100%',
 								}}
 							>
-								{!fullPage && (
-									<View style={{paddingBottom: 10}}>
-										{title && <Text style={styles.title}>{title}</Text>}
-										{subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-									</View>
-								)}
+								{home && <View style={styles.darkOverlay} />}
 
-								<View style={{flex: 1, display: 'flex', width: '100%'}}>
-									<Content />
-								</View>
-							</View>
-						</ImageBackground>
-					)}
-					{!online && <Offline />}
-
-					{/* Mobile FullPage Floating Sidebar Button & Card */}
-					{isMobileFullPage && sidebar && sidebar.length > 0 && (
-						<>
-							<Pressable
-								onPress={() => setIsSidebarVisible(prev => !prev)}
-								style={{
-									position: 'absolute',
-									bottom: floatingButtonBottom,
-									right: 20,
-									zIndex: 20,
-									backgroundColor: '#1a1a1a',
-									borderWidth: 1,
-									borderColor: '#333333',
-									width: 48,
-									height: 48,
-									borderRadius: 12,
-									justifyContent: 'center',
-									alignItems: 'center',
-									elevation: 6,
-								}}
-							>
-								<MaterialCommunityIcons name={isSidebarVisible ? 'close' : 'view-dashboard-outline'} size={24} color="#ffffff" />
-							</Pressable>
-
-							{isSidebarVisible && (
+								{/* Padded Content Wrapper */}
 								<View
 									style={{
-										position: 'absolute',
-										bottom: floatingMenuBottom,
-										left: 12,
-										right: 12,
-										maxHeight: '60%',
-										backgroundColor: '#1a1a1a',
-										borderRadius: 12,
-										borderWidth: 1,
-										borderColor: '#333333',
-										padding: 16,
-										zIndex: 15,
-										elevation: 8,
+										flex: 1,
+										padding: fullPage ? 0 : 10,
+										flexDirection: 'column',
 									}}
 								>
-									<ScrollView nestedScrollEnabled style={{maxHeight: '100%'}}>
-										<Sidebar components={sidebar} />
-									</ScrollView>
-								</View>
-							)}
-						</>
-					)}
-				</View>
+									{!fullPage && (
+										<View style={{paddingBottom: 10}}>
+											{title && <Text style={styles.title}>{title}</Text>}
+											{subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+										</View>
+									)}
 
-				{/* Standard Sidebar for non-mobile or non-fullPage */}
-				{!isMobileFullPage && (
-					<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : [styles.sidebarDesktop, {alignSelf: 'stretch'}]]}>
-						<Sidebar components={sidebar} />
+									<View style={{flex: 1, width: '100%'}}>
+										<Content />
+									</View>
+								</View>
+
+								{/* Desktop Footer: Outside the padded View so it spans edge-to-edge */}
+								{!fullPage && !isMobileView && <Footer />}
+							</ImageBackground>
+						)}
+						{!online && <Offline />}
+
+						{/* Mobile FullPage Floating Sidebar */}
+						{isMobileFullPage && sidebar && sidebar.length > 0 && (
+							<>
+								<Pressable
+									onPress={() => setIsSidebarVisible(prev => !prev)}
+									style={{
+										position: 'absolute',
+										bottom: floatingButtonBottom,
+										right: 20,
+										zIndex: 20,
+										backgroundColor: '#1a1a1a',
+										borderWidth: 1,
+										borderColor: '#333333',
+										width: 48,
+										height: 48,
+										borderRadius: 12,
+										justifyContent: 'center',
+										alignItems: 'center',
+										elevation: 6,
+									}}
+								>
+									<MaterialCommunityIcons name={isSidebarVisible ? 'close' : 'view-dashboard-outline'} size={24} color="#ffffff" />
+								</Pressable>
+
+								{isSidebarVisible && (
+									<View
+										style={{
+											position: 'absolute',
+											bottom: floatingMenuBottom,
+											left: 12,
+											right: 12,
+											maxHeight: '60%',
+											backgroundColor: '#1a1a1a',
+											borderRadius: 12,
+											borderWidth: 1,
+											borderColor: '#333333',
+											padding: 16,
+											zIndex: 15,
+											elevation: 8,
+										}}
+									>
+										<ScrollView nestedScrollEnabled style={{maxHeight: '100%'}}>
+											<Sidebar components={sidebar} />
+										</ScrollView>
+									</View>
+								)}
+							</>
+						)}
 					</View>
-				)}
+
+					{/* Sidebar Column */}
+					{!isMobileFullPage && (
+						<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : styles.sidebarDesktop]}>
+							<Sidebar components={sidebar} />
+						</View>
+					)}
+
+					{/* Mobile Footer */}
+					{!fullPage && isMobileView && <Footer />}
+				</View>
 			</ScrollView>
 		</View>
 	);

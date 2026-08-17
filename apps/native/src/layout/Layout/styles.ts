@@ -182,4 +182,22 @@ export const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 16,
 	},
+	footerContainer: {
+		width: '100%',
+		backgroundColor: '#1a1a1a',
+		borderTopWidth: 1,
+		borderTopColor: '#333333',
+		paddingTop: 20,
+		paddingHorizontal: 16,
+		alignItems: 'center',
+		marginTop: 'auto',
+		gap: 12,
+	},
+	footerLinks: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'center',
+		alignItems: 'center',
+		gap: 16,
+	},
 });
