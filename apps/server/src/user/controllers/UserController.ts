@@ -47,6 +47,8 @@ export class UserController extends BaseController {
 			firstName: params.firstName,
 			lastName: params.lastName,
 			username: params.username.toLowerCase(),
+			birthday: params.birthday,
+			gender: params.gender,
 			isActive: false,
 			passwordHash,
 			subscription,
