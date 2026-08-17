@@ -31,7 +31,10 @@ export function Admin() {
 			</Pressable>
 
 			{/* Draft Sites Card */}
-			<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/draft-point-of-interest')}>
+			<Pressable
+				style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
+				onPress={() => router.push('/admin/draft-point-of-interest')}
+			>
 				<View style={[styles.iconBadge, {backgroundColor: '#fff3e0'}]}>
 					<Ionicons name="document-text-outline" size={24} color="#e65100" />
 				</View>
