@@ -1,6 +1,6 @@
 import {Entity, Property, PrimaryKey, OneToOne, Enum} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
-import {RolesEnum} from '@northernexplorer/types';
+import {GenderEnum, RolesEnum} from '@northernexplorer/types';
 import {Subscription} from './Subscription';
 
 type UserInput = {
@@ -11,6 +11,9 @@ type UserInput = {
 	passwordHash: string;
 	isActive: boolean;
 	subscription: Subscription;
+	birthday: Date;
+	gender: GenderEnum;
+	roles?: RolesEnum[];
 };
 
 @Entity()
@@ -43,13 +46,19 @@ export class User {
 	passwordHash: string;
 
 	@Property({type: 'boolean'})
-	isActive: boolean;
+	isActive: boolean = true;
 
 	@OneToOne(() => Subscription)
 	subscription: Subscription;
 
 	@Enum({items: () => RolesEnum, array: true, nullable: true, type: 'enumArray'})
 	roles?: RolesEnum[];
+
+	@Property({type: 'date'})
+	birthday: Date;
+
+	@Enum({items: () => GenderEnum})
+	gender: GenderEnum;
 
 	constructor(data: UserInput) {
 		this.firstName = data.firstName;
@@ -59,5 +68,8 @@ export class User {
 		this.passwordHash = data.passwordHash;
 		this.isActive = data.isActive;
 		this.subscription = data.subscription;
+		this.birthday = data.birthday;
+		this.gender = data.gender;
+		this.roles = data.roles;
 	}
 }

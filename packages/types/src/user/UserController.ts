@@ -4,6 +4,12 @@ export enum RolesEnum {
 	Admin = 'Admin',
 }
 
+export enum GenderEnum {
+	MALE = 'Male',
+	FEMALE = 'Female',
+	OTHER = 'Other',
+}
+
 export type UserAuthenticationType = {
 	userId: string;
 	email: string;
@@ -22,6 +28,8 @@ type RegisterParams = {
 	acceptTerms: boolean;
 	acceptPrivacy: boolean;
 	website?: string;
+	birthday: Date;
+	gender: GenderEnum;
 };
 
 type ActivateParams = {
@@ -53,6 +61,8 @@ export type EditProfileParams = {
 	username: string;
 	email: string;
 	userId: string;
+	birthday: Date;
+	gender: GenderEnum;
 };
 type ChangePasswordParams = {
 	username: string;
@@ -79,6 +89,8 @@ export type UserType = {
 	createdAt: Date;
 	isActive: boolean;
 	roles?: RolesEnum[];
+	birthday: Date;
+	gender: GenderEnum;
 	// Note: We intentionally exclude passwordHash here for API security
 };
 
