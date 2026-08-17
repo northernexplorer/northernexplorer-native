@@ -46,7 +46,7 @@ export function Home() {
 	const canUseCompass = !!permissionData?.navigation.useCompass;
 
 	return (
-		<ScrollView style={{flex: 1}} contentContainerStyle={{paddingBottom: 24}} showsVerticalScrollIndicator={false}>
+		<ScrollView style={{flex: 1, padding: 10}} contentContainerStyle={{paddingBottom: 24}} showsVerticalScrollIndicator={false}>
 			{isMobileView ? (
 				<View style={{gap: 12}}>
 					<View style={styles.mobileHeroRow}>
