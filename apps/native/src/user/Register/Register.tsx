@@ -5,7 +5,6 @@ import {DateField, DropdownField, FormField} from '@northernexplorer/tools';
 import {GenderEnum} from '@northernexplorer/types';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
-import {useApiFetch} from '~/core/useApiFetch';
 import {isValidEmail} from '~/user/isValidEmail';
 
 const initialFormData = {
