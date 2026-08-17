@@ -11,6 +11,8 @@ import {
 	RegionRepository,
 	Review,
 	ReviewRepository,
+	OrganizationRepository,
+	Organization,
 } from '../location';
 import {
 	Session,
@@ -39,6 +41,7 @@ export function repositories(em: EntityManager) {
 		weather: new WeatherRepository(em, WeatherCache),
 		user: new UserRepository(em, User),
 		review: new ReviewRepository(em, Review),
+		organization: new OrganizationRepository(em, Organization),
 		migration: new MigrationRepository(em, Migration),
 		session: new SessionRepository(em, Session),
 		subscription: new SubscriptionRepository(em, Subscription),

@@ -11,8 +11,9 @@ export class CountryController extends BaseController {
 
 	public async getCountryById(params: Params<Route<'getCountryById'>>): Promise<Response<Route<'getCountryById'>>> {
 		const {id} = params;
-		return this.repos.country.getCountryById(id);
+		return this.repos.country.getById(id);
 	}
+
 	getAll(): Promise<Response<Route<'getAll'>>> {
 		return this.repos.country.getAll();
 	}

@@ -53,6 +53,7 @@ export function PointOfInterestDetails() {
 					<Text style={styles.metaLabel}>
 						Dates: {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
 					</Text>
+					<Text style={styles.metaLabel}>Organization: {data.organization.name}</Text>
 				</View>
 
 				<View style={styles.divider} />

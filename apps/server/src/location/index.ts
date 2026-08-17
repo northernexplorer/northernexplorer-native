@@ -1,17 +1,20 @@
 export {CityController} from './controllers/CityController';
-export {PointOfInterestController} from './controllers/PointOfInterestController';
 export {CountryController} from './controllers/CountryController';
+export {OrganizationController} from './controllers/OrganizationController';
+export {PointOfInterestController} from './controllers/PointOfInterestController';
 export {RegionController} from './controllers/RegionController';
 export {ReviewController} from './controllers/ReviewController';
 
 export {CityCache} from './entities/CityCache';
-export {PointOfInterest} from './entities/PointOfInterest';
 export {Country} from './entities/Country';
+export {Organization} from './entities/Organization';
+export {PointOfInterest} from './entities/PointOfInterest';
 export {Region} from './entities/Region';
 export {Review} from './entities/Review';
 
 export {CityRepository} from './repositories/CityRepository';
-export {PointOfInterestRepository} from './repositories/PointOfInterestRepository';
 export {CountryRepository} from './repositories/CountryRepository';
+export {OrganizationRepository} from './repositories/OrganizationRepository';
+export {PointOfInterestRepository} from './repositories/PointOfInterestRepository';
 export {RegionRepository} from './repositories/RegionRepository';
 export {ReviewRepository} from './repositories/ReviewRepository';

@@ -23,7 +23,7 @@ export class PointOfInterestController extends BaseController {
 		params: Params<Route<'getPointOfInterestById'>>,
 		auth?: AuthContext,
 	): Promise<Response<Route<'getPointOfInterestById'>>> {
-		const pointOfInterest = await this.repos.pointOfInterest.getPointOfInterestDetails(params.id);
+		const pointOfInterest = await this.repos.pointOfInterest.getPointOfInterestById(params.id);
 		if (pointOfInterest.status === PublishStatusEnum.Draft) {
 			this.permissionService.canAccessAdmin(auth);
 		}
@@ -47,6 +47,7 @@ export class PointOfInterestController extends BaseController {
 			region: site.region,
 			country: site.country,
 			type: site.type,
+			organization: site.organization,
 		}));
 	}
 
@@ -67,17 +68,19 @@ export class PointOfInterestController extends BaseController {
 			region: site.region,
 			country: site.country,
 			type: site.type,
+			organization: site.organization,
 		}));
 	}
 
 	async edit(params: Params<Route<'edit'>>, auth?: AuthContext): Promise<Response<Route<'edit'>>> {
 		this.permissionService.canAccessAdmin(auth);
 
-		const {id, countryId, regionId, startDate, endDate, ...updates} = params;
+		const {id, countryId, regionId, startDate, endDate, organizationId, ...updates} = params;
 
 		const pointOfInterest = await this.repos.pointOfInterest.getById(id);
 		const country = await this.repos.country.getById(countryId);
 		const region = await this.repos.region.getById(regionId);
+		const organization = await this.repos.organization.getById(organizationId);
 
 		pointOfInterest.edit({
 			...updates,
@@ -85,6 +88,7 @@ export class PointOfInterestController extends BaseController {
 			region,
 			startDate,
 			endDate,
+			organization,
 		});
 
 		await this.flush();
