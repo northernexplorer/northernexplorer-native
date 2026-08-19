@@ -1,52 +1,64 @@
 version: 2
 updates:
-    - package-ecosystem: 'npm'
-      directory: '/'
-      schedule:
-          interval: 'weekly'
-      groups:
-          expo-ecosystem:
-              patterns:
-                  - 'expo*'
-                  - '@expo/*'
-                  - 'react-native*'
-                  - 'react'
-          mikro-orm-ecosystem:
-              patterns:
-                  - '*mikro-orm*'
-                  - '@mikro-orm/*'
-      ignore:
-          - dependency-name: '*'
-            update-types:
-                - 'version-update:semver-major'
-                - 'version-update:semver-minor'
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      expo-ecosystem:
+        patterns:
+          - 'expo*'
+          - '@expo/*'
+          - 'react-native*'
+          - 'react'
+      mikro-orm-ecosystem:
+        patterns:
+          - '*mikro-orm*'
+          - '@mikro-orm/*'
+    ignore:
+      - dependency-name: 'expo*'
+      - dependency-name: '@expo/*'
+      - dependency-name: 'react*'
+      - dependency-name: '@types/react*'
+      - dependency-name: '*'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
 
-    - package-ecosystem: 'npm'
-      directory: '/app'
-      schedule:
-          interval: 'weekly'
-      groups:
-          mikro-orm-ecosystem:
-              patterns:
-                  - '*mikro-orm*'
-                  - '@mikro-orm/*'
-      ignore:
-          - dependency-name: '*'
-            update-types:
-                - 'version-update:semver-major'
-                - 'version-update:semver-minor'
+  - package-ecosystem: 'npm'
+    directory: '/app'
+    schedule:
+      interval: 'weekly'
+    groups:
+      mikro-orm-ecosystem:
+        patterns:
+          - '*mikro-orm*'
+          - '@mikro-orm/*'
+    ignore:
+      - dependency-name: 'expo*'
+      - dependency-name: '@expo/*'
+      - dependency-name: 'react*'
+      - dependency-name: '@types/react*'
+      - dependency-name: '*'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
 
-    - package-ecosystem: 'npm'
-      directory: '/packages'
-      schedule:
-          interval: 'weekly'
-      groups:
-          mikro-orm-ecosystem:
-              patterns:
-                  - '*mikro-orm*'
-                  - '@mikro-orm/*'
-      ignore:
-          - dependency-name: '*'
-            update-types:
-                - 'version-update:semver-major'
-                - 'version-update:semver-minor'
+  - package-ecosystem: 'npm'
+    directory: '/packages'
+    schedule:
+      interval: 'weekly'
+    groups:
+      mikro-orm-ecosystem:
+        patterns:
+          - '*mikro-orm*'
+          - '@mikro-orm/*'
+    ignore:
+      - dependency-name: 'expo*'
+      - dependency-name: '@expo/*'
+      - dependency-name: 'react*'
+      - dependency-name: '@types/react*'
+      - dependency-name: '*'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
