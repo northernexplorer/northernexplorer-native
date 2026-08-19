@@ -21,9 +21,14 @@ export function Map() {
 	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
 
 	const coords = useLocation();
+
+	// Track map center coordinates separate from user position
+	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number} | null>(coords ? {lat: coords.lat, lon: coords.lon} : null);
+
+	// Query POIs relative to current mapCenter
 	const {data} = useApiFetch('location', 'PointOfInterestController', 'getNearbyPointOfInterests', {
-		lat: coords?.lat || 0,
-		lon: coords?.lon || 0,
+		lat: mapCenter?.lat || 0,
+		lon: mapCenter?.lon || 0,
 		limit: 500,
 	});
 
@@ -44,7 +49,7 @@ export function Map() {
 	});
 
 	const onRegionDidChange = useCallback((e: NativeSyntheticEvent<ViewStateChangeEvent>) => {
-		const {bounds, zoom} = e.nativeEvent;
+		const {bounds, zoom, geometry} = e.nativeEvent;
 
 		if (!Array.isArray(bounds)) return;
 
@@ -52,6 +57,12 @@ export function Map() {
 
 		setBounds(newBounds);
 		setZoom(zoom);
+
+		// Extract center [longitude, latitude] from event geometry payload
+		if (geometry && geometry.type === 'Point' && Array.isArray(geometry.coordinates)) {
+			const [lon, lat] = geometry.coordinates;
+			setMapCenter({lat, lon});
+		}
 	}, []);
 
 	const handleNavigateToSite = useCallback(
@@ -174,7 +185,7 @@ const styles = StyleSheet.create({
 	},
 	popupTitle: {
 		fontSize: 14,
-		fontWeight: 700,
+		fontWeight: '700',
 		color: '#333',
 		textAlign: 'left',
 		marginTop: 8,
