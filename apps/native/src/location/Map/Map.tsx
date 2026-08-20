@@ -49,7 +49,7 @@ export function Map() {
 	});
 
 	const onRegionDidChange = useCallback((e: NativeSyntheticEvent<ViewStateChangeEvent>) => {
-		const {bounds, zoom, geometry} = e.nativeEvent;
+		const {bounds, zoom, center} = e.nativeEvent;
 
 		if (!Array.isArray(bounds)) return;
 
@@ -58,9 +58,13 @@ export function Map() {
 		setBounds(newBounds);
 		setZoom(zoom);
 
-		// Extract center [longitude, latitude] from event geometry payload
-		if (geometry && geometry.type === 'Point' && Array.isArray(geometry.coordinates)) {
-			const [lon, lat] = geometry.coordinates;
+		if (Array.isArray(center)) {
+			const [lon, lat] = center;
+			setMapCenter({lat, lon});
+		} else {
+			// Fallback calculation using bounding box center
+			const lon = (bounds[0] + bounds[2]) / 2;
+			const lat = (bounds[1] + bounds[3]) / 2;
 			setMapCenter({lat, lon});
 		}
 	}, []);
