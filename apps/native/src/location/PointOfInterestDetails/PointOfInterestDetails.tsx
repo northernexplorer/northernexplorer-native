@@ -24,15 +24,11 @@ export function PointOfInterestDetails() {
 		const siteLat = typeof data.lat === 'number' ? data.lat : parseFloat(String(data.lat));
 		const siteLon = typeof data.lon === 'number' ? data.lon : parseFloat(String(data.lon));
 
-		if (Number.isNaN(userLat) || Number.isNaN(userLon) || Number.isNaN(siteLat) || Number.isNaN(siteLon)) {
-			return null;
-		}
+		if (isNaN(userLat) || isNaN(userLon) || isNaN(siteLat) || isNaN(siteLon)) return null;
 
 		const distInKm = calculateHaversineDistance(userLat, userLon, siteLat, siteLon);
 
-		if (distInKm === undefined || distInKm === null || Number.isNaN(distInKm)) {
-			return null;
-		}
+		if (isNaN(distInKm)) return null;
 
 		if (distInKm < 1) {
 			return `${Math.round(distInKm * 1000)} m away`;
