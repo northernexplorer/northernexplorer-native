@@ -16,6 +16,10 @@ updates:
                   - '*mikro-orm*'
                   - '@mikro-orm/*'
       ignore:
+          - dependency-name: 'expo*'
+          - dependency-name: '@expo/*'
+          - dependency-name: 'react*'
+          - dependency-name: '@types/react*'
           - dependency-name: '*'
             update-types:
                 - 'version-update:semver-major'
@@ -31,6 +35,10 @@ updates:
                   - '*mikro-orm*'
                   - '@mikro-orm/*'
       ignore:
+          - dependency-name: 'expo*'
+          - dependency-name: '@expo/*'
+          - dependency-name: 'react*'
+          - dependency-name: '@types/react*'
           - dependency-name: '*'
             update-types:
                 - 'version-update:semver-major'
@@ -46,6 +54,10 @@ updates:
                   - '*mikro-orm*'
                   - '@mikro-orm/*'
       ignore:
+          - dependency-name: 'expo*'
+          - dependency-name: '@expo/*'
+          - dependency-name: 'react*'
+          - dependency-name: '@types/react*'
           - dependency-name: '*'
             update-types:
                 - 'version-update:semver-major'
