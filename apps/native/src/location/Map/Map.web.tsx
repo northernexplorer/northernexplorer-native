@@ -17,14 +17,19 @@ import {MapMarkerWeb} from '~/location/Map/components/MapMarkerWeb';
 export function Map() {
 	const {baseLayer} = useMap();
 	const mapRef = useRef<MapRef>(null);
+	const coords = useLocation();
+
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
 	const [zoom, setZoom] = useState(10);
 	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
 
-	const coords = useLocation();
+	// Track map center instead of relying strictly on user location
+	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number} | null>(coords ? {lat: coords.lat, lon: coords.lon} : null);
+
+	// Fetch POIs using current mapCenter (falls back to 0,0 if mapCenter isn't initialized yet)
 	const {data} = useApiFetch('location', 'PointOfInterestController', 'getNearbyPointOfInterests', {
-		lat: coords?.lat || 0,
-		lon: coords?.lon || 0,
+		lat: mapCenter?.lat || 0,
+		lon: mapCenter?.lon || 0,
 		limit: 500,
 	});
 
@@ -47,11 +52,18 @@ export function Map() {
 	const updateMapState = useCallback(() => {
 		if (mapRef.current) {
 			const b = mapRef.current.getBounds();
+			const center = mapRef.current.getCenter();
 
 			const nextBounds: BBox = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
 
 			setBounds(nextBounds);
 			setZoom(mapRef.current.getZoom());
+
+			// Update map center state when panning or zooming completes
+			setMapCenter({
+				lat: center.lat,
+				lon: center.lng,
+			});
 		}
 	}, []);
 
@@ -70,7 +82,7 @@ export function Map() {
 				mapStyle={baseLayer}
 				onClick={() => setSelectedSite(null)}
 				onLoad={updateMapState}
-				onMove={updateMapState}
+				onMoveEnd={updateMapState} // Triggers API refetch only when camera movement finishes
 				interactiveLayerIds={['pointOfInterestsLayer']}
 				cursor={selectedSite ? 'pointer' : 'default'}
 				minZoom={2}
