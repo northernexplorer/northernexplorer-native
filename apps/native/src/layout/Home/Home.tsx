@@ -107,6 +107,8 @@ export function Home() {
 								country={site.country.name}
 								region={site.region.name}
 								id={site.id}
+								latitude={site.lat}
+								longitude={site.lon}
 							/>
 						))}
 					</ScrollView>
