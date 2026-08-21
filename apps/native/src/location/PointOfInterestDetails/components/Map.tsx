@@ -20,7 +20,7 @@ export function Map({site}: Props) {
 				params: {
 					lat: site.lat,
 					lon: site.lon,
-					zoom: 15,
+					zoom: 16,
 					selectedId: site.id,
 				},
 			}}

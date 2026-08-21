@@ -102,7 +102,7 @@ export function Map() {
 					if (selectedSite) setSelectedSite(null);
 				}}
 			>
-				<Camera ref={cameraRef} zoom={initialZoom} centerCoordinate={[initialLon, initialLat]} />
+				<Camera ref={cameraRef} zoom={initialZoom} center={[initialLon, initialLat]} />
 
 				{clusters.map(cluster => {
 					const [longitude, latitude] = cluster.geometry.coordinates;
