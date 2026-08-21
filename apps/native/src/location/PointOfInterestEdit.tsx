@@ -5,13 +5,14 @@ import {getUrl, getUrlSafeString, Spinner, FormField, TextAreaField, DropdownFie
 import {PointOfInterestEditType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
-import {styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
+import {styles, styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
 import {RegionDropdown} from '~/layout/Layout/components/RegionDropdown';
 import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
 import {OrganizationDropdown} from '~/layout/Layout/components/OrganizationDropdown';
+import {Map} from '~/location/PointOfInterestDetails/components/Map';
 
 type FormState = {
 	name: string;
@@ -154,8 +155,12 @@ export function PointOfInterestEdit() {
 
 	return (
 		<ScrollView style={formStyles.container} contentContainerStyle={formStyles.contentContainer}>
-			<Image source={{uri: getUrl({path: data.image, serverUrl: config.SERVER_URL})}} style={detailStyles.banner} />
-
+			<View style={styles.bannerContainer}>
+				<Image source={{uri: getUrl({path: data.image, serverUrl: config.SERVER_URL})}} style={styles.banner} />
+				<View style={styles.mapCard}>
+					<Map site={data} />
+				</View>
+			</View>
 			<View style={detailStyles.content}>
 				<Text style={detailStyles.breadcrumbs}>
 					{data.country.name} › {data.region.name}
