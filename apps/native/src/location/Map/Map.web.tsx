@@ -3,7 +3,7 @@ import MapGL, {Marker} from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import useSupercluster from 'use-supercluster';
-import {Link} from 'expo-router';
+import {Link, useLocalSearchParams} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {PointOfInterestType} from '@northernexplorer/types';
 import {BBox} from 'geojson';
@@ -19,17 +19,24 @@ export function Map() {
 	const mapRef = useRef<MapRef>(null);
 	const coords = useLocation();
 
+	const params = useLocalSearchParams<{lat?: string; lon?: string; zoom?: string; selectedId?: string}>();
+
+	const initialLat = params.lat ? parseFloat(params.lat) : (coords?.lat ?? 49.8951);
+	const initialLon = params.lon ? parseFloat(params.lon) : (coords?.lon ?? -97.1384);
+	const initialZoom = params.zoom ? parseFloat(params.zoom) : 10;
+
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
-	const [zoom, setZoom] = useState(10);
+	const [zoom, setZoom] = useState(initialZoom);
 	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
 
-	// Track map center instead of relying strictly on user location
-	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number} | null>(coords ? {lat: coords.lat, lon: coords.lon} : null);
+	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number}>({
+		lat: initialLat,
+		lon: initialLon,
+	});
 
-	// Fetch POIs using current mapCenter (falls back to 0,0 if mapCenter isn't initialized yet)
 	const {data} = useApiFetch('location', 'PointOfInterestController', 'getNearbyPointOfInterests', {
-		lat: mapCenter?.lat || 0,
-		lon: mapCenter?.lon || 0,
+		lat: mapCenter.lat,
+		lon: mapCenter.lon,
 		limit: 500,
 	});
 
@@ -59,7 +66,6 @@ export function Map() {
 			setBounds(nextBounds);
 			setZoom(mapRef.current.getZoom());
 
-			// Update map center state when panning or zooming completes
 			setMapCenter({
 				lat: center.lat,
 				lon: center.lng,
@@ -67,22 +73,20 @@ export function Map() {
 		}
 	}, []);
 
-	if (!coords) return null;
-
 	return (
 		<div style={{width: '100%', height: '100%', minHeight: '400px'}}>
 			<MapGL
 				ref={mapRef}
 				mapLib={maplibregl}
 				initialViewState={{
-					longitude: coords.lon,
-					latitude: coords.lat,
-					zoom: 10,
+					longitude: initialLon,
+					latitude: initialLat,
+					zoom: initialZoom,
 				}}
 				mapStyle={baseLayer}
 				onClick={() => setSelectedSite(null)}
 				onLoad={updateMapState}
-				onMoveEnd={updateMapState} // Triggers API refetch only when camera movement finishes
+				onMoveEnd={updateMapState}
 				interactiveLayerIds={['pointOfInterestsLayer']}
 				cursor={selectedSite ? 'pointer' : 'default'}
 				minZoom={2}

@@ -14,7 +14,18 @@ export function Map({site}: Props) {
 	const {baseLayer} = useMap();
 
 	return (
-		<Link href="/map" asChild>
+		<Link
+			href={{
+				pathname: '/map',
+				params: {
+					lat: site.lat,
+					lon: site.lon,
+					zoom: 15,
+					selectedId: site.id,
+				},
+			}}
+			asChild
+		>
 			<Pressable style={styles.mapContainer}>
 				<NativeMap style={styles.map} mapStyle={baseLayer} attribution={false} logo={false}>
 					<Camera zoom={13} center={[site.lon, site.lat]} />
