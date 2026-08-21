@@ -8,11 +8,12 @@ interface Props {
 	site: PointOfInterestType;
 	longitude: number;
 	latitude: number;
-	selectedSite: PointOfInterestType | null;
-	setSelectedSite: Dispatch<SetStateAction<PointOfInterestType | null>>;
+	selectedSite?: PointOfInterestType | null;
+	setSelectedSite?: Dispatch<SetStateAction<PointOfInterestType | null>>;
+	size?: number;
 }
 
-export function MapMarkerWeb({site, longitude, latitude, selectedSite, setSelectedSite}: Props) {
+export function MapMarkerWeb({site, longitude, latitude, selectedSite, setSelectedSite, size}: Props) {
 	const {iconName, backgroundColor} = getMarkerConfig(site.type);
 
 	return (
@@ -23,10 +24,12 @@ export function MapMarkerWeb({site, longitude, latitude, selectedSite, setSelect
 			anchor="bottom"
 			onClick={e => {
 				e.originalEvent.stopPropagation();
-				if (selectedSite && selectedSite.id === site.id) {
-					setSelectedSite(null);
-				} else {
-					setSelectedSite(site);
+				if (setSelectedSite) {
+					if (selectedSite && selectedSite.id === site.id) {
+						setSelectedSite(null);
+					} else {
+						setSelectedSite(site);
+					}
 				}
 			}}
 		>
@@ -34,9 +37,11 @@ export function MapMarkerWeb({site, longitude, latitude, selectedSite, setSelect
 				style={{
 					...styles.iconCircle,
 					backgroundColor,
+					width: size || 48,
+					height: size || 48,
 				}}
 			>
-				<MaterialCommunityIcons name={iconName} size={28} color="#FFFFFF" />
+				<MaterialCommunityIcons name={iconName} size={size ? size / 2 : 28} color="#FFFFFF" />
 			</div>
 		</Marker>
 	);
@@ -44,8 +49,6 @@ export function MapMarkerWeb({site, longitude, latitude, selectedSite, setSelect
 
 const styles = {
 	iconCircle: {
-		width: 48,
-		height: 48,
 		borderRadius: '50%',
 		display: 'flex',
 		alignItems: 'center',
