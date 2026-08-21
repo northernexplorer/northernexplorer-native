@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Pressable, StyleSheet} from 'react-native';
 import MapGL from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -14,6 +14,22 @@ interface Props {
 export function Map({site}: Props) {
 	const {baseLayer} = useMap();
 
+	const [viewState, setViewState] = useState({
+		longitude: site.lon,
+		latitude: site.lat,
+		zoom: 9,
+	});
+
+	useEffect(() => {
+		if (!isNaN(site.lat) && !isNaN(site.lon)) {
+			setViewState(prev => ({
+				...prev,
+				latitude: site.lat,
+				longitude: site.lon,
+			}));
+		}
+	}, [site.lat, site.lon]);
+
 	return (
 		<Link
 			href={{
@@ -28,16 +44,7 @@ export function Map({site}: Props) {
 			asChild
 		>
 			<Pressable style={styles.mapContainer}>
-				<MapGL
-					initialViewState={{
-						longitude: site.lon,
-						latitude: site.lat,
-						zoom: 9,
-					}}
-					style={{width: '100%', height: '100%', pointerEvents: 'none'}}
-					mapStyle={baseLayer}
-					attributionControl={false}
-				>
+				<MapGL {...viewState} style={{width: '100%', height: '100%', pointerEvents: 'none'}} mapStyle={baseLayer} attributionControl={false}>
 					<MapMarkerWeb key={site.id} site={site} longitude={site.lon} latitude={site.lat} selectedSite={site} size={24} />
 				</MapGL>
 			</Pressable>

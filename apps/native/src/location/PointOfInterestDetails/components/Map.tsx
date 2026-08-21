@@ -13,6 +13,8 @@ interface Props {
 export function Map({site}: Props) {
 	const {baseLayer} = useMap();
 
+	const isValidCoord = !isNaN(site.lat) && !isNaN(site.lon);
+
 	return (
 		<Link
 			href={{
@@ -28,7 +30,7 @@ export function Map({site}: Props) {
 		>
 			<Pressable style={styles.mapContainer}>
 				<NativeMap style={styles.map} mapStyle={baseLayer} attribution={false} logo={false}>
-					<Camera zoom={13} center={[site.lon, site.lat]} />
+					<Camera zoom={13} center={isValidCoord ? [site.lon, site.lat] : undefined} />
 					<MapMarkerNative key={site.id} site={site} longitude={site.lon} latitude={site.lat} selectedSite={site} size={24} />
 				</NativeMap>
 			</Pressable>

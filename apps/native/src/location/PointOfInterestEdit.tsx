@@ -158,7 +158,13 @@ export function PointOfInterestEdit() {
 			<View style={styles.bannerContainer}>
 				<Image source={{uri: getUrl({path: data.image, serverUrl: config.SERVER_URL})}} style={styles.banner} />
 				<View style={styles.mapCard}>
-					<Map site={data} />
+					<Map
+						site={{
+							...data,
+							lat: !isNaN(parseFloat(form.lat)) ? parseFloat(form.lat) : data.lat,
+							lon: !isNaN(parseFloat(form.lon)) ? parseFloat(form.lon) : data.lon,
+						}}
+					/>
 				</View>
 			</View>
 			<View style={detailStyles.content}>
