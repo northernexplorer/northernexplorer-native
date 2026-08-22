@@ -2,7 +2,7 @@ import React, {useState, useMemo, useRef, useCallback} from 'react';
 import {View, Text, StyleSheet, Image, NativeSyntheticEvent} from 'react-native';
 import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
 import useSupercluster from 'use-supercluster';
-import {useRouter} from 'expo-router';
+import {useRouter, useLocalSearchParams} from 'expo-router';
 import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {PointOfInterestType} from '@northernexplorer/types';
 import {BBox} from 'geojson';
@@ -16,19 +16,27 @@ export function Map() {
 	const router = useRouter();
 	const {baseLayer} = useMap();
 	const cameraRef = useRef<CameraRef>(null);
-	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
-	const [zoom, setZoom] = useState(10);
-	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
+
+	const params = useLocalSearchParams<{lat?: string; lon?: string; zoom?: string; selectedId?: string}>();
 
 	const coords = useLocation();
 
-	// Track map center coordinates separate from user position
-	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number} | null>(coords ? {lat: coords.lat, lon: coords.lon} : null);
+	const initialLat = params.lat ? parseFloat(params.lat) : (coords?.lat ?? 49.8951);
+	const initialLon = params.lon ? parseFloat(params.lon) : (coords?.lon ?? -97.1384);
+	const initialZoom = params.zoom ? parseFloat(params.zoom) : 10;
 
-	// Query POIs relative to current mapCenter
+	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
+	const [zoom, setZoom] = useState(initialZoom);
+	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
+
+	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number}>({
+		lat: initialLat,
+		lon: initialLon,
+	});
+
 	const {data} = useApiFetch('location', 'PointOfInterestController', 'getNearbyPointOfInterests', {
-		lat: mapCenter?.lat || 0,
-		lon: mapCenter?.lon || 0,
+		lat: mapCenter.lat,
+		lon: mapCenter.lon,
 		limit: 500,
 	});
 
@@ -94,7 +102,7 @@ export function Map() {
 					if (selectedSite) setSelectedSite(null);
 				}}
 			>
-				{coords?.lat && <Camera ref={cameraRef} zoom={10} center={[coords.lon, coords.lat]} />}
+				<Camera ref={cameraRef} zoom={initialZoom} center={[initialLon, initialLat]} />
 
 				{clusters.map(cluster => {
 					const [longitude, latitude] = cluster.geometry.coordinates;

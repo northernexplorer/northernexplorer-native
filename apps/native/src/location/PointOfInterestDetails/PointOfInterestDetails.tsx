@@ -8,6 +8,7 @@ import {styles} from '~/location/PointOfInterestDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {Map} from '~/location/PointOfInterestDetails/components/Map';
 import {useLocation} from '~/location/state/location/useLocation';
 
 export function PointOfInterestDetails() {
@@ -40,7 +41,12 @@ export function PointOfInterestDetails() {
 
 	return (
 		<View>
-			<Image source={{uri: getUrl({path: data.image, serverUrl: config.SERVER_URL})}} style={styles.banner} />
+			<View style={styles.bannerContainer}>
+				<Image source={{uri: getUrl({path: data.image, serverUrl: config.SERVER_URL})}} style={styles.banner} />
+				<View style={styles.mapCard}>
+					<Map site={data} />
+				</View>
+			</View>
 			<View style={styles.content}>
 				<View style={styles.headerRow}>
 					<Text style={styles.breadcrumbs}>

@@ -9,11 +9,12 @@ interface Props {
 	site: PointOfInterestType;
 	longitude: number;
 	latitude: number;
-	selectedSite: PointOfInterestType | null;
-	setSelectedSite: Dispatch<SetStateAction<PointOfInterestType | null>>;
+	selectedSite?: PointOfInterestType | null;
+	setSelectedSite?: Dispatch<SetStateAction<PointOfInterestType | null>>;
+	size?: number;
 }
 
-export function MapMarkerNative({site, longitude, latitude, selectedSite, setSelectedSite}: Props) {
+export function MapMarkerNative({site, longitude, latitude, selectedSite, setSelectedSite, size}: Props) {
 	const {iconName, backgroundColor} = getMarkerConfig(site.type);
 
 	return (
@@ -23,15 +24,17 @@ export function MapMarkerNative({site, longitude, latitude, selectedSite, setSel
 			anchor="bottom"
 			onPress={e => {
 				e.stopPropagation();
-				if (selectedSite && selectedSite.id === site.id) {
-					setSelectedSite(null);
-				} else {
-					setSelectedSite(site);
+				if (setSelectedSite) {
+					if (selectedSite && selectedSite.id === site.id) {
+						setSelectedSite(null);
+					} else {
+						setSelectedSite(site);
+					}
 				}
 			}}
 		>
-			<View style={[styles.iconCircle, {backgroundColor}]}>
-				<MaterialCommunityIcons name={iconName} size={28} color="#FFFFFF" />
+			<View style={[styles.iconCircle, {backgroundColor, width: size || 48, height: size || 48}]}>
+				<MaterialCommunityIcons name={iconName} size={size ? size / 2 : 28} color="#FFFFFF" />
 			</View>
 		</Marker>
 	);
@@ -39,8 +42,6 @@ export function MapMarkerNative({site, longitude, latitude, selectedSite, setSel
 
 const styles = StyleSheet.create({
 	iconCircle: {
-		width: 48,
-		height: 48,
 		borderRadius: 24,
 		borderWidth: 2,
 		borderColor: '#FFFFFF',

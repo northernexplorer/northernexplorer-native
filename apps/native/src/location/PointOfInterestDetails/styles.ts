@@ -1,9 +1,30 @@
 import {StyleSheet, Platform} from 'react-native';
 
 export const styles = StyleSheet.create({
+	bannerContainer: {
+		position: 'relative',
+		height: 240,
+		width: '100%',
+	},
 	banner: {
 		width: '100%',
-		height: 300,
+		height: '100%',
+	},
+	mapCard: {
+		position: 'absolute',
+		bottom: 16,
+		right: 16,
+		width: 120,
+		height: 120,
+		borderRadius: 12,
+		overflow: 'hidden',
+		borderWidth: 2,
+		borderColor: '#ffffff',
+		shadowColor: '#000',
+		shadowOffset: {width: 0, height: 4},
+		shadowOpacity: 0.3,
+		shadowRadius: 6,
+		elevation: 6,
 	},
 	content: {
 		padding: 24,
