@@ -4,7 +4,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import useSupercluster from 'use-supercluster';
 import {Link, useLocalSearchParams} from 'expo-router';
-import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {PointOfInterestType} from '@northernexplorer/types';
 import {BBox} from 'geojson';
 import {MapRef} from 'react-map-gl/mapbox-legacy';
@@ -146,9 +146,9 @@ export function Map() {
 								{selectedSite.image && (
 									<img
 										alt={selectedSite.name}
-										src={getUrl({
+										src={getImageUrl({
 											path: selectedSite.image,
-											serverUrl: config.SERVER_URL,
+											cdn: config.CONTENT_DELIVERY_NETWORK,
 										})}
 										style={{
 											width: '100%',

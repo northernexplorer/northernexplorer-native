@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import {View, Text, Image, Pressable} from 'react-native';
 import {Link} from 'expo-router';
-import {calculateHaversineDistance, getUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {calculateHaversineDistance, getImageUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {styles} from '~/layout/Home/styles';
 import {config} from '~/config';
 import {useLocation} from '~/location/state/location/useLocation';
@@ -60,7 +60,11 @@ export function PointOfInterestPreviewWidget({id, name, description, image, coun
 		>
 			<Pressable style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
 				<View style={[styles.tile, styles.siteCard]}>
-					<Image source={{uri: getUrl({path: image, serverUrl: config.SERVER_URL})}} style={styles.siteImage} resizeMode="cover" />
+					<Image
+						source={{uri: getImageUrl({path: image, cdn: config.CONTENT_DELIVERY_NETWORK})}}
+						style={styles.siteImage}
+						resizeMode="cover"
+					/>
 					<View style={styles.siteContent}>
 						<View>
 							<Text style={styles.siteTitle} numberOfLines={1}>
