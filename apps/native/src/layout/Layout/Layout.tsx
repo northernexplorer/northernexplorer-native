@@ -45,7 +45,6 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 			<Navigation />
 
 			<ScrollView
-				scrollEnabled={!fullPage}
 				style={{flex: 1}}
 				contentContainerStyle={{
 					flexGrow: 1,

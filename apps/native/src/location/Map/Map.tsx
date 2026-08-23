@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, Image, NativeSyntheticEvent} from 'react-native'
 import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
 import useSupercluster from 'use-supercluster';
 import {useRouter, useLocalSearchParams} from 'expo-router';
-import {getUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools';
 import {PointOfInterestType} from '@northernexplorer/types';
 import {BBox} from 'geojson';
 import {config} from '~/config';
@@ -159,9 +159,9 @@ export function Map() {
 							{selectedSite.image && (
 								<Image
 									source={{
-										uri: getUrl({
+										uri: getImageUrl({
 											path: selectedSite.image,
-											serverUrl: config.SERVER_URL,
+											cdn: config.CONTENT_DELIVERY_NETWORK,
 										}),
 									}}
 									style={styles.popupImage}

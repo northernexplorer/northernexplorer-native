@@ -1,5 +1,5 @@
 export {calculateHaversineDistance} from './calculateHaversineDistance';
 export {formatDate} from './formatDate';
 export {formatMoney} from './formatMoney';
-export {getUrl} from './getUrl';
+export {getImageUrl} from './getImageUrl';
 export {getUrlSafeString} from './getUrlSafeString';

@@ -38,7 +38,7 @@ export function ChangeSubscription() {
 	const configureRevenueCatIfNeeded = async () => {
 		const isConfigured = await Purchases.isConfigured();
 		if (!isConfigured) {
-			const apiKey = Platform.OS === 'android' ? config.EXPO_PUBLIC_REVENUE_CAT_GOOGLE_KEY : undefined;
+			const apiKey = Platform.OS === 'android' ? config.REVENUE_CAT_GOOGLE_KEY : undefined;
 
 			if (apiKey) {
 				Purchases.configure({apiKey});

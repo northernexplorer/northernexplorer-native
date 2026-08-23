@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 import {Link, useLocalSearchParams} from 'expo-router';
-import {calculateHaversineDistance, getUrl, getUrlSafeString, Spinner} from '@northernexplorer/tools';
+import {calculateHaversineDistance, getImageUrl, getUrlSafeString, Spinner} from '@northernexplorer/tools';
 import {RolesEnum} from '@northernexplorer/types';
 import {ReviewDetails} from './components/Reviews';
 import {styles} from '~/location/PointOfInterestDetails/styles';
@@ -42,7 +42,7 @@ export function PointOfInterestDetails() {
 	return (
 		<View>
 			<View style={styles.bannerContainer}>
-				<Image source={{uri: getUrl({path: data.image, serverUrl: config.SERVER_URL})}} style={styles.banner} />
+				<Image source={{uri: getImageUrl({path: data.image, cdn: config.CONTENT_DELIVERY_NETWORK})}} style={styles.banner} />
 				<View style={styles.mapCard}>
 					<Map site={data} />
 				</View>

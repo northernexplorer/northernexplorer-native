@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
-import {getUrl, getUrlSafeString, Spinner, FormField, TextAreaField, DropdownField} from '@northernexplorer/tools';
+import {getImageUrl, getUrlSafeString, Spinner, FormField, TextAreaField, DropdownField} from '@northernexplorer/tools';
 import {PointOfInterestEditType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
@@ -156,7 +156,7 @@ export function PointOfInterestEdit() {
 	return (
 		<ScrollView style={formStyles.container} contentContainerStyle={formStyles.contentContainer}>
 			<View style={styles.bannerContainer}>
-				<Image source={{uri: getUrl({path: data.image, serverUrl: config.SERVER_URL})}} style={styles.banner} />
+				<Image source={{uri: getImageUrl({path: data.image, cdn: config.CONTENT_DELIVERY_NETWORK})}} style={styles.banner} />
 				<View style={styles.mapCard}>
 					<Map
 						site={{
