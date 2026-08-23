@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import path from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import {MikroORM, RequestContext} from '@mikro-orm/core';
@@ -17,7 +16,6 @@ const corsOrigin = config.CORS.split(',').map(origin => origin.toLowerCase().tri
 
 app.use(cors({origin: corsOrigin}));
 app.use(express.json());
-app.use(express.static(path.join(process.cwd(), 'public')));
 app.use('/api/', globalLimiter);
 
 async function bootstrap() {
