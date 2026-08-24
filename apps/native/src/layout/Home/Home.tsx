@@ -1,17 +1,18 @@
-import {View, ActivityIndicator, useWindowDimensions, Text, ScrollView} from 'react-native';
+import React from 'react';
+import {View, ActivityIndicator, Text, ScrollView} from 'react-native';
 import {WeatherWidget} from './components/WeatherWidget';
 import {ForecastWidget} from './components/ForecastWidget';
 import {LunarWidget} from './components/LunarWidget';
 import {FieldNoteWidget} from './components/FieldNoteWidget';
+import {CompassWidget} from '~/layout/Home/components/CompassWidget';
+import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
 import {useWeather} from '~/environment/state/weather/useWeather';
 import {useForecast} from '~/environment/state/forecast/useForecast';
 import {useLunar} from '~/environment/state/lunar/useLunar';
 import {useFieldNote} from '~/environment/state/fieldNote/useFieldNote';
-import {styles} from '~/layout/Home/styles';
-import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
-import {CompassWidget} from '~/layout/Home/components/CompassWidget';
+import {styles} from '~/layout/Home/styles';
 
 export function Home() {
 	const weather = useWeather();
@@ -29,10 +30,6 @@ export function Home() {
 
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
-	const {width} = useWindowDimensions();
-	const isMobileView = width < 1000;
-
-	// Critical weather data readiness check
 	const isCoreReady = !!weather && !!forecast && !!lunar && !!fieldNote;
 
 	if (!isCoreReady) {
@@ -47,37 +44,21 @@ export function Home() {
 
 	return (
 		<View style={{width: '100%', padding: 10, paddingBottom: 32}}>
-			{isMobileView ? (
-				<View style={{gap: 12}}>
-					<View style={styles.mobileHeroRow}>
-						<View style={styles.weatherSection}>
-							<WeatherWidget data={weather} />
-						</View>
-						<View style={styles.mobileLunarSection}>
-							<LunarWidget data={lunar} />
-						</View>
-					</View>
-					<View style={styles.mobileHeroRow}>
-						<View style={styles.mobileFieldNoteSection}>
-							<FieldNoteWidget data={fieldNote} />
-						</View>
-						{canUseCompass && (
-							<View style={styles.mobileCompassSection}>
-								<CompassWidget />
-							</View>
-						)}
-					</View>
-				</View>
-			) : (
+			<View style={{gap: 12}}>
+				{/* Row 1: Weather (flex: 2) + Lunar (flex: 1) */}
 				<View style={styles.heroRow}>
 					<View style={styles.weatherSection}>
 						<WeatherWidget data={weather} />
 					</View>
-					<View style={styles.fieldNote}>
-						<FieldNoteWidget data={fieldNote} />
-					</View>
 					<View style={styles.lunarSection}>
 						<LunarWidget data={lunar} />
+					</View>
+				</View>
+
+				{/* Row 2: FieldNote (flex: 2) + Compass (flex: 1) */}
+				<View style={styles.heroRow}>
+					<View style={styles.fieldNote}>
+						<FieldNoteWidget data={fieldNote} />
 					</View>
 					{canUseCompass && (
 						<View style={styles.compassSection}>
@@ -85,7 +66,7 @@ export function Home() {
 						</View>
 					)}
 				</View>
-			)}
+			</View>
 
 			<Text style={styles.exploreHeader}>Plan Ahead...</Text>
 			<View style={styles.forecastSection}>
@@ -97,7 +78,7 @@ export function Home() {
 				{!pointOfInterestData ? (
 					<ActivityIndicator size="small" color="#ffffff" style={{marginVertical: 20}} />
 				) : (
-					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12, paddingHorizontal: 16}}>
+					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12}}>
 						{pointOfInterestData.map(site => (
 							<PointOfInterestPreviewWidget
 								key={site.id}

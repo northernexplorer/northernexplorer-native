@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
 	hero: {
@@ -12,34 +12,37 @@ export const styles = StyleSheet.create({
 	heroRow: {
 		flexDirection: 'row',
 		alignItems: 'stretch',
-		gap: 16,
+		gap: 12,
 		width: '100%',
 	},
+	// Row 1 & Row 2 proportional flex columns (2:1 ratio)
 	weatherSection: {
-		flex: 1,
+		flex: 2,
 		minWidth: 0,
 	},
 	fieldNote: {
-		flex: 1,
-		minWidth: 280,
+		flex: 2,
+		minWidth: 0,
 	},
 	lunarSection: {
-		width: 140,
+		flex: 1,
+		minWidth: 0,
 	},
 	compassSection: {
-		width: 140,
+		flex: 1,
+		minWidth: 0,
 	},
-	// Glassmorphism card container
+
+	// Base Glassmorphism Tile
 	tile: {
-		marginRight: 12,
 		backgroundColor: 'rgba(255, 255, 255, 0.1)',
 		borderRadius: 16,
 		borderWidth: 1,
 		borderColor: 'rgba(255, 255, 255, 0.1)',
-		flexShrink: 0,
 		overflow: 'hidden',
 	},
-	// Forecast Tile
+
+	// Forecast Tile (Horizontal Scroll items)
 	forecastTile: {
 		width: 84,
 		paddingVertical: 14,
@@ -59,6 +62,7 @@ export const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: '700',
 	},
+
 	// Point of Interest Card
 	siteCard: {
 		width: 200,
@@ -85,14 +89,15 @@ export const styles = StyleSheet.create({
 		marginTop: 4,
 		lineHeight: 16,
 	},
-	// Section Headers
+
+	// Section Headers & Layout Wrappers
 	exploreHeader: {
 		color: '#ffffff',
 		fontSize: 18,
 		fontWeight: '700',
 		letterSpacing: -0.3,
-		marginTop: 28,
-		marginBottom: 14,
+		marginTop: 24,
+		marginBottom: 12,
 	},
 	forecastSection: {
 		width: '100%',
@@ -104,23 +109,6 @@ export const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-	},
-	// Mobile layouts
-	mobileHeroRow: {
-		flexDirection: 'row',
-		alignItems: 'stretch',
-		gap: 12,
-		width: '100%',
-	},
-	mobileLunarSection: {
-		width: 130,
-	},
-	mobileCompassSection: {
-		width: 130,
-	},
-	mobileFieldNoteSection: {
-		flex: 1,
-		minWidth: 0,
 	},
 	metricPill: {
 		flexDirection: 'row',
