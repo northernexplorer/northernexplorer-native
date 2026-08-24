@@ -2,6 +2,7 @@ import {CityCache, PointOfInterest, Country, Region, Review, Organization} from 
 import {Migration} from '../system';
 import {ForecastCache, WeatherCache} from '../environment';
 import {Session, Subscription, SubscriptionLevel, User} from '../user';
+
 export const entities = [
 	CityCache,
 	ForecastCache,

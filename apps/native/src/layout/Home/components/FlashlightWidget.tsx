@@ -56,7 +56,7 @@ export function FlashlightWidget() {
 					<MaterialCommunityIcons name="flashlight-off" size={28} color="rgba(255,255,255,0.3)" />
 				</View>
 
-				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>Flashlight</Text>
+				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>Flashlight</Text>
 
 				<Text style={{color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>Unavailable</Text>
 			</Pressable>
@@ -98,7 +98,7 @@ export function FlashlightWidget() {
 				<MaterialCommunityIcons name={torchOn ? 'flashlight' : 'flashlight-off'} size={28} color={torchOn ? '#facc15' : '#ffffff'} />
 			</View>
 
-			<Text style={{color: '#ffffff', fontSize: 14, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>Flashlight</Text>
+			<Text style={{color: '#ffffff', fontSize: 12, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>Flashlight</Text>
 
 			<Text style={{color: torchOn ? '#facc15' : 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '600'}}>
 				{torchOn ? 'On' : 'Off'}
