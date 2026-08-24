@@ -54,7 +54,6 @@ export function CompassWidget() {
 					}).start();
 				});
 
-				// Safety check: If component unmounted while awaiting watchHeadingAsync
 				if (!mounted) {
 					sub.remove();
 				} else {
@@ -78,21 +77,37 @@ export function CompassWidget() {
 
 	if (!isAvailable) {
 		return (
-			<Link href="/location/compass" asChild>
-				<Pressable
+			<Pressable
+				disabled
+				style={{
+					...styles.tile,
+					padding: 16,
+					alignItems: 'center',
+					justifyContent: 'center',
+					flex: 1,
+					marginRight: 0,
+					opacity: 0.5,
+				}}
+			>
+				<View
 					style={{
-						...styles.tile,
-						padding: 16,
+						width: 56,
+						height: 56,
+						borderRadius: 28,
+						borderWidth: 1.5,
+						borderColor: 'rgba(255,255,255,0.08)',
+						backgroundColor: 'transparent',
 						alignItems: 'center',
 						justifyContent: 'center',
-						flex: 1,
-						marginRight: 0,
 					}}
 				>
-					<MaterialCommunityIcons name="compass-off-outline" size={48} color="rgba(255,255,255,0.4)" />
-					<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 8, textAlign: 'center'}}>Compass Unavailable</Text>
-				</Pressable>
-			</Link>
+					<MaterialCommunityIcons name="compass-off-outline" size={28} color="rgba(255,255,255,0.3)" />
+				</View>
+
+				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>Compass</Text>
+
+				<Text style={{color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>Unavailable</Text>
+			</Pressable>
 		);
 	}
 

@@ -4,6 +4,7 @@ type SubscriptionParams = {username: string};
 type PermissionResponse = {
 	navigation: {
 		useCompass: boolean;
+		useFlashlight: boolean;
 		changeMapStyle: boolean;
 	};
 };

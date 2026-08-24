@@ -13,6 +13,7 @@ import {useFieldNote} from '~/environment/state/fieldNote/useFieldNote';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {styles} from '~/layout/Home/styles';
+import {FlashlightWidget} from '~/layout/Home/components/FlashlightWidget';
 
 export function Home() {
 	const weather = useWeather();
@@ -41,6 +42,7 @@ export function Home() {
 	}
 
 	const canUseCompass = !!permissionData?.navigation.useCompass;
+	const canUseFlashlight = !!permissionData?.navigation.useFlashlight;
 
 	return (
 		<View style={{width: '100%', padding: 10, paddingBottom: 32}}>
@@ -63,6 +65,11 @@ export function Home() {
 					{canUseCompass && (
 						<View style={styles.compassSection}>
 							<CompassWidget />
+						</View>
+					)}
+					{canUseFlashlight && (
+						<View style={styles.compassSection}>
+							<FlashlightWidget />
 						</View>
 					)}
 				</View>
