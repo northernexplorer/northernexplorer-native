@@ -42,6 +42,7 @@ export function Home() {
 	}
 
 	const canUseCompass = !!permissionData?.navigation.useCompass;
+	const canUseFlashlight = !!permissionData?.navigation.useFlashlight;
 
 	return (
 		<View style={{width: '100%', padding: 10, paddingBottom: 32}}>
@@ -66,7 +67,7 @@ export function Home() {
 							<CompassWidget />
 						</View>
 					)}
-					{canUseCompass && (
+					{canUseFlashlight && (
 						<View style={styles.compassSection}>
 							<FlashlightWidget />
 						</View>

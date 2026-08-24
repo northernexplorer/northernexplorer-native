@@ -25,6 +25,7 @@ export class SubscriptionController extends BaseController {
 		return {
 			navigation: {
 				useCompass: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				useFlashlight: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 				changeMapStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 			},
 		};
