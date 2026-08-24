@@ -13,7 +13,7 @@ import {useFieldNote} from '~/environment/state/fieldNote/useFieldNote';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {styles} from '~/layout/Home/styles';
-import {FlashlightWidget} from "~/layout/Home/components/FlashlightWidget";
+import {FlashlightWidget} from '~/layout/Home/components/FlashlightWidget';
 
 export function Home() {
 	const weather = useWeather();

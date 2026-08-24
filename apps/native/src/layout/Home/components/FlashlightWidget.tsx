@@ -46,7 +46,7 @@ export function FlashlightWidget() {
 				globalStyles.tile,
 				localStyles.container,
 				torchOn ? localStyles.activeTile : localStyles.inactiveTile,
-				pressed && {transform: [{scale: 0.97}], opacity: 0.9},
+				pressed && {opacity: 0.8},
 			]}
 		>
 			{permission?.granted && (
@@ -55,9 +55,13 @@ export function FlashlightWidget() {
 				</View>
 			)}
 
-			{/* Circle Icon Container */}
-			<View style={localStyles.iconWrapper}>
-				<MaterialCommunityIcons name={torchOn ? 'flashlight' : 'flashlight-off'} size={26} color="rgba(255, 255, 255, 0.7)" />
+			{/* Flat Circle Icon Container */}
+			<View style={[localStyles.iconWrapper, torchOn ? localStyles.activeIconWrapper : localStyles.inactiveIconWrapper]}>
+				<MaterialCommunityIcons
+					name={torchOn ? 'flashlight' : 'flashlight-off'}
+					size={26}
+					color={torchOn ? '#FFFFFF' : 'rgba(255, 255, 255, 0.7)'}
+				/>
 			</View>
 
 			<Text style={[localStyles.title, torchOn && localStyles.activeTitle]}>Flashlight</Text>
@@ -96,29 +100,27 @@ const localStyles = StyleSheet.create({
 		borderColor: 'rgba(255, 255, 255, 0.08)',
 	},
 	activeTile: {
-		backgroundColor: 'rgba(250, 204, 21, 0.12)', // Subtle yellow glow highlight behind tile
+		backgroundColor: 'rgba(250, 204, 21, 0.08)',
 		borderWidth: 1,
-		borderColor: 'rgba(250, 204, 21, 0.4)',
+		borderColor: 'rgba(250, 204, 21, 0.25)',
 	},
 
-	// Icon Wrapper & Glowing Light effect
+	// Icon Wrapper (Pure Flat Style)
 	iconWrapper: {
 		width: 52,
 		height: 52,
 		borderRadius: 26,
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	inactiveIconWrapper: {
 		backgroundColor: 'rgba(255, 255, 255, 0.08)',
 		borderWidth: 1,
 		borderColor: 'rgba(255, 255, 255, 0.12)',
 	},
 	activeIconWrapper: {
-		backgroundColor: '#FACC15', // Vibrant torch illumination color
-		shadowColor: '#FACC15',
-		shadowOffset: {width: 0, height: 0},
-		shadowOpacity: 0.85,
-		shadowRadius: 14,
-		elevation: 8,
+		backgroundColor: 'rgba(250, 204, 21, 0.22)',
+		borderWidth: 0,
 	},
 
 	// Typography
@@ -133,7 +135,7 @@ const localStyles = StyleSheet.create({
 		color: '#FFFFFF',
 	},
 
-	// Status Badge / Dot indicator
+	// Status Badge
 	statusBadge: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -143,7 +145,7 @@ const localStyles = StyleSheet.create({
 		marginTop: 4,
 	},
 	activeBadge: {
-		backgroundColor: 'rgba(250, 204, 21, 0.2)',
+		backgroundColor: 'rgba(250, 204, 21, 0.15)',
 	},
 	inactiveBadge: {
 		backgroundColor: 'transparent',
