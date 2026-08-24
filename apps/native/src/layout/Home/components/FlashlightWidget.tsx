@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, Platform, Pressable, StyleSheet} from 'react-native';
 import {CameraView, useCameraPermissions} from 'expo-camera';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {styles} from '~/layout/Home/styles';
+import {styles as globalStyles} from '~/layout/Home/styles';
 
 export function FlashlightWidget() {
 	const [torchOn, setTorchOn] = useState<boolean>(false);
@@ -10,13 +10,10 @@ export function FlashlightWidget() {
 	const [permission, requestPermission] = useCameraPermissions();
 
 	useEffect(() => {
-		// Web browsers cannot toggle hardware torches
 		if (Platform.OS === 'web') {
 			setIsAvailable(false);
 			return;
 		}
-
-		// On native iOS and Android, physical hardware is present
 		setIsAvailable(true);
 	}, []);
 
@@ -28,88 +25,176 @@ export function FlashlightWidget() {
 		setTorchOn(prev => !prev);
 	};
 
-	if (!isAvailable || (permission && !permission.granted && permission.canAskAgain === false)) {
+	const isDisabled = !isAvailable || (permission && !permission.granted && permission.canAskAgain === false);
+
+	if (isDisabled) {
 		return (
-			<Pressable
-				disabled
-				style={StyleSheet.flatten([
-					styles.tile,
-					{
-						padding: 16,
-						alignItems: 'center',
-						justifyContent: 'center',
-						flex: 1,
-						marginRight: 0,
-						opacity: 0.5,
-					},
-				])}
-			>
-				<View
-					style={{
-						width: 56,
-						height: 56,
-						borderRadius: 28,
-						borderWidth: 1.5,
-						borderColor: 'rgba(255,255,255,0.08)',
-						backgroundColor: 'transparent',
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-				>
-					<MaterialCommunityIcons name="flashlight-off" size={28} color="rgba(255,255,255,0.3)" />
+			<View style={[globalStyles.tile, localStyles.container, localStyles.disabledContainer]}>
+				<View style={localStyles.disabledIconWrapper}>
+					<MaterialCommunityIcons name="flashlight-off" size={26} color="rgba(255, 255, 255, 0.25)" />
 				</View>
-
-				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>Flashlight</Text>
-
-				<Text style={{color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>Unavailable</Text>
-			</Pressable>
+				<Text style={localStyles.disabledTitle}>Flashlight</Text>
+				<Text style={localStyles.disabledSubtitle}>Unavailable</Text>
+			</View>
 		);
 	}
 
 	return (
 		<Pressable
 			onPress={handleToggle}
-			style={({pressed}) =>
-				StyleSheet.flatten([
-					styles.tile,
-					{
-						padding: 16,
-						alignItems: 'center',
-						justifyContent: 'center',
-						flex: 1,
-						marginRight: 0,
-						opacity: pressed ? 0.8 : 1,
-					},
-				])
-			}
+			style={({pressed}) => [
+				globalStyles.tile,
+				localStyles.container,
+				torchOn ? localStyles.activeTile : localStyles.inactiveTile,
+				pressed && {transform: [{scale: 0.97}], opacity: 0.9},
+			]}
 		>
-			{/* Zero-size wrapper keeps CameraView mounted without affecting layout */}
 			{permission?.granted && (
-				<View style={{position: 'absolute', width: 0, height: 0, overflow: 'hidden'}} pointerEvents="none">
+				<View style={localStyles.hiddenCamera} pointerEvents="none">
 					<CameraView style={{width: 1, height: 1}} enableTorch={torchOn} facing="back" />
 				</View>
 			)}
 
-			<View
-				style={{
-					width: 56,
-					height: 56,
-					borderRadius: 28,
-					borderWidth: 1.5,
-					borderColor: torchOn ? '#ffffff' : 'rgba(255,255,255,0.15)',
-					backgroundColor: torchOn ? '#ffffff' : 'transparent',
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}
-			>
-				<MaterialCommunityIcons name={torchOn ? 'flashlight' : 'flashlight-off'} size={28} color={torchOn ? '#0f172a' : '#ffffff'} />
+			{/* Circle Icon Container */}
+			<View style={localStyles.iconWrapper}>
+				<MaterialCommunityIcons name={torchOn ? 'flashlight' : 'flashlight-off'} size={26} color="rgba(255, 255, 255, 0.7)" />
 			</View>
 
-			<Text style={{color: '#ffffff', fontSize: 14, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>Flashlight</Text>
+			<Text style={[localStyles.title, torchOn && localStyles.activeTitle]}>Flashlight</Text>
 
-			<Text style={{color: torchOn ? '#ffffff' : 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>
-				{torchOn ? 'On' : 'Off'}
-			</Text>
+			{/* Status Pill Indicator */}
+			<View style={[localStyles.statusBadge, torchOn ? localStyles.activeBadge : localStyles.inactiveBadge]}>
+				<View style={[localStyles.dot, torchOn ? localStyles.activeDot : localStyles.inactiveDot]} />
+				<Text style={[localStyles.statusText, torchOn ? localStyles.activeStatusText : localStyles.inactiveStatusText]}>
+					{torchOn ? 'On' : 'Off'}
+				</Text>
+			</View>
 		</Pressable>
 	);
 }
+
+const localStyles = StyleSheet.create({
+	container: {
+		padding: 16,
+		alignItems: 'center',
+		justifyContent: 'center',
+		flex: 1,
+		borderRadius: 20,
+		marginRight: 0,
+	},
+	hiddenCamera: {
+		position: 'absolute',
+		width: 0,
+		height: 0,
+		overflow: 'hidden',
+	},
+
+	// Tile background states
+	inactiveTile: {
+		backgroundColor: 'rgba(255, 255, 255, 0.05)',
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.08)',
+	},
+	activeTile: {
+		backgroundColor: 'rgba(250, 204, 21, 0.12)', // Subtle yellow glow highlight behind tile
+		borderWidth: 1,
+		borderColor: 'rgba(250, 204, 21, 0.4)',
+	},
+
+	// Icon Wrapper & Glowing Light effect
+	iconWrapper: {
+		width: 52,
+		height: 52,
+		borderRadius: 26,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'rgba(255, 255, 255, 0.08)',
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.12)',
+	},
+	activeIconWrapper: {
+		backgroundColor: '#FACC15', // Vibrant torch illumination color
+		shadowColor: '#FACC15',
+		shadowOffset: {width: 0, height: 0},
+		shadowOpacity: 0.85,
+		shadowRadius: 14,
+		elevation: 8,
+	},
+
+	// Typography
+	title: {
+		color: '#E2E8F0',
+		fontSize: 14,
+		fontWeight: '700',
+		marginTop: 10,
+		textAlign: 'center',
+	},
+	activeTitle: {
+		color: '#FFFFFF',
+	},
+
+	// Status Badge / Dot indicator
+	statusBadge: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingHorizontal: 8,
+		paddingVertical: 3,
+		borderRadius: 12,
+		marginTop: 4,
+	},
+	activeBadge: {
+		backgroundColor: 'rgba(250, 204, 21, 0.2)',
+	},
+	inactiveBadge: {
+		backgroundColor: 'transparent',
+	},
+	dot: {
+		width: 6,
+		height: 6,
+		borderRadius: 3,
+		marginRight: 5,
+	},
+	activeDot: {
+		backgroundColor: '#FACC15',
+	},
+	inactiveDot: {
+		backgroundColor: 'rgba(255, 255, 255, 0.3)',
+	},
+	statusText: {
+		fontSize: 11,
+		fontWeight: '600',
+	},
+	activeStatusText: {
+		color: '#FACC15',
+	},
+	inactiveStatusText: {
+		color: 'rgba(255, 255, 255, 0.4)',
+	},
+
+	// Disabled State
+	disabledContainer: {
+		opacity: 0.4,
+		backgroundColor: 'rgba(255, 255, 255, 0.02)',
+	},
+	disabledIconWrapper: {
+		width: 52,
+		height: 52,
+		borderRadius: 26,
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.08)',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	disabledTitle: {
+		color: 'rgba(255, 255, 255, 0.4)',
+		fontSize: 14,
+		fontWeight: '700',
+		marginTop: 10,
+	},
+	disabledSubtitle: {
+		color: 'rgba(255, 255, 255, 0.25)',
+		fontSize: 11,
+		marginTop: 2,
+		fontWeight: '500',
+	},
+});
