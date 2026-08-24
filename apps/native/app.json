@@ -21,7 +21,7 @@
 			"predictiveBackGestureEnabled": false,
 			"package": "org.northernexplorer.app",
 			"permissions": ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"],
-			"versionCode": 10
+			"versionCode": 11
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"
