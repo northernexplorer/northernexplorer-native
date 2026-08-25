@@ -3,13 +3,13 @@ import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Link} from 'expo-router';
+import {PointOfInterestTypeEnum} from '@northernexplorer/types';
 import {setBaseLayer, setPoiTypes} from '~/location/state/map/mapSlice';
 import {baseLayers} from '~/location/Map/baseLayers';
 import {useMap} from '~/location/state/map/useMap';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
-import {PointOfInterestTypeEnum} from '@northernexplorer/types';
 
 const LAYER_TILES = [
 	{
