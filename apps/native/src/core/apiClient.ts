@@ -54,7 +54,7 @@ export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUT
 		Object.entries(params).forEach(([key, value]) => {
 			if (value !== undefined && value !== null) {
 				if (Array.isArray(value)) {
-					value.forEach(v => url.searchParams.append(key, String(v)));
+					value.forEach(v => url.searchParams.append(`${key}[]`, String(v)));
 				} else {
 					url.searchParams.set(key, String(value));
 				}

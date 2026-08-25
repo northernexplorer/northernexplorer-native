@@ -8,9 +8,10 @@ interface ComponentProps<T extends string> {
 	value: PointOfInterestTypeEnum[];
 	updateField: (name: T, value: PointOfInterestTypeEnum[]) => void;
 	error?: string;
+	darkMode?: boolean;
 }
 
-export function PointOfInterestTypeDropdown<T extends string>({fieldName, label = 'Type', value, updateField, error}: ComponentProps<T>) {
+export function PointOfInterestTypeDropdown<T extends string>({fieldName, label = 'Type', value, updateField, error, darkMode}: ComponentProps<T>) {
 	const options = Object.values(PointOfInterestTypeEnum).map(option => ({
 		label: option.replace(/([a-z])([A-Z])/g, '$1 $2'),
 		value: option as string,
@@ -31,6 +32,7 @@ export function PointOfInterestTypeDropdown<T extends string>({fieldName, label 
 			updateField={handleUpdate}
 			error={error}
 			isMultiSelect
+			darkMode={darkMode}
 		/>
 	);
 }

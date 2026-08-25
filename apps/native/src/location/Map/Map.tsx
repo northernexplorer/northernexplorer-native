@@ -14,7 +14,7 @@ import {MapMarkerNative} from '~/location/Map/components/MapMarkerNative';
 
 export function Map() {
 	const router = useRouter();
-	const {baseLayer} = useMap();
+	const {baseLayer, selectedPoiTypes} = useMap();
 	const cameraRef = useRef<CameraRef>(null);
 
 	const params = useLocalSearchParams<{lat?: string; lon?: string; zoom?: string; selectedId?: string}>();
@@ -38,6 +38,7 @@ export function Map() {
 		lat: mapCenter.lat,
 		lon: mapCenter.lon,
 		limit: 500,
+		selectedPoiTypes,
 	});
 
 	const points = useMemo(() => {

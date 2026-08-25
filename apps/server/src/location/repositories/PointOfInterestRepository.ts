@@ -72,7 +72,10 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		};
 	}
 
-	async getClosestPointOfInterests(lat: number, lon: number, limit: number) {
+	async getClosestPointOfInterests(lat: number, lon: number, limit: number, selectedPoiTypes: PointOfInterestTypeEnum[] = []) {
+		const hasTypeFilter = selectedPoiTypes.length > 0;
+		const typeFilterSql = hasTypeFilter ? `AND h.type && ?::text[]` : '';
+
 		const query = `
 			SELECT id, name, description, image, lat, lon, country, region, status, type,
 			       start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
@@ -100,12 +103,19 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 							  JOIN country c ON h.country_id = c.id
 					          JOIN region r ON h.region_id = r.id
 				     WHERE h.status = 'Published'
+						 ${typeFilterSql}
 				 ) AS spatial_search
 			ORDER BY distanceMeters ASC
 				LIMIT ?;
 		`;
 
-		const rawResults = (await this.execute(query, [lat, lon, lat, limit])) as unknown as PointOfInterestRawRow[];
+		const params: unknown[] = [lat, lon, lat];
+		if (hasTypeFilter) {
+			params.push(`{${selectedPoiTypes.join(',')}}`);
+		}
+		params.push(limit);
+
+		const rawResults = (await this.execute(query, params)) as unknown as PointOfInterestRawRow[];
 
 		return rawResults.map(site => ({
 			id: site.id,
