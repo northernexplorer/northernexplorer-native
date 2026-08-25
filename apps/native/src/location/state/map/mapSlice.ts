@@ -1,4 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {PointOfInterestTypeEnum} from '@northernexplorer/types';
 import {baseLayers} from '~/location/Map/baseLayers';
 
 export interface MapRasterSource {
@@ -26,10 +27,12 @@ export interface MapStyleObject {
 
 export interface MapState {
 	baseLayer: MapStyleObject;
+	selectedPoiTypes: PointOfInterestTypeEnum[];
 }
 
 const initialState: MapState = {
 	baseLayer: baseLayers.standard,
+	selectedPoiTypes: [],
 };
 
 export const mapSlice = createSlice({
@@ -39,8 +42,11 @@ export const mapSlice = createSlice({
 		setBaseLayer: (state, action: PayloadAction<MapStyleObject>) => {
 			state.baseLayer = action.payload;
 		},
+		setPoiTypes: (state, action: PayloadAction<PointOfInterestTypeEnum[]>) => {
+			state.selectedPoiTypes = action.payload;
+		},
 	},
 });
 
-export const {setBaseLayer} = mapSlice.actions;
+export const {setBaseLayer, setPoiTypes} = mapSlice.actions;
 export default mapSlice.reducer;

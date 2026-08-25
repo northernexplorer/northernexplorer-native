@@ -72,7 +72,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		};
 	}
 
-	async getClosestPointOfInterests(lat: number, lon: number, limit: number) {
+	async getClosestPointOfInterests(lat: number, lon: number, limit: number, selectedPoiTypes: PointOfInterestTypeEnum[] = []) {
 		const query = `
 			SELECT id, name, description, image, lat, lon, country, region, status, type,
 			       start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters

@@ -3,11 +3,13 @@ import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Link} from 'expo-router';
-import {setBaseLayer} from '~/location/state/map/mapSlice';
+import {setBaseLayer, setPoiTypes} from '~/location/state/map/mapSlice';
 import {baseLayers} from '~/location/Map/baseLayers';
 import {useMap} from '~/location/state/map/useMap';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
+import {PointOfInterestTypeEnum} from '@northernexplorer/types';
 
 const LAYER_TILES = [
 	{
@@ -33,7 +35,7 @@ const LAYER_TILES = [
 export function MapSidebar() {
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
-	const {baseLayer} = useMap();
+	const {baseLayer, selectedPoiTypes = []} = useMap();
 
 	const isLoggedIn = !!authentication?.username;
 
@@ -42,26 +44,17 @@ export function MapSidebar() {
 	const canChangeMapStyle = !!permissionData?.navigation.changeMapStyle;
 
 	const bannerHref = isLoggedIn ? `/profile/${authentication.username}/change-subscription` : '/profile/login';
-
 	const bannerTitle = 'Upgrade Required to Access All Map Styles';
-
 	const bannerSubtitle = isLoggedIn ? 'Click to find out more' : 'Start by signing in';
+
+	const handlePoiTypeChange = (fieldName: string, newTypes: PointOfInterestTypeEnum[]) => {
+		dispatch(setPoiTypes(newTypes));
+	};
 
 	if (!permissionData) return null;
 
 	return (
-		<View>
-			{!canChangeMapStyle && (
-				<Link href={bannerHref} asChild>
-					<TouchableOpacity activeOpacity={0.8}>
-						<View style={styles.banner}>
-							<Text style={styles.bannerTitle}>{bannerTitle}</Text>
-							<Text style={styles.bannerSubtitle}>{bannerSubtitle}</Text>
-						</View>
-					</TouchableOpacity>
-				</Link>
-			)}
-
+		<View style={styles.container}>
 			<Text style={styles.heading}>Map Style</Text>
 			<View style={[styles.tileGroup, !canChangeMapStyle && styles.disabledGroup]}>
 				{LAYER_TILES.map(item => {
@@ -83,16 +76,32 @@ export function MapSidebar() {
 					);
 				})}
 			</View>
+			<Text style={styles.heading}>Filter</Text>
+			<PointOfInterestTypeDropdown fieldName="poiTypes" label="Types" value={selectedPoiTypes} updateField={handlePoiTypeChange} darkMode />
+
+			{!canChangeMapStyle && (
+				<Link href={bannerHref} asChild>
+					<TouchableOpacity activeOpacity={0.8}>
+						<View style={styles.banner}>
+							<Text style={styles.bannerTitle}>{bannerTitle}</Text>
+							<Text style={styles.bannerSubtitle}>{bannerSubtitle}</Text>
+						</View>
+					</TouchableOpacity>
+				</Link>
+			)}
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
+	container: {
+		gap: 12,
+	},
 	heading: {
 		color: 'white',
 		fontSize: 18,
 		fontWeight: '600',
-		marginTop: 16,
+		marginTop: 8,
 		marginBottom: 8,
 	},
 	tileGroup: {
@@ -139,7 +148,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: '#333333',
 		padding: 12,
-		marginBottom: 12,
+		marginTop: 4,
 	},
 	bannerTitle: {
 		fontSize: 14,

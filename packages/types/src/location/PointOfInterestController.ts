@@ -50,7 +50,7 @@ export type PointOfInterestEditType = {
 
 export const PointOfInterestController = {
 	getNearbyPointOfInterests: {
-		params: {} as {lat: number; lon: number; limit: number},
+		params: {} as {lat: number; lon: number; limit: number; selectedPoiTypes?: PointOfInterestTypeEnum[]},
 		response: null as unknown as PointOfInterestType[],
 	},
 	getPointOfInterestById: {
