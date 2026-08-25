@@ -7,11 +7,11 @@
 	},
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",
-	"dependencies": {
-		"@expo/vector-icons": "^15.1.1",
-		"react": "19.2.3",
-		"react-native": "0.86.2",
-		"react-native-safe-area-context": "~5.7.0"
+	"peerDependencies": {
+		"@expo/vector-icons": "*",
+		"react": "*",
+		"react-native": "*",
+		"react-native-safe-area-context": "*"
 	},
 	"scripts": {
 		"build": "tsc",
