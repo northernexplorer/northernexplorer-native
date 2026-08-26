@@ -1925,9 +1925,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@maplibre/maplibre-react-native@npm:^11.3.6":
-  version: 11.3.6
-  resolution: "@maplibre/maplibre-react-native@npm:11.3.6"
+"@maplibre/maplibre-react-native@npm:^11.3.7":
+  version: 11.3.7
+  resolution: "@maplibre/maplibre-react-native@npm:11.3.7"
   dependencies:
     "@maplibre/maplibre-gl-style-spec": "npm:24.8.5"
     "@turf/distance": "npm:^7.3.5"
@@ -1947,7 +1947,7 @@ __metadata:
       optional: true
     expo:
       optional: true
-  checksum: 10c0/abe4aad13c59cb76c9fd6b754126e92bd084575ac6a20f4546defde10ab433a52ff4242f0209055eda4747e643c81a8abf33dbb7dbbf136b293411df6ec28136
+  checksum: 10c0/7c6515e425ffdc869c53f00c2fdb5bdcb9f972ff2e0de14f46f5a0a97995d3ac979a07bba8eee3e6a6a94c10f682a8d52defb446a59c8b5895b6126b503198b4
   languageName: node
   linkType: hard
 
@@ -5174,9 +5174,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsonc@npm:^3.2.0":
-  version: 3.4.1
-  resolution: "eslint-plugin-jsonc@npm:3.4.1"
+"eslint-plugin-jsonc@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "eslint-plugin-jsonc@npm:3.4.2"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.5.1"
     "@eslint/core": "npm:^1.0.1"
@@ -5189,7 +5189,7 @@ __metadata:
     synckit: "npm:^0.11.12"
   peerDependencies:
     eslint: ">=9.38.0"
-  checksum: 10c0/ff92261c21d15e7dda2c467c86bc16b53026b0b1e08a126c4ac2cafa14c36c3326ad93842d7cb4f941e40b27d42db90c3e24cd0d4b5e3aa2fb4ea843ed5d9932
+  checksum: 10c0/ca88b1d56d0cbdac0af6414488b881e8348cd47373f7c96293d3f4d918438ad30b1171f4efd535ec3cf2e5ffd816c44bbbbcf90e04a7eeff9216cb74a1cc193e
   languageName: node
   linkType: hard
 
@@ -8383,7 +8383,7 @@ __metadata:
     eslint: "npm:^9.39.5"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-import: "npm:^2.32.0"
-    eslint-plugin-jsonc: "npm:^3.2.0"
+    eslint-plugin-jsonc: "npm:^3.4.2"
     eslint-plugin-prettier: "npm:^5.5.6"
     eslint-plugin-react: "npm:^7.37.5"
     expo-doctor: "npm:^1.20.1"
@@ -8400,7 +8400,7 @@ __metadata:
   resolution: "northernexplorer-native@workspace:apps/native"
   dependencies:
     "@expo/vector-icons": "npm:^15.0.2"
-    "@maplibre/maplibre-react-native": "npm:^11.3.6"
+    "@maplibre/maplibre-react-native": "npm:^11.3.7"
     "@northernexplorer/tools": "npm:*"
     "@northernexplorer/types": "npm:*"
     "@react-native-async-storage/async-storage": "npm:2.2.0"
