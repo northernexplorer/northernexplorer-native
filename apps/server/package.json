@@ -25,7 +25,7 @@
 		"pg-boss": "^12.26.3",
 		"reflect-metadata": "^0.2.2",
 		"resend": "^6.17.2",
-		"uuid": "^14.0.1"
+		"uuid": "^14.0.2"
 	},
 	"devDependencies": {
 		"@mikro-orm/cli": "^7.1.11",
