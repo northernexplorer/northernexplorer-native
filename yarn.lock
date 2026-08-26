@@ -1971,69 +1971,69 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mikro-orm/cli@npm:^7.1.11":
-  version: 7.1.11
-  resolution: "@mikro-orm/cli@npm:7.1.11"
+"@mikro-orm/cli@npm:^7.1.13":
+  version: 7.1.13
+  resolution: "@mikro-orm/cli@npm:7.1.13"
   dependencies:
-    "@mikro-orm/core": "npm:7.1.11"
-    mikro-orm: "npm:7.1.11"
+    "@mikro-orm/core": "npm:7.1.13"
+    mikro-orm: "npm:7.1.13"
     yargs: "npm:17.7.2"
   bin:
     mikro-orm: cli.js
-  checksum: 10c0/617e1ae8d8f2173c6105fc71b0fe68bae895e3ea06f4a3930604a1b68b1a25ce32b7c823016352725bada817c83d1477b17638ccba52c9578f48b02656f09adb
+  checksum: 10c0/cd6e2f0cafb4621331a632d494a5763928bab9e28f4808e343cb74e4c2a0d36077de9cf923b7e4b74732ab85e1d7f466c43d5647f78d006b50f113dd6d1245c2
   languageName: node
   linkType: hard
 
-"@mikro-orm/core@npm:7.1.11, @mikro-orm/core@npm:^7.1.11":
-  version: 7.1.11
-  resolution: "@mikro-orm/core@npm:7.1.11"
+"@mikro-orm/core@npm:7.1.13, @mikro-orm/core@npm:^7.1.13":
+  version: 7.1.13
+  resolution: "@mikro-orm/core@npm:7.1.13"
   peerDependencies:
     dataloader: 2.2.3
   peerDependenciesMeta:
     dataloader:
       optional: true
-  checksum: 10c0/f31d590c3e1ff4e7f0d059cca74680509b2b247409955c673aef6227b799af7aef43aff686ba98464c61dab6e5e9479f8177a52adc14e2bdec3a0f6a0b807813
+  checksum: 10c0/c7adde0baccfc09b2c36836501f1b9daeb3dd04beff4026c4f2cac97f47a432d2db73ef20bb0371d0845435571841ba91a8151511f56430610ca4453a1c96fd0
   languageName: node
   linkType: hard
 
-"@mikro-orm/decorators@npm:^7.1.11":
-  version: 7.1.11
-  resolution: "@mikro-orm/decorators@npm:7.1.11"
+"@mikro-orm/decorators@npm:^7.1.13":
+  version: 7.1.13
+  resolution: "@mikro-orm/decorators@npm:7.1.13"
   peerDependencies:
-    "@mikro-orm/core": 7.1.11
+    "@mikro-orm/core": 7.1.13
     reflect-metadata: ^0.1.0 || ^0.2.0
   peerDependenciesMeta:
     reflect-metadata:
       optional: true
-  checksum: 10c0/12ad34ad1e9f3dffcac69a8cff6fcedf4e983a929088aefd792abb1d0b105954471c45f93a37ec97ab21811acf5e350b2dfe7d6703098c975f618c3e30d6e9cf
+  checksum: 10c0/6698dfd828bfa2f1e1dd8bc77744a63efcbb0f18368c5da41cff6ae9c470747377b53b2ef58a4ac881ce47076dd9460cd1ed360aac319a064ad490924154ea1f
   languageName: node
   linkType: hard
 
-"@mikro-orm/postgresql@npm:^7.1.11":
-  version: 7.1.11
-  resolution: "@mikro-orm/postgresql@npm:7.1.11"
+"@mikro-orm/postgresql@npm:^7.1.13":
+  version: 7.1.13
+  resolution: "@mikro-orm/postgresql@npm:7.1.13"
   dependencies:
-    "@mikro-orm/sql": "npm:7.1.11"
-    kysely: "npm:0.29.4"
-    pg: "npm:8.22.0"
-    pg-cursor: "npm:2.21.0"
+    "@mikro-orm/sql": "npm:7.1.13"
+    kysely: "npm:0.29.5"
+    pg: "npm:8.23.0"
+    pg-cursor: "npm:2.22.0"
     postgres-array: "npm:3.0.4"
     postgres-date: "npm:2.1.0"
     postgres-interval: "npm:4.1.0"
   peerDependencies:
-    "@mikro-orm/core": 7.1.11
-  checksum: 10c0/0863631bae170a7ff5eb68f1dd7030eb72d9d37ae5560dd2008231be0f198b34509a7bc4a779f36d2ed3db059a04eab79a1eac71b6ff4aa897ea3fe580abf866
+    "@mikro-orm/core": 7.1.13
+  checksum: 10c0/9c0ba645b0101aa33315e684e142ce1e105ab905619cecc59fb6f4833c26cb9dc6e6ef6a4c357dd0807c3b470fa376ac6ba43c2745dd33f11d4f0056d23ded1c
   languageName: node
   linkType: hard
 
-"@mikro-orm/sql@npm:7.1.11":
-  version: 7.1.11
-  resolution: "@mikro-orm/sql@npm:7.1.11"
+"@mikro-orm/sql@npm:7.1.13":
+  version: 7.1.13
+  resolution: "@mikro-orm/sql@npm:7.1.13"
   dependencies:
-    kysely: "npm:0.29.4"
+    kysely: "npm:0.29.5"
   peerDependencies:
-    "@mikro-orm/core": 7.1.11
-  checksum: 10c0/df78b0e7c1c369cdd4e6b47ca56552e2bd845a3c7d2e1b28d72613b8a8bc88977a70e0434900ab02d4a732e4f2c16f82ce893be98d33f5032bde05a0853c970a
+    "@mikro-orm/core": 7.1.13
+  checksum: 10c0/b38160f5e4cbc0a052346e1159767060513853d8c06bd235210729de9e3c6769a8a1a5edad3a6c8e7d79a427a02a50dd5dd5acd96303b109b576319b276d9ee8
   languageName: node
   linkType: hard
 
@@ -7159,10 +7159,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kysely@npm:0.29.4":
-  version: 0.29.4
-  resolution: "kysely@npm:0.29.4"
-  checksum: 10c0/13843cfaec03aa5c849c35da6d6e263e83c4ba194805d68f822a094609fd3e19053ecee942b9359be10383714bd1224475cc463f94a911666990b754ac13cc34
+"kysely@npm:0.29.5":
+  version: 0.29.5
+  resolution: "kysely@npm:0.29.5"
+  checksum: 10c0/b2a64d06e568ff9cd5a738fd371c834252517625e4e844e29332654080647a824c2573f60ed1d52945205e2aa19707538c17b581347650dad2899f37455945f0
   languageName: node
   linkType: hard
 
@@ -8063,10 +8063,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mikro-orm@npm:7.1.11":
-  version: 7.1.11
-  resolution: "mikro-orm@npm:7.1.11"
-  checksum: 10c0/da3238a3a7dbcc1bbbe23cf6667170e6d0db85f6ecdc2a60903548ce58ddf6457b42240c6a1a00ff898d89b68aefc81b165cd8f55bec10cee0e9feceddfc714f
+"mikro-orm@npm:7.1.13":
+  version: 7.1.13
+  resolution: "mikro-orm@npm:7.1.13"
+  checksum: 10c0/277d69e85ed3342f9c515f9a78be951a6039031a75c4d73d0eece21dff7566f29aecf94ef44a3bcf7a816175c8e192153963f4f4ee4b3a919b4f79840bf05905
   languageName: node
   linkType: hard
 
@@ -8437,10 +8437,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "northernexplorer-server@workspace:apps/server"
   dependencies:
-    "@mikro-orm/cli": "npm:^7.1.11"
-    "@mikro-orm/core": "npm:^7.1.11"
-    "@mikro-orm/decorators": "npm:^7.1.11"
-    "@mikro-orm/postgresql": "npm:^7.1.11"
+    "@mikro-orm/cli": "npm:^7.1.13"
+    "@mikro-orm/core": "npm:^7.1.13"
+    "@mikro-orm/decorators": "npm:^7.1.13"
+    "@mikro-orm/postgresql": "npm:^7.1.13"
     "@northernexplorer/types": "npm:*"
     "@types/cors": "npm:^2.8.17"
     "@types/express": "npm:^4.17.21"
@@ -8816,12 +8816,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-cursor@npm:2.21.0":
-  version: 2.21.0
-  resolution: "pg-cursor@npm:2.21.0"
+"pg-cursor@npm:2.22.0":
+  version: 2.22.0
+  resolution: "pg-cursor@npm:2.22.0"
   peerDependencies:
     pg: ^8
-  checksum: 10c0/abc916bbec4eb285357b987ab2ea43e515db1ea4b5a5d1f5817db4eb1ad91afb951de98261c221ac7d05912856c6180fb2259c4537ea248d4cae69f53d2beb9c
+  checksum: 10c0/546e06337376beef805fe17495a1b427aba55c67c1c916048f4476070554d03583a440106a9ea09fd6263cf76dfa23965bd9098f5d94c53df307d699394c0850
   languageName: node
   linkType: hard
 
@@ -8848,6 +8848,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pg-protocol@npm:^1.16.0":
+  version: 1.16.0
+  resolution: "pg-protocol@npm:1.16.0"
+  checksum: 10c0/8ea4a8f4970aa0ca1e5bf9a482da0a41a043d7470fbaf7592736971146b09a2a4003d953c0091b72fc30bf7a7994a0b7fdf897bf50cd219787bd22806b3ffb04
+  languageName: node
+  linkType: hard
+
 "pg-types@npm:2.2.0, pg-types@npm:^2.2.0":
   version: 2.2.0
   resolution: "pg-types@npm:2.2.0"
@@ -8861,7 +8868,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:8.22.0, pg@npm:^8.22.0":
+"pg@npm:8.23.0":
+  version: 8.23.0
+  resolution: "pg@npm:8.23.0"
+  dependencies:
+    pg-cloudflare: "npm:^1.4.0"
+    pg-connection-string: "npm:^2.14.0"
+    pg-pool: "npm:^3.14.0"
+    pg-protocol: "npm:^1.16.0"
+    pg-types: "npm:2.2.0"
+    pgpass: "npm:1.0.5"
+  peerDependencies:
+    pg-native: ">=3.0.1"
+  dependenciesMeta:
+    pg-cloudflare:
+      optional: true
+  peerDependenciesMeta:
+    pg-native:
+      optional: true
+  checksum: 10c0/11ce12a71b4239588c18f078531c378d5bcdbcb9ea892e080a6e71f91aaece2b4b8fd93ee5777f94210f9258ff56161f8ed1a45050c32d295aaca037bba12ee8
+  languageName: node
+  linkType: hard
+
+"pg@npm:^8.22.0":
   version: 8.22.0
   resolution: "pg@npm:8.22.0"
   dependencies:
