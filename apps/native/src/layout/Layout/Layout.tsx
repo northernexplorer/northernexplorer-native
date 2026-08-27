@@ -20,9 +20,10 @@ interface Props {
 	fullPage?: boolean;
 	home?: boolean;
 	showOffline?: boolean;
+	disableScroll?: boolean;
 }
 
-export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline}: Props) {
+export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline, disableScroll}: Props) {
 	const {width} = useWindowDimensions();
 	const insets = useSafeAreaInsets();
 	const {isOffline, isRequiredAppUpdate} = useIsOffline();
@@ -46,6 +47,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 
 			<ScrollView
 				style={{flex: 1}}
+				scrollEnabled={!disableScroll}
 				contentContainerStyle={{
 					flexGrow: 1,
 					minHeight: fullPage ? '100%' : '100%',
