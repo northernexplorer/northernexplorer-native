@@ -4,7 +4,7 @@ export type CountryType = {
 };
 
 export const CountryController = {
-	getCountryById: {
+	getById: {
 		params: {} as {id: string},
 		response: null as unknown as CountryType,
 	},

@@ -1,5 +1,5 @@
 import {CityCache, PointOfInterest, Country, Region, Review, Organization} from '../location';
-import {Migration} from '../system';
+import {Migration, Support} from '../system';
 import {ForecastCache, WeatherCache} from '../environment';
 import {Session, Subscription, SubscriptionLevel, User} from '../user';
 
@@ -17,4 +17,5 @@ export const entities = [
 	Subscription,
 	SubscriptionLevel,
 	Review,
+	Support,
 ];
