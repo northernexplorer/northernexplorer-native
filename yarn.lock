@@ -1513,7 +1513,7 @@ __metadata:
   peerDependencies:
     "@expo/metro-runtime": ^57.0.14
     expo: "*"
-    expo-constants: ^57.0.16
+    expo-constants: ^57.0.15
     expo-font: ^57.0.1
     expo-router: "*"
     expo-server: ^57.0.3
@@ -5354,7 +5354,7 @@ __metadata:
   resolution: "expo-asset@npm:57.0.15"
   dependencies:
     "@expo/image-utils": "npm:^0.11.5"
-    expo-constants: "npm:~57.0.16"
+    expo-constants: "npm:~57.0.15"
   peerDependencies:
     expo: "*"
     react: "*"
@@ -5380,7 +5380,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-constants@npm:~57.0.16":
+"expo-constants@npm:~57.0.15, expo-constants@npm:~57.0.16":
   version: 57.0.16
   resolution: "expo-constants@npm:57.0.16"
   dependencies:
@@ -5460,7 +5460,7 @@ __metadata:
   version: 57.0.8
   resolution: "expo-linking@npm:57.0.8"
   dependencies:
-    expo-constants: "npm:~57.0.16"
+    expo-constants: "npm:~57.0.15"
     invariant: "npm:^2.2.4"
   peerDependencies:
     react: "*"
@@ -5557,7 +5557,7 @@ __metadata:
     "@expo/metro-runtime": ^57.0.14
     "@testing-library/react-native": ">= 13.2.0"
     expo: "*"
-    expo-constants: ^57.0.16
+    expo-constants: ^57.0.15
     expo-linking: ^57.0.8
     react: "*"
     react-dom: "*"
