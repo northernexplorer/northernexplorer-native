@@ -1,79 +1,12 @@
-import React, {useState, useRef, useCallback} from 'react';
-import {View, Text, Platform, Animated, Easing, Pressable} from 'react-native';
-import * as Location from 'expo-location';
+import React from 'react';
+import {View, Text, Animated, Pressable} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {Link, useFocusEffect} from 'expo-router';
+import {Link} from 'expo-router';
 import {styles} from '~/layout/Home/styles';
-import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
+import {useCompass} from '~/location/hooks/useCompass';
 
 export function CompassWidget() {
-	const [heading, setHeading] = useState<number>(0);
-	const [accuracy, setAccuracy] = useState<number>(3);
-	const [isAvailable, setIsAvailable] = useState<boolean>(true);
-
-	const animatedDegrees = useRef(new Animated.Value(0)).current;
-	const targetDegrees = useRef<number>(0);
-
-	useFocusEffect(
-		useCallback(() => {
-			let subscription: Location.LocationSubscription | null = null;
-			let mounted = true;
-
-			const setupFusedCompass = async () => {
-				if (Platform.OS === 'web') {
-					if (mounted) setIsAvailable(false);
-					return;
-				}
-
-				const {status} = await Location.requestForegroundPermissionsAsync();
-				if (status !== 'granted') {
-					if (mounted) setIsAvailable(false);
-					return;
-				}
-
-				const sub = await Location.watchHeadingAsync(headingData => {
-					if (!mounted) return;
-
-					const rawAngle = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
-					const rounded = Math.round(rawAngle);
-
-					setAccuracy(headingData.accuracy);
-					setHeading(rounded);
-
-					let delta = -rounded - targetDegrees.current;
-					if (delta > 180) delta -= 360;
-					if (delta < -180) delta += 360;
-
-					targetDegrees.current += delta;
-
-					Animated.timing(animatedDegrees, {
-						toValue: targetDegrees.current,
-						duration: 100,
-						easing: Easing.out(Easing.quad),
-						useNativeDriver: true,
-					}).start();
-				});
-
-				if (!mounted) {
-					sub.remove();
-				} else {
-					subscription = sub;
-				}
-			};
-
-			setupFusedCompass();
-
-			return () => {
-				mounted = false;
-				subscription?.remove();
-			};
-		}, []),
-	);
-
-	const rotate = animatedDegrees.interpolate({
-		inputRange: [0, 360],
-		outputRange: ['0deg', '360deg'],
-	});
+	const {heading, cardinal, rotate, isAvailable, needsCalibration} = useCompass();
 
 	if (!isAvailable) {
 		return (
@@ -110,9 +43,6 @@ export function CompassWidget() {
 			</Pressable>
 		);
 	}
-
-	const cardinal = getCardinalDirection(heading);
-	const needsCalibration = accuracy <= 1;
 
 	return (
 		<Link href="/location/compass" asChild>
