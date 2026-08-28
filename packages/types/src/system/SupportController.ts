@@ -11,13 +11,19 @@ export type SupportType = {
 	author: UserType;
 };
 
+export type SupportHeadingType = {
+	id: string;
+	title: string;
+	url: string;
+};
+
 export const SupportController = {
 	getByUrl: {
 		params: {} as {url: string},
 		response: null as unknown as SupportType,
 	},
-	getAll: {
+	getHeadings: {
 		params: {} as Record<string, never>,
-		response: null as unknown as SupportType[],
+		response: null as unknown as SupportHeadingType[],
 	},
 };

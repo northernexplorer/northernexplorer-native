@@ -14,7 +14,7 @@ export class SupportController extends BaseController {
 		return this.repos.support.getByUrl(url);
 	}
 
-	getAll(): Promise<Response<Route<'getAll'>>> {
-		return this.repos.support.getAll();
+	getHeadings(): Promise<Response<Route<'getHeadings'>>> {
+		return this.repos.support.getHeadings();
 	}
 }

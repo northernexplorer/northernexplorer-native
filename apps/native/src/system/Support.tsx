@@ -5,7 +5,7 @@ import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 
 export function Support() {
-	const {data, loading} = useApiFetch('system', 'SupportController', 'getAll', {});
+	const {data, loading} = useApiFetch('system', 'SupportController', 'getHeadings', {});
 
 	if (loading) return <Spinner />;
 
