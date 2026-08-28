@@ -120,5 +120,16 @@ const styles = StyleSheet.create({
 		color: '#0088cc',
 		fontWeight: 'bold',
 	},
+	categorySection: {
+		gap: 12,
+	},
+	categoryHeader: {
+		fontSize: 18,
+		fontWeight: '700',
+		color: '#111827',
+		borderBottomWidth: 1,
+		borderBottomColor: '#e5e7eb',
+		paddingBottom: 6,
+	},
 });
 export default styles;

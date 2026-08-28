@@ -18,6 +18,7 @@ export function Footer({items}: FooterProps) {
 	const defaultItems: MenuItem[] = [
 		{label: 'Privacy Policy', href: '/support/privacy-policy'},
 		{label: 'Terms of Service', href: '/support/terms-of-service'},
+		{label: 'Code of Conduct', href: '/support/explorers-code-of-conduct'},
 		{label: 'Support', href: '/support'},
 	];
 

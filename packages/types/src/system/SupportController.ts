@@ -1,5 +1,10 @@
 import {UserType} from '../user';
 
+export enum SupportCategory {
+	Legal = 'Legal',
+	Help = 'Help',
+}
+
 export type SupportType = {
 	id: string;
 	version: number;
@@ -9,12 +14,14 @@ export type SupportType = {
 	createdAt: Date;
 	updatedAt: Date;
 	author: UserType;
+	category: SupportCategory;
 };
 
 export type SupportHeadingType = {
 	id: string;
 	title: string;
 	url: string;
+	category: SupportCategory;
 };
 
 export const SupportController = {

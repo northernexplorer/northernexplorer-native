@@ -8,7 +8,7 @@ export class SupportRepository extends BaseRepository<Support> {
 
 	async getHeadings() {
 		return this.findAll({
-			fields: ['id', 'title', 'url'],
+			fields: ['id', 'title', 'url', 'category'],
 			orderBy: {title: 'asc'},
 		});
 	}

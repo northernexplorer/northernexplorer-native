@@ -1,5 +1,6 @@
-import {Entity, PrimaryKey, Property, ManyToOne} from '@mikro-orm/decorators/legacy';
+import {Entity, PrimaryKey, Property, ManyToOne, Enum} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
+import {SupportCategory} from '@northernexplorer/types';
 import {User} from '../../user';
 
 export type SupportInput = {
@@ -7,6 +8,7 @@ export type SupportInput = {
 	title: string;
 	url: string;
 	author: User;
+	category: SupportCategory;
 };
 
 @Entity()
@@ -26,6 +28,9 @@ export class Support {
 	@Property({type: 'text'})
 	url: string;
 
+	@Enum(() => SupportCategory)
+	category: SupportCategory;
+
 	@ManyToOne(() => User)
 	author: User;
 
@@ -40,5 +45,6 @@ export class Support {
 		this.title = data.title;
 		this.url = data.url;
 		this.author = data.author;
+		this.category = data.category;
 	}
 }
