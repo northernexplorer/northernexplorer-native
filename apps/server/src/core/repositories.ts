@@ -25,7 +25,7 @@ import {
 	User,
 	UserRepository,
 } from '../user';
-import {Migration} from '../system';
+import {Migration, Support, SupportRepository} from '../system';
 import {MigrationRepository} from '../system/repositories/MigrationRepository';
 import {SubscriptionFeature} from '../user/entities/SubscriptionFeature';
 
@@ -47,5 +47,6 @@ export function repositories(em: EntityManager) {
 		subscription: new SubscriptionRepository(em, Subscription),
 		subscriptionFeature: new SubscriptionFeatureRepository(em, SubscriptionFeature),
 		subscriptionLevel: new SubscriptionLevelRepository(em, SubscriptionLevel),
+		support: new SupportRepository(em, Support),
 	};
 }

@@ -1,6 +1,6 @@
 import {ForecastController, FieldNoteController, LunarController, WeatherController} from '../environment';
 import {CityController, PointOfInterestController, CountryController, RegionController, ReviewController, OrganizationController} from '../location';
-import {StatusController, MigrationController} from '../system';
+import {StatusController, MigrationController, SupportController} from '../system';
 import {SessionController, SubscriptionController, SubscriptionLevelController, UserController} from '../user';
 
 export const controllers = [
@@ -20,4 +20,5 @@ export const controllers = [
 	SessionController,
 	SubscriptionLevelController,
 	ReviewController,
+	SupportController,
 ];
