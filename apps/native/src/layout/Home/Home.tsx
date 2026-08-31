@@ -14,6 +14,7 @@ import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {styles} from '~/layout/Home/styles';
 import {FlashlightWidget} from '~/layout/Home/components/FlashlightWidget';
+import {SignalWidget} from '~/layout/Home/components/SignalWidget';
 
 export function Home() {
 	const weather = useWeather();
@@ -43,11 +44,11 @@ export function Home() {
 
 	const canUseCompass = !!permissionData?.navigation.useCompass;
 	const canUseFlashlight = !!permissionData?.navigation.useFlashlight;
+	const canUseSignal = !!permissionData?.navigation.useSignal;
 
 	return (
 		<View style={{width: '100%', padding: 10, paddingBottom: 32}}>
 			<View style={{gap: 12}}>
-				{/* Row 1: Weather (flex: 2) + Lunar (flex: 1) */}
 				<View style={styles.heroRow}>
 					<View style={styles.weatherSection}>
 						<WeatherWidget data={weather} />
@@ -57,11 +58,12 @@ export function Home() {
 					</View>
 				</View>
 
-				{/* Row 2: FieldNote (flex: 2) + Compass (flex: 1) */}
 				<View style={styles.heroRow}>
-					<View style={styles.fieldNote}>
-						<FieldNoteWidget data={fieldNote} />
-					</View>
+					{canUseSignal && (
+						<View style={styles.compassSection}>
+							<SignalWidget />
+						</View>
+					)}
 					{canUseCompass && (
 						<View style={styles.compassSection}>
 							<CompassWidget />
@@ -72,6 +74,11 @@ export function Home() {
 							<FlashlightWidget />
 						</View>
 					)}
+				</View>
+				<View style={styles.heroRow}>
+					<View style={styles.fieldNote}>
+						<FieldNoteWidget data={fieldNote} />
+					</View>
 				</View>
 			</View>
 
