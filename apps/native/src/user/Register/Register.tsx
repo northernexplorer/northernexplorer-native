@@ -18,6 +18,7 @@ const initialFormData = {
 	gender: GenderEnum.MALE,
 	acceptTerms: false,
 	acceptPrivacy: false,
+	acceptCodeOfConduct: false,
 	website: '',
 };
 
@@ -62,6 +63,7 @@ export function Register() {
 
 		if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the terms of service';
 		if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'You must accept the privacy policy';
+		if (!formData.acceptCodeOfConduct) newErrors.acceptCodeOfConduct = "You must accept the Explorer's Code of Conduct";
 
 		setErrors(newErrors);
 
@@ -191,6 +193,17 @@ export function Register() {
 				<Switch value={formData.acceptPrivacy} onValueChange={val => updateField('acceptPrivacy', val)} disabled={loading} />
 			</View>
 			{errors.acceptPrivacy && <Text style={styles.errorText}>{errors.acceptPrivacy}</Text>}
+
+			<View style={styles.switchRow}>
+				<Text style={styles.label}>
+					I accept the{' '}
+					<Link href="/support/explorers-code-of-conduct" style={styles.linkText}>
+						Explorer's Code of Conduct
+					</Link>
+				</Text>
+				<Switch value={formData.acceptCodeOfConduct} onValueChange={val => updateField('acceptCodeOfConduct', val)} disabled={loading} />
+			</View>
+			{errors.acceptCodeOfConduct && <Text style={styles.errorText}>{errors.acceptCodeOfConduct}</Text>}
 
 			<Pressable style={[styles.button, loading && {opacity: 0.6}]} onPress={validateForm} disabled={loading}>
 				<Text style={styles.buttonText}>{loading ? 'Creating Account...' : 'Create Account'}</Text>
