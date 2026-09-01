@@ -5,6 +5,7 @@ type PermissionResponse = {
 	navigation: {
 		useCompass: boolean;
 		useFlashlight: boolean;
+		useSignal: boolean;
 		changeMapStyle: boolean;
 	};
 };

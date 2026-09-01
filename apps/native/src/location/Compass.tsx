@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
 	centerContainer: {
 		flex: 1,
 		alignItems: 'center',
-		justifyContent: 'center',
 		paddingHorizontal: 24,
 	},
 	compassContainer: {
