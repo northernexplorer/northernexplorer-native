@@ -76,7 +76,6 @@ export const styles = StyleSheet.create({
 		borderColor: 'black',
 		flexDirection: 'column',
 		flexWrap: 'wrap',
-		alignItems: 'flex-start',
 	},
 
 	userName: {
@@ -106,5 +105,30 @@ export const styles = StyleSheet.create({
 		color: '#FFFFFF',
 		fontWeight: '600',
 		fontSize: 14,
+	},
+
+	reviewForm: {
+		padding: 10,
+		borderRadius: 10,
+		width: '50%',
+		gap: 10,
+		backgroundColor: '#555555',
+	},
+
+	reviewTitle: {
+		fontWeight: 600,
+		fontSize: 22,
+		color: 'white',
+	},
+
+	submitReview: {
+		marginTop: 10,
+		width: 80,
+		textAlign: 'center',
+		borderRadius: 6,
+		padding: 5,
+		color: 'white',
+		fontWeight: '500',
+		backgroundColor: 'black',
 	},
 });

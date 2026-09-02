@@ -15,7 +15,8 @@ export function PointOfInterestDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
 	const auth = useAuthentication();
 	const coords = useLocation();
-	const {data, loading} = useApiFetch('location', 'PointOfInterestController', 'getPointOfInterestById', {id});
+
+	const {data, loading, refetch} = useApiFetch('location', 'PointOfInterestController', 'getPointOfInterestById', {id});
 
 	const distance = useMemo(() => {
 		if (!coords?.lat || !data?.lon) return null;
@@ -89,7 +90,7 @@ export function PointOfInterestDetails() {
 
 				<Text style={styles.body}>{data.description}</Text>
 				<View style={styles.divider} />
-				<ReviewDetails data={data} loading={loading} />
+				<ReviewDetails data={data} loading={loading} refetch={refetch} />
 			</View>
 		</View>
 	);

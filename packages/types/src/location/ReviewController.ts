@@ -20,6 +20,7 @@ export type ReviewSummary = {
 };
 
 export enum ReviewRatingEnum {
+	DEFAULT = 0,
 	TERRIBLE = 1,
 	POOR = 2,
 	AVERAGE = 3,
