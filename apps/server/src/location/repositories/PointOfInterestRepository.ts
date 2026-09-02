@@ -67,6 +67,8 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 					id: review.user.id,
 					username: review.user.username,
 					score: review.user.score,
+					firstName: review.user.firstName,
+					lastName: review.user.lastName,
 				},
 			})),
 		};
