@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react';
-import {View, Text, Image, TouchableOpacity} from 'react-native';
+import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import {Link, useLocalSearchParams} from 'expo-router';
+import {Ionicons} from '@expo/vector-icons';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString, Spinner} from '@northernexplorer/tools';
 import {RolesEnum} from '@northernexplorer/types';
 import {ReviewDetails} from './components/Reviews';
@@ -40,6 +41,10 @@ export function PointOfInterestDetails() {
 
 	if (loading || !data) return <Spinner />;
 
+	const reviewCount = data.reviews?.length ?? 0;
+	const rawRating = typeof data.averageRating === 'number' ? data.averageRating : parseFloat(String(data.averageRating));
+	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
+
 	return (
 		<View>
 			<View style={styles.bannerContainer}>
@@ -75,6 +80,36 @@ export function PointOfInterestDetails() {
 
 				<Text style={styles.title}>{data.name}</Text>
 
+				{/* 5-Star Rating Summary Row */}
+				<View style={ratingStyles.ratingBadge}>
+					<View style={ratingStyles.starRow}>
+						{[1, 2, 3, 4, 5].map(starIndex => {
+							let iconName: 'star' | 'star-half' | 'star-outline' = 'star-outline';
+
+							if (averageRating >= starIndex) {
+								iconName = 'star';
+							} else if (averageRating >= starIndex - 0.5) {
+								iconName = 'star-half';
+							}
+
+							const isFilled = iconName !== 'star-outline';
+
+							return <Ionicons key={starIndex} name={iconName} size={18} color={isFilled ? '#f59e0b' : '#cbd5e1'} />;
+						})}
+					</View>
+
+					{averageRating > 0 ? (
+						<>
+							<Text style={ratingStyles.ratingScore}>{averageRating.toFixed(1)}</Text>
+							<Text style={ratingStyles.ratingCount}>
+								({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})
+							</Text>
+						</>
+					) : (
+						<Text style={ratingStyles.noReviewsText}>No reviews yet</Text>
+					)}
+				</View>
+
 				<View style={styles.metaContainer}>
 					<Text style={styles.metaLabel}>
 						Coordinates: {data.lat}°, {data.lon}°
@@ -95,3 +130,33 @@ export function PointOfInterestDetails() {
 		</View>
 	);
 }
+
+const ratingStyles = StyleSheet.create({
+	ratingBadge: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		marginTop: 4,
+		marginBottom: 8,
+	},
+	starRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 2,
+	},
+	ratingScore: {
+		fontSize: 14,
+		fontWeight: '700',
+		color: '#0f172a',
+		marginLeft: 2,
+	},
+	ratingCount: {
+		fontSize: 13,
+		color: '#64748b',
+	},
+	noReviewsText: {
+		fontSize: 13,
+		color: '#94a3b8',
+		marginLeft: 2,
+	},
+});

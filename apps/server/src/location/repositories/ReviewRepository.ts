@@ -23,6 +23,21 @@ export class ReviewRepository extends BaseRepository<Review> {
 		};
 	}
 
+	async getAverageRatingByPointOfInterestId(pointOfInterestId: string): Promise<number> {
+		const result = await this.execute<{avg_rating: string | number | null}[]>(
+			`SELECT AVG(rating) as avg_rating FROM review WHERE point_of_interest_id = ?`,
+			[pointOfInterestId],
+		);
+
+		const rawAvg = result[0]?.avg_rating;
+		if (!rawAvg) {
+			return 0;
+		}
+
+		const numericAvg = typeof rawAvg === 'number' ? rawAvg : parseFloat(rawAvg);
+		return isNaN(numericAvg) ? 0 : Math.round(numericAvg * 10) / 10;
+	}
+
 	createReview(user: User, pointOfInterest: PointOfInterest, rating: ReviewRatingEnum, description: string) {
 		const review = new Review({
 			user,
