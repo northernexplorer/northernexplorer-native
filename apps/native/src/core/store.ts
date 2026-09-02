@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import locationReducer from '~/location/state/location/locationSlice';
 import mapReducer from '~/location/state/map/mapSlice';
 import weatherReducer from '~/environment/state/weather/weatherSlice';
-import forecastReducer from '~/environment/state/forecast/forecastSlice';
 import fieldNoteReducer from '~/environment/state/fieldNote/fieldNoteSlice';
 import lunarReducer from '~/environment/state/lunar/lunarSlice';
 import cityReducer from '~/location/state/city/citySlice';
@@ -13,7 +12,6 @@ import authenticationReducer from '~/user/state/authentication/authenticationSli
 const rootReducer = combineReducers({
 	location: locationReducer,
 	weather: weatherReducer,
-	forecast: forecastReducer,
 	fieldNote: fieldNoteReducer,
 	lunar: lunarReducer,
 	city: cityReducer,
@@ -24,7 +22,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
 	key: 'root',
 	storage: AsyncStorage,
-	whitelist: ['fieldNote', 'city', 'weather', 'forecast', 'authentication'],
+	whitelist: ['fieldNote', 'city', 'weather', 'authentication'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
