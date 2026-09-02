@@ -2,18 +2,14 @@ import {Text, TextInput, TouchableOpacity, TextInputProps, View, StyleSheet} fro
 import React, {useState} from 'react';
 import {Ionicons} from '@expo/vector-icons';
 
-interface Props<T extends string> {
+interface Props<T extends string> extends Omit<TextInputProps, 'onChangeText' | 'value'> {
 	fieldName: T;
-	label: string;
+	label?: string;
 	placeholder: string;
 	updateField: (name: T, value: string) => void;
 	error?: string;
 	loading?: boolean;
 	value?: string;
-	secureTextEntry?: boolean;
-	autoComplete?: TextInputProps['autoComplete'];
-	textContentType?: TextInputProps['textContentType'];
-	importantForAutofill?: TextInputProps['importantForAutofill'];
 }
 
 export function FormField<T extends string>({
@@ -28,16 +24,24 @@ export function FormField<T extends string>({
 	autoComplete,
 	textContentType,
 	importantForAutofill = 'yes',
+	multiline,
+	numberOfLines,
+	textAlignVertical,
+	style,
+	blurOnSubmit,
+	submitBehavior,
+	...restProps
 }: Props<T>) {
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
 	return (
 		<View style={styles.field}>
-			<Text style={styles.label}>{label}</Text>
+			{label ? <Text style={styles.label}>{label}</Text> : null}
 
-			<View style={styles.inputContainer}>
+			<View style={[styles.inputContainer, multiline && styles.multilineContainer]}>
 				<TextInput
-					style={[styles.input, loading && styles.disabledInput]}
+					{...restProps}
+					style={[styles.input, multiline && styles.multilineInput, loading && styles.disabledInput, style]}
 					placeholder={placeholder}
 					secureTextEntry={secureTextEntry && !isPasswordVisible}
 					value={value}
@@ -47,8 +51,14 @@ export function FormField<T extends string>({
 					autoComplete={autoComplete}
 					textContentType={textContentType}
 					importantForAutofill={importantForAutofill}
+					multiline={multiline}
+					numberOfLines={numberOfLines}
+					textAlignVertical={multiline ? (textAlignVertical ?? 'top') : undefined}
+					/* Fix for entering paragraph breaks (newlines) */
+					blurOnSubmit={multiline ? (blurOnSubmit ?? false) : blurOnSubmit}
+					submitBehavior={multiline ? (submitBehavior ?? 'newline') : submitBehavior}
 				/>
-				{secureTextEntry && (
+				{secureTextEntry && !multiline && (
 					<TouchableOpacity
 						onPress={() => setIsPasswordVisible(prev => !prev)}
 						style={styles.toggleButton}
@@ -61,7 +71,7 @@ export function FormField<T extends string>({
 				)}
 			</View>
 
-			{error && <Text style={styles.errorText}>{error}</Text>}
+			{error ? <Text style={styles.errorText}>{error}</Text> : null}
 		</View>
 	);
 }
@@ -84,11 +94,20 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fefefe',
 		paddingHorizontal: 14,
 	},
+	multilineContainer: {
+		alignItems: 'flex-start',
+		paddingVertical: 4,
+	},
 	input: {
 		flex: 1,
 		paddingVertical: 12,
 		fontSize: 16,
 		color: '#000',
+	},
+	multilineInput: {
+		minHeight: 100,
+		paddingTop: 8,
+		paddingBottom: 8,
 	},
 	toggleButton: {
 		paddingLeft: 8,
