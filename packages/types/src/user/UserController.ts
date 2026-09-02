@@ -97,6 +97,8 @@ export type UserType = {
 export type UserSummary = {
 	id: string;
 	username: string;
+	firstName: string;
+	lastName: string;
 	score: number;
 };
 type RefreshParams = {

@@ -30,6 +30,7 @@ export type PointOfInterestType = {
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 	organization: OrganizationType;
+	averageRating?: number;
 };
 
 export type PointOfInterestEditType = {
