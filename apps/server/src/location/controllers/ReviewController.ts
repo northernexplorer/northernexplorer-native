@@ -15,7 +15,7 @@ export class ReviewController extends BaseController {
 
 	public async getReviewById(params: Params<Route<'getReviewById'>>): Promise<Response<Route<'getReviewById'>>> {
 		const {id} = params;
-		const review = await this.repos.review.getReviewsById(id);
+		const review = await this.repos.review.getById(id);
 
 		return review;
 	}
@@ -32,7 +32,7 @@ export class ReviewController extends BaseController {
 		this.permissionService.canAccessAdmin(auth);
 
 		const {id} = params;
-		const review = await this.repos.review.getReviewsById(id);
+		const review = await this.repos.review.getById(id);
 
 		review.status = ReviewStatusEnum.Approved;
 		review.user.score = review.user.score + 10;
@@ -47,7 +47,7 @@ export class ReviewController extends BaseController {
 		this.permissionService.canAccessAdmin(auth);
 
 		const {id} = params;
-		const review = await this.repos.review.getReviewsById(id);
+		const review = await this.repos.review.getById(id);
 
 		this.repos.review.remove(review);
 		await this.flush();

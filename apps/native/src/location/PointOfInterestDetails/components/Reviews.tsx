@@ -63,11 +63,18 @@ export function Reviews({data, loading, refetch, onEditReview}: ReviewsProps) {
 									</View>
 								</View>
 
-								{onEditReview && (
-									<Pressable onPress={() => onEditReview(review.id)} style={globalStyles.editButton} hitSlop={8}>
-										<Text style={globalStyles.editButtonText}>Edit</Text>
-									</Pressable>
-								)}
+								<View style={reviewStyles.rightHeaderContainer}>
+									<View style={reviewStyles.scoreTag}>
+										<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
+										<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
+									</View>
+
+									{onEditReview && (
+										<Pressable onPress={() => onEditReview(review.id)} style={globalStyles.editButton} hitSlop={8}>
+											<Text style={globalStyles.editButtonText}>Edit</Text>
+										</Pressable>
+									)}
+								</View>
 							</View>
 
 							<ReviewMetadataBadges difficulty={review.difficulty} entranceCost={review.entranceCost} conditions={review.conditions} />
@@ -126,6 +133,11 @@ const reviewStyles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 10,
+	},
+	rightHeaderContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
 	},
 	avatarCircle: {
 		width: 38,

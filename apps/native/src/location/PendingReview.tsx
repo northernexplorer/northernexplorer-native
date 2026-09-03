@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useLocalSearchParams, router} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
@@ -19,41 +19,54 @@ export const PendingReview: React.FC = () => {
 
 	const {mutate: rejectReview, loading: isRejecting} = useApiMutation('location', 'ReviewController', 'rejectReview');
 
-	const executeApprove = async () => {
-		await approveReview({id});
+	const handleApprovePress = () => {
 		alertStore.showAlert({
-			title: 'Success',
-			message: 'Review approved successfully.',
-			type: 'success',
-			buttons: [{text: 'OK', onPress: () => router.back()}],
+			title: 'Approve Review',
+			message: 'Are you sure you want to approve this review? The submitter will receive +10 user score.',
+			type: 'warning',
+			buttons: [
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+				{
+					text: 'Approve',
+					style: 'default',
+					onPress: async () => {
+						await approveReview({id});
+						alertStore.showAlert({
+							title: 'Success',
+							message: 'Review approved successfully.',
+							type: 'success',
+							buttons: [{text: 'OK', onPress: () => router.back()}],
+						});
+					},
+				},
+			],
 		});
 	};
 
-	const executeReject = async () => {
-		await rejectReview({id});
-		alertStore.showAlert({
-			title: 'Success',
-			message: 'Review rejected and removed.',
-			type: 'success',
-			buttons: [{text: 'OK', onPress: () => router.back()}],
-		});
-	};
-
-	const handleRejectPrompt = () => {
+	const handleRejectPress = () => {
 		alertStore.showAlert({
 			title: 'Reject Review',
+			message: 'Are you sure you want to reject and permanently delete this review? This action cannot be undone.',
 			type: 'warning',
-			message: 'Are you sure you want to reject and delete this review submission?',
 			buttons: [
-				{text: 'Cancel', style: 'cancel'},
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
 				{
 					text: 'Reject',
 					style: 'destructive',
-					onPress: () => {
-						// Execute asynchronously outside of modal state cycle
-						setTimeout(() => {
-							executeReject();
-						}, 100);
+					onPress: async () => {
+						await rejectReview({id});
+						alertStore.showAlert({
+							title: 'Success',
+							message: 'Review rejected and removed.',
+							type: 'success',
+							buttons: [{text: 'OK', onPress: () => router.back()}],
+						});
 					},
 				},
 			],
@@ -97,7 +110,7 @@ export const PendingReview: React.FC = () => {
 			<View style={pendingStyles.actionRow}>
 				<Pressable
 					style={[pendingStyles.button, pendingStyles.rejectButton, isActionLoading && pendingStyles.disabledButton]}
-					onPress={handleRejectPrompt}
+					onPress={handleRejectPress}
 					disabled={isActionLoading}
 				>
 					{isRejecting ? <ActivityIndicator size="small" color="#ef4444" /> : <Text style={pendingStyles.rejectButtonText}>Reject</Text>}
@@ -105,7 +118,7 @@ export const PendingReview: React.FC = () => {
 
 				<Pressable
 					style={[pendingStyles.button, pendingStyles.approveButton, isActionLoading && pendingStyles.disabledButton]}
-					onPress={executeApprove}
+					onPress={handleApprovePress}
 					disabled={isActionLoading}
 				>
 					{isApproving ? <ActivityIndicator size="small" color="#ffffff" /> : <Text style={pendingStyles.approveButtonText}>Approve</Text>}

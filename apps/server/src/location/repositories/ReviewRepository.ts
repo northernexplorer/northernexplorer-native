@@ -15,29 +15,8 @@ export type CreateReviewParams = {
 };
 
 export class ReviewRepository extends BaseRepository<Review> {
-	async getReviewsById(id: string) {
-		const review = await this.findOneOrFail({id}, {populate: ['user', 'pointOfInterest']});
-
-		return {
-			id: review.id,
-			user: {
-				id: review.user.id,
-				username: review.user.username,
-				firstName: review.user.firstName,
-				lastName: review.user.lastName,
-				score: review.user.score,
-			},
-			pointOfInterest: {
-				id: review.pointOfInterest.id,
-				name: review.pointOfInterest.name,
-			},
-			rating: review.rating,
-			description: review.description,
-			difficulty: review.difficulty,
-			entranceCost: review.entranceCost,
-			conditions: review.conditions,
-			status: review.status,
-		};
+	async getById(id: string) {
+		return this.findOneOrFail({id}, {populate: ['user', 'pointOfInterest']});
 	}
 
 	async getAverageRatingByPointOfInterestId(pointOfInterestId: string): Promise<number> {
