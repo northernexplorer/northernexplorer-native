@@ -1,27 +1,35 @@
 import {UserSummary} from '../user';
 
+export enum ReviewStatusEnum {
+	Pending = 'Pending',
+	Approved = 'Approved',
+}
+
 export type ReviewType = {
 	id: string;
 	user: {
 		id: string;
 		username: string;
+		firstName: string;
+		lastName: string;
 		score: number;
 	};
 	pointOfInterest: {id: string; name: string};
 	rating: ReviewRatingEnum;
-	difficulty?: SiteDifficultyEnum;
-	entranceCost?: EntranceCostEnum;
-	conditions?: SiteConditionEnum[];
+	difficulty: SiteDifficultyEnum;
+	entranceCost: EntranceCostEnum;
+	conditions: SiteConditionEnum[];
 	description: string;
+	status: ReviewStatusEnum;
 };
 
 export type ReviewSummary = {
 	id: string;
 	user: UserSummary;
 	rating: ReviewRatingEnum;
-	difficulty?: SiteDifficultyEnum;
-	entranceCost?: EntranceCostEnum;
-	conditions?: SiteConditionEnum[];
+	difficulty: SiteDifficultyEnum;
+	entranceCost: EntranceCostEnum;
+	conditions: SiteConditionEnum[];
 	description: string;
 };
 
@@ -77,6 +85,18 @@ export const ReviewController = {
 	getReviewById: {
 		params: {} as {id: string},
 		response: null as unknown as ReviewType,
+	},
+	getPendingReviews: {
+		params: {} as Record<string, never>,
+		response: null as unknown as ReviewType[],
+	},
+	approveReview: {
+		params: {} as {id: string},
+		response: null as unknown as ReviewType,
+	},
+	rejectReview: {
+		params: {} as {id: string},
+		response: null as unknown as {success: boolean},
 	},
 	createNewReview: {
 		params: {} as {

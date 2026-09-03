@@ -9,6 +9,11 @@ export abstract class BaseRepository<T extends object> extends EntityRepository<
 		return this;
 	}
 
+	remove(entity: AnyEntity | AnyEntity[]): this {
+		this.getEntityManager().remove(entity);
+		return this;
+	}
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async execute<R = Record<string, any>[]>(query: string, params: any[] = []): Promise<R> {
 		return this.getEntityManager().getConnection().execute<R>(query, params);

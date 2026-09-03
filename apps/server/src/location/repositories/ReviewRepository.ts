@@ -1,7 +1,7 @@
-import {EntranceCostEnum, ReviewRatingEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
-import {Review, PointOfInterest} from '../../location';
+import {EntranceCostEnum, ReviewRatingEnum, ReviewStatusEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {User} from '../../user';
+import {PointOfInterest, Review} from '../../location';
 
 export type CreateReviewParams = {
 	user: User;
@@ -11,6 +11,7 @@ export type CreateReviewParams = {
 	difficulty: SiteDifficultyEnum;
 	entranceCost: EntranceCostEnum;
 	conditions: SiteConditionEnum[];
+	status: ReviewStatusEnum;
 };
 
 export class ReviewRepository extends BaseRepository<Review> {
@@ -22,6 +23,8 @@ export class ReviewRepository extends BaseRepository<Review> {
 			user: {
 				id: review.user.id,
 				username: review.user.username,
+				firstName: review.user.firstName,
+				lastName: review.user.lastName,
 				score: review.user.score,
 			},
 			pointOfInterest: {
@@ -33,6 +36,7 @@ export class ReviewRepository extends BaseRepository<Review> {
 			difficulty: review.difficulty,
 			entranceCost: review.entranceCost,
 			conditions: review.conditions,
+			status: review.status,
 		};
 	}
 
@@ -51,7 +55,7 @@ export class ReviewRepository extends BaseRepository<Review> {
 		return isNaN(numericAvg) ? 0 : Math.round(numericAvg * 10) / 10;
 	}
 
-	createReview({user, pointOfInterest, rating, description, difficulty, entranceCost, conditions}: CreateReviewParams) {
+	createReview({user, pointOfInterest, rating, description, difficulty, entranceCost, conditions, status}: CreateReviewParams) {
 		const review = new Review({
 			user,
 			rating,
@@ -60,10 +64,10 @@ export class ReviewRepository extends BaseRepository<Review> {
 			difficulty,
 			entranceCost,
 			conditions,
+			status,
 		});
-		user.score += 10;
 
-		this.persist([review, user]);
+		this.persist([review]);
 
 		return {
 			id: review.id,
@@ -72,12 +76,13 @@ export class ReviewRepository extends BaseRepository<Review> {
 			difficulty: review.difficulty,
 			entranceCost: review.entranceCost,
 			conditions: review.conditions,
+			status: review.status,
 			user: {
 				id: user.id,
-				name: user.username,
+				username: user.username,
 				score: user.score,
 			},
-			PointOfInterest: {
+			pointOfInterest: {
 				id: pointOfInterest.id,
 				name: pointOfInterest.name,
 			},

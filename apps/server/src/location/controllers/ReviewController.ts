@@ -1,6 +1,6 @@
-import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
-import {Repositories} from '../../core/repositories';
+import {Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {BaseController} from '../../core/BaseController';
+import {Repositories} from '../../core/repositories';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 
@@ -17,17 +17,57 @@ export class ReviewController extends BaseController {
 		const {id} = params;
 		const review = await this.repos.review.getReviewsById(id);
 
-		await this.flush();
 		return review;
 	}
 
-	public async createNewReview(params: Params<Route<'createNewReview'>>, auth?: AuthContext) {
+	public async getPendingReviews(_params: Params<Route<'getPendingReviews'>>, auth?: AuthContext): Promise<Response<Route<'getPendingReviews'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		return this.repos.review.find({status: ReviewStatusEnum.Pending}, {populate: ['user', 'pointOfInterest']});
+	}
+
+	public async approveReview(params: Params<Route<'approveReview'>>, auth?: AuthContext): Promise<Response<Route<'approveReview'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		const {id} = params;
+		const review = await this.repos.review.getReviewsById(id);
+
+		review.status = ReviewStatusEnum.Approved;
+		review.user.score = review.user.score + 10;
+
+		await this.flush();
+
+		return review;
+	}
+
+	public async rejectReview(params: Params<Route<'rejectReview'>>, auth?: AuthContext): Promise<Response<Route<'rejectReview'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		const {id} = params;
+		const review = await this.repos.review.getReviewsById(id);
+
+		this.repos.review.remove(review);
+		await this.flush();
+
+		return {success: true};
+	}
+
+	public async createNewReview(params: Params<Route<'createNewReview'>>, auth?: AuthContext): Promise<Response<Route<'createNewReview'>>> {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 
 		const {pointOfInterestId, rating, description, difficulty, entranceCost, conditions} = params;
 
 		const user = await this.repos.user.getById(userId);
 		const pointOfInterest = await this.repos.pointOfInterest.getById(pointOfInterestId);
+		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
+
+		let status = ReviewStatusEnum.Pending;
+		if (userReviewCount >= 10) {
+			status = ReviewStatusEnum.Approved;
+		}
 
 		const review = this.repos.review.createReview({
 			user,
@@ -37,10 +77,11 @@ export class ReviewController extends BaseController {
 			difficulty,
 			entranceCost,
 			conditions,
+			status,
 		});
 
 		await this.flush();
 
-		return review;
+		return {...review, user: {id: user.id, score: user.score, username: user.username, firstName: user.firstName, lastName: user.lastName}};
 	}
 }
