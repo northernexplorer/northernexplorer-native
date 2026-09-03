@@ -1,4 +1,3 @@
-import React, {useMemo} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useLocalSearchParams, router} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
@@ -10,7 +9,7 @@ import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {ReviewMetadataBadges} from '~/location/PointOfInterestDetails/components/ReviewMetadataBadges';
 import {RenderStars} from '~/location/PointOfInterestDetails/components/RenderStars';
 
-export const PendingReview: React.FC = () => {
+export function PendingReview() {
 	const {id} = useLocalSearchParams<{id: string}>();
 
 	const {data: review, loading: isLoadingData} = useApiFetch('location', 'ReviewController', 'getReviewById', {id});

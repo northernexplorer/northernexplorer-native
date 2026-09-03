@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {FormField} from '@northernexplorer/tools';
-import {EntranceCostEnum, ReviewRatingEnum, ReviewType, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
+import {EntranceCostEnum, ReviewRatingEnum, ReviewSummary, ReviewType, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {Link, useLocalSearchParams} from 'expo-router';
 import {CONDITION_OPTIONS, COST_OPTIONS, DIFFICULTY_OPTIONS, RATING_MAPPING} from './reviewOptions';
 import {useApiMutation} from '~/core/useApiMutation';
@@ -11,7 +11,7 @@ import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 type CreateReviewProps = {
 	refetch: () => void;
-	initialData?: ReviewType;
+	initialData?: ReviewType | ReviewSummary;
 	onCancel?: () => void;
 };
 
@@ -42,10 +42,10 @@ export function ReviewForm({refetch, initialData, onCancel}: CreateReviewProps) 
 	const createMutation = useApiMutation('location', 'ReviewController', 'createNewReview');
 	const updateMutation = useApiMutation('location', 'ReviewController', 'editReview');
 
-	const mutation = isEditing ? updateMutation : createMutation;
+	const isLoading = isEditing ? updateMutation.loading : createMutation.loading;
 
 	const [formData, setFormData] = useState<ReviewFormState>({
-		pointOfInterestId: id || initialData?.pointOfInterest.id || '',
+		pointOfInterestId: id,
 		description: initialData?.description ?? '',
 		rating: initialData?.rating ?? ReviewRatingEnum.DEFAULT,
 		difficulty: initialData?.difficulty ?? null,
@@ -127,6 +127,7 @@ export function ReviewForm({refetch, initialData, onCancel}: CreateReviewProps) 
 			}
 
 			refetch();
+			if (onCancel) onCancel();
 			return response;
 		} catch (error) {
 			console.error(error);
@@ -157,7 +158,7 @@ export function ReviewForm({refetch, initialData, onCancel}: CreateReviewProps) 
 
 			{/* Overall Impression */}
 			<View style={cardStyles.overallSection}>
-				<Text style={cardStyles.sectionLabelBold}>{isEditing ? 'Edit Your Review' : 'Overall Impression'}</Text>
+				<Text style={cardStyles.sectionLabelBold}>Overall Impression</Text>
 				<View style={cardStyles.ratingRow}>
 					<View style={cardStyles.starRow}>
 						{RATING_MAPPING.map(item => {
@@ -240,7 +241,7 @@ export function ReviewForm({refetch, initialData, onCancel}: CreateReviewProps) 
 
 			{/* Conditions Selection */}
 			<View style={cardStyles.section}>
-				<Text style={cardStyles.sectionLabel}>Current Conditions</Text>
+				<Text style={cardStyles.sectionLabel}>Conditions</Text>
 				<View style={cardStyles.chipGroup}>
 					{CONDITION_OPTIONS.map(opt => {
 						const selected = formData.conditions.includes(opt.value);
@@ -266,7 +267,7 @@ export function ReviewForm({refetch, initialData, onCancel}: CreateReviewProps) 
 					placeholder="Share details about access, trail conditions, or recommendations..."
 					value={formData.description}
 					updateField={updateField}
-					loading={mutation.loading}
+					loading={isLoading}
 					error={errors.description}
 					multiline={true}
 					numberOfLines={4}
@@ -275,32 +276,30 @@ export function ReviewForm({refetch, initialData, onCancel}: CreateReviewProps) 
 				/>
 			</View>
 
-			{/* Action Buttons Row */}
-			<View style={cardStyles.buttonRow}>
-				{isEditing && onCancel && (
-					<Pressable onPress={onCancel} style={[cardStyles.actionButton, cardStyles.cancelButton]} disabled={mutation.loading}>
-						<Text style={cardStyles.cancelButtonText}>Cancel</Text>
-					</Pressable>
+			{/* Submit Button */}
+			<Pressable
+				onPress={validateForm}
+				style={({pressed}) => [
+					globalStyles.submitButton,
+					pressed && globalStyles.submitButtonPressed,
+					isLoading && globalStyles.submitButtonDisabled,
+					cardStyles.submitButton,
+				]}
+				disabled={isLoading}
+			>
+				{isLoading ? (
+					<ActivityIndicator color="#ffffff" size="small" />
+				) : (
+					<Text style={globalStyles.submitButtonText}>{isEditing ? 'Save Changes' : 'Submit Review'}</Text>
 				)}
+			</Pressable>
 
-				<Pressable
-					onPress={validateForm}
-					style={({pressed}) => [
-						globalStyles.submitButton,
-						cardStyles.actionButton,
-						pressed && globalStyles.submitButtonPressed,
-						mutation.loading && globalStyles.submitButtonDisabled,
-						isEditing && cardStyles.flexButton,
-					]}
-					disabled={mutation.loading}
-				>
-					{mutation.loading ? (
-						<ActivityIndicator color="#ffffff" size="small" />
-					) : (
-						<Text style={globalStyles.submitButtonText}>{isEditing ? 'Save Changes' : 'Submit Review'}</Text>
-					)}
+			{/* Cancel Action for Edit Mode */}
+			{isEditing && onCancel && (
+				<Pressable onPress={onCancel} style={cardStyles.cancelButton} disabled={isLoading}>
+					<Text style={cardStyles.cancelButtonText}>Cancel</Text>
 				</Pressable>
-			</View>
+			)}
 		</View>
 	);
 }
@@ -443,31 +442,18 @@ const cardStyles = StyleSheet.create({
 		paddingBottom: 10,
 		textAlignVertical: 'top',
 	},
-	buttonRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
-		marginTop: 8,
-	},
-	actionButton: {
+	submitButton: {
 		paddingVertical: 10,
-	},
-	flexButton: {
-		flex: 1,
+		marginTop: 4,
 	},
 	cancelButton: {
-		paddingHorizontal: 16,
-		paddingVertical: 10,
-		borderRadius: 8,
-		backgroundColor: '#f1f5f9',
-		borderWidth: 1,
-		borderColor: '#cbd5e1',
 		alignItems: 'center',
-		justifyContent: 'center',
+		paddingVertical: 10,
+		marginTop: 6,
 	},
 	cancelButtonText: {
 		fontSize: 14,
 		fontWeight: '600',
-		color: '#475569',
+		color: '#64748b',
 	},
 });

@@ -22,33 +22,33 @@ export const RATING_MAPPING = [
 export const DIFFICULTY_CONFIG: Record<SiteDifficultyEnum, {label: string; color: string; bgColor: string; borderColor: string}> = {
 	[SiteDifficultyEnum.EASY]: {
 		label: 'Easy',
-		color: '#15803d',
-		bgColor: '#dcfce7',
-		borderColor: '#15803d',
+		color: '#ffffff',
+		bgColor: '#22c55e',
+		borderColor: '#16a34a',
 	},
 	[SiteDifficultyEnum.MODERATE]: {
 		label: 'Moderate',
-		color: '#0369a1',
-		bgColor: '#e0f2fe',
-		borderColor: '#0369a1',
+		color: '#ffffff',
+		bgColor: '#0ea5e9',
+		borderColor: '#0284c7',
 	},
 	[SiteDifficultyEnum.HARD]: {
 		label: 'Hard',
-		color: '#a16207',
-		bgColor: '#fef9c3',
+		color: '#ffffff',
+		bgColor: '#eab308',
 		borderColor: '#ca8a04',
 	},
 	[SiteDifficultyEnum.EXTREME]: {
 		label: 'Extreme',
-		color: '#c2410c',
-		bgColor: '#ffedd5',
-		borderColor: '#c2410c',
+		color: '#ffffff',
+		bgColor: '#f97316',
+		borderColor: '#ea580c',
 	},
 	[SiteDifficultyEnum.IMPOSSIBLE]: {
 		label: 'Impossible',
-		color: '#b91c1c',
-		bgColor: '#fee2e2',
-		borderColor: '#b91c1c',
+		color: '#ffffff',
+		bgColor: '#ef4444',
+		borderColor: '#dc2626',
 	},
 };
 

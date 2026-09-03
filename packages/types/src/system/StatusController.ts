@@ -5,6 +5,6 @@ export const StatusController = {
 	},
 	getOverview: {
 		params: {} as Record<string, never>,
-		response: {} as {users: number; pointOfInterestsPublished: number; pointOfInterestsDraft: number, pendingReviews: number},
+		response: {} as {users: number; pointOfInterestsPublished: number; pointOfInterestsDraft: number; pendingReviews: number},
 	},
 };

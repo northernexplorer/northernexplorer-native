@@ -70,6 +70,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 				difficulty: review.difficulty,
 				entranceCost: review.entranceCost,
 				conditions: review.conditions,
+				status: review.status,
 				user: {
 					id: review.user.id,
 					username: review.user.username,
