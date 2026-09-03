@@ -1,11 +1,11 @@
 import React from 'react';
-import {View, Text, StyleSheet, Pressable} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {RolesEnum} from '@northernexplorer/types';
 import {Spinner} from '@northernexplorer/tools';
-import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 export function Admin() {
 	const router = useRouter();
@@ -18,6 +18,18 @@ export function Admin() {
 
 	return (
 		<View style={styles.grid}>
+			{/* Draft Sites Card */}
+			<Pressable
+				style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
+				onPress={() => router.push('/admin/draft-point-of-interest')}
+			>
+				<View style={[styles.iconBadge, {backgroundColor: '#fff3e0'}]}>
+					<Ionicons name="document-text-outline" size={24} color="#e65100" />
+				</View>
+				<Text style={styles.statValue}>{data?.pointOfInterestsDraft ?? 0}</Text>
+				<Text style={styles.statLabel}>Draft Sites</Text>
+			</Pressable>
+
 			{/* Published Sites Card */}
 			<Pressable
 				style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
@@ -30,16 +42,13 @@ export function Admin() {
 				<Text style={styles.statLabel}>Published Sites</Text>
 			</Pressable>
 
-			{/* Draft Sites Card */}
-			<Pressable
-				style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
-				onPress={() => router.push('/admin/draft-point-of-interest')}
-			>
-				<View style={[styles.iconBadge, {backgroundColor: '#fff3e0'}]}>
-					<Ionicons name="document-text-outline" size={24} color="#e65100" />
+			{/* Pending Reviews Card */}
+			<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/pending-reviews')}>
+				<View style={[styles.iconBadge, {backgroundColor: '#fef3c7'}]}>
+					<Ionicons name="chatbox-ellipses-outline" size={24} color="#d97706" />
 				</View>
-				<Text style={styles.statValue}>{data?.pointOfInterestsDraft ?? 0}</Text>
-				<Text style={styles.statLabel}>Draft Sites</Text>
+				<Text style={styles.statValue}>{data?.pendingReviews ?? 0}</Text>
+				<Text style={styles.statLabel}>Pending Reviews</Text>
 			</Pressable>
 
 			{/* Users Card */}
@@ -60,11 +69,13 @@ const styles = StyleSheet.create({
 	},
 	grid: {
 		flexDirection: 'row',
+		flexWrap: 'wrap',
 		gap: 16,
 		marginBottom: 24,
 	},
 	card: {
 		flex: 1,
+		minWidth: '45%',
 		backgroundColor: '#ffffff',
 		borderRadius: 16,
 		padding: 16,

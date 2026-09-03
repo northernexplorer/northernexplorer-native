@@ -4,7 +4,7 @@ import {Link, useLocalSearchParams} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString, Spinner} from '@northernexplorer/tools';
 import {RolesEnum} from '@northernexplorer/types';
-import {ReviewDetails} from './components/Reviews';
+import {Reviews} from './components/Reviews';
 import {styles} from '~/location/PointOfInterestDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -125,7 +125,7 @@ export function PointOfInterestDetails() {
 
 				<Text style={styles.body}>{data.description}</Text>
 				<View style={styles.divider} />
-				<ReviewDetails data={data} loading={loading} refetch={refetch} />
+				<Reviews data={data} loading={loading} refetch={refetch} />
 			</View>
 		</View>
 	);

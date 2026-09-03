@@ -1,11 +1,13 @@
 import {
 	CountryType,
+	OrganizationType,
+	PointOfInterestTypeEnum,
 	PublishStatusEnum,
 	RegionType,
-	ReviewType,
+	ReviewStatusEnum,
 	ReviewSummary,
-	PointOfInterestTypeEnum,
-	OrganizationType,
+	ReviewType,
+	VisitedFilterEnum,
 } from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
@@ -44,8 +46,11 @@ type PointOfInterestDetailsResponse = {
 };
 
 export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
-	async getPointOfInterestById(id: string): Promise<PointOfInterestDetailsResponse> {
-		const site = await this.findOneOrFail({id: id}, {populate: ['country', 'region', 'reviews', 'reviews.user', 'organization']});
+	async getPointOfInterestById(id: string, currentUserId?: string): Promise<PointOfInterestDetailsResponse> {
+		const site = await this.findOneOrFail({id}, {populate: ['country', 'region', 'reviews', 'reviews.user', 'organization']});
+
+		// Filter reviews: show published reviews OR reviews belonging to the current user
+		const visibleReviews = site.reviews.filter(review => review.status === ReviewStatusEnum.Approved || review.user.id === currentUserId);
 
 		return {
 			id: site.id,
@@ -59,10 +64,14 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			status: site.status,
 			type: site.type,
 			organization: site.organization,
-			reviews: site.reviews.map(review => ({
+			reviews: visibleReviews.map(review => ({
 				id: review.id,
 				description: review.description,
 				rating: review.rating,
+				difficulty: review.difficulty,
+				entranceCost: review.entranceCost,
+				conditions: review.conditions,
+				status: review.status,
 				user: {
 					id: review.user.id,
 					username: review.user.username,
@@ -74,9 +83,48 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		};
 	}
 
-	async getClosestPointOfInterests(lat: number, lon: number, limit: number, selectedPoiTypes: PointOfInterestTypeEnum[] = []) {
+	async getClosestPointOfInterests(
+		lat: number,
+		lon: number,
+		limit: number,
+		userId?: string,
+		selectedPoiTypes: PointOfInterestTypeEnum[] = [],
+		visitedFilter: VisitedFilterEnum = VisitedFilterEnum.All,
+	) {
+		const params: unknown[] = [];
+
+		const applyVisitedFilter = Boolean(userId) && visitedFilter !== VisitedFilterEnum.All;
+
+		let userJoinSql = '';
+		let visitedFilterSql = '';
+
+		if (applyVisitedFilter) {
+			userJoinSql = `
+           LEFT JOIN review rev 
+             ON rev.point_of_interest_id = h.id 
+            AND rev.user_id = ?
+       `;
+
+			if (visitedFilter === VisitedFilterEnum.Visited) {
+				visitedFilterSql = `AND rev.id IS NOT NULL`;
+			} else {
+				visitedFilterSql = `AND rev.id IS NULL`;
+			}
+		}
+
+		params.push(lat, lon, lat);
+
+		if (applyVisitedFilter) {
+			params.push(userId);
+		}
+
 		const hasTypeFilter = selectedPoiTypes.length > 0;
 		const typeFilterSql = hasTypeFilter ? `AND h.type && ?::text[]` : '';
+		if (hasTypeFilter) {
+			params.push(`{${selectedPoiTypes.join(',')}}`);
+		}
+
+		params.push(limit);
 
 		const query = `
 			SELECT id, name, description, image, lat, lon, country, region, status, type,
@@ -90,32 +138,29 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 				            json_build_object(
 								'id', r.id,
 					            'name', r.name,
-					            'country',
-					            json_build_object(
+					            'country', json_build_object(
 									'id', c.id,
 						            'name', c.name
-					            )
+					                       )
 				            ) AS region,
 				            h.start_date, h.end_date,
 				            (6371000 * acos(
-								cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
-					            sin(radians(?)) * sin(radians(h.lat))
+								LEAST(1.0, GREATEST(-1.0,
+					                                cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
+					                                sin(radians(?)) * sin(radians(h.lat))
+					                       ))
 				                       )) AS distance_meters
 				     FROM point_of_interest h
 							  JOIN country c ON h.country_id = c.id
 					          JOIN region r ON h.region_id = r.id
+						 ${userJoinSql}
 				     WHERE h.status = 'Published'
 						 ${typeFilterSql}
+					     ${visitedFilterSql}
 				 ) AS spatial_search
 			ORDER BY distanceMeters ASC
 				LIMIT ?;
 		`;
-
-		const params: unknown[] = [lat, lon, lat];
-		if (hasTypeFilter) {
-			params.push(`{${selectedPoiTypes.join(',')}}`);
-		}
-		params.push(limit);
 
 		const rawResults = (await this.execute(query, params)) as unknown as PointOfInterestRawRow[];
 
