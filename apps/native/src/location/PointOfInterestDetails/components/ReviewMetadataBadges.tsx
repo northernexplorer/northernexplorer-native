@@ -5,42 +5,34 @@ import {EntranceCostEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northern
 import {CONDITION_ICON_MAP, COST_LABEL_MAP, DIFFICULTY_CONFIG, formatEnumLabel} from './reviewOptions';
 
 type ReviewMetadataBadgesProps = {
-	difficulty?: SiteDifficultyEnum;
-	entranceCost?: EntranceCostEnum;
-	conditions?: SiteConditionEnum[];
+	difficulty: SiteDifficultyEnum;
+	entranceCost: EntranceCostEnum;
+	conditions: SiteConditionEnum[];
 };
 
 export function ReviewMetadataBadges({difficulty, entranceCost, conditions}: ReviewMetadataBadgesProps) {
-	const diffConfig = difficulty ? DIFFICULTY_CONFIG[difficulty] : null;
-	const costText = entranceCost ? COST_LABEL_MAP[entranceCost]?.badge : null;
-	const hasConditions = conditions && conditions.length > 0;
-
-	if (!diffConfig && !costText && !hasConditions) return null;
+	const diffConfig = DIFFICULTY_CONFIG[difficulty];
+	const costText = COST_LABEL_MAP[entranceCost].badge;
+	const hasConditions = conditions.length > 0;
 
 	return (
 		<View style={styles.metaContainer}>
-			{(diffConfig || costText) && (
-				<View style={styles.badgeRow}>
-					{diffConfig && (
-						<View style={[styles.badge, {backgroundColor: diffConfig.bgColor}]}>
-							<Text style={[styles.badgeText, {color: diffConfig.color}]}>{diffConfig.label}</Text>
-						</View>
-					)}
-
-					{costText && (
-						<View style={[styles.badge, styles.costBadge]}>
-							<Ionicons name="cash-outline" size={12} color="#047857" />
-							<Text style={[styles.badgeText, styles.costBadgeText]}>{costText}</Text>
-						</View>
-					)}
+			<View style={styles.badgeRow}>
+				<View style={[styles.badge, {backgroundColor: diffConfig.bgColor}]}>
+					<Text style={[styles.badgeText, {color: diffConfig.color}]}>{diffConfig.label}</Text>
 				</View>
-			)}
+
+				<View style={[styles.badge, styles.costBadge]}>
+					<Ionicons name="cash-outline" size={12} color="#047857" />
+					<Text style={[styles.badgeText, styles.costBadgeText]}>{costText}</Text>
+				</View>
+			</View>
 
 			{hasConditions && (
 				<View style={styles.conditionRow}>
 					{conditions.map(cond => (
 						<View key={cond} style={styles.conditionTag}>
-							<Ionicons name={CONDITION_ICON_MAP[cond] ?? 'alert-circle-outline'} size={12} color="#ea580c" />
+							<Ionicons name={CONDITION_ICON_MAP[cond]} size={12} color="#ea580c" />
 							<Text style={styles.conditionTagText}>{formatEnumLabel(cond)}</Text>
 						</View>
 					))}
