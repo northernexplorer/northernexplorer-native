@@ -31,6 +31,7 @@ export type ReviewSummary = {
 	entranceCost: EntranceCostEnum;
 	conditions: SiteConditionEnum[];
 	description: string;
+	status: ReviewStatusEnum;
 };
 
 export enum ReviewRatingEnum {
@@ -101,6 +102,17 @@ export const ReviewController = {
 	createNewReview: {
 		params: {} as {
 			pointOfInterestId: string;
+			rating: ReviewRatingEnum;
+			difficulty: SiteDifficultyEnum;
+			entranceCost: EntranceCostEnum;
+			conditions: SiteConditionEnum[];
+			description: string;
+		},
+		response: null as unknown as ReviewType,
+	},
+	editReview: {
+		params: {} as {
+			id: string;
 			rating: ReviewRatingEnum;
 			difficulty: SiteDifficultyEnum;
 			entranceCost: EntranceCostEnum;

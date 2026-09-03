@@ -21,11 +21,11 @@ export class ReviewRepository extends BaseRepository<Review> {
 
 	async getAverageRatingByPointOfInterestId(pointOfInterestId: string): Promise<number> {
 		const result = await this.execute<{avg_rating: string | number | null}[]>(
-			`SELECT AVG(rating) as avg_rating FROM review WHERE point_of_interest_id = ?`,
-			[pointOfInterestId],
+			`SELECT AVG(rating) as avg_rating FROM review WHERE point_of_interest_id = ? AND status = ?`,
+			[pointOfInterestId, ReviewStatusEnum.Approved],
 		);
 
-		const rawAvg = result[0]?.avg_rating;
+		const rawAvg = result.at(0)?.avg_rating;
 		if (!rawAvg) {
 			return 0;
 		}

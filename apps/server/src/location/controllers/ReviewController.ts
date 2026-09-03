@@ -84,4 +84,31 @@ export class ReviewController extends BaseController {
 
 		return {...review, user: {id: user.id, score: user.score, username: user.username, firstName: user.firstName, lastName: user.lastName}};
 	}
+
+	public async editReview(params: Params<Route<'editReview'>>, auth?: AuthContext): Promise<Response<Route<'editReview'>>> {
+		const review = await this.repos.review.getById(params.id);
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canEditReview({targetId: review.user.id}, auth);
+
+		review.rating = params.rating;
+		review.description = params.description;
+		review.difficulty = params.difficulty;
+		review.entranceCost = params.entranceCost;
+		review.conditions = params.conditions;
+
+		const user = review.user;
+
+		await this.flush();
+
+		return {
+			...review,
+			user: {
+				id: user.id,
+				score: user.score,
+				username: user.username,
+				firstName: user.firstName,
+				lastName: user.lastName,
+			},
+		};
+	}
 }

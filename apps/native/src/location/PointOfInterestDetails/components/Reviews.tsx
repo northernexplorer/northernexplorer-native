@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, Spinner} from '@northernexplorer/tools';
-import {PointOfInterestType} from '@northernexplorer/types';
-import CreateReview from './ReviewForm';
+import {PointOfInterestType, ReviewStatusEnum, RolesEnum} from '@northernexplorer/types';
+import {ReviewForm} from './ReviewForm';
 import {RenderStars} from './RenderStars';
 import {ReviewMetadataBadges} from './ReviewMetadataBadges';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
@@ -13,11 +13,11 @@ type ReviewsProps = {
 	data: PointOfInterestType;
 	loading: boolean;
 	refetch: () => void;
-	onEditReview?: (reviewId: string) => void;
 };
 
-export function Reviews({data, loading, refetch, onEditReview}: ReviewsProps) {
+export function Reviews({data, loading, refetch}: ReviewsProps) {
 	const authentication = useAuthentication();
+	const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
 
 	if (loading) return <Spinner />;
 
@@ -26,12 +26,18 @@ export function Reviews({data, loading, refetch, onEditReview}: ReviewsProps) {
 	const otherReviews = reviews.filter(r => r.user.id !== authentication?.userId);
 	const userHasReviewed = myReviews.length > 0;
 
+	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
+
+	const handleSuccess = () => {
+		setEditingReviewId(null);
+		refetch();
+	};
+
 	return (
 		<View style={reviewStyles.container}>
 			{/* Show Review Creation Form at the top if User Hasn't Posted Yet */}
-			{!userHasReviewed && <CreateReview refetch={refetch} />}
+			{!userHasReviewed && <ReviewForm refetch={refetch} />}
 
-			{/* Reviews List Section Header */}
 			<View style={reviewStyles.headerSection}>
 				<Text style={globalStyles.reviewTitle}>Community Reviews ({reviews.length})</Text>
 			</View>
@@ -45,69 +51,115 @@ export function Reviews({data, loading, refetch, onEditReview}: ReviewsProps) {
 			) : (
 				<View style={reviewStyles.listContainer}>
 					{/* Authenticated User's Reviews */}
-					{myReviews.map(review => (
-						<View key={review.id} style={[globalStyles.reviewCard, reviewStyles.myReviewCard]}>
-							<View style={globalStyles.headerRow}>
-								<View style={reviewStyles.userInfo}>
-									<View style={reviewStyles.avatarCircle}>
-										<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
-									</View>
-									<View>
-										<View style={reviewStyles.nameBadgeRow}>
-											<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
-											<View style={reviewStyles.youBadge}>
-												<Text style={reviewStyles.youBadgeText}>Your Review</Text>
-											</View>
+					{myReviews.map(review => {
+						const isPending = review.status === ReviewStatusEnum.Pending;
+						const canEditReview = isAdmin || review.user.id === authentication?.userId;
+
+						if (editingReviewId === review.id) {
+							return (
+								<View key={review.id} style={globalStyles.reviewCard}>
+									<ReviewForm initialData={review} refetch={handleSuccess} onCancel={() => setEditingReviewId(null)} />
+								</View>
+							);
+						}
+
+						return (
+							<View key={review.id} style={[globalStyles.reviewCard, reviewStyles.myReviewCard]}>
+								<View style={globalStyles.headerRow}>
+									<View style={reviewStyles.userInfo}>
+										<View style={reviewStyles.avatarCircle}>
+											<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
 										</View>
-										<RenderStars rating={review.rating} />
+										<View>
+											<View style={reviewStyles.nameBadgeRow}>
+												<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
+												<View style={reviewStyles.youBadge}>
+													<Text style={reviewStyles.youBadgeText}>Your Review</Text>
+												</View>
+												{isPending && (
+													<View style={reviewStyles.pendingBadge}>
+														<Text style={reviewStyles.pendingBadgeText}>Pending Approval</Text>
+													</View>
+												)}
+											</View>
+											<RenderStars rating={review.rating} />
+										</View>
+									</View>
+
+									<View style={reviewStyles.rightHeaderContainer}>
+										<View style={reviewStyles.scoreTag}>
+											<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
+											<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
+										</View>
+
+										{canEditReview && (
+											<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
+												<Ionicons name="pencil" size={14} color="#0088cc" />
+												<Text style={reviewStyles.editButtonText}>Edit</Text>
+											</Pressable>
+										)}
 									</View>
 								</View>
 
-								<View style={reviewStyles.rightHeaderContainer}>
-									<View style={reviewStyles.scoreTag}>
-										<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
-										<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
-									</View>
+								<ReviewMetadataBadges
+									difficulty={review.difficulty}
+									entranceCost={review.entranceCost}
+									conditions={review.conditions}
+								/>
 
-									{onEditReview && (
-										<Pressable onPress={() => onEditReview(review.id)} style={globalStyles.editButton} hitSlop={8}>
-											<Text style={globalStyles.editButtonText}>Edit</Text>
-										</Pressable>
-									)}
-								</View>
+								<Text style={globalStyles.description}>{review.description}</Text>
 							</View>
-
-							<ReviewMetadataBadges difficulty={review.difficulty} entranceCost={review.entranceCost} conditions={review.conditions} />
-
-							<Text style={globalStyles.description}>{review.description}</Text>
-						</View>
-					))}
+						);
+					})}
 
 					{/* Other Users' Reviews */}
-					{otherReviews.map(review => (
-						<View key={review.id} style={globalStyles.reviewCard}>
-							<View style={globalStyles.headerRow}>
-								<View style={reviewStyles.userInfo}>
-									<View style={[reviewStyles.avatarCircle, reviewStyles.otherAvatarCircle]}>
-										<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
+					{otherReviews.map(review => {
+						if (editingReviewId === review.id) {
+							return (
+								<View key={review.id} style={globalStyles.reviewCard}>
+									<ReviewForm initialData={review} refetch={handleSuccess} onCancel={() => setEditingReviewId(null)} />
+								</View>
+							);
+						}
+
+						return (
+							<View key={review.id} style={globalStyles.reviewCard}>
+								<View style={globalStyles.headerRow}>
+									<View style={reviewStyles.userInfo}>
+										<View style={[reviewStyles.avatarCircle, reviewStyles.otherAvatarCircle]}>
+											<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
+										</View>
+										<View>
+											<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
+											<RenderStars rating={review.rating} />
+										</View>
 									</View>
-									<View>
-										<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
-										<RenderStars rating={review.rating} />
+
+									<View style={reviewStyles.rightHeaderContainer}>
+										<View style={reviewStyles.scoreTag}>
+											<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
+											<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
+										</View>
+
+										{isAdmin && (
+											<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
+												<Ionicons name="pencil" size={14} color="#0088cc" />
+												<Text style={reviewStyles.editButtonText}>Edit</Text>
+											</Pressable>
+										)}
 									</View>
 								</View>
 
-								<View style={reviewStyles.scoreTag}>
-									<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
-									<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
-								</View>
+								<ReviewMetadataBadges
+									difficulty={review.difficulty}
+									entranceCost={review.entranceCost}
+									conditions={review.conditions}
+								/>
+
+								<Text style={globalStyles.description}>{review.description}</Text>
 							</View>
-
-							<ReviewMetadataBadges difficulty={review.difficulty} entranceCost={review.entranceCost} conditions={review.conditions} />
-
-							<Text style={globalStyles.description}>{review.description}</Text>
-						</View>
-					))}
+						);
+					})}
 				</View>
 			)}
 		</View>
@@ -139,6 +191,20 @@ const reviewStyles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 8,
 	},
+	editButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		backgroundColor: '#e0f2fe',
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		borderRadius: 6,
+	},
+	editButtonText: {
+		fontSize: 12,
+		fontWeight: '600',
+		color: '#0088cc',
+	},
 	avatarCircle: {
 		width: 38,
 		height: 38,
@@ -158,6 +224,7 @@ const reviewStyles = StyleSheet.create({
 	nameBadgeRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		flexWrap: 'wrap',
 		gap: 6,
 	},
 	youBadge: {
@@ -168,6 +235,18 @@ const reviewStyles = StyleSheet.create({
 	},
 	youBadgeText: {
 		color: '#0369a1',
+		fontSize: 10,
+		fontWeight: '700',
+		textTransform: 'uppercase',
+	},
+	pendingBadge: {
+		backgroundColor: '#fef3c7',
+		paddingHorizontal: 6,
+		paddingVertical: 2,
+		borderRadius: 4,
+	},
+	pendingBadgeText: {
+		color: '#b45309',
 		fontSize: 10,
 		fontWeight: '700',
 		textTransform: 'uppercase',

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {FormField} from '@northernexplorer/tools';
-import {EntranceCostEnum, ReviewRatingEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
+import {EntranceCostEnum, ReviewRatingEnum, ReviewType, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {Link, useLocalSearchParams} from 'expo-router';
 import {CONDITION_OPTIONS, COST_OPTIONS, DIFFICULTY_OPTIONS, RATING_MAPPING} from './reviewOptions';
 import {useApiMutation} from '~/core/useApiMutation';
@@ -11,6 +11,8 @@ import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 type CreateReviewProps = {
 	refetch: () => void;
+	initialData?: ReviewType;
+	onCancel?: () => void;
 };
 
 type RouteParams = {
@@ -28,22 +30,27 @@ type ReviewFormState = {
 
 type FormKeys = keyof ReviewFormState;
 
-export default function CreateReview({refetch}: CreateReviewProps) {
+export function ReviewForm({refetch, initialData, onCancel}: CreateReviewProps) {
 	const authentication = useAuthentication();
 	const {id} = useLocalSearchParams<RouteParams>();
+
+	const isEditing = Boolean(initialData);
 
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-	const {mutate, loading: mutationLoading} = useApiMutation('location', 'ReviewController', 'createNewReview');
+	const createMutation = useApiMutation('location', 'ReviewController', 'createNewReview');
+	const updateMutation = useApiMutation('location', 'ReviewController', 'editReview');
+
+	const mutation = isEditing ? updateMutation : createMutation;
 
 	const [formData, setFormData] = useState<ReviewFormState>({
-		pointOfInterestId: '',
-		description: '',
-		rating: ReviewRatingEnum.DEFAULT,
-		difficulty: null,
-		entranceCost: null,
-		conditions: [],
+		pointOfInterestId: id || initialData?.pointOfInterest.id || '',
+		description: initialData?.description ?? '',
+		rating: initialData?.rating ?? ReviewRatingEnum.DEFAULT,
+		difficulty: initialData?.difficulty ?? null,
+		entranceCost: initialData?.entranceCost ?? null,
+		conditions: initialData?.conditions ?? [],
 	});
 
 	const updateField = (key: FormKeys, value: unknown) => {
@@ -88,23 +95,36 @@ export default function CreateReview({refetch}: CreateReviewProps) {
 
 	const handleSubmit = async () => {
 		try {
-			const response = await mutate({
-				pointOfInterestId: id,
-				description: formData.description || '',
-				rating: formData.rating,
-				difficulty: formData.difficulty!,
-				entranceCost: formData.entranceCost!,
-				conditions: formData.conditions,
-			});
+			let response;
 
-			setFormData({
-				pointOfInterestId: '',
-				description: '',
-				rating: ReviewRatingEnum.DEFAULT,
-				difficulty: null,
-				entranceCost: null,
-				conditions: [],
-			});
+			if (isEditing) {
+				response = await updateMutation.mutate({
+					id: initialData!.id,
+					description: formData.description || '',
+					rating: formData.rating,
+					difficulty: formData.difficulty!,
+					entranceCost: formData.entranceCost!,
+					conditions: formData.conditions,
+				});
+			} else {
+				response = await createMutation.mutate({
+					pointOfInterestId: id,
+					description: formData.description || '',
+					rating: formData.rating,
+					difficulty: formData.difficulty!,
+					entranceCost: formData.entranceCost!,
+					conditions: formData.conditions,
+				});
+
+				setFormData({
+					pointOfInterestId: '',
+					description: '',
+					rating: ReviewRatingEnum.DEFAULT,
+					difficulty: null,
+					entranceCost: null,
+					conditions: [],
+				});
+			}
 
 			refetch();
 			return response;
@@ -137,7 +157,7 @@ export default function CreateReview({refetch}: CreateReviewProps) {
 
 			{/* Overall Impression */}
 			<View style={cardStyles.overallSection}>
-				<Text style={cardStyles.sectionLabelBold}>Overall Impression</Text>
+				<Text style={cardStyles.sectionLabelBold}>{isEditing ? 'Edit Your Review' : 'Overall Impression'}</Text>
 				<View style={cardStyles.ratingRow}>
 					<View style={cardStyles.starRow}>
 						{RATING_MAPPING.map(item => {
@@ -246,7 +266,7 @@ export default function CreateReview({refetch}: CreateReviewProps) {
 					placeholder="Share details about access, trail conditions, or recommendations..."
 					value={formData.description}
 					updateField={updateField}
-					loading={mutationLoading}
+					loading={mutation.loading}
 					error={errors.description}
 					multiline={true}
 					numberOfLines={4}
@@ -255,23 +275,32 @@ export default function CreateReview({refetch}: CreateReviewProps) {
 				/>
 			</View>
 
-			{/* Submit Button */}
-			<Pressable
-				onPress={validateForm}
-				style={({pressed}) => [
-					globalStyles.submitButton,
-					pressed && globalStyles.submitButtonPressed,
-					mutationLoading && globalStyles.submitButtonDisabled,
-					cardStyles.submitButton,
-				]}
-				disabled={mutationLoading}
-			>
-				{mutationLoading ? (
-					<ActivityIndicator color="#ffffff" size="small" />
-				) : (
-					<Text style={globalStyles.submitButtonText}>Submit Review</Text>
+			{/* Action Buttons Row */}
+			<View style={cardStyles.buttonRow}>
+				{isEditing && onCancel && (
+					<Pressable onPress={onCancel} style={[cardStyles.actionButton, cardStyles.cancelButton]} disabled={mutation.loading}>
+						<Text style={cardStyles.cancelButtonText}>Cancel</Text>
+					</Pressable>
 				)}
-			</Pressable>
+
+				<Pressable
+					onPress={validateForm}
+					style={({pressed}) => [
+						globalStyles.submitButton,
+						cardStyles.actionButton,
+						pressed && globalStyles.submitButtonPressed,
+						mutation.loading && globalStyles.submitButtonDisabled,
+						isEditing && cardStyles.flexButton,
+					]}
+					disabled={mutation.loading}
+				>
+					{mutation.loading ? (
+						<ActivityIndicator color="#ffffff" size="small" />
+					) : (
+						<Text style={globalStyles.submitButtonText}>{isEditing ? 'Save Changes' : 'Submit Review'}</Text>
+					)}
+				</Pressable>
+			</View>
 		</View>
 	);
 }
@@ -414,8 +443,31 @@ const cardStyles = StyleSheet.create({
 		paddingBottom: 10,
 		textAlignVertical: 'top',
 	},
-	submitButton: {
+	buttonRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		marginTop: 8,
+	},
+	actionButton: {
 		paddingVertical: 10,
-		marginTop: 4,
+	},
+	flexButton: {
+		flex: 1,
+	},
+	cancelButton: {
+		paddingHorizontal: 16,
+		paddingVertical: 10,
+		borderRadius: 8,
+		backgroundColor: '#f1f5f9',
+		borderWidth: 1,
+		borderColor: '#cbd5e1',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	cancelButtonText: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: '#475569',
 	},
 });
