@@ -19,7 +19,7 @@ export const PendingReview: React.FC = () => {
 
 	const {mutate: rejectReview, loading: isRejecting} = useApiMutation('location', 'ReviewController', 'rejectReview');
 
-	const handleApprove = async () => {
+	const executeApprove = async () => {
 		await approveReview({id});
 		alertStore.showAlert({
 			title: 'Success',
@@ -29,7 +29,17 @@ export const PendingReview: React.FC = () => {
 		});
 	};
 
-	const handleReject = () => {
+	const executeReject = async () => {
+		await rejectReview({id});
+		alertStore.showAlert({
+			title: 'Success',
+			message: 'Review rejected and removed.',
+			type: 'success',
+			buttons: [{text: 'OK', onPress: () => router.back()}],
+		});
+	};
+
+	const handleRejectPrompt = () => {
 		alertStore.showAlert({
 			title: 'Reject Review',
 			type: 'warning',
@@ -39,14 +49,11 @@ export const PendingReview: React.FC = () => {
 				{
 					text: 'Reject',
 					style: 'destructive',
-					onPress: async () => {
-						await rejectReview({id});
-						alertStore.showAlert({
-							title: 'Success',
-							message: 'Review rejected and removed.',
-							type: 'success',
-							buttons: [{text: 'OK', onPress: () => router.back()}],
-						});
+					onPress: () => {
+						// Execute asynchronously outside of modal state cycle
+						setTimeout(() => {
+							executeReject();
+						}, 100);
 					},
 				},
 			],
@@ -77,12 +84,10 @@ export const PendingReview: React.FC = () => {
 					</View>
 				</View>
 
-				{review.user.score && (
-					<View style={pendingStyles.scoreTag}>
-						<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
-						<Text style={pendingStyles.scoreTagText}>{review.user.score}</Text>
-					</View>
-				)}
+				<View style={pendingStyles.scoreTag}>
+					<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
+					<Text style={pendingStyles.scoreTagText}>{review.user.score}</Text>
+				</View>
 			</View>
 
 			<ReviewMetadataBadges difficulty={review.difficulty} entranceCost={review.entranceCost} conditions={review.conditions} />
@@ -92,7 +97,7 @@ export const PendingReview: React.FC = () => {
 			<View style={pendingStyles.actionRow}>
 				<Pressable
 					style={[pendingStyles.button, pendingStyles.rejectButton, isActionLoading && pendingStyles.disabledButton]}
-					onPress={handleReject}
+					onPress={handleRejectPrompt}
 					disabled={isActionLoading}
 				>
 					{isRejecting ? <ActivityIndicator size="small" color="#ef4444" /> : <Text style={pendingStyles.rejectButtonText}>Reject</Text>}
@@ -100,7 +105,7 @@ export const PendingReview: React.FC = () => {
 
 				<Pressable
 					style={[pendingStyles.button, pendingStyles.approveButton, isActionLoading && pendingStyles.disabledButton]}
-					onPress={handleApprove}
+					onPress={executeApprove}
 					disabled={isActionLoading}
 				>
 					{isApproving ? <ActivityIndicator size="small" color="#ffffff" /> : <Text style={pendingStyles.approveButtonText}>Approve</Text>}

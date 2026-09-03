@@ -90,12 +90,10 @@ export function Reviews({data, loading, refetch, onEditReview}: ReviewsProps) {
 									</View>
 								</View>
 
-								{review.user.score && (
-									<View style={reviewStyles.scoreTag}>
-										<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
-										<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
-									</View>
-								)}
+								<View style={reviewStyles.scoreTag}>
+									<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
+									<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
+								</View>
 							</View>
 
 							<ReviewMetadataBadges difficulty={review.difficulty} entranceCost={review.entranceCost} conditions={review.conditions} />
