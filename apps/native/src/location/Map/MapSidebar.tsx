@@ -61,7 +61,7 @@ export function MapSidebar() {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.heading}>Map Style</Text>
+			<Text style={[styles.label, styles.labelDark]}>Map Style</Text>
 			<View style={[styles.tileGroup, !canChangeMapStyle && styles.disabledGroup]}>
 				{LAYER_TILES.map(item => {
 					const isActive = JSON.stringify(baseLayer) === JSON.stringify(item.layer);
@@ -82,8 +82,6 @@ export function MapSidebar() {
 					);
 				})}
 			</View>
-
-			<Text style={styles.heading}>Filter</Text>
 
 			{/* Visited / Unvisited Toggle Filter */}
 			{isLoggedIn && (
@@ -149,6 +147,7 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		padding: 3,
 		borderWidth: 1,
+		marginTop: 5,
 		borderColor: 'rgba(255,255,255,0.1)',
 	},
 	label: {

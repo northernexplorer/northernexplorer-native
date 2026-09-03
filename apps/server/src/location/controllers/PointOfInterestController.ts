@@ -14,9 +14,10 @@ export class PointOfInterestController extends BaseController {
 
 	public async getNearbyPointOfInterests(
 		params: Params<Route<'getNearbyPointOfInterests'>>,
+		auth?: AuthContext,
 	): Promise<Response<Route<'getNearbyPointOfInterests'>>> {
 		const {lat, lon, limit, selectedPoiTypes, visitedFilter} = params;
-		return this.repos.pointOfInterest.getClosestPointOfInterests(lat, lon, limit, selectedPoiTypes, visitedFilter);
+		return this.repos.pointOfInterest.getClosestPointOfInterests(lat, lon, limit, auth?.userId, selectedPoiTypes, visitedFilter);
 	}
 
 	public async getPointOfInterestById(
