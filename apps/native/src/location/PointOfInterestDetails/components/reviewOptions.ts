@@ -62,7 +62,7 @@ export const COST_LABEL_MAP: Record<EntranceCostEnum, {short: string; badge: str
 
 export const CONDITION_ICON_MAP: Record<SiteConditionEnum, IoniconsName> = {
 	[SiteConditionEnum.MUD]: 'water-outline',
-	[SiteConditionEnum.BUGS]: 'bug-outline',
+	[SiteConditionEnum.MOSQUITOES]: 'bug-outline',
 	[SiteConditionEnum.DUST]: 'cloud-outline',
 	[SiteConditionEnum.SNOW]: 'snow-outline',
 	[SiteConditionEnum.ICE]: 'bonfire-outline',
@@ -71,7 +71,6 @@ export const CONDITION_ICON_MAP: Record<SiteConditionEnum, IoniconsName> = {
 	[SiteConditionEnum.GARBAGE]: 'trash-outline',
 	[SiteConditionEnum.POISONOUS_PLANTS]: 'alert-circle-outline',
 	[SiteConditionEnum.FLOODED_HIGH_WATER]: 'boat-outline',
-	[SiteConditionEnum.WASHED_OUT_ROAD]: 'warning-outline',
 	[SiteConditionEnum.STEEP_CLIMB]: 'trending-up-outline',
 	[SiteConditionEnum.LOOSE_ROCK]: 'construct-outline',
 	[SiteConditionEnum.LIMITED_PARKING]: 'car-outline',
