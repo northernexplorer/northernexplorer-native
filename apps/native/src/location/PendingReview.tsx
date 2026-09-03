@@ -1,10 +1,11 @@
 import React from 'react';
-import {ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useLocalSearchParams, router} from 'expo-router';
 import {EntranceCostEnum, ReviewRatingEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {Spinner} from '@northernexplorer/tools';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useApiMutation} from '~/core/useApiMutation';
+import {alertStore} from '~/core/alertStore';
 
 export const PendingReview: React.FC = () => {
 	const {id} = useLocalSearchParams<{id: string}>();
@@ -16,35 +17,40 @@ export const PendingReview: React.FC = () => {
 	const {mutate: rejectReview, loading: isRejecting} = useApiMutation('location', 'ReviewController', 'rejectReview');
 
 	const handleApprove = async () => {
-		try {
-			await approveReview({id});
-			Alert.alert('Success', 'Review approved successfully.', [{text: 'OK', onPress: () => router.back()}]);
-		} catch (err) {
-			Alert.alert('Error', 'Failed to approve review.');
-		}
+		await approveReview({id});
+		alertStore.showAlert({
+			title: 'Success',
+			message: 'Review approved successfully.',
+			type: 'success',
+			buttons: [{text: 'OK', onPress: () => router.back()}],
+		});
 	};
 
-	const handleReject = async () => {
-		Alert.alert('Reject Review', 'Are you sure you want to reject and delete this review submission?', [
-			{text: 'Cancel', style: 'cancel'},
-			{
-				text: 'Reject',
-				style: 'destructive',
-				onPress: async () => {
-					try {
+	const handleReject = () => {
+		alertStore.showAlert({
+			title: 'Reject Review',
+			type: 'warning',
+			message: 'Are you sure you want to reject and delete this review submission?',
+			buttons: [
+				{text: 'Cancel', style: 'cancel'},
+				{
+					text: 'Reject',
+					style: 'destructive',
+					onPress: async () => {
 						await rejectReview({id});
-						Alert.alert('Success', 'Review rejected and removed.', [{text: 'OK', onPress: () => router.back()}]);
-					} catch (err) {
-						Alert.alert('Error', 'Failed to reject review.');
-					}
+						alertStore.showAlert({
+							title: 'Success',
+							message: 'Review rejected and removed.',
+							type: 'success',
+							buttons: [{text: 'OK', onPress: () => router.back()}],
+						});
+					},
 				},
-			},
-		]);
+			],
+		});
 	};
 
-	if (isLoadingData || !review) {
-		return <Spinner />;
-	}
+	if (isLoadingData || !review) return <Spinner />;
 
 	const isActionLoading = isApproving || isRejecting;
 
