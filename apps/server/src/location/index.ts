@@ -7,6 +7,7 @@ export {ReviewController} from './controllers/ReviewController';
 
 export {CityCache} from './entities/CityCache';
 export {Country} from './entities/Country';
+export {Image} from './entities/Image';
 export {Organization} from './entities/Organization';
 export {PointOfInterest} from './entities/PointOfInterest';
 export {Region} from './entities/Region';
