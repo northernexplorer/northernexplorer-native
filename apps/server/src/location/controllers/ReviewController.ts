@@ -65,7 +65,7 @@ export class ReviewController extends BaseController {
 		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
 		let status = ReviewStatusEnum.Pending;
-		if (userReviewCount >= 10) {
+		if (userReviewCount >= 10 || user.score >= 500) {
 			status = ReviewStatusEnum.Approved;
 		}
 
