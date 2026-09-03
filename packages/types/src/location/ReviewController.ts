@@ -99,6 +99,10 @@ export const ReviewController = {
 		params: {} as {id: string},
 		response: null as unknown as {success: boolean},
 	},
+	deleteReview: {
+		params: {} as {id: string},
+		response: null as unknown as {success: boolean},
+	},
 	createNewReview: {
 		params: {} as {
 			pointOfInterestId: string;

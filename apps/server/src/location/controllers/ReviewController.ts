@@ -55,6 +55,22 @@ export class ReviewController extends BaseController {
 		return {success: true};
 	}
 
+	public async deleteReview(params: Params<Route<'deleteReview'>>, auth?: AuthContext): Promise<Response<Route<'deleteReview'>>> {
+		const review = await this.repos.review.getById(params.id);
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canEditReview({targetId: review.user.id}, auth);
+
+		// Deduct points if deleting an approved review
+		if (review.status === ReviewStatusEnum.Approved && review.user.score >= 10) {
+			review.user.score = review.user.score - 10;
+		}
+
+		this.repos.review.remove(review);
+		await this.flush();
+
+		return {success: true};
+	}
+
 	public async createNewReview(params: Params<Route<'createNewReview'>>, auth?: AuthContext): Promise<Response<Route<'createNewReview'>>> {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 
@@ -67,6 +83,7 @@ export class ReviewController extends BaseController {
 		let status = ReviewStatusEnum.Pending;
 		if (userReviewCount >= 10 || user.score >= 500) {
 			status = ReviewStatusEnum.Approved;
+			user.score = user.score + 10;
 		}
 
 		const review = this.repos.review.createReview({

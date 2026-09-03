@@ -1,13 +1,15 @@
 import React, {useState} from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, Spinner} from '@northernexplorer/tools';
 import {PointOfInterestType, ReviewStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {ReviewForm} from './ReviewForm';
 import {RenderStars} from './RenderStars';
 import {ReviewMetadataBadges} from './ReviewMetadataBadges';
+import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {alertStore} from '~/core/alertStore';
 
 type ReviewsProps = {
 	data: PointOfInterestType;
@@ -18,6 +20,9 @@ type ReviewsProps = {
 export function Reviews({data, loading, refetch}: ReviewsProps) {
 	const authentication = useAuthentication();
 	const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+	const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
+
+	const deleteMutation = useApiMutation('location', 'ReviewController', 'deleteReview');
 
 	if (loading) return <Spinner />;
 
@@ -31,6 +36,26 @@ export function Reviews({data, loading, refetch}: ReviewsProps) {
 	const handleSuccess = () => {
 		setEditingReviewId(null);
 		refetch();
+	};
+
+	const handleDelete = (reviewId: string) => {
+		alertStore.showAlert({
+			title: 'Delete Review',
+			message: 'Are you sure you want to delete this review? This action cannot be undone.',
+			type: 'warning',
+			buttons: [
+				{text: 'Cancel', style: 'cancel'},
+				{
+					text: 'Delete',
+					style: 'destructive',
+					onPress: async () => {
+						setDeletingReviewId(reviewId);
+						await deleteMutation.mutate({id: reviewId});
+						refetch();
+					},
+				},
+			],
+		});
 	};
 
 	return (
@@ -53,7 +78,8 @@ export function Reviews({data, loading, refetch}: ReviewsProps) {
 					{/* Authenticated User's Reviews */}
 					{myReviews.map(review => {
 						const isPending = review.status === ReviewStatusEnum.Pending;
-						const canEditReview = isAdmin || review.user.id === authentication?.userId;
+						const canManageReview = isAdmin || review.user.id === authentication?.userId;
+						const isDeleting = deletingReviewId === review.id;
 
 						if (editingReviewId === review.id) {
 							return (
@@ -92,11 +118,26 @@ export function Reviews({data, loading, refetch}: ReviewsProps) {
 											<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
 										</View>
 
-										{canEditReview && (
-											<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
-												<Ionicons name="pencil" size={14} color="#0088cc" />
-												<Text style={reviewStyles.editButtonText}>Edit</Text>
-											</Pressable>
+										{canManageReview && (
+											<>
+												<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
+													<Ionicons name="pencil" size={14} color="#0088cc" />
+													<Text style={reviewStyles.editButtonText}>Edit</Text>
+												</Pressable>
+
+												<Pressable
+													onPress={() => handleDelete(review.id)}
+													disabled={isDeleting}
+													style={reviewStyles.deleteButton}
+													hitSlop={8}
+												>
+													{isDeleting ? (
+														<ActivityIndicator size="small" color="#ef4444" />
+													) : (
+														<Ionicons name="trash-outline" size={15} color="#ef4444" />
+													)}
+												</Pressable>
+											</>
 										)}
 									</View>
 								</View>
@@ -114,6 +155,9 @@ export function Reviews({data, loading, refetch}: ReviewsProps) {
 
 					{/* Other Users' Reviews */}
 					{otherReviews.map(review => {
+						const canManageReview = isAdmin || review.user.id === authentication?.userId;
+						const isDeleting = deletingReviewId === review.id;
+
 						if (editingReviewId === review.id) {
 							return (
 								<View key={review.id} style={globalStyles.reviewCard}>
@@ -141,11 +185,26 @@ export function Reviews({data, loading, refetch}: ReviewsProps) {
 											<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
 										</View>
 
-										{isAdmin && (
-											<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
-												<Ionicons name="pencil" size={14} color="#0088cc" />
-												<Text style={reviewStyles.editButtonText}>Edit</Text>
-											</Pressable>
+										{canManageReview && (
+											<>
+												<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
+													<Ionicons name="pencil" size={14} color="#0088cc" />
+													<Text style={reviewStyles.editButtonText}>Edit</Text>
+												</Pressable>
+
+												<Pressable
+													onPress={() => handleDelete(review.id)}
+													disabled={isDeleting}
+													style={reviewStyles.deleteButton}
+													hitSlop={8}
+												>
+													{isDeleting ? (
+														<ActivityIndicator size="small" color="#ef4444" />
+													) : (
+														<Ionicons name="trash-outline" size={15} color="#ef4444" />
+													)}
+												</Pressable>
+											</>
 										)}
 									</View>
 								</View>
@@ -189,7 +248,7 @@ const reviewStyles = StyleSheet.create({
 	rightHeaderContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: 6,
 	},
 	editButton: {
 		flexDirection: 'row',
@@ -204,6 +263,14 @@ const reviewStyles = StyleSheet.create({
 		fontSize: 12,
 		fontWeight: '600',
 		color: '#0088cc',
+	},
+	deleteButton: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: '#fef2f2',
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		borderRadius: 6,
 	},
 	avatarCircle: {
 		width: 38,

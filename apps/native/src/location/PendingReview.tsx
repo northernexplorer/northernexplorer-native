@@ -125,7 +125,7 @@ export function PendingReview() {
 			</View>
 		</View>
 	);
-};
+}
 
 const pendingStyles = StyleSheet.create({
 	card: {
