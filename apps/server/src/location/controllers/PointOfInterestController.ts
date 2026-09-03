@@ -23,7 +23,7 @@ export class PointOfInterestController extends BaseController {
 		params: Params<Route<'getPointOfInterestById'>>,
 		auth?: AuthContext,
 	): Promise<Response<Route<'getPointOfInterestById'>>> {
-		const pointOfInterest = await this.repos.pointOfInterest.getPointOfInterestById(params.id);
+		const pointOfInterest = await this.repos.pointOfInterest.getPointOfInterestById(params.id, auth?.userId);
 		if (pointOfInterest.status === PublishStatusEnum.Draft) {
 			this.permissionService.canAccessAdmin(auth);
 		}

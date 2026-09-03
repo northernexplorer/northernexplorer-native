@@ -1,11 +1,12 @@
 import {
 	CountryType,
+	OrganizationType,
+	PointOfInterestTypeEnum,
 	PublishStatusEnum,
 	RegionType,
-	ReviewType,
+	ReviewStatusEnum,
 	ReviewSummary,
-	PointOfInterestTypeEnum,
-	OrganizationType,
+	ReviewType,
 } from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
@@ -44,8 +45,11 @@ type PointOfInterestDetailsResponse = {
 };
 
 export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
-	async getPointOfInterestById(id: string): Promise<PointOfInterestDetailsResponse> {
-		const site = await this.findOneOrFail({id: id}, {populate: ['country', 'region', 'reviews', 'reviews.user', 'organization']});
+	async getPointOfInterestById(id: string, currentUserId?: string): Promise<PointOfInterestDetailsResponse> {
+		const site = await this.findOneOrFail({id}, {populate: ['country', 'region', 'reviews', 'reviews.user', 'organization']});
+
+		// Filter reviews: show published reviews OR reviews belonging to the current user
+		const visibleReviews = site.reviews.filter(review => review.status === ReviewStatusEnum.Approved || review.user.id === currentUserId);
 
 		return {
 			id: site.id,
@@ -59,7 +63,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			status: site.status,
 			type: site.type,
 			organization: site.organization,
-			reviews: site.reviews.map(review => ({
+			reviews: visibleReviews.map(review => ({
 				id: review.id,
 				description: review.description,
 				rating: review.rating,
