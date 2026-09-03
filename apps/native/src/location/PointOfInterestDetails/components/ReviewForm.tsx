@@ -1,36 +1,32 @@
 import React, {useState} from 'react';
-import {Pressable, View, Text, ActivityIndicator, StyleSheet} from 'react-native';
+import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {FormField} from '@northernexplorer/tools';
-import {ReviewRatingEnum} from '@northernexplorer/types';
+import {EntranceCostEnum, ReviewRatingEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {Link, useLocalSearchParams} from 'expo-router';
-import {styles} from '../styles';
+import {CONDITION_OPTIONS, COST_OPTIONS, DIFFICULTY_OPTIONS, RATING_MAPPING} from './reviewOptions';
 import {useApiMutation} from '~/core/useApiMutation';
+import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 type CreateReviewProps = {
 	refetch: () => void;
 };
 
-type Review = {
-	pointOfInterestId: string;
-	description: string;
-	rating: ReviewRatingEnum;
-};
-
 type RouteParams = {
 	id: string;
 };
 
-type FormKeys = keyof Review;
+type ReviewFormState = {
+	pointOfInterestId: string;
+	description: string;
+	rating: ReviewRatingEnum;
+	difficulty: SiteDifficultyEnum | null;
+	entranceCost: EntranceCostEnum | null;
+	conditions: SiteConditionEnum[];
+};
 
-const RATING_MAPPING = [
-	{rating: ReviewRatingEnum.TERRIBLE, label: 'Terrible'},
-	{rating: ReviewRatingEnum.POOR, label: 'Poor'},
-	{rating: ReviewRatingEnum.AVERAGE, label: 'Average'},
-	{rating: ReviewRatingEnum.GOOD, label: 'Good'},
-	{rating: ReviewRatingEnum.EXCELLENT, label: 'Excellent'},
-];
+type FormKeys = keyof ReviewFormState;
 
 export default function CreateReview({refetch}: CreateReviewProps) {
 	const authentication = useAuthentication();
@@ -41,10 +37,13 @@ export default function CreateReview({refetch}: CreateReviewProps) {
 
 	const {mutate, loading: mutationLoading} = useApiMutation('location', 'ReviewController', 'createNewReview');
 
-	const [formData, setFormData] = useState<Review>({
+	const [formData, setFormData] = useState<ReviewFormState>({
 		pointOfInterestId: '',
 		description: '',
 		rating: ReviewRatingEnum.DEFAULT,
+		difficulty: null,
+		entranceCost: null,
+		conditions: [],
 	});
 
 	const updateField = (key: FormKeys, value: unknown) => {
@@ -58,15 +57,26 @@ export default function CreateReview({refetch}: CreateReviewProps) {
 		}
 	};
 
+	const toggleCondition = (condition: SiteConditionEnum) => {
+		setFormData(prev => {
+			const exists = prev.conditions.includes(condition);
+			const conditions = exists ? prev.conditions.filter(item => item !== condition) : [...prev.conditions, condition];
+			return {...prev, conditions};
+		});
+	};
+
 	const validateForm = async () => {
 		const newErrors: Partial<Record<FormKeys, string>> = {};
 		setSubmissionError(null);
 
-		if (formData.description.trim().length < 10) {
-			newErrors.description = 'Review must be at least 10 characters long';
-		}
 		if (formData.rating === ReviewRatingEnum.DEFAULT) {
-			newErrors.rating = 'Please select a star rating';
+			newErrors.rating = 'Please select an overall rating';
+		}
+		if (!formData.difficulty) {
+			newErrors.difficulty = 'Please select access difficulty';
+		}
+		if (!formData.entranceCost) {
+			newErrors.entranceCost = 'Please select entrance cost';
 		}
 
 		setErrors(newErrors);
@@ -80,14 +90,20 @@ export default function CreateReview({refetch}: CreateReviewProps) {
 		try {
 			const response = await mutate({
 				pointOfInterestId: id,
-				description: formData.description,
+				description: formData.description || '',
 				rating: formData.rating,
+				difficulty: formData.difficulty!,
+				entranceCost: formData.entranceCost!,
+				conditions: formData.conditions,
 			});
 
 			setFormData({
 				pointOfInterestId: '',
 				description: '',
 				rating: ReviewRatingEnum.DEFAULT,
+				difficulty: null,
+				entranceCost: null,
+				conditions: [],
 			});
 
 			refetch();
@@ -98,7 +114,6 @@ export default function CreateReview({refetch}: CreateReviewProps) {
 		}
 	};
 
-	// Logged-out fallback state
 	if (!authentication) {
 		return (
 			<Link href="profile/login" asChild>
@@ -115,49 +130,120 @@ export default function CreateReview({refetch}: CreateReviewProps) {
 	return (
 		<View style={cardStyles.card}>
 			{submissionError && (
-				<View style={styles.errorBanner}>
-					<Text style={styles.errorBannerText}>{submissionError}</Text>
+				<View style={globalStyles.errorBanner}>
+					<Text style={globalStyles.errorBannerText}>{submissionError}</Text>
 				</View>
 			)}
 
-			{/* Header Row */}
-			<View style={cardStyles.headerRow}>
-				<Text style={cardStyles.title}>Write a Review</Text>
+			{/* Overall Impression */}
+			<View style={cardStyles.overallSection}>
+				<Text style={cardStyles.sectionLabelBold}>Overall Impression</Text>
+				<View style={cardStyles.ratingRow}>
+					<View style={cardStyles.starRow}>
+						{RATING_MAPPING.map(item => {
+							const isSelected = formData.rating !== ReviewRatingEnum.DEFAULT && formData.rating >= item.rating;
 
-				<View style={cardStyles.starRow}>
-					{RATING_MAPPING.map(item => {
-						const isSelected = formData.rating !== ReviewRatingEnum.DEFAULT && formData.rating >= item.rating;
+							return (
+								<Pressable
+									key={item.rating}
+									onPress={() => updateField('rating', item.rating)}
+									hitSlop={8}
+									style={cardStyles.starTouchable}
+								>
+									<View style={[cardStyles.starIconContainer, isSelected && cardStyles.activeStarHalo]}>
+										<Ionicons name={isSelected ? 'star' : 'star-outline'} size={24} color={isSelected ? '#f59e0b' : '#94a3b8'} />
+									</View>
+								</Pressable>
+							);
+						})}
+					</View>
 
+					<View style={cardStyles.statusWrapper}>
+						{errors.rating ? (
+							<Text style={cardStyles.errorText}>{errors.rating}</Text>
+						) : (
+							<Text style={cardStyles.ratingStatusText}>{currentSelectedLabel ?? ''}</Text>
+						)}
+					</View>
+				</View>
+			</View>
+
+			{/* Difficulty Selection */}
+			<View style={cardStyles.section}>
+				<View style={cardStyles.sectionHeaderRow}>
+					<Text style={cardStyles.sectionLabel}>Difficulty to Access</Text>
+					{errors.difficulty && <Text style={cardStyles.errorText}>{errors.difficulty}</Text>}
+				</View>
+				<View style={cardStyles.chipGroup}>
+					{DIFFICULTY_OPTIONS.map(opt => {
+						const selected = formData.difficulty === opt.value;
 						return (
 							<Pressable
-								key={item.rating}
-								onPress={() => updateField('rating', item.rating)}
-								hitSlop={8}
-								style={cardStyles.starTouchable}
+								key={opt.value}
+								onPress={() => updateField('difficulty', opt.value)}
+								style={[
+									cardStyles.chip,
+									selected && {
+										backgroundColor: opt.bgColor,
+										borderColor: opt.borderColor,
+									},
+								]}
 							>
-								<View style={[cardStyles.starIconContainer, isSelected && cardStyles.activeStarHalo]}>
-									<Ionicons name={isSelected ? 'star' : 'star-outline'} size={24} color={isSelected ? '#f59e0b' : '#94a3b8'} />
-								</View>
+								<Text style={[cardStyles.chipText, selected && cardStyles.chipTextSelected]}>{opt.label}</Text>
 							</Pressable>
 						);
 					})}
 				</View>
 			</View>
 
-			{/* Fixed-Height Rating Sub-Label / Error Row */}
-			<View style={cardStyles.statusRow}>
-				{errors.rating ? (
-					<Text style={cardStyles.errorText}>{errors.rating}</Text>
-				) : (
-					<Text style={cardStyles.ratingStatusText}>{currentSelectedLabel ?? ''}</Text>
-				)}
+			{/* Entrance Cost Selection */}
+			<View style={cardStyles.section}>
+				<View style={cardStyles.sectionHeaderRow}>
+					<Text style={cardStyles.sectionLabel}>Entrance Cost</Text>
+					{errors.entranceCost && <Text style={cardStyles.errorText}>{errors.entranceCost}</Text>}
+				</View>
+				<View style={cardStyles.chipGroup}>
+					{COST_OPTIONS.map(opt => {
+						const selected = formData.entranceCost === opt.value;
+						return (
+							<Pressable
+								key={opt.value}
+								onPress={() => updateField('entranceCost', opt.value)}
+								style={[cardStyles.chip, selected && cardStyles.chipSelected]}
+							>
+								<Text style={[cardStyles.chipText, selected && cardStyles.chipTextSelected]}>{opt.label}</Text>
+							</Pressable>
+						);
+					})}
+				</View>
 			</View>
 
-			{/* Multiline Description Field */}
+			{/* Conditions Selection */}
+			<View style={cardStyles.section}>
+				<Text style={cardStyles.sectionLabel}>Current Conditions</Text>
+				<View style={cardStyles.chipGroup}>
+					{CONDITION_OPTIONS.map(opt => {
+						const selected = formData.conditions.includes(opt.value);
+						return (
+							<Pressable
+								key={opt.value}
+								onPress={() => toggleCondition(opt.value)}
+								style={[cardStyles.chip, cardStyles.iconChip, selected && cardStyles.chipSelectedWarning]}
+							>
+								<Ionicons name={opt.icon} size={14} color={selected ? '#ffffff' : '#64748b'} />
+								<Text style={[cardStyles.chipText, selected && cardStyles.chipTextSelectedWarning]}>{opt.label}</Text>
+							</Pressable>
+						);
+					})}
+				</View>
+			</View>
+
+			{/* Description Field */}
 			<View style={cardStyles.fieldWrapper}>
+				<Text style={cardStyles.sectionLabel}>Written Review</Text>
 				<FormField
 					fieldName="description"
-					placeholder="Share your experience visiting this location..."
+					placeholder="Share details about access, trail conditions, or recommendations..."
 					value={formData.description}
 					updateField={updateField}
 					loading={mutationLoading}
@@ -173,14 +259,18 @@ export default function CreateReview({refetch}: CreateReviewProps) {
 			<Pressable
 				onPress={validateForm}
 				style={({pressed}) => [
-					styles.submitButton,
-					pressed && styles.submitButtonPressed,
-					mutationLoading && styles.submitButtonDisabled,
+					globalStyles.submitButton,
+					pressed && globalStyles.submitButtonPressed,
+					mutationLoading && globalStyles.submitButtonDisabled,
 					cardStyles.submitButton,
 				]}
 				disabled={mutationLoading}
 			>
-				{mutationLoading ? <ActivityIndicator color="#ffffff" size="small" /> : <Text style={styles.submitButtonText}>Submit Review</Text>}
+				{mutationLoading ? (
+					<ActivityIndicator color="#ffffff" size="small" />
+				) : (
+					<Text style={globalStyles.submitButtonText}>Submit Review</Text>
+				)}
 			</Pressable>
 		</View>
 	);
@@ -218,15 +308,19 @@ const cardStyles = StyleSheet.create({
 		fontWeight: '600',
 		color: '#64748b',
 	},
-	headerRow: {
+	overallSection: {
+		marginBottom: 12,
+	},
+	sectionLabelBold: {
+		fontSize: 14,
+		fontWeight: '700',
+		color: '#0f172a',
+		marginBottom: 4,
+	},
+	ratingRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-	},
-	title: {
-		fontSize: 15,
-		fontWeight: '700',
-		color: '#0f172a',
 	},
 	starRow: {
 		flexDirection: 'row',
@@ -234,7 +328,7 @@ const cardStyles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	starTouchable: {
-		padding: 2,
+		padding: 1,
 	},
 	starIconContainer: {
 		padding: 2,
@@ -243,15 +337,12 @@ const cardStyles = StyleSheet.create({
 	activeStarHalo: {
 		backgroundColor: '#fef3c7',
 	},
-	statusRow: {
-		minHeight: 18,
+	statusWrapper: {
 		justifyContent: 'center',
 		alignItems: 'flex-end',
-		marginBottom: 6,
-		marginTop: 2,
 	},
 	ratingStatusText: {
-		fontSize: 12,
+		fontSize: 13,
 		fontWeight: '700',
 		color: '#d97706',
 	},
@@ -259,6 +350,60 @@ const cardStyles = StyleSheet.create({
 		fontSize: 11,
 		fontWeight: '500',
 		color: '#ef4444',
+	},
+	section: {
+		marginBottom: 12,
+	},
+	sectionHeaderRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		marginBottom: 6,
+	},
+	sectionLabel: {
+		fontSize: 13,
+		fontWeight: '600',
+		color: '#334155',
+		marginBottom: 6,
+	},
+	chipGroup: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 6,
+	},
+	chip: {
+		backgroundColor: '#f1f5f9',
+		borderWidth: 1,
+		borderColor: '#cbd5e1',
+		borderRadius: 16,
+		paddingVertical: 6,
+		paddingHorizontal: 10,
+	},
+	iconChip: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 5,
+	},
+	chipSelected: {
+		backgroundColor: '#0284c7',
+		borderColor: '#0284c7',
+	},
+	chipSelectedWarning: {
+		backgroundColor: '#ea580c',
+		borderColor: '#ea580c',
+	},
+	chipText: {
+		fontSize: 12,
+		fontWeight: '500',
+		color: '#475569',
+	},
+	chipTextSelected: {
+		color: '#ffffff',
+		fontWeight: '600',
+	},
+	chipTextSelectedWarning: {
+		color: '#ffffff',
+		fontWeight: '600',
 	},
 	fieldWrapper: {
 		marginBottom: 8,

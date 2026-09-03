@@ -1,7 +1,17 @@
-import {ReviewRatingEnum} from '@northernexplorer/types';
+import {EntranceCostEnum, ReviewRatingEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {Review, PointOfInterest} from '../../location';
 import {BaseRepository} from '../../core/BaseRepository';
 import {User} from '../../user';
+
+export type CreateReviewParams = {
+	user: User;
+	pointOfInterest: PointOfInterest;
+	rating: ReviewRatingEnum;
+	description: string;
+	difficulty: SiteDifficultyEnum;
+	entranceCost: EntranceCostEnum;
+	conditions: SiteConditionEnum[];
+};
 
 export class ReviewRepository extends BaseRepository<Review> {
 	async getReviewsById(id: string) {
@@ -20,6 +30,9 @@ export class ReviewRepository extends BaseRepository<Review> {
 			},
 			rating: review.rating,
 			description: review.description,
+			difficulty: review.difficulty,
+			entranceCost: review.entranceCost,
+			conditions: review.conditions,
 		};
 	}
 
@@ -38,12 +51,15 @@ export class ReviewRepository extends BaseRepository<Review> {
 		return isNaN(numericAvg) ? 0 : Math.round(numericAvg * 10) / 10;
 	}
 
-	createReview(user: User, pointOfInterest: PointOfInterest, rating: ReviewRatingEnum, description: string) {
+	createReview({user, pointOfInterest, rating, description, difficulty, entranceCost, conditions}: CreateReviewParams) {
 		const review = new Review({
 			user,
 			rating,
 			description,
 			pointOfInterest,
+			difficulty,
+			entranceCost,
+			conditions,
 		});
 		user.score += 10;
 
@@ -53,6 +69,9 @@ export class ReviewRepository extends BaseRepository<Review> {
 			id: review.id,
 			rating: review.rating,
 			description: review.description,
+			difficulty: review.difficulty,
+			entranceCost: review.entranceCost,
+			conditions: review.conditions,
 			user: {
 				id: user.id,
 				name: user.username,

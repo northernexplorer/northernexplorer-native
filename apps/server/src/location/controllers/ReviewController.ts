@@ -15,7 +15,7 @@ export class ReviewController extends BaseController {
 
 	public async getReviewById(params: Params<Route<'getReviewById'>>): Promise<Response<Route<'getReviewById'>>> {
 		const {id} = params;
-		const review = this.repos.review.getReviewsById(id);
+		const review = await this.repos.review.getReviewsById(id);
 
 		await this.flush();
 		return review;
@@ -24,12 +24,20 @@ export class ReviewController extends BaseController {
 	public async createNewReview(params: Params<Route<'createNewReview'>>, auth?: AuthContext) {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 
-		const {pointOfInterestId, rating, description} = params;
+		const {pointOfInterestId, rating, description, difficulty, entranceCost, conditions} = params;
 
 		const user = await this.repos.user.getById(userId);
 		const pointOfInterest = await this.repos.pointOfInterest.getById(pointOfInterestId);
 
-		const review = this.repos.review.createReview(user, pointOfInterest, rating, description);
+		const review = this.repos.review.createReview({
+			user,
+			pointOfInterest,
+			rating,
+			description,
+			difficulty,
+			entranceCost,
+			conditions,
+		});
 
 		await this.flush();
 

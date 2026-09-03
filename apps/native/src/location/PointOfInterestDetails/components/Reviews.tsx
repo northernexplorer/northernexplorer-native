@@ -1,31 +1,22 @@
 import React from 'react';
-import {View, Text, Pressable, StyleSheet} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {PointOfInterestType, ReviewRatingEnum} from '@northernexplorer/types';
 import {formatName, Spinner} from '@northernexplorer/tools';
+import {PointOfInterestType} from '@northernexplorer/types';
 import CreateReview from './ReviewForm';
-import {styles} from '~/location/PointOfInterestDetails/styles';
+import {RenderStars} from './RenderStars';
+import {ReviewMetadataBadges} from './ReviewMetadataBadges';
+import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
-type ReviewDetailsProps = {
+type ReviewsProps = {
 	data: PointOfInterestType;
 	loading: boolean;
 	refetch: () => void;
 	onEditReview?: (reviewId: string) => void;
 };
 
-function RenderStars({rating}: {rating: ReviewRatingEnum}) {
-	return (
-		<View style={reviewStyles.starRow}>
-			{[1, 2, 3, 4, 5].map(starIndex => {
-				const isFilled = rating >= starIndex;
-				return <Ionicons key={starIndex} name={isFilled ? 'star' : 'star-outline'} size={16} color={isFilled ? '#ffb400' : '#cbd5e1'} />;
-			})}
-		</View>
-	);
-}
-
-export function ReviewDetails({data, loading, refetch, onEditReview}: ReviewDetailsProps) {
+export function Reviews({data, loading, refetch, onEditReview}: ReviewsProps) {
 	const authentication = useAuthentication();
 
 	if (loading) return <Spinner />;
@@ -42,7 +33,7 @@ export function ReviewDetails({data, loading, refetch, onEditReview}: ReviewDeta
 
 			{/* Reviews List Section Header */}
 			<View style={reviewStyles.headerSection}>
-				<Text style={styles.reviewTitle}>Community Reviews ({reviews.length})</Text>
+				<Text style={globalStyles.reviewTitle}>Community Reviews ({reviews.length})</Text>
 			</View>
 
 			{reviews.length === 0 ? (
@@ -55,15 +46,15 @@ export function ReviewDetails({data, loading, refetch, onEditReview}: ReviewDeta
 				<View style={reviewStyles.listContainer}>
 					{/* Authenticated User's Reviews */}
 					{myReviews.map(review => (
-						<View key={review.id} style={[styles.reviewCard, reviewStyles.myReviewCard]}>
-							<View style={styles.headerRow}>
+						<View key={review.id} style={[globalStyles.reviewCard, reviewStyles.myReviewCard]}>
+							<View style={globalStyles.headerRow}>
 								<View style={reviewStyles.userInfo}>
 									<View style={reviewStyles.avatarCircle}>
 										<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
 									</View>
 									<View>
 										<View style={reviewStyles.nameBadgeRow}>
-											<Text style={styles.userName}>{formatName(review.user)}</Text>
+											<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
 											<View style={reviewStyles.youBadge}>
 												<Text style={reviewStyles.youBadgeText}>Your Review</Text>
 											</View>
@@ -73,26 +64,28 @@ export function ReviewDetails({data, loading, refetch, onEditReview}: ReviewDeta
 								</View>
 
 								{onEditReview && (
-									<Pressable onPress={() => onEditReview(review.id)} style={styles.editButton} hitSlop={8}>
-										<Text style={styles.editButtonText}>Edit</Text>
+									<Pressable onPress={() => onEditReview(review.id)} style={globalStyles.editButton} hitSlop={8}>
+										<Text style={globalStyles.editButtonText}>Edit</Text>
 									</Pressable>
 								)}
 							</View>
 
-							<Text style={styles.description}>{review.description}</Text>
+							<ReviewMetadataBadges difficulty={review.difficulty} entranceCost={review.entranceCost} conditions={review.conditions} />
+
+							<Text style={globalStyles.description}>{review.description}</Text>
 						</View>
 					))}
 
 					{/* Other Users' Reviews */}
 					{otherReviews.map(review => (
-						<View key={review.id} style={styles.reviewCard}>
-							<View style={styles.headerRow}>
+						<View key={review.id} style={globalStyles.reviewCard}>
+							<View style={globalStyles.headerRow}>
 								<View style={reviewStyles.userInfo}>
 									<View style={[reviewStyles.avatarCircle, reviewStyles.otherAvatarCircle]}>
 										<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
 									</View>
 									<View>
-										<Text style={styles.userName}>{formatName(review.user)}</Text>
+										<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
 										<RenderStars rating={review.rating} />
 									</View>
 								</View>
@@ -105,7 +98,9 @@ export function ReviewDetails({data, loading, refetch, onEditReview}: ReviewDeta
 								)}
 							</View>
 
-							<Text style={styles.description}>{review.description}</Text>
+							<ReviewMetadataBadges difficulty={review.difficulty} entranceCost={review.entranceCost} conditions={review.conditions} />
+
+							<Text style={globalStyles.description}>{review.description}</Text>
 						</View>
 					))}
 				</View>
@@ -166,11 +161,6 @@ const reviewStyles = StyleSheet.create({
 		fontSize: 10,
 		fontWeight: '700',
 		textTransform: 'uppercase',
-	},
-	starRow: {
-		flexDirection: 'row',
-		gap: 2,
-		marginTop: 2,
 	},
 	scoreTag: {
 		flexDirection: 'row',
