@@ -15,7 +15,7 @@ import {useMap} from '~/location/state/map/useMap';
 import {MapMarkerWeb} from '~/location/Map/components/MapMarkerWeb';
 
 export function Map() {
-	const {baseLayer, selectedPoiTypes} = useMap();
+	const {baseLayer, selectedPoiTypes, visitedFilter} = useMap();
 	const mapRef = useRef<MapRef>(null);
 	const coords = useLocation();
 
@@ -39,6 +39,7 @@ export function Map() {
 		lon: mapCenter.lon,
 		limit: 500,
 		selectedPoiTypes,
+		visitedFilter,
 	});
 
 	const points = useMemo(() => {

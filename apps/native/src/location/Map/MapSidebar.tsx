@@ -1,15 +1,15 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Link} from 'expo-router';
-import {PointOfInterestTypeEnum} from '@northernexplorer/types';
-import {setBaseLayer, setPoiTypes} from '~/location/state/map/mapSlice';
+import {PointOfInterestTypeEnum, VisitedFilterEnum} from '@northernexplorer/types';
+import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
 import {baseLayers} from '~/location/Map/baseLayers';
+import {setBaseLayer, setPoiTypes, setVisitedFilter} from '~/location/state/map/mapSlice';
 import {useMap} from '~/location/state/map/useMap';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
-import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
 
 const LAYER_TILES = [
 	{
@@ -32,10 +32,16 @@ const LAYER_TILES = [
 	},
 ] as const;
 
+const VISITED_OPTIONS: {key: VisitedFilterEnum; label: string; icon: keyof typeof MaterialCommunityIcons.glyphMap}[] = [
+	{key: VisitedFilterEnum.All, label: 'All', icon: 'map-marker-multiple-outline'},
+	{key: VisitedFilterEnum.Visited, label: 'Visited', icon: 'map-marker-check-outline'},
+	{key: VisitedFilterEnum.Unvisited, label: 'Unvisited', icon: 'map-marker-alert-outline'},
+];
+
 export function MapSidebar() {
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
-	const {baseLayer, selectedPoiTypes = []} = useMap();
+	const {baseLayer, selectedPoiTypes = [], visitedFilter = VisitedFilterEnum.All} = useMap();
 
 	const isLoggedIn = !!authentication?.username;
 
@@ -47,7 +53,7 @@ export function MapSidebar() {
 	const bannerTitle = 'Upgrade Required to Access All Map Styles';
 	const bannerSubtitle = isLoggedIn ? 'Click to find out more' : 'Start by signing in';
 
-	const handlePoiTypeChange = (fieldName: string, newTypes: PointOfInterestTypeEnum[]) => {
+	const handlePoiTypeChange = (_fieldName: string, newTypes: PointOfInterestTypeEnum[]) => {
 		dispatch(setPoiTypes(newTypes));
 	};
 
@@ -76,7 +82,31 @@ export function MapSidebar() {
 					);
 				})}
 			</View>
+
 			<Text style={styles.heading}>Filter</Text>
+
+			{/* Visited / Unvisited Toggle Filter */}
+			{isLoggedIn && (
+				<View style={styles.visitedFilterSection}>
+					<Text style={[styles.label, styles.labelDark]}>Visits</Text>
+					<View style={styles.segmentedControl}>
+						{VISITED_OPTIONS.map(option => {
+							const isActive = visitedFilter === option.key;
+							return (
+								<TouchableOpacity
+									key={option.key}
+									activeOpacity={0.8}
+									onPress={() => dispatch(setVisitedFilter(option.key))}
+									style={[styles.segmentButton, isActive && styles.segmentButtonActive]}
+								>
+									<MaterialCommunityIcons name={option.icon} size={16} color={isActive ? 'white' : 'rgba(255,255,255,0.6)'} />
+									<Text style={[styles.segmentText, isActive && styles.segmentTextActive]}>{option.label}</Text>
+								</TouchableOpacity>
+							);
+						})}
+					</View>
+				</View>
+			)}
 			<PointOfInterestTypeDropdown fieldName="poiTypes" label="Types" value={selectedPoiTypes} updateField={handlePoiTypeChange} darkMode />
 
 			{!canChangeMapStyle && (
@@ -102,7 +132,53 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: '600',
 		marginTop: 8,
-		marginBottom: 8,
+		marginBottom: 4,
+	},
+	subHeading: {
+		color: 'rgba(255,255,255,0.8)',
+		fontSize: 14,
+		fontWeight: '500',
+		marginBottom: 6,
+	},
+	visitedFilterSection: {
+		marginTop: 4,
+	},
+	segmentedControl: {
+		flexDirection: 'row',
+		backgroundColor: 'rgba(255,255,255,0.06)',
+		borderRadius: 10,
+		padding: 3,
+		borderWidth: 1,
+		borderColor: 'rgba(255,255,255,0.1)',
+	},
+	label: {
+		fontSize: 15,
+		fontWeight: '600',
+		color: '#333',
+	},
+	labelDark: {
+		color: '#EEE',
+	},
+	segmentButton: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 6,
+		paddingVertical: 8,
+		borderRadius: 8,
+	},
+	segmentButtonActive: {
+		backgroundColor: '#0088cc',
+	},
+	segmentText: {
+		color: 'rgba(255,255,255,0.6)',
+		fontSize: 12,
+		fontWeight: '500',
+	},
+	segmentTextActive: {
+		color: 'white',
+		fontWeight: '600',
 	},
 	tileGroup: {
 		flexDirection: 'row',

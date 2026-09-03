@@ -7,6 +7,7 @@ import {
 	ReviewStatusEnum,
 	ReviewSummary,
 	ReviewType,
+	VisitedFilterEnum,
 } from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
@@ -82,7 +83,13 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		};
 	}
 
-	async getClosestPointOfInterests(lat: number, lon: number, limit: number, selectedPoiTypes: PointOfInterestTypeEnum[] = []) {
+	async getClosestPointOfInterests(
+		lat: number,
+		lon: number,
+		limit: number,
+		selectedPoiTypes: PointOfInterestTypeEnum[] = [],
+		visitedFilter: VisitedFilterEnum = VisitedFilterEnum.All,
+	) {
 		const hasTypeFilter = selectedPoiTypes.length > 0;
 		const typeFilterSql = hasTypeFilter ? `AND h.type && ?::text[]` : '';
 
