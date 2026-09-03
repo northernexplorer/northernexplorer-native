@@ -42,14 +42,6 @@ export const styles = StyleSheet.create({
 		overflow: 'hidden',
 	},
 
-	// Forecast Tile (Horizontal Scroll items)
-	forecastTile: {
-		width: 84,
-		paddingVertical: 14,
-		paddingHorizontal: 8,
-		alignItems: 'center',
-		justifyContent: 'space-between',
-	},
 	hourDay: {
 		color: 'rgba(255, 255, 255, 0.6)',
 		fontSize: 13,
@@ -98,9 +90,6 @@ export const styles = StyleSheet.create({
 		letterSpacing: -0.3,
 		marginTop: 24,
 		marginBottom: 12,
-	},
-	forecastSection: {
-		width: '100%',
 	},
 	pointOfInterestsSection: {
 		width: '100%',

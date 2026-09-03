@@ -1,5 +1,5 @@
 import {EntityManager} from '@mikro-orm/postgresql';
-import {ForecastCache, ForecastRepository, WeatherCache, WeatherRepository} from '../environment';
+import {WeatherCache, WeatherRepository} from '../environment';
 import {
 	CityCache,
 	CityRepository,
@@ -36,7 +36,6 @@ export function repositories(em: EntityManager) {
 		city: new CityRepository(em, CityCache),
 		country: new CountryRepository(em, Country),
 		region: new RegionRepository(em, Region),
-		forecast: new ForecastRepository(em, ForecastCache),
 		pointOfInterest: new PointOfInterestRepository(em, PointOfInterest),
 		weather: new WeatherRepository(em, WeatherCache),
 		user: new UserRepository(em, User),
