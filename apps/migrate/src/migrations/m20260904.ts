@@ -1,5 +1,6 @@
 export const m20260904: string[] = [
-	`create table "image" ("id" uuid not null, "version" int not null default 1, "url" text not null, "file_extension" varchar(255) not null, "filename" varchar(255) not null, "mime_type" varchar(255) not null, "size" int not null, "likes" int not null, "alt_text" text null, "processed" boolean not null default false, "point_of_interest_id" uuid not null, "user_id" uuid not null, "created_at" timestamptz not null, primary key ("id"));`,
+	`create table "image" ("id" uuid not null, "version" int not null default 1, "url" text not null, "file_extension" varchar(255) not null, "filename" varchar(255) not null, "mime_type" varchar(255) not null, "size" int not null, "likes" int not null, "alt_text" text null, "processed" boolean not null default false, "point_of_interest_id" uuid not null, "user_id" uuid not null, "created_at" timestamptz not null, "status" text not null, primary key ("id"));`,
 	`alter table "image" add constraint "image_point_of_interest_id_foreign" foreign key ("point_of_interest_id") references "point_of_interest" ("id") on delete cascade;`,
 	`alter table "image" add constraint "image_user_id_foreign" foreign key ("user_id") references "user" ("id");`,
+	`alter table "image" add constraint "image_status_check" check ("status" in ('Pending', 'Approved'));`,
 ];

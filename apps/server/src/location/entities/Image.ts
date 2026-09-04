@@ -1,5 +1,6 @@
-import {Entity, PrimaryKey, Property, ManyToOne} from '@mikro-orm/decorators/legacy';
+import {Entity, PrimaryKey, Property, ManyToOne, Enum} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
+import {ImageStatusEnum} from '@northernexplorer/types';
 import {User} from '../../user';
 import {PointOfInterest} from './PointOfInterest';
 
@@ -12,6 +13,7 @@ type ImageInput = {
 	pointOfInterest: PointOfInterest;
 	altText?: string;
 	user: User;
+	status: ImageStatusEnum;
 };
 
 @Entity()
@@ -55,6 +57,9 @@ export class Image {
 	@Property({type: 'datetime'})
 	createdAt = new Date();
 
+	@Enum(() => ImageStatusEnum)
+	status: ImageStatusEnum;
+
 	constructor(data: ImageInput) {
 		this.url = data.url;
 		this.fileExtension = data.fileExtension;
@@ -64,5 +69,6 @@ export class Image {
 		this.pointOfInterest = data.pointOfInterest;
 		this.altText = data.altText;
 		this.user = data.user;
+		this.status = data.status;
 	}
 }
