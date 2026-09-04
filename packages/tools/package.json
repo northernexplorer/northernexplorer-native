@@ -17,5 +17,8 @@
 		"build": "tsc",
 		"clean": "rm -rf dist node_modules/.cache",
 		"test:deps": "depcheck --specials=typescript"
+	},
+	"dependencies": {
+		"expo-image-picker": "^57.0.16"
 	}
 }
