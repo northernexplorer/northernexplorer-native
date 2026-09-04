@@ -189,7 +189,6 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			status: site.status,
 			type: site.type,
 			organization: site.organization,
-			images: [],
 		}));
 	}
 

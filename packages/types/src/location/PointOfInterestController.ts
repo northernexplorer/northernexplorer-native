@@ -38,7 +38,7 @@ export type PointOfInterestType = {
 	type: PointOfInterestTypeEnum[];
 	organization: OrganizationType;
 	averageRating?: number;
-	images: ImageType[];
+	images?: ImageType[];
 };
 
 export type PointOfInterestEditType = {

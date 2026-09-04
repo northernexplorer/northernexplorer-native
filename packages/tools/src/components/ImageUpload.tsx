@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ActivityIndicator, Alert} from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import {ActivityIndicator, Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 
 export interface SelectedImage {
 	uri: string;
@@ -115,7 +115,7 @@ export function ImageUpload<T extends string>({
 										hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}
 										activeOpacity={0.8}
 									>
-										<Ionicons name="close-circle" size={22} color="#FF3B30" />
+										<Ionicons name="close-circle" size={20} color="#ef4444" />
 									</TouchableOpacity>
 								)}
 							</View>
@@ -131,10 +131,10 @@ export function ImageUpload<T extends string>({
 						activeOpacity={0.7}
 					>
 						{isPicking ? (
-							<ActivityIndicator color="#888888" />
+							<ActivityIndicator color="#0284c7" />
 						) : (
 							<>
-								<Ionicons name="cloud-upload-outline" size={26} color="#888888" />
+								<Ionicons name="cloud-upload-outline" size={24} color="#64748b" />
 								<Text style={styles.uploadText}>{multiple ? (value.length > 0 ? 'Add More' : 'Select Images') : 'Select Image'}</Text>
 							</>
 						)}
@@ -152,63 +152,66 @@ const styles = StyleSheet.create({
 		gap: 6,
 	},
 	label: {
-		fontSize: 15,
+		fontSize: 14,
 		fontWeight: '600',
-		color: '#333',
+		color: '#0f172a',
 	},
 	container: {
-		borderWidth: 1,
-		borderColor: '#ccc',
-		borderRadius: 8,
-		backgroundColor: '#fefefe',
-		padding: 10,
+		borderRadius: 10,
+		backgroundColor: '#ffffff',
 		gap: 10,
 	},
 	disabledContainer: {
 		opacity: 0.5,
-		backgroundColor: '#f5f5f5',
 	},
 	listContainer: {
-		gap: 10,
-		paddingRight: 4,
+		gap: 8,
+		paddingVertical: 4,
 	},
 	imageWrapper: {
 		position: 'relative',
 	},
 	previewImage: {
-		width: 80,
-		height: 80,
-		borderRadius: 6,
-		backgroundColor: '#e1e1e1',
+		width: 76,
+		height: 76,
+		borderRadius: 8,
+		backgroundColor: '#f1f5f9',
+		borderWidth: 1,
+		borderColor: '#e2e8f0',
 	},
 	removeButton: {
 		position: 'absolute',
 		top: -6,
 		right: -6,
-		backgroundColor: '#fff',
-		borderRadius: 12,
+		backgroundColor: '#ffffff',
+		borderRadius: 10,
+		shadowColor: '#0f172a',
+		shadowOffset: {width: 0, height: 1},
+		shadowOpacity: 0.15,
+		shadowRadius: 2,
+		elevation: 2,
 	},
 	uploadButton: {
 		borderWidth: 1,
 		borderStyle: 'dashed',
-		borderColor: '#888888',
-		borderRadius: 6,
-		height: 90,
+		borderColor: '#cbd5e1',
+		borderRadius: 10,
+		height: 84,
 		justifyContent: 'center',
 		alignItems: 'center',
 		gap: 6,
-		backgroundColor: '#fafafa',
+		backgroundColor: '#f8fafc',
 	},
 	uploadButtonCompact: {
-		height: 80,
+		height: 76,
 	},
 	uploadText: {
-		fontSize: 14,
-		color: '#888888',
-		fontWeight: '500',
+		fontSize: 13,
+		color: '#64748b',
+		fontWeight: '600',
 	},
 	errorText: {
-		color: '#FF3B30',
+		color: '#ef4444',
 		fontSize: 12,
 		marginTop: 2,
 	},
