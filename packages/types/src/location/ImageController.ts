@@ -28,6 +28,7 @@ export interface UploadImageFileInput {
 	fileExtension: string;
 	mimeType: string;
 	size: number;
+	uri: string;
 }
 
 export const ImageController = {

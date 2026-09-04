@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {formatName, ImageUpload, SelectedImage, Spinner} from '@northernexplorer/tools';
-import {ImageType, ImageStatusEnum, PointOfInterestType, RolesEnum} from '@northernexplorer/types';
+import {formatName, ImageUpload, Spinner} from '@northernexplorer/tools';
+import {ImageType, ImageStatusEnum, PointOfInterestType, RolesEnum, UploadImageFileInput} from '@northernexplorer/types';
 import {Link} from 'expo-router';
 import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
@@ -20,7 +20,7 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 	const [selectedImage, setSelectedImage] = useState<ImageType | null>(null);
 	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
 	const [isUploading, setIsUploading] = useState(false);
-	const [stagedUploads, setStagedUploads] = useState<SelectedImage[]>([]);
+	const [stagedUploads, setStagedUploads] = useState<UploadImageFileInput[]>([]);
 
 	const {mutate: deleteMutation} = useApiMutation('location', 'ImageController', 'deleteById');
 	const {mutate: uploadMutation} = useApiMutation('location', 'ImageController', 'upload');
@@ -42,7 +42,7 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 			});
 			setStagedUploads([]);
 			refetch();
-		} catch (error) {
+		} catch {
 			alertStore.showAlert({
 				title: 'Upload Failed',
 				message: 'Could not upload photos. Please try again.',
@@ -155,7 +155,7 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 
 								{isMine && (
 									<View style={photoStyles.gridMineBadge}>
-										<Text style={photoStyles.gridBadgeText}>Yours</Text>
+										<Text style={photoStyles.gridBadgeText}>Your Photo</Text>
 									</View>
 								)}
 

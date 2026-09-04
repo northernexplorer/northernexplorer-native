@@ -13,6 +13,7 @@ import {
 	ReviewRepository,
 	OrganizationRepository,
 	Organization,
+	Image,
 	ImageRepository,
 } from '../location';
 import {

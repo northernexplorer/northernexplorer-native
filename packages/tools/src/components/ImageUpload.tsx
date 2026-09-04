@@ -2,19 +2,13 @@ import React, {useState} from 'react';
 import {ActivityIndicator, Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-
-export interface SelectedImage {
-	uri: string;
-	filename?: string;
-	mimeType?: string;
-	size?: number;
-}
+import {UploadImageFileInput} from '@northernexplorer/types';
 
 interface Props<T extends string> {
 	fieldName: T;
 	label?: string;
-	updateField: (name: T, value: SelectedImage[]) => void;
-	value?: SelectedImage[];
+	updateField: (name: T, value: UploadImageFileInput[]) => void;
+	value?: UploadImageFileInput[];
 	multiple?: boolean;
 	maxImages?: number;
 	error?: string;
@@ -47,42 +41,42 @@ export function ImageUpload<T extends string>({
 
 		const hasPermission = await requestPermission();
 		if (!hasPermission) return;
+		setIsPicking(true);
+		const remainingSlots = maxImages - value.length;
 
-		try {
-			setIsPicking(true);
-			const remainingSlots = maxImages - value.length;
+		if (multiple && remainingSlots <= 0) {
+			Alert.alert('Limit Reached', `You can only upload up to ${maxImages} images.`);
+			return;
+		}
 
-			if (multiple && remainingSlots <= 0) {
-				Alert.alert('Limit Reached', `You can only upload up to ${maxImages} images.`);
-				return;
-			}
+		const result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsMultipleSelection: multiple,
+			selectionLimit: multiple ? remainingSlots : 1,
+			quality: 0.8,
+		});
 
-			const result = await ImagePicker.launchImageLibraryAsync({
-				mediaTypes: ImagePicker.MediaTypeOptions.Images,
-				allowsMultipleSelection: multiple,
-				selectionLimit: multiple ? remainingSlots : 1,
-				quality: 0.8,
+		if (!result.canceled && result.assets.length > 0) {
+			const formattedImages: UploadImageFileInput[] = result.assets.map(asset => {
+				const filename = asset.fileName || asset.uri.split('/').pop() || 'image.jpg';
+				const fileExtension = filename.split('.').pop()?.toLowerCase() || 'jpg';
+
+				return {
+					uri: asset.uri,
+					filename,
+					mimeType: asset.mimeType || 'image/jpeg',
+					size: asset.fileSize || 0,
+					fileExtension,
+				};
 			});
 
-			if (!result.canceled && result.assets.length > 0) {
-				const formattedImages: SelectedImage[] = result.assets.map(asset => ({
-					uri: asset.uri,
-					filename: asset.fileName || asset.uri.split('/').pop() || 'image.jpg',
-					mimeType: asset.mimeType || 'image/jpeg',
-					size: asset.fileSize,
-				}));
-
-				if (multiple) {
-					updateField(fieldName, [...value, ...formattedImages]);
-				} else {
-					updateField(fieldName, [formattedImages[0]]);
-				}
+			if (multiple) {
+				updateField(fieldName, [...value, ...formattedImages]);
+			} else {
+				updateField(fieldName, [formattedImages[0]]);
 			}
-		} catch (err) {
-			Alert.alert('Error', 'An error occurred while picking images.');
-		} finally {
-			setIsPicking(false);
 		}
+		setIsPicking(false);
 	};
 
 	const handleRemoveImage = (indexToRemove: number) => {
