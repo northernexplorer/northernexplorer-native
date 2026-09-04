@@ -5,6 +5,7 @@ import {PointOfInterest} from './PointOfInterest';
 
 type ImageInput = {
 	url: string;
+	fileExtension: string;
 	filename: string;
 	mimeType: string;
 	size: number;
@@ -23,6 +24,9 @@ export class Image {
 
 	@Property({type: 'text'})
 	url: string;
+
+	@Property({type: 'string'})
+	fileExtension: string;
 
 	@Property({type: 'string'})
 	filename: string;
@@ -53,6 +57,7 @@ export class Image {
 
 	constructor(data: ImageInput) {
 		this.url = data.url;
+		this.fileExtension = data.fileExtension;
 		this.filename = data.filename;
 		this.mimeType = data.mimeType;
 		this.size = data.size;
