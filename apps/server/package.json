@@ -12,6 +12,7 @@
 		"test:deps": "depcheck --specials=typescript --ignores=\"@mikro-orm/cli\""
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.1127.0",
 		"@mikro-orm/core": "^7.1.14",
 		"@mikro-orm/decorators": "^7.1.14",
 		"@mikro-orm/postgresql": "^7.1.14",

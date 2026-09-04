@@ -4,11 +4,13 @@ import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 import {Image} from '../entities/Image';
+import {SpacesManagementService} from '../services/SpacesManagementService';
 
 type Route<M extends keyof ROUTES['location']['ImageController']> = RouteDefinition<'location', 'ImageController'>[M];
 
 export class ImageController extends BaseController {
 	private permissionService = new PermissionService();
+	private spacesManagementService = new SpacesManagementService();
 
 	constructor(repos: Repositories) {
 		super(repos);
