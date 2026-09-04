@@ -20,7 +20,7 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 	const [selectedImage, setSelectedImage] = useState<ImageType | null>(null);
 	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
 	const [isUploading, setIsUploading] = useState(false);
-	const [selectedUploads, setSelectedUploads] = useState<SelectedImage[]>([]);
+	const [stagedUploads, setStagedUploads] = useState<SelectedImage[]>([]);
 
 	const {mutate: deleteMutation} = useApiMutation('location', 'ImageController', 'deleteById');
 	const {mutate: uploadMutation} = useApiMutation('location', 'ImageController', 'upload');
@@ -28,21 +28,26 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 
 	if (loading) return <Spinner />;
 
-	const images = data.images ?? [];
+	const images = data.images;
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
 
-	const handleUploadImages = async (newImages: SelectedImage[]) => {
-		setSelectedUploads(newImages);
-		if (newImages.length === 0) return;
+	const handleConfirmUpload = async () => {
+		if (stagedUploads.length === 0) return;
 
 		setIsUploading(true);
 		try {
 			await uploadMutation({
 				pointOfInterestId: data.id,
-				files: newImages,
+				files: stagedUploads,
 			});
-			setSelectedUploads([]);
+			setStagedUploads([]);
 			refetch();
+		} catch (error) {
+			alertStore.showAlert({
+				title: 'Upload Failed',
+				message: 'Could not upload photos. Please try again.',
+				type: 'error',
+			});
 		} finally {
 			setIsUploading(false);
 		}
@@ -82,7 +87,6 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 
 	return (
 		<View style={photoStyles.container}>
-			{/* Upload Card - Styled identically to ReviewForm card */}
 			{!authentication ? (
 				<Link href="profile/login" asChild>
 					<Pressable style={photoStyles.loggedOutCard}>
@@ -93,25 +97,45 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 			) : (
 				<View style={photoStyles.uploadCard}>
 					<Text style={photoStyles.uploadTitle}>Share Your Photos</Text>
+
 					<ImageUpload
 						fieldName="photos"
 						label=""
 						multiple
 						maxImages={5}
-						value={selectedUploads}
+						value={stagedUploads}
 						loading={isUploading}
-						updateField={(_, val) => handleUploadImages(val)}
+						updateField={(_, val) => setStagedUploads(val)}
 					/>
+
+					{stagedUploads.length > 0 && (
+						<Pressable
+							style={[photoStyles.submitButton, isUploading && photoStyles.submitButtonDisabled]}
+							onPress={handleConfirmUpload}
+							disabled={isUploading}
+						>
+							{isUploading ? (
+								<ActivityIndicator size="small" color="#ffffff" />
+							) : (
+								<>
+									<Ionicons name="cloud-upload" size={18} color="#ffffff" />
+									<Text style={photoStyles.submitButtonText}>
+										Upload {stagedUploads.length} {stagedUploads.length === 1 ? 'Photo' : 'Photos'}
+									</Text>
+								</>
+							)}
+						</Pressable>
+					)}
 				</View>
 			)}
 
 			{/* Header */}
 			<View style={photoStyles.headerSection}>
-				<Text style={globalStyles.reviewTitle}>Community Photos ({images.length})</Text>
+				<Text style={globalStyles.reviewTitle}>Community Photos ({images?.length})</Text>
 			</View>
 
 			{/* Empty State */}
-			{images.length === 0 ? (
+			{images?.length === 0 ? (
 				<View style={photoStyles.emptyState}>
 					<Ionicons name="images-outline" size={44} color="#cbd5e1" />
 					<Text style={photoStyles.emptyTitle}>No photos yet</Text>
@@ -120,8 +144,8 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 			) : (
 				/* Photo Grid */
 				<View style={photoStyles.gridContainer}>
-					{images.map(image => {
-						const isMine = image.user?.id === authentication?.userId;
+					{images?.map(image => {
+						const isMine = image.user.id === authentication?.userId;
 						const isPending = image.status === ImageStatusEnum.Pending;
 						const canManage = isAdmin || isMine;
 
@@ -129,7 +153,6 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 							<Pressable key={image.id} style={photoStyles.gridItem} onPress={() => setSelectedImage(image)}>
 								<Image source={{uri: image.url}} style={photoStyles.thumbnail} />
 
-								{/* Status Overlay Badges */}
 								{isMine && (
 									<View style={photoStyles.gridMineBadge}>
 										<Text style={photoStyles.gridBadgeText}>Yours</Text>
@@ -142,7 +165,6 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 									</View>
 								)}
 
-								{/* Quick Delete Overlay Button */}
 								{canManage && (
 									<Pressable style={photoStyles.gridDeleteButton} onPress={() => handleDelete(image.id)} hitSlop={8}>
 										<Ionicons name="trash-outline" size={13} color="#ef4444" />
@@ -159,34 +181,30 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 				{selectedImage && (
 					<View style={photoStyles.modalOverlay}>
 						<View style={photoStyles.modalContent}>
-							{/* Close Button */}
 							<Pressable style={photoStyles.modalCloseButton} onPress={() => setSelectedImage(null)} hitSlop={12}>
 								<Ionicons name="close" size={24} color="#ffffff" />
 							</Pressable>
 
-							{/* Main Image */}
 							<Image source={{uri: selectedImage.url}} style={photoStyles.modalImage} resizeMode="contain" />
 
-							{/* Image Details Bar */}
 							<View style={photoStyles.modalFooter}>
 								<View style={photoStyles.userInfo}>
 									<View style={photoStyles.avatarCircle}>
-										<Text style={photoStyles.avatarText}>{selectedImage.user?.username?.charAt(0).toUpperCase() || 'U'}</Text>
+										<Text style={photoStyles.avatarText}>{selectedImage.user.username.charAt(0).toUpperCase()}</Text>
 									</View>
 									<View>
 										<Text style={photoStyles.userName}>{formatName(selectedImage.user)}</Text>
-										{selectedImage.altText ? <Text style={photoStyles.altText}>{selectedImage.altText}</Text> : null}
+										{selectedImage.altText && <Text style={photoStyles.altText}>{selectedImage.altText}</Text>}
 									</View>
 								</View>
 
-								{/* Actions */}
 								<View style={photoStyles.modalActions}>
 									<Pressable style={photoStyles.likeButton} onPress={() => handleLike(selectedImage.id)}>
 										<Ionicons name="heart-outline" size={20} color="#0088cc" />
-										<Text style={photoStyles.likeCount}>{selectedImage.likes ?? 0}</Text>
+										<Text style={photoStyles.likeCount}>{selectedImage.likes}</Text>
 									</Pressable>
 
-									{(isAdmin || selectedImage.user?.id === authentication?.userId) && (
+									{(isAdmin || selectedImage.user.id === authentication?.userId) && (
 										<Pressable
 											style={photoStyles.modalDeleteButton}
 											onPress={() => handleDelete(selectedImage.id)}
@@ -213,7 +231,6 @@ const photoStyles = StyleSheet.create({
 	container: {
 		marginVertical: 10,
 	},
-	/* Form & Logged Out Card - Matches cardStyles from ReviewForm */
 	uploadCard: {
 		backgroundColor: '#ffffff',
 		borderRadius: 12,
@@ -232,6 +249,25 @@ const photoStyles = StyleSheet.create({
 		fontWeight: '700',
 		color: '#0f172a',
 		marginBottom: 8,
+	},
+	submitButton: {
+		marginTop: 12,
+		backgroundColor: '#0284c7',
+		borderRadius: 8,
+		paddingVertical: 10,
+		paddingHorizontal: 16,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+	},
+	submitButtonDisabled: {
+		opacity: 0.6,
+	},
+	submitButtonText: {
+		color: '#ffffff',
+		fontSize: 14,
+		fontWeight: '600',
 	},
 	loggedOutCard: {
 		backgroundColor: '#f8fafc',
@@ -311,15 +347,15 @@ const photoStyles = StyleSheet.create({
 		shadowRadius: 2,
 		elevation: 2,
 	},
-	/* Empty State - Matches reviewStyles.emptyState */
 	emptyState: {
 		alignItems: 'center',
 		justifyContent: 'center',
 		padding: 32,
-		backgroundColor: '#ffffff',
-		borderRadius: 16,
+		backgroundColor: '#f8fafc',
+		borderRadius: 12,
 		borderWidth: 1,
-		borderColor: '#f1f5f9',
+		borderColor: '#e2e8f0',
+		borderStyle: 'dashed',
 		marginVertical: 8,
 	},
 	emptyTitle: {
@@ -335,7 +371,6 @@ const photoStyles = StyleSheet.create({
 		marginTop: 4,
 		maxWidth: 280,
 	},
-	/* Modal Styles */
 	modalOverlay: {
 		flex: 1,
 		backgroundColor: 'rgba(0, 0, 0, 0.92)',

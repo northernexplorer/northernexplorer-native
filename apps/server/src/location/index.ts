@@ -1,5 +1,6 @@
 export {CityController} from './controllers/CityController';
 export {CountryController} from './controllers/CountryController';
+export {ImageController} from './controllers/ImageController';
 export {OrganizationController} from './controllers/OrganizationController';
 export {PointOfInterestController} from './controllers/PointOfInterestController';
 export {RegionController} from './controllers/RegionController';
@@ -15,6 +16,7 @@ export {Review} from './entities/Review';
 
 export {CityRepository} from './repositories/CityRepository';
 export {CountryRepository} from './repositories/CountryRepository';
+export {ImageRepository} from './repositories/ImageRepository';
 export {OrganizationRepository} from './repositories/OrganizationRepository';
 export {PointOfInterestRepository} from './repositories/PointOfInterestRepository';
 export {RegionRepository} from './repositories/RegionRepository';

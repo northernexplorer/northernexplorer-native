@@ -13,6 +13,7 @@ import {
 	ReviewRepository,
 	OrganizationRepository,
 	Organization,
+	ImageRepository,
 } from '../location';
 import {
 	Session,
@@ -35,17 +36,18 @@ export function repositories(em: EntityManager) {
 	return {
 		city: new CityRepository(em, CityCache),
 		country: new CountryRepository(em, Country),
-		region: new RegionRepository(em, Region),
+		image: new ImageRepository(em, Image),
 		pointOfInterest: new PointOfInterestRepository(em, PointOfInterest),
-		weather: new WeatherRepository(em, WeatherCache),
 		user: new UserRepository(em, User),
 		review: new ReviewRepository(em, Review),
 		organization: new OrganizationRepository(em, Organization),
 		migration: new MigrationRepository(em, Migration),
+		region: new RegionRepository(em, Region),
 		session: new SessionRepository(em, Session),
 		subscription: new SubscriptionRepository(em, Subscription),
 		subscriptionFeature: new SubscriptionFeatureRepository(em, SubscriptionFeature),
 		subscriptionLevel: new SubscriptionLevelRepository(em, SubscriptionLevel),
 		support: new SupportRepository(em, Support),
+		weather: new WeatherRepository(em, WeatherCache),
 	};
 }

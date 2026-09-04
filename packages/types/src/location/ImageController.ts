@@ -24,46 +24,38 @@ export interface ImageType {
 }
 
 export interface UploadImageFileInput {
-	uri: string;
 	filename: string;
+	fileExtension: string;
 	mimeType: string;
-	size?: number;
-	altText?: string;
+	size: number;
 }
 
 export const ImageController = {
 	upload: {
-		params: {},
-		body: {} as {
+		params: {} as {
 			pointOfInterestId: string;
 			files: UploadImageFileInput[];
 		},
 		response: null as unknown as {
 			success: boolean;
-			message: string;
-			images: ImageType[];
 		},
 	},
 	deleteById: {
 		params: {} as {id: string},
 		response: null as unknown as {
 			success: boolean;
-			message: string;
 		},
 	},
 	like: {
 		params: {} as {id: string},
 		response: null as unknown as {
 			success: boolean;
-			likes: number;
 		},
 	},
 	updateStatus: {
-		params: {} as {id: string},
-		body: {} as {status: ImageStatusEnum},
+		params: {} as {id: string; status: ImageStatusEnum},
 		response: null as unknown as {
 			success: boolean;
-			image: ImageType;
 		},
 	},
 	getPending: {
