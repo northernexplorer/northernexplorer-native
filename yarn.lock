@@ -1985,6 +1985,8 @@ __metadata:
 "@northernexplorer/tools@npm:*, @northernexplorer/tools@workspace:packages/tools":
   version: 0.0.0-use.local
   resolution: "@northernexplorer/tools@workspace:packages/tools"
+  dependencies:
+    expo-image-picker: "npm:^57.0.16"
   peerDependencies:
     "@expo/vector-icons": "*"
     react: "*"
@@ -5443,6 +5445,26 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/c076b58734bbf02293f1af96d0fd404a332a1e482c43a6268910ae651cddf51ff073a5019ece377592bcf1b284d423f98321f6a74de28058d57954345c3a208a
+  languageName: node
+  linkType: hard
+
+"expo-image-loader@npm:~57.0.1":
+  version: 57.0.1
+  resolution: "expo-image-loader@npm:57.0.1"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/c68a12901d789bfc395b045305a68a352e05d4b3e4fcbbe382591a5fff5fcd896e81c4cbb082dfaa520c5ac6ee2c3221c3887b0292b7b831e21779bd360936f0
+  languageName: node
+  linkType: hard
+
+"expo-image-picker@npm:^57.0.16":
+  version: 57.0.16
+  resolution: "expo-image-picker@npm:57.0.16"
+  dependencies:
+    expo-image-loader: "npm:~57.0.1"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/a793c253ed50a6828c636d10bfaf1546e6a3ef663ca372a17b027fa9a0d6b253d4cf2b46975b363376774c4f1585cd22140bd06124b73d896ea09a6f65accfeb
   languageName: node
   linkType: hard
 

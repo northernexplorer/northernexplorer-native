@@ -1,6 +1,7 @@
 import {
 	CountryType,
 	OrganizationType,
+	PointOfInterestType,
 	PointOfInterestTypeEnum,
 	PublishStatusEnum,
 	RegionType,
@@ -30,24 +31,12 @@ interface PointOfInterestRawRow {
 	organization: OrganizationType;
 }
 
-type PointOfInterestDetailsResponse = {
-	id: string;
-	name: string;
-	description: string;
-	image: string;
-	lat: number;
-	lon: number;
-	status: PublishStatusEnum;
-	country: CountryType;
-	region: RegionType;
-	type: PointOfInterestTypeEnum[];
-	reviews: ReviewSummary[];
-	organization: OrganizationType;
-};
-
 export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
-	async getPointOfInterestById(id: string, currentUserId?: string): Promise<PointOfInterestDetailsResponse> {
-		const site = await this.findOneOrFail({id}, {populate: ['country', 'region', 'reviews', 'reviews.user', 'organization']});
+	async getPointOfInterestById(id: string, currentUserId?: string): Promise<PointOfInterestType> {
+		const site = await this.findOneOrFail(
+			{id},
+			{populate: ['country', 'region', 'reviews', 'reviews.user', 'organization', 'images', 'images.user']},
+		);
 
 		// Filter reviews: show published reviews OR reviews belonging to the current user
 		const visibleReviews = site.reviews.filter(review => review.status === ReviewStatusEnum.Approved || review.user.id === currentUserId);
@@ -78,6 +67,27 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 					score: review.user.score,
 					firstName: review.user.firstName,
 					lastName: review.user.lastName,
+				},
+			})),
+			images: site.images.map(image => ({
+				id: image.id,
+				version: image.version,
+				url: image.url,
+				fileExtension: image.fileExtension,
+				filename: image.filename,
+				mimeType: image.mimeType,
+				size: image.size,
+				likes: image.likes,
+				altText: image.altText,
+				processed: image.processed,
+				createdAt: image.createdAt,
+				status: image.status,
+				user: {
+					id: image.user.id,
+					username: image.user.username,
+					score: image.user.score,
+					firstName: image.user.firstName,
+					lastName: image.user.lastName,
 				},
 			})),
 		};
@@ -179,6 +189,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			status: site.status,
 			type: site.type,
 			organization: site.organization,
+			images: [],
 		}));
 	}
 
