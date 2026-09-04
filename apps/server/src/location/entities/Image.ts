@@ -1,5 +1,6 @@
 import {Entity, PrimaryKey, Property, ManyToOne} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
+import {User} from '../../user';
 import {PointOfInterest} from './PointOfInterest';
 
 type ImageInput = {
@@ -9,6 +10,7 @@ type ImageInput = {
 	size: number;
 	pointOfInterest: PointOfInterest;
 	altText?: string;
+	user: User;
 };
 
 @Entity()
@@ -31,6 +33,9 @@ export class Image {
 	@Property({type: 'number'})
 	size: number;
 
+	@Property({type: 'number'})
+	likes = 0;
+
 	@Property({type: 'text', nullable: true})
 	altText?: string;
 
@@ -40,6 +45,12 @@ export class Image {
 	@ManyToOne(() => PointOfInterest, {deleteRule: 'cascade'})
 	pointOfInterest: PointOfInterest;
 
+	@ManyToOne(() => User)
+	user: User;
+
+	@Property({type: 'datetime'})
+	createdAt = new Date();
+
 	constructor(data: ImageInput) {
 		this.url = data.url;
 		this.filename = data.filename;
@@ -47,5 +58,6 @@ export class Image {
 		this.size = data.size;
 		this.pointOfInterest = data.pointOfInterest;
 		this.altText = data.altText;
+		this.user = data.user;
 	}
 }
