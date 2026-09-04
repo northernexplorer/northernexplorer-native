@@ -1,35 +1,31 @@
-import {ReviewRatingEnum} from '@northernexplorer/types';
-import {Review, PointOfInterest} from '../../location';
+import {EntranceCostEnum, ReviewRatingEnum, ReviewStatusEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {User} from '../../user';
+import {PointOfInterest, Review} from '../../location';
+
+export type CreateReviewParams = {
+	user: User;
+	pointOfInterest: PointOfInterest;
+	rating: ReviewRatingEnum;
+	description: string;
+	difficulty: SiteDifficultyEnum;
+	entranceCost: EntranceCostEnum;
+	conditions: SiteConditionEnum[];
+	status: ReviewStatusEnum;
+};
 
 export class ReviewRepository extends BaseRepository<Review> {
-	async getReviewsById(id: string) {
-		const review = await this.findOneOrFail({id}, {populate: ['user', 'pointOfInterest']});
-
-		return {
-			id: review.id,
-			user: {
-				id: review.user.id,
-				username: review.user.username,
-				score: review.user.score,
-			},
-			pointOfInterest: {
-				id: review.pointOfInterest.id,
-				name: review.pointOfInterest.name,
-			},
-			rating: review.rating,
-			description: review.description,
-		};
+	async getById(id: string) {
+		return this.findOneOrFail({id}, {populate: ['user', 'pointOfInterest']});
 	}
 
 	async getAverageRatingByPointOfInterestId(pointOfInterestId: string): Promise<number> {
 		const result = await this.execute<{avg_rating: string | number | null}[]>(
-			`SELECT AVG(rating) as avg_rating FROM review WHERE point_of_interest_id = ?`,
-			[pointOfInterestId],
+			`SELECT AVG(rating) as avg_rating FROM review WHERE point_of_interest_id = ? AND status = ?`,
+			[pointOfInterestId, ReviewStatusEnum.Approved],
 		);
 
-		const rawAvg = result[0]?.avg_rating;
+		const rawAvg = result.at(0)?.avg_rating;
 		if (!rawAvg) {
 			return 0;
 		}
@@ -38,27 +34,34 @@ export class ReviewRepository extends BaseRepository<Review> {
 		return isNaN(numericAvg) ? 0 : Math.round(numericAvg * 10) / 10;
 	}
 
-	createReview(user: User, pointOfInterest: PointOfInterest, rating: ReviewRatingEnum, description: string) {
+	createReview({user, pointOfInterest, rating, description, difficulty, entranceCost, conditions, status}: CreateReviewParams) {
 		const review = new Review({
 			user,
 			rating,
 			description,
 			pointOfInterest,
+			difficulty,
+			entranceCost,
+			conditions,
+			status,
 		});
-		user.score += 10;
 
-		this.persist([review, user]);
+		this.persist([review]);
 
 		return {
 			id: review.id,
 			rating: review.rating,
 			description: review.description,
+			difficulty: review.difficulty,
+			entranceCost: review.entranceCost,
+			conditions: review.conditions,
+			status: review.status,
 			user: {
 				id: user.id,
-				name: user.username,
+				username: user.username,
 				score: user.score,
 			},
-			PointOfInterest: {
+			pointOfInterest: {
 				id: pointOfInterest.id,
 				name: pointOfInterest.name,
 			},

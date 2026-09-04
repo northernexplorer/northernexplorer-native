@@ -15,6 +15,12 @@ export enum PointOfInterestTypeEnum {
 	Waterfall = 'Waterfall',
 }
 
+export enum VisitedFilterEnum {
+	All = 'All',
+	Visited = 'Visited',
+	Unvisited = 'Unvisited',
+}
+
 export type PointOfInterestType = {
 	id: string;
 	name: string;
@@ -51,7 +57,7 @@ export type PointOfInterestEditType = {
 
 export const PointOfInterestController = {
 	getNearbyPointOfInterests: {
-		params: {} as {lat: number; lon: number; limit: number; selectedPoiTypes?: PointOfInterestTypeEnum[]},
+		params: {} as {lat: number; lon: number; limit: number; selectedPoiTypes?: PointOfInterestTypeEnum[]; visitedFilter?: VisitedFilterEnum},
 		response: null as unknown as PointOfInterestType[],
 	},
 	getPointOfInterestById: {

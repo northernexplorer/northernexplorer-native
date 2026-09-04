@@ -1,32 +1,28 @@
-import React from 'react';
-import {View, Text, Pressable, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
+import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {PointOfInterestType, ReviewRatingEnum} from '@northernexplorer/types';
 import {formatName, Spinner} from '@northernexplorer/tools';
-import CreateReview from './ReviewForm';
-import {styles} from '~/location/PointOfInterestDetails/styles';
+import {PointOfInterestType, ReviewStatusEnum, RolesEnum} from '@northernexplorer/types';
+import {ReviewForm} from './ReviewForm';
+import {RenderStars} from './RenderStars';
+import {ReviewMetadataBadges} from './ReviewMetadataBadges';
+import {useApiMutation} from '~/core/useApiMutation';
+import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {alertStore} from '~/core/alertStore';
 
-type ReviewDetailsProps = {
+type ReviewsProps = {
 	data: PointOfInterestType;
 	loading: boolean;
 	refetch: () => void;
-	onEditReview?: (reviewId: string) => void;
 };
 
-function RenderStars({rating}: {rating: ReviewRatingEnum}) {
-	return (
-		<View style={reviewStyles.starRow}>
-			{[1, 2, 3, 4, 5].map(starIndex => {
-				const isFilled = rating >= starIndex;
-				return <Ionicons key={starIndex} name={isFilled ? 'star' : 'star-outline'} size={16} color={isFilled ? '#ffb400' : '#cbd5e1'} />;
-			})}
-		</View>
-	);
-}
-
-export function ReviewDetails({data, loading, refetch, onEditReview}: ReviewDetailsProps) {
+export function Reviews({data, loading, refetch}: ReviewsProps) {
 	const authentication = useAuthentication();
+	const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+	const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
+
+	const deleteMutation = useApiMutation('location', 'ReviewController', 'deleteReview');
 
 	if (loading) return <Spinner />;
 
@@ -35,14 +31,40 @@ export function ReviewDetails({data, loading, refetch, onEditReview}: ReviewDeta
 	const otherReviews = reviews.filter(r => r.user.id !== authentication?.userId);
 	const userHasReviewed = myReviews.length > 0;
 
+	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
+
+	const handleSuccess = () => {
+		setEditingReviewId(null);
+		refetch();
+	};
+
+	const handleDelete = (reviewId: string) => {
+		alertStore.showAlert({
+			title: 'Delete Review',
+			message: 'Are you sure you want to delete this review? This action cannot be undone.',
+			type: 'warning',
+			buttons: [
+				{text: 'Cancel', style: 'cancel'},
+				{
+					text: 'Delete',
+					style: 'destructive',
+					onPress: async () => {
+						setDeletingReviewId(reviewId);
+						await deleteMutation.mutate({id: reviewId});
+						refetch();
+					},
+				},
+			],
+		});
+	};
+
 	return (
 		<View style={reviewStyles.container}>
 			{/* Show Review Creation Form at the top if User Hasn't Posted Yet */}
-			{!userHasReviewed && <CreateReview refetch={refetch} />}
+			{!userHasReviewed && <ReviewForm refetch={refetch} />}
 
-			{/* Reviews List Section Header */}
 			<View style={reviewStyles.headerSection}>
-				<Text style={styles.reviewTitle}>Community Reviews ({reviews.length})</Text>
+				<Text style={globalStyles.reviewTitle}>Community Reviews ({reviews.length})</Text>
 			</View>
 
 			{reviews.length === 0 ? (
@@ -54,60 +76,149 @@ export function ReviewDetails({data, loading, refetch, onEditReview}: ReviewDeta
 			) : (
 				<View style={reviewStyles.listContainer}>
 					{/* Authenticated User's Reviews */}
-					{myReviews.map(review => (
-						<View key={review.id} style={[styles.reviewCard, reviewStyles.myReviewCard]}>
-							<View style={styles.headerRow}>
-								<View style={reviewStyles.userInfo}>
-									<View style={reviewStyles.avatarCircle}>
-										<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
-									</View>
-									<View>
-										<View style={reviewStyles.nameBadgeRow}>
-											<Text style={styles.userName}>{formatName(review.user)}</Text>
-											<View style={reviewStyles.youBadge}>
-												<Text style={reviewStyles.youBadgeText}>Your Review</Text>
-											</View>
+					{myReviews.map(review => {
+						const isPending = review.status === ReviewStatusEnum.Pending;
+						const canManageReview = isAdmin || review.user.id === authentication?.userId;
+						const isDeleting = deletingReviewId === review.id;
+
+						if (editingReviewId === review.id) {
+							return (
+								<View key={review.id} style={globalStyles.reviewCard}>
+									<ReviewForm initialData={review} refetch={handleSuccess} onCancel={() => setEditingReviewId(null)} />
+								</View>
+							);
+						}
+
+						return (
+							<View key={review.id} style={[globalStyles.reviewCard, reviewStyles.myReviewCard]}>
+								<View style={globalStyles.headerRow}>
+									<View style={reviewStyles.userInfo}>
+										<View style={reviewStyles.avatarCircle}>
+											<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
 										</View>
-										<RenderStars rating={review.rating} />
+										<View>
+											<View style={reviewStyles.nameBadgeRow}>
+												<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
+												<View style={reviewStyles.youBadge}>
+													<Text style={reviewStyles.youBadgeText}>Your Review</Text>
+												</View>
+												{isPending && (
+													<View style={reviewStyles.pendingBadge}>
+														<Text style={reviewStyles.pendingBadgeText}>Pending Approval</Text>
+													</View>
+												)}
+											</View>
+											<RenderStars rating={review.rating} />
+										</View>
+									</View>
+
+									<View style={reviewStyles.rightHeaderContainer}>
+										<View style={reviewStyles.scoreTag}>
+											<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
+											<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
+										</View>
+
+										{canManageReview && (
+											<>
+												<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
+													<Ionicons name="pencil" size={14} color="#0088cc" />
+													<Text style={reviewStyles.editButtonText}>Edit</Text>
+												</Pressable>
+
+												<Pressable
+													onPress={() => handleDelete(review.id)}
+													disabled={isDeleting}
+													style={reviewStyles.deleteButton}
+													hitSlop={8}
+												>
+													{isDeleting ? (
+														<ActivityIndicator size="small" color="#ef4444" />
+													) : (
+														<Ionicons name="trash-outline" size={15} color="#ef4444" />
+													)}
+												</Pressable>
+											</>
+										)}
 									</View>
 								</View>
 
-								{onEditReview && (
-									<Pressable onPress={() => onEditReview(review.id)} style={styles.editButton} hitSlop={8}>
-										<Text style={styles.editButtonText}>Edit</Text>
-									</Pressable>
-								)}
-							</View>
+								<ReviewMetadataBadges
+									difficulty={review.difficulty}
+									entranceCost={review.entranceCost}
+									conditions={review.conditions}
+								/>
 
-							<Text style={styles.description}>{review.description}</Text>
-						</View>
-					))}
+								<Text style={globalStyles.description}>{review.description}</Text>
+							</View>
+						);
+					})}
 
 					{/* Other Users' Reviews */}
-					{otherReviews.map(review => (
-						<View key={review.id} style={styles.reviewCard}>
-							<View style={styles.headerRow}>
-								<View style={reviewStyles.userInfo}>
-									<View style={[reviewStyles.avatarCircle, reviewStyles.otherAvatarCircle]}>
-										<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
+					{otherReviews.map(review => {
+						const canManageReview = isAdmin || review.user.id === authentication?.userId;
+						const isDeleting = deletingReviewId === review.id;
+
+						if (editingReviewId === review.id) {
+							return (
+								<View key={review.id} style={globalStyles.reviewCard}>
+									<ReviewForm initialData={review} refetch={handleSuccess} onCancel={() => setEditingReviewId(null)} />
+								</View>
+							);
+						}
+
+						return (
+							<View key={review.id} style={globalStyles.reviewCard}>
+								<View style={globalStyles.headerRow}>
+									<View style={reviewStyles.userInfo}>
+										<View style={[reviewStyles.avatarCircle, reviewStyles.otherAvatarCircle]}>
+											<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
+										</View>
+										<View>
+											<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
+											<RenderStars rating={review.rating} />
+										</View>
 									</View>
-									<View>
-										<Text style={styles.userName}>{formatName(review.user)}</Text>
-										<RenderStars rating={review.rating} />
+
+									<View style={reviewStyles.rightHeaderContainer}>
+										<View style={reviewStyles.scoreTag}>
+											<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
+											<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
+										</View>
+
+										{canManageReview && (
+											<>
+												<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
+													<Ionicons name="pencil" size={14} color="#0088cc" />
+													<Text style={reviewStyles.editButtonText}>Edit</Text>
+												</Pressable>
+
+												<Pressable
+													onPress={() => handleDelete(review.id)}
+													disabled={isDeleting}
+													style={reviewStyles.deleteButton}
+													hitSlop={8}
+												>
+													{isDeleting ? (
+														<ActivityIndicator size="small" color="#ef4444" />
+													) : (
+														<Ionicons name="trash-outline" size={15} color="#ef4444" />
+													)}
+												</Pressable>
+											</>
+										)}
 									</View>
 								</View>
 
-								{review.user.score && (
-									<View style={reviewStyles.scoreTag}>
-										<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
-										<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
-									</View>
-								)}
-							</View>
+								<ReviewMetadataBadges
+									difficulty={review.difficulty}
+									entranceCost={review.entranceCost}
+									conditions={review.conditions}
+								/>
 
-							<Text style={styles.description}>{review.description}</Text>
-						</View>
-					))}
+								<Text style={globalStyles.description}>{review.description}</Text>
+							</View>
+						);
+					})}
 				</View>
 			)}
 		</View>
@@ -134,6 +245,33 @@ const reviewStyles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 10,
 	},
+	rightHeaderContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+	},
+	editButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		backgroundColor: '#e0f2fe',
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		borderRadius: 6,
+	},
+	editButtonText: {
+		fontSize: 12,
+		fontWeight: '600',
+		color: '#0088cc',
+	},
+	deleteButton: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: '#fef2f2',
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		borderRadius: 6,
+	},
 	avatarCircle: {
 		width: 38,
 		height: 38,
@@ -153,6 +291,7 @@ const reviewStyles = StyleSheet.create({
 	nameBadgeRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		flexWrap: 'wrap',
 		gap: 6,
 	},
 	youBadge: {
@@ -167,10 +306,17 @@ const reviewStyles = StyleSheet.create({
 		fontWeight: '700',
 		textTransform: 'uppercase',
 	},
-	starRow: {
-		flexDirection: 'row',
-		gap: 2,
-		marginTop: 2,
+	pendingBadge: {
+		backgroundColor: '#fef3c7',
+		paddingHorizontal: 6,
+		paddingVertical: 2,
+		borderRadius: 4,
+	},
+	pendingBadgeText: {
+		color: '#b45309',
+		fontSize: 10,
+		fontWeight: '700',
+		textTransform: 'uppercase',
 	},
 	scoreTag: {
 		flexDirection: 'row',
