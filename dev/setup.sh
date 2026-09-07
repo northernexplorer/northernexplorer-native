@@ -48,3 +48,5 @@ fi
 echo "Enabling Corepack and setting up Yarn..."
 corepack enable
 corepack prepare yarn@stable --activate
+
+source ~/.bashrc
