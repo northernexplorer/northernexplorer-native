@@ -2,7 +2,7 @@ import {GetParams, GetResponse, NonEmptyCategory, ROUTES, UserAuthenticationType
 import {config} from '~/config';
 import {authEvents} from '~/core/authEvents';
 import {store} from '~/core/store';
-import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
+import {clearAuthentication, setAuthentication} from '~/user/state/authentication/authenticationSlice';
 
 let refreshPromise: Promise<UserAuthenticationType | null> | null = null;
 
@@ -24,7 +24,7 @@ function refreshTokens(refreshToken: string): Promise<UserAuthenticationType | n
 				}
 
 				// If refresh endpoint returns non-200 (e.g. 400/401/403 expired refresh token)
-				store.dispatch(setAuthentication(null));
+				store.dispatch(clearAuthentication());
 				return null;
 			} catch {
 				return null;
