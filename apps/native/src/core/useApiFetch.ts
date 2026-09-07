@@ -78,7 +78,7 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 		} finally {
 			setLoading(false);
 		}
-	}, [category, controller, method, params ? JSON.stringify(params) : null, authentication?.accessToken]);
+	}, [category, controller, method, params ? JSON.stringify(params) : null, authentication?.accessToken, authentication?.refreshToken]);
 	useFocusEffect(
 		useCallback(() => {
 			fetchData();
