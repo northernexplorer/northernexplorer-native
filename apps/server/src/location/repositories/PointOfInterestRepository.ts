@@ -1,5 +1,6 @@
 import {
 	CountryType,
+	ImageStatusEnum,
 	OrganizationType,
 	PointOfInterestType,
 	PointOfInterestTypeEnum,
@@ -39,6 +40,8 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 		// Filter reviews: show published reviews OR reviews belonging to the current user
 		const visibleReviews = site.reviews.filter(review => review.status === ReviewStatusEnum.Approved || review.user.id === currentUserId);
+		// Filter images: show published images OR images belonging to the current user
+		const visibleImages = site.images.filter(image => image.status === ImageStatusEnum.Approved || image.user.id === currentUserId);
 
 		return {
 			id: site.id,
@@ -68,7 +71,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 					lastName: review.user.lastName,
 				},
 			})),
-			images: site.images.map(image => ({
+			images: visibleImages.map(image => ({
 				id: image.id,
 				version: image.version,
 				url: image.url,
