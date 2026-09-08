@@ -27,7 +27,7 @@ const ALERT_CONFIG = {
 export function AlertHandler({children}: {children: React.ReactNode}) {
 	const [activeAlert, setActiveAlert] = useState<AlertState>({message: null, type: 'error'});
 	const [isVisible, setIsVisible] = useState(false);
-	const [modalKey, setModalKey] = useState(0); // Forcing remount on present
+	const [modalKey, setModalKey] = useState(0);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
