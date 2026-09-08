@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
+import {launchImageLibraryAsync, MediaTypeOptions, requestMediaLibraryPermissionsAsync} from 'expo-image-picker';
 import {UploadImageFileInput} from '@northernexplorer/types';
 
 interface Props<T extends string> {
@@ -28,7 +28,7 @@ export function ImageUpload<T extends string>({
 	const [isPicking, setIsPicking] = useState(false);
 
 	const requestPermission = async (): Promise<boolean> => {
-		const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync();
+		const {status} = await requestMediaLibraryPermissionsAsync();
 		if (status !== 'granted') {
 			Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to upload images.');
 			return false;
@@ -49,8 +49,8 @@ export function ImageUpload<T extends string>({
 			return;
 		}
 
-		const result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+		const result = await launchImageLibraryAsync({
+			mediaTypes: MediaTypeOptions.Images,
 			allowsMultipleSelection: multiple,
 			selectionLimit: multiple ? remainingSlots : 1,
 			quality: 0.8,
