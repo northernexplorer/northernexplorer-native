@@ -62,8 +62,9 @@ export class ImageController extends BaseController {
 		return {success: true};
 	}
 
-	async deleteById(params: Params<Route<'deleteById'>>): Promise<Response<Route<'deleteById'>>> {
+	async deleteById(params: Params<Route<'deleteById'>>, auth?: AuthContext): Promise<Response<Route<'deleteById'>>> {
 		const image = await this.repos.image.getById(params.id);
+		this.permissionService.canEditImage({targetId: image.user.id}, auth);
 
 		await this.spacesManagementService.remove(image.url);
 
@@ -78,7 +79,8 @@ export class ImageController extends BaseController {
 		return {success: true};
 	}
 
-	async like(params: Params<Route<'like'>>): Promise<Response<Route<'like'>>> {
+	async like(params: Params<Route<'like'>>, auth?: AuthContext): Promise<Response<Route<'like'>>> {
+		this.permissionService.isLoggedIn(auth);
 		const image = await this.repos.image.getById(params.id);
 
 		image.likes = image.likes + 1;

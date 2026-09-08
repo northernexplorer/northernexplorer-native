@@ -2241,6 +2241,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@northernexplorer/tools@workspace:packages/tools"
   dependencies:
+    "@northernexplorer/types": "npm:*"
     expo-image-picker: "npm:^57.0.16"
   peerDependencies:
     "@expo/vector-icons": "*"
