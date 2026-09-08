@@ -28,7 +28,6 @@ export function Photos({data, refetch}: PhotosProps) {
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
 
 	const selectedIndex = selectedImageId !== null ? images.findIndex(img => img.id === selectedImageId) : -1;
-	const selectedImage = selectedIndex !== -1 ? images[selectedIndex] : null;
 
 	const handleDelete = (imageId: string) => {
 		alertStore.showAlert({
@@ -101,7 +100,6 @@ export function Photos({data, refetch}: PhotosProps) {
 
 			{selectedImageId && (
 				<PhotoPreviewModal
-					key={selectedImage?.id ?? 'photo-preview-modal'}
 					selectedImageId={selectedImageId}
 					selectedIndex={selectedIndex !== -1 ? selectedIndex : 0}
 					totalImages={images.length}

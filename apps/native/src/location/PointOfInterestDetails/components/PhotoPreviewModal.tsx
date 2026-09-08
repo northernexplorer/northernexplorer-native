@@ -17,7 +17,6 @@ type PhotoPreviewModalProps = {
 	onPrevious: () => void;
 	onNext: () => void;
 	onDelete: (imageId: string) => void;
-	onLikeChanged?: () => void;
 };
 
 export function PhotoPreviewModal({
@@ -31,26 +30,18 @@ export function PhotoPreviewModal({
 	onPrevious,
 	onNext,
 	onDelete,
-	onLikeChanged,
 }: PhotoPreviewModalProps) {
 	const [isLiked, setIsLiked] = useState<boolean>(false);
-	const [likeCount, setLikeCount] = useState<number>(0);
 
 	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
 	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
 
 	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ImageController', 'hasLiked', {id: selectedImageId});
-	const {data: imageData} = useApiFetch('location', 'ImageController', 'getById', {id: selectedImageId});
+	const {data: imageData, refetch: refetchImage} = useApiFetch('location', 'ImageController', 'getById', {id: selectedImageId});
 
 	useEffect(() => {
 		setIsLiked(Boolean(hasLikedData?.liked));
 	}, [hasLikedData]);
-
-	useEffect(() => {
-		if (imageData) {
-			setLikeCount(imageData.likes);
-		}
-	}, [imageData]);
 
 	if (!imageData) {
 		return (
@@ -69,17 +60,14 @@ export function PhotoPreviewModal({
 		if (!currentUserId) return;
 
 		const nextState = !isLiked;
-		const nextCount = nextState ? likeCount + 1 : Math.max(0, likeCount - 1);
-
 		setIsLiked(nextState);
-		setLikeCount(nextCount);
+
 		if (isLiked) {
 			await unlikeMutation({id: imageData.id});
 		} else {
 			await likeMutation({id: imageData.id});
 		}
-		await refetchLikeState();
-		onLikeChanged?.();
+		await Promise.all([refetchLikeState(), refetchImage()]);
 	};
 
 	return (
@@ -156,7 +144,7 @@ export function PhotoPreviewModal({
 						{currentUserId && (
 							<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
 								<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
-								<Text style={styles.likeCount}>{likeCount}</Text>
+								<Text style={styles.likeCount}>{imageData.likes}</Text>
 							</Pressable>
 						)}
 
