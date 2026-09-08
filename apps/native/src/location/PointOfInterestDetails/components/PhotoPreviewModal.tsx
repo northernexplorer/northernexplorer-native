@@ -1,13 +1,15 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl} from '@northernexplorer/tools';
 import {ImageType} from '@northernexplorer/types';
 import {config} from '~/config';
+import {useApiMutation} from '~/core/useApiMutation';
+import {useApiFetch} from '~/core/useApiFetch';
 
 type PhotoPreviewModalProps = {
 	visible: boolean;
-	selectedImage: (ImageType & {likedByCurrentUser?: boolean}) | null;
+	selectedImage: ImageType | null;
 	selectedIndex: number | null;
 	totalImages: number;
 	currentUserId?: string;
@@ -16,9 +18,8 @@ type PhotoPreviewModalProps = {
 	onClose: () => void;
 	onPrevious: () => void;
 	onNext: () => void;
-	onLike: (imageId: string) => void;
-	onUnlike: (imageId: string) => void;
 	onDelete: (imageId: string) => void;
+	onLikeChanged?: () => void;
 };
 
 export function PhotoPreviewModal({
@@ -32,27 +33,57 @@ export function PhotoPreviewModal({
 	onClose,
 	onPrevious,
 	onNext,
-	onLike,
-	onUnlike,
 	onDelete,
+	onLikeChanged,
 }: PhotoPreviewModalProps) {
 	if (!selectedImage || selectedIndex === null) return null;
 
-	const canManage = isAdmin || selectedImage.user.id === currentUserId;
-	const isLiked = Boolean(selectedImage.likedByCurrentUser);
+	const [isLiked, setIsLiked] = useState<boolean>(false);
+	const [likeCount, setLikeCount] = useState<number>(selectedImage.likes);
 
-	const handleLikeToggle = () => {
-		if (isLiked) {
-			onUnlike(selectedImage.id);
-		} else {
-			onLike(selectedImage.id);
+	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
+	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
+
+	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ImageController', 'hasLiked', {id: selectedImage.id});
+
+	useEffect(() => {
+		setIsLiked(Boolean(hasLikedData?.liked));
+	}, [hasLikedData]);
+
+	useEffect(() => {
+		setLikeCount(selectedImage.likes);
+	}, [selectedImage.id, selectedImage.likes]);
+
+	const canManage = isAdmin || selectedImage.user.id === currentUserId;
+
+	const handleLikeToggle = async (e: React.SyntheticEvent) => {
+		e.stopPropagation();
+		if (!currentUserId) return;
+
+		const nextState = !isLiked;
+		const nextCount = nextState ? likeCount + 1 : Math.max(0, likeCount - 1);
+
+		setIsLiked(nextState);
+		setLikeCount(nextCount);
+
+		try {
+			if (isLiked) {
+				await unlikeMutation({id: selectedImage.id});
+			} else {
+				await likeMutation({id: selectedImage.id});
+			}
+			await refetchLikeState();
+			onLikeChanged?.();
+		} catch {
+			setIsLiked(!nextState);
+			setLikeCount(likeCount);
 		}
 	};
 
 	return (
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
 			<View style={styles.modalContainer}>
-				{/* 1. Header Area - Standard View, cannot trigger onClose */}
+				{/* Header */}
 				<View style={styles.modalHeader}>
 					<Text style={styles.modalCounterText}>
 						{selectedIndex + 1} / {totalImages}
@@ -63,7 +94,7 @@ export function PhotoPreviewModal({
 					</Pressable>
 				</View>
 
-				{/* 2. Middle Photo Display Area - ONLY clicking the image backdrop calls onClose */}
+				{/* Middle Area */}
 				<View style={styles.modalBody}>
 					{selectedIndex > 0 && (
 						<Pressable style={[styles.navButton, styles.navButtonLeft]} onPress={onPrevious} hitSlop={12}>
@@ -71,13 +102,14 @@ export function PhotoPreviewModal({
 						</Pressable>
 					)}
 
-					{/* Backdrop dismiss touch target */}
 					<Pressable style={styles.modalImageWrapper} onPress={onClose}>
-						<Image
-							source={{uri: getImageUrl({path: selectedImage.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
-							style={styles.modalImage}
-							resizeMode="contain"
-						/>
+						<Pressable style={styles.imageTouchGuard} onPress={e => e.stopPropagation()}>
+							<Image
+								source={{uri: getImageUrl({path: selectedImage.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
+								style={styles.modalImage}
+								resizeMode="contain"
+							/>
+						</Pressable>
 					</Pressable>
 
 					{selectedIndex < totalImages - 1 && (
@@ -87,8 +119,8 @@ export function PhotoPreviewModal({
 					)}
 				</View>
 
-				{/* 3. Footer Bar - Standard View, completely decoupled from dismiss handlers */}
-				<View style={styles.modalFooter}>
+				{/* Footer Bar */}
+				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
 					<View style={styles.userInfo}>
 						<View style={styles.avatarCircle}>
 							<Text style={styles.avatarText}>{selectedImage.user.username.charAt(0).toUpperCase()}</Text>
@@ -100,15 +132,20 @@ export function PhotoPreviewModal({
 					</View>
 
 					<View style={styles.modalActions}>
-						<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
-							<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#0088cc'} />
-							<Text style={styles.likeCount}>{selectedImage.likes}</Text>
-						</Pressable>
+						{currentUserId && (
+							<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
+								<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
+								<Text style={styles.likeCount}>{likeCount}</Text>
+							</Pressable>
+						)}
 
 						{canManage && (
 							<Pressable
 								style={styles.modalDeleteButton}
-								onPress={() => onDelete(selectedImage.id)}
+								onPress={e => {
+									e.stopPropagation();
+									onDelete(selectedImage.id);
+								}}
 								disabled={deletingImageId === selectedImage.id}
 							>
 								{deletingImageId === selectedImage.id ? (
@@ -119,7 +156,7 @@ export function PhotoPreviewModal({
 							</Pressable>
 						)}
 					</View>
-				</View>
+				</Pressable>
 			</View>
 		</Modal>
 	);
@@ -161,6 +198,10 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 48,
 		justifyContent: 'center',
 		alignItems: 'center',
+	},
+	imageTouchGuard: {
+		width: '100%',
+		height: '100%',
 	},
 	modalImage: {
 		width: '100%',

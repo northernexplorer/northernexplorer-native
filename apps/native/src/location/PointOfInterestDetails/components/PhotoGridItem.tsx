@@ -1,62 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {GestureResponderEvent, Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {Ionicons} from '@expo/vector-icons';
+import React from 'react';
+import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {getImageUrl} from '@northernexplorer/tools';
 import {ImageStatusEnum, ImageType} from '@northernexplorer/types';
 import {config} from '~/config';
-import {useApiMutation} from '~/core/useApiMutation';
-import {useAuthentication} from '~/user/state/authentication/useAuthentication';
-import {useApiFetch} from '~/core/useApiFetch';
 
 type PhotoGridItemProps = {
 	image: ImageType;
 	isMine: boolean;
-	canManage: boolean;
-	likeCount?: number;
 	onSelect: () => void;
-	onDelete: (imageId: string) => void;
-	onLikeChanged?: () => void;
 };
 
-export function PhotoGridItem({image, isMine, canManage, likeCount = 0, onSelect, onDelete, onLikeChanged}: PhotoGridItemProps) {
-	const authentication = useAuthentication();
-	const [isLiked, setIsLiked] = useState<boolean>(false);
-
-	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
-	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
-
-	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ImageController', 'hasLiked', {id: image.id});
-
-	useEffect(() => {
-		setIsLiked(Boolean(hasLikedData?.liked));
-	}, [hasLikedData]);
-
+export function PhotoGridItem({image, isMine, onSelect}: PhotoGridItemProps) {
 	const isPending = image.status === ImageStatusEnum.Pending;
-
-	const handleDeletePress = (e: GestureResponderEvent) => {
-		e.stopPropagation();
-		onDelete(image.id);
-	};
-
-	const handleToggleLike = async (e: GestureResponderEvent) => {
-		e.stopPropagation();
-		if (!authentication) return;
-
-		const nextState = !isLiked;
-		setIsLiked(nextState); // Optimistic UI update
-
-		try {
-			if (isLiked) {
-				await unlikeMutation({id: image.id});
-			} else {
-				await likeMutation({id: image.id});
-			}
-			await refetchLikeState();
-			onLikeChanged?.();
-		} catch {
-			setIsLiked(!nextState); // Revert on failure
-		}
-	};
 
 	return (
 		<Pressable style={styles.gridItem} onPress={onSelect}>
@@ -72,19 +27,6 @@ export function PhotoGridItem({image, isMine, canManage, likeCount = 0, onSelect
 				<View style={styles.gridPendingBadge}>
 					<Text style={styles.gridBadgeText}>Pending</Text>
 				</View>
-			)}
-
-			{authentication && (
-				<Pressable style={styles.gridLikeButton} onPress={handleToggleLike} hitSlop={8}>
-					<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={12} color={isLiked ? '#ef4444' : '#64748b'} />
-					{likeCount > 0 && <Text style={[styles.likeCountText, isLiked && styles.likedText]}>{likeCount}</Text>}
-				</Pressable>
-			)}
-
-			{canManage && (
-				<Pressable style={styles.gridDeleteButton} onPress={handleDeletePress} hitSlop={8}>
-					<Ionicons name="trash-outline" size={13} color="#ef4444" />
-				</Pressable>
 			)}
 		</Pressable>
 	);

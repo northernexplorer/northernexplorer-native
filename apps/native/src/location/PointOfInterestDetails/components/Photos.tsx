@@ -23,8 +23,6 @@ export function Photos({data, refetch}: PhotosProps) {
 
 	const {mutate: deleteMutation} = useApiMutation('location', 'ImageController', 'deleteById');
 	const {mutate: uploadMutation} = useApiMutation('location', 'ImageController', 'upload');
-	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
-	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
 
 	const images = data.images || [];
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
@@ -56,16 +54,6 @@ export function Photos({data, refetch}: PhotosProps) {
 		});
 	};
 
-	const handleLike = async (imageId: string) => {
-		await likeMutation({id: imageId});
-		refetch();
-	};
-
-	const handleUnlike = async (imageId: string) => {
-		await unlikeMutation({id: imageId});
-		refetch();
-	};
-
 	const handlePreviousImage = () => {
 		if (selectedIndex > 0) {
 			setSelectedImageId(images[selectedIndex - 1].id);
@@ -91,12 +79,10 @@ export function Photos({data, refetch}: PhotosProps) {
 				<PhotoUploadCard pointOfInterestId={data.id} uploadMutation={uploadMutation} refetch={refetch} />
 			)}
 
-			{/* Header */}
 			<View style={styles.headerSection}>
 				<Text style={globalStyles.reviewTitle}>Community Photos ({images.length})</Text>
 			</View>
 
-			{/* Empty State */}
 			{images.length === 0 ? (
 				<View style={styles.emptyState}>
 					<Ionicons name="images-outline" size={44} color="#cbd5e1" />
@@ -104,30 +90,17 @@ export function Photos({data, refetch}: PhotosProps) {
 					<Text style={styles.emptySubtitle}>Be the first to share photos of this location with the community.</Text>
 				</View>
 			) : (
-				/* Photo Grid */
 				<View style={styles.gridContainer}>
 					{images.map(image => {
-						const isMine = image.user.id === authentication?.userId;
-						const canManage = Boolean(isAdmin || isMine);
+						const isMine = Boolean(authentication?.userId && image.user.id === authentication.userId);
 
-						return (
-							<PhotoGridItem
-								key={image.id}
-								image={image}
-								isMine={isMine}
-								canManage={canManage}
-								likeCount={image.likes}
-								onSelect={() => setSelectedImageId(image.id)}
-								onDelete={handleDelete}
-								onLikeChanged={refetch}
-							/>
-						);
+						return <PhotoGridItem key={image.id} image={image} isMine={isMine} onSelect={() => setSelectedImageId(image.id)} />;
 					})}
 				</View>
 			)}
 
-			{/* Fullscreen Photo Modal Preview */}
 			<PhotoPreviewModal
+				key={selectedImage?.id ?? 'photo-preview-modal'}
 				visible={selectedImage !== null}
 				selectedImage={selectedImage}
 				selectedIndex={selectedIndex !== -1 ? selectedIndex : null}
@@ -138,8 +111,6 @@ export function Photos({data, refetch}: PhotosProps) {
 				onClose={() => setSelectedImageId(null)}
 				onPrevious={handlePreviousImage}
 				onNext={handleNextImage}
-				onLike={handleLike}
-				onUnlike={handleUnlike}
 				onDelete={handleDelete}
 			/>
 		</View>
