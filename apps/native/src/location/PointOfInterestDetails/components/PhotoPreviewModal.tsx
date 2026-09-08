@@ -39,7 +39,7 @@ export function PhotoPreviewModal({
 	if (!selectedImage || selectedIndex === null) return null;
 
 	const [isLiked, setIsLiked] = useState<boolean>(false);
-	const [likeCount, setLikeCount] = useState<number>(selectedImage.likes);
+	const [likeCount, setLikeCount] = useState<number>(selectedImage.likes ?? 0);
 
 	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
 	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
@@ -51,10 +51,10 @@ export function PhotoPreviewModal({
 	}, [hasLikedData]);
 
 	useEffect(() => {
-		setLikeCount(selectedImage.likes);
+		setLikeCount(selectedImage.likes ?? 0);
 	}, [selectedImage.id, selectedImage.likes]);
 
-	const canManage = isAdmin || selectedImage.user.id === currentUserId;
+	const canManage = isAdmin || selectedImage.user?.id === currentUserId;
 
 	const handleLikeToggle = async (e: React.SyntheticEvent) => {
 		e.stopPropagation();
@@ -82,38 +82,57 @@ export function PhotoPreviewModal({
 
 	return (
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-			<View style={styles.modalContainer}>
+			<Pressable style={styles.modalContainer} onPress={onClose}>
 				{/* Header */}
-				<View style={styles.modalHeader}>
+				<Pressable style={styles.modalHeader} onPress={e => e.stopPropagation()}>
 					<Text style={styles.modalCounterText}>
 						{selectedIndex + 1} / {totalImages}
 					</Text>
 
-					<Pressable style={styles.modalCloseButton} onPress={onClose} hitSlop={12}>
+					<Pressable
+						style={styles.modalCloseButton}
+						onPress={e => {
+							e.stopPropagation();
+							onClose();
+						}}
+						hitSlop={12}
+					>
 						<Ionicons name="close" size={24} color="#ffffff" />
 					</Pressable>
-				</View>
+				</Pressable>
 
 				{/* Middle Area */}
 				<View style={styles.modalBody}>
 					{selectedIndex > 0 && (
-						<Pressable style={[styles.navButton, styles.navButtonLeft]} onPress={onPrevious} hitSlop={12}>
+						<Pressable
+							style={[styles.navButton, styles.navButtonLeft]}
+							onPress={e => {
+								e.stopPropagation();
+								onPrevious();
+							}}
+							hitSlop={12}
+						>
 							<Ionicons name="chevron-back" size={28} color="#ffffff" />
 						</Pressable>
 					)}
 
-					<Pressable style={styles.modalImageWrapper} onPress={onClose}>
-						<Pressable style={styles.imageTouchGuard} onPress={e => e.stopPropagation()}>
-							<Image
-								source={{uri: getImageUrl({path: selectedImage.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
-								style={styles.modalImage}
-								resizeMode="contain"
-							/>
-						</Pressable>
-					</Pressable>
+					<View style={styles.modalImageWrapper} pointerEvents="box-none">
+						<Image
+							source={{uri: getImageUrl({path: selectedImage.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
+							style={styles.modalImage}
+							resizeMode="contain"
+						/>
+					</View>
 
 					{selectedIndex < totalImages - 1 && (
-						<Pressable style={[styles.navButton, styles.navButtonRight]} onPress={onNext} hitSlop={12}>
+						<Pressable
+							style={[styles.navButton, styles.navButtonRight]}
+							onPress={e => {
+								e.stopPropagation();
+								onNext();
+							}}
+							hitSlop={12}
+						>
 							<Ionicons name="chevron-forward" size={28} color="#ffffff" />
 						</Pressable>
 					)}
@@ -123,7 +142,7 @@ export function PhotoPreviewModal({
 				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
 					<View style={styles.userInfo}>
 						<View style={styles.avatarCircle}>
-							<Text style={styles.avatarText}>{selectedImage.user.username.charAt(0).toUpperCase()}</Text>
+							<Text style={styles.avatarText}>{selectedImage.user?.username?.charAt(0).toUpperCase() ?? 'U'}</Text>
 						</View>
 						<View>
 							<Text style={styles.userName}>{formatName(selectedImage.user)}</Text>
@@ -157,7 +176,7 @@ export function PhotoPreviewModal({
 						)}
 					</View>
 				</Pressable>
-			</View>
+			</Pressable>
 		</Modal>
 	);
 }
@@ -198,10 +217,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 48,
 		justifyContent: 'center',
 		alignItems: 'center',
-	},
-	imageTouchGuard: {
-		width: '100%',
-		height: '100%',
 	},
 	modalImage: {
 		width: '100%',
