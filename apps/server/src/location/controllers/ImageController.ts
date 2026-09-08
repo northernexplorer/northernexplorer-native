@@ -19,6 +19,23 @@ export class ImageController extends BaseController {
 	async upload(params: Params<Route<'upload'>>, auth?: AuthContext): Promise<Response<Route<'upload'>>> {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 
+		if (params.files.length === 0) throw new Error('No files provided for upload.');
+
+		const MAX_FILES = 10;
+		if (params.files.length > MAX_FILES) throw new Error(`You can upload a maximum of ${MAX_FILES} photos at a time.`);
+
+		const MAX_SINGLE_FILE_BYTES = 10 * 1024 * 1024; // 10 MB per image
+		const MAX_TOTAL_BATCH_BYTES = 50 * 1024 * 1024; // 50 MB total per payload
+
+		let totalBatchSizeBytes = 0;
+
+		for (const file of params.files) {
+			if (file.size > MAX_SINGLE_FILE_BYTES) throw new Error(`File "${file.filename}" exceeds the maximum individual limit of 10 MB.`);
+			totalBatchSizeBytes += file.size;
+		}
+
+		if (totalBatchSizeBytes > MAX_TOTAL_BATCH_BYTES) throw new Error('Total upload payload exceeds the 50 MB batch limit.');
+
 		const pointOfInterest = await this.repos.pointOfInterest.findOneOrFail({id: params.pointOfInterestId});
 		const user = await this.repos.user.getById(userId);
 		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
