@@ -62,6 +62,12 @@ export const ImageController = {
 			success: boolean;
 		},
 	},
+	unLike: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			success: boolean;
+		},
+	},
 	updateStatus: {
 		params: {} as {id: string; status: ImageStatusEnum},
 		response: null as unknown as {

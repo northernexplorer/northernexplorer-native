@@ -101,6 +101,18 @@ export class ImageController extends BaseController {
 		const image = await this.repos.image.getById(params.id);
 
 		image.likes = image.likes + 1;
+		image.user.score = image.user.score + 1;
+		await this.flush();
+
+		return {success: true};
+	}
+
+	async unLike(params: Params<Route<'unLike'>>, auth?: AuthContext): Promise<Response<Route<'unLike'>>> {
+		this.permissionService.isLoggedIn(auth);
+		const image = await this.repos.image.getById(params.id);
+
+		image.likes = image.likes - 1;
+		image.user.score = image.user.score - 1;
 		await this.flush();
 
 		return {success: true};

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {formatName, Spinner} from '@northernexplorer/tools';
+import {formatName} from '@northernexplorer/tools';
 import {PointOfInterestType, ReviewStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {ReviewForm} from './ReviewForm';
 import {RenderStars} from './RenderStars';
@@ -13,19 +13,15 @@ import {alertStore} from '~/core/alertStore';
 
 type ReviewsProps = {
 	data: PointOfInterestType;
-	loading: boolean;
 	refetch: () => void;
 };
 
-export function Reviews({data, loading, refetch}: ReviewsProps) {
+export function Reviews({data, refetch}: ReviewsProps) {
 	const authentication = useAuthentication();
 	const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
 	const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
 
 	const deleteMutation = useApiMutation('location', 'ReviewController', 'deleteReview');
-
-	if (loading) return <Spinner />;
-
 	const reviews = data.reviews ?? [];
 	const myReviews = reviews.filter(r => r.user.id === authentication?.userId);
 	const otherReviews = reviews.filter(r => r.user.id !== authentication?.userId);

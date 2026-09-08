@@ -7,7 +7,7 @@ import {config} from '~/config';
 
 type PhotoPreviewModalProps = {
 	visible: boolean;
-	selectedImage: ImageType | null;
+	selectedImage: (ImageType & {likedByCurrentUser?: boolean}) | null;
 	selectedIndex: number | null;
 	totalImages: number;
 	currentUserId?: string;
@@ -17,6 +17,7 @@ type PhotoPreviewModalProps = {
 	onPrevious: () => void;
 	onNext: () => void;
 	onLike: (imageId: string) => void;
+	onUnlike: (imageId: string) => void;
 	onDelete: (imageId: string) => void;
 };
 
@@ -32,19 +33,27 @@ export function PhotoPreviewModal({
 	onPrevious,
 	onNext,
 	onLike,
+	onUnlike,
 	onDelete,
 }: PhotoPreviewModalProps) {
 	if (!selectedImage || selectedIndex === null) return null;
 
 	const canManage = isAdmin || selectedImage.user.id === currentUserId;
+	const isLiked = Boolean(selectedImage.likedByCurrentUser);
+
+	const handleLikeToggle = () => {
+		if (isLiked) {
+			onUnlike(selectedImage.id);
+		} else {
+			onLike(selectedImage.id);
+		}
+	};
 
 	return (
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
 			<View style={styles.modalContainer}>
-				<Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
-
-				{/* Header controls */}
-				<View style={styles.modalHeader} pointerEvents="box-none">
+				{/* 1. Header Area - Standard View, cannot trigger onClose */}
+				<View style={styles.modalHeader}>
 					<Text style={styles.modalCounterText}>
 						{selectedIndex + 1} / {totalImages}
 					</Text>
@@ -54,14 +63,15 @@ export function PhotoPreviewModal({
 					</Pressable>
 				</View>
 
-				{/* Center photo display area with navigation arrows */}
-				<View style={styles.modalBody} pointerEvents="box-none">
+				{/* 2. Middle Photo Display Area - ONLY clicking the image backdrop calls onClose */}
+				<View style={styles.modalBody}>
 					{selectedIndex > 0 && (
 						<Pressable style={[styles.navButton, styles.navButtonLeft]} onPress={onPrevious} hitSlop={12}>
 							<Ionicons name="chevron-back" size={28} color="#ffffff" />
 						</Pressable>
 					)}
 
+					{/* Backdrop dismiss touch target */}
 					<Pressable style={styles.modalImageWrapper} onPress={onClose}>
 						<Image
 							source={{uri: getImageUrl({path: selectedImage.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
@@ -77,8 +87,8 @@ export function PhotoPreviewModal({
 					)}
 				</View>
 
-				{/* Footer controls */}
-				<View style={styles.modalFooter} pointerEvents="box-none">
+				{/* 3. Footer Bar - Standard View, completely decoupled from dismiss handlers */}
+				<View style={styles.modalFooter}>
 					<View style={styles.userInfo}>
 						<View style={styles.avatarCircle}>
 							<Text style={styles.avatarText}>{selectedImage.user.username.charAt(0).toUpperCase()}</Text>
@@ -90,8 +100,8 @@ export function PhotoPreviewModal({
 					</View>
 
 					<View style={styles.modalActions}>
-						<Pressable style={styles.likeButton} onPress={() => onLike(selectedImage.id)}>
-							<Ionicons name="heart-outline" size={20} color="#0088cc" />
+						<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
+							<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#0088cc'} />
 							<Text style={styles.likeCount}>{selectedImage.likes}</Text>
 						</Pressable>
 
@@ -128,7 +138,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		paddingHorizontal: 20,
-		zIndex: 10,
 	},
 	modalCounterText: {
 		color: '#94a3b8',
@@ -174,12 +183,12 @@ const styles = StyleSheet.create({
 		right: 12,
 	},
 	modalFooter: {
+		width: '100%',
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		paddingHorizontal: 20,
 		paddingTop: 16,
-		zIndex: 10,
 	},
 	userInfo: {
 		flexDirection: 'row',
@@ -221,6 +230,9 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 12,
 		paddingVertical: 6,
 		borderRadius: 16,
+	},
+	likeButtonActive: {
+		backgroundColor: 'rgba(239, 68, 68, 0.15)',
 	},
 	likeCount: {
 		color: '#ffffff',

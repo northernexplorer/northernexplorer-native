@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {Spinner} from '@northernexplorer/tools';
 import {PointOfInterestType, RolesEnum} from '@northernexplorer/types';
 import {Link} from 'expo-router';
 import {PhotoUploadCard} from './PhotoUploadCard';
@@ -15,23 +14,23 @@ import {alertStore} from '~/core/alertStore';
 type PhotosProps = {
 	data: PointOfInterestType;
 	refetch: () => void;
-	loading: boolean;
 };
 
-export function Photos({data, refetch, loading}: PhotosProps) {
+export function Photos({data, refetch}: PhotosProps) {
 	const authentication = useAuthentication();
-	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+	const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
 
 	const {mutate: deleteMutation} = useApiMutation('location', 'ImageController', 'deleteById');
 	const {mutate: uploadMutation} = useApiMutation('location', 'ImageController', 'upload');
 	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
-
-	if (loading) return <Spinner />;
+	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
 
 	const images = data.images || [];
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
-	const selectedImage = selectedImageIndex !== null ? images[selectedImageIndex] : null;
+
+	const selectedIndex = selectedImageId !== null ? images.findIndex(img => img.id === selectedImageId) : -1;
+	const selectedImage = selectedIndex !== -1 ? images[selectedIndex] : null;
 
 	const handleDelete = (imageId: string) => {
 		alertStore.showAlert({
@@ -46,8 +45,8 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 					onPress: async () => {
 						setDeletingImageId(imageId);
 						await deleteMutation({id: imageId});
-						if (selectedImage?.id === imageId) {
-							setSelectedImageIndex(null);
+						if (selectedImageId === imageId) {
+							setSelectedImageId(null);
 						}
 						refetch();
 						setDeletingImageId(null);
@@ -62,15 +61,21 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 		refetch();
 	};
 
+	// 2. Add the handleUnlike handler
+	const handleUnlike = async (imageId: string) => {
+		await unlikeMutation({id: imageId});
+		refetch();
+	};
+
 	const handlePreviousImage = () => {
-		if (selectedImageIndex !== null && selectedImageIndex > 0) {
-			setSelectedImageIndex(selectedImageIndex - 1);
+		if (selectedIndex > 0) {
+			setSelectedImageId(images[selectedIndex - 1].id);
 		}
 	};
 
 	const handleNextImage = () => {
-		if (selectedImageIndex !== null && selectedImageIndex < images.length - 1) {
-			setSelectedImageIndex(selectedImageIndex + 1);
+		if (selectedIndex !== -1 && selectedIndex < images.length - 1) {
+			setSelectedImageId(images[selectedIndex + 1].id);
 		}
 	};
 
@@ -102,7 +107,7 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 			) : (
 				/* Photo Grid */
 				<View style={styles.gridContainer}>
-					{images.map((image, index) => {
+					{images.map(image => {
 						const isMine = image.user.id === authentication?.userId;
 						const canManage = Boolean(isAdmin || isMine);
 
@@ -112,7 +117,7 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 								image={image}
 								isMine={isMine}
 								canManage={canManage}
-								onSelect={() => setSelectedImageIndex(index)}
+								onSelect={() => setSelectedImageId(image.id)}
 								onDelete={handleDelete}
 							/>
 						);
@@ -122,17 +127,18 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 
 			{/* Fullscreen Photo Modal Preview */}
 			<PhotoPreviewModal
-				visible={selectedImageIndex !== null}
+				visible={selectedImage !== null}
 				selectedImage={selectedImage}
-				selectedIndex={selectedImageIndex}
+				selectedIndex={selectedIndex !== -1 ? selectedIndex : null}
 				totalImages={images.length}
 				currentUserId={authentication?.userId}
 				isAdmin={isAdmin}
 				deletingImageId={deletingImageId}
-				onClose={() => setSelectedImageIndex(null)}
+				onClose={() => setSelectedImageId(null)}
 				onPrevious={handlePreviousImage}
 				onNext={handleNextImage}
 				onLike={handleLike}
+				onUnlike={handleUnlike}
 				onDelete={handleDelete}
 			/>
 		</View>
