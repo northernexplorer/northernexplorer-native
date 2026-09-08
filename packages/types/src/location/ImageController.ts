@@ -31,11 +31,20 @@ export interface UploadImageFileInput {
 	uri: string;
 }
 
+export interface FileUpload {
+	filename: string;
+	fileExtension: string;
+	mimeType: string;
+	size: number;
+	uri: string;
+	base64: string;
+}
+
 export const ImageController = {
 	upload: {
 		params: {} as {
 			pointOfInterestId: string;
-			files: UploadImageFileInput[];
+			files: FileUpload[];
 		},
 		response: null as unknown as {
 			success: boolean;

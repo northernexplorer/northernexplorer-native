@@ -15,7 +15,7 @@ const PORT = config.PORT;
 const corsOrigin = config.CORS.split(',').map(origin => origin.toLowerCase().trim());
 
 app.use(cors({origin: corsOrigin}));
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
 app.use('/api/', globalLimiter);
 
 async function bootstrap() {

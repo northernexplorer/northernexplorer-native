@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {formatName, ImageUpload, Spinner} from '@northernexplorer/tools';
-import {ImageType, ImageStatusEnum, PointOfInterestType, RolesEnum, UploadImageFileInput} from '@northernexplorer/types';
+import {formatName, getImageUrl, ImageUpload, Spinner} from '@northernexplorer/tools';
+import {ImageType, ImageStatusEnum, PointOfInterestType, RolesEnum, UploadImageFileInput, FileUpload} from '@northernexplorer/types';
 import {Link} from 'expo-router';
 import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {alertStore} from '~/core/alertStore';
+import {config} from '~/config';
 
 type PhotosProps = {
 	data: PointOfInterestType;
@@ -17,7 +18,7 @@ type PhotosProps = {
 
 export function Photos({data, refetch, loading}: PhotosProps) {
 	const authentication = useAuthentication();
-	const [selectedImage, setSelectedImage] = useState<ImageType | null>(null);
+	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
 	const [isUploading, setIsUploading] = useState(false);
 	const [stagedUploads, setStagedUploads] = useState<UploadImageFileInput[]>([]);
@@ -28,29 +29,50 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 
 	if (loading) return <Spinner />;
 
-	const images = data.images;
+	const images = data.images || [];
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
+	const selectedImage = selectedImageIndex !== null ? images[selectedImageIndex] : null;
+
+	const uriToBase64 = async (uri: string): Promise<string> => {
+		const response = await fetch(uri);
+		const blob = await response.blob();
+
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onerror = reject;
+			reader.onload = () => {
+				const dataUrl = reader.result as string;
+				const base64 = dataUrl.split(',')[1];
+				resolve(base64);
+			};
+			reader.readAsDataURL(blob);
+		});
+	};
 
 	const handleConfirmUpload = async () => {
 		if (stagedUploads.length === 0) return;
 
 		setIsUploading(true);
-		try {
-			await uploadMutation({
-				pointOfInterestId: data.id,
-				files: stagedUploads,
-			});
-			setStagedUploads([]);
-			refetch();
-		} catch {
-			alertStore.showAlert({
-				title: 'Upload Failed',
-				message: 'Could not upload photos. Please try again.',
-				type: 'error',
-			});
-		} finally {
-			setIsUploading(false);
-		}
+
+		const preparedFiles: FileUpload[] = await Promise.all(
+			stagedUploads.map(async file => {
+				const base64 = await uriToBase64(file.uri);
+
+				return {
+					...file,
+					base64,
+				};
+			}),
+		);
+
+		await uploadMutation({
+			pointOfInterestId: data.id,
+			files: preparedFiles,
+		});
+
+		setStagedUploads([]);
+		refetch();
+		setIsUploading(false);
 	};
 
 	const handleDelete = (imageId: string) => {
@@ -68,7 +90,7 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 						try {
 							await deleteMutation({id: imageId});
 							if (selectedImage?.id === imageId) {
-								setSelectedImage(null);
+								setSelectedImageIndex(null);
 							}
 							refetch();
 						} finally {
@@ -83,6 +105,18 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 	const handleLike = async (imageId: string) => {
 		await likeMutation({id: imageId});
 		refetch();
+	};
+
+	const handlePreviousImage = () => {
+		if (selectedImageIndex !== null && selectedImageIndex > 0) {
+			setSelectedImageIndex(selectedImageIndex - 1);
+		}
+	};
+
+	const handleNextImage = () => {
+		if (selectedImageIndex !== null && selectedImageIndex < images.length - 1) {
+			setSelectedImageIndex(selectedImageIndex + 1);
+		}
 	};
 
 	return (
@@ -131,11 +165,11 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 
 			{/* Header */}
 			<View style={photoStyles.headerSection}>
-				<Text style={globalStyles.reviewTitle}>Community Photos ({images?.length})</Text>
+				<Text style={globalStyles.reviewTitle}>Community Photos ({images.length})</Text>
 			</View>
 
 			{/* Empty State */}
-			{images?.length === 0 ? (
+			{images.length === 0 ? (
 				<View style={photoStyles.emptyState}>
 					<Ionicons name="images-outline" size={44} color="#cbd5e1" />
 					<Text style={photoStyles.emptyTitle}>No photos yet</Text>
@@ -144,14 +178,17 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 			) : (
 				/* Photo Grid */
 				<View style={photoStyles.gridContainer}>
-					{images?.map(image => {
+					{images.map((image, index) => {
 						const isMine = image.user.id === authentication?.userId;
 						const isPending = image.status === ImageStatusEnum.Pending;
 						const canManage = isAdmin || isMine;
 
 						return (
-							<Pressable key={image.id} style={photoStyles.gridItem} onPress={() => setSelectedImage(image)}>
-								<Image source={{uri: image.url}} style={photoStyles.thumbnail} />
+							<Pressable key={image.id} style={photoStyles.gridItem} onPress={() => setSelectedImageIndex(index)}>
+								<Image
+									source={{uri: getImageUrl({path: image.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
+									style={photoStyles.thumbnail}
+								/>
 
 								{isMine && (
 									<View style={photoStyles.gridMineBadge}>
@@ -177,47 +214,77 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 			)}
 
 			{/* Fullscreen Photo Modal Preview */}
-			<Modal visible={!!selectedImage} transparent animationType="fade" onRequestClose={() => setSelectedImage(null)}>
-				{selectedImage && (
-					<View style={photoStyles.modalOverlay}>
-						<View style={photoStyles.modalContent}>
-							<Pressable style={photoStyles.modalCloseButton} onPress={() => setSelectedImage(null)} hitSlop={12}>
+			<Modal visible={selectedImageIndex !== null} transparent animationType="fade" onRequestClose={() => setSelectedImageIndex(null)}>
+				{selectedImage && selectedImageIndex !== null && (
+					<View style={photoStyles.modalContainer}>
+						{/* Fullscreen pressable backdrop */}
+						<Pressable style={StyleSheet.absoluteFill} onPress={() => setSelectedImageIndex(null)} />
+
+						{/* Header controls */}
+						<View style={photoStyles.modalHeader} pointerEvents="box-none">
+							<Text style={photoStyles.modalCounterText}>
+								{selectedImageIndex + 1} / {images.length}
+							</Text>
+
+							<Pressable style={photoStyles.modalCloseButton} onPress={() => setSelectedImageIndex(null)} hitSlop={12}>
 								<Ionicons name="close" size={24} color="#ffffff" />
 							</Pressable>
+						</View>
 
-							<Image source={{uri: selectedImage.url}} style={photoStyles.modalImage} resizeMode="contain" />
+						{/* Center photo display area with navigation arrows */}
+						<View style={photoStyles.modalBody} pointerEvents="box-none">
+							{selectedImageIndex > 0 && (
+								<Pressable style={[photoStyles.navButton, photoStyles.navButtonLeft]} onPress={handlePreviousImage} hitSlop={12}>
+									<Ionicons name="chevron-back" size={28} color="#ffffff" />
+								</Pressable>
+							)}
 
-							<View style={photoStyles.modalFooter}>
-								<View style={photoStyles.userInfo}>
-									<View style={photoStyles.avatarCircle}>
-										<Text style={photoStyles.avatarText}>{selectedImage.user.username.charAt(0).toUpperCase()}</Text>
-									</View>
-									<View>
-										<Text style={photoStyles.userName}>{formatName(selectedImage.user)}</Text>
-										{selectedImage.altText && <Text style={photoStyles.altText}>{selectedImage.altText}</Text>}
-									</View>
+							<Pressable style={photoStyles.modalImageWrapper} onPress={() => setSelectedImageIndex(null)}>
+								<Image
+									source={{uri: getImageUrl({path: selectedImage.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
+									style={photoStyles.modalImage}
+									resizeMode="contain"
+								/>
+							</Pressable>
+
+							{selectedImageIndex < images.length - 1 && (
+								<Pressable style={[photoStyles.navButton, photoStyles.navButtonRight]} onPress={handleNextImage} hitSlop={12}>
+									<Ionicons name="chevron-forward" size={28} color="#ffffff" />
+								</Pressable>
+							)}
+						</View>
+
+						{/* Footer controls */}
+						<View style={photoStyles.modalFooter} pointerEvents="box-none">
+							<View style={photoStyles.userInfo}>
+								<View style={photoStyles.avatarCircle}>
+									<Text style={photoStyles.avatarText}>{selectedImage.user.username.charAt(0).toUpperCase()}</Text>
 								</View>
+								<View>
+									<Text style={photoStyles.userName}>{formatName(selectedImage.user)}</Text>
+									{selectedImage.altText && <Text style={photoStyles.altText}>{selectedImage.altText}</Text>}
+								</View>
+							</View>
 
-								<View style={photoStyles.modalActions}>
-									<Pressable style={photoStyles.likeButton} onPress={() => handleLike(selectedImage.id)}>
-										<Ionicons name="heart-outline" size={20} color="#0088cc" />
-										<Text style={photoStyles.likeCount}>{selectedImage.likes}</Text>
+							<View style={photoStyles.modalActions}>
+								<Pressable style={photoStyles.likeButton} onPress={() => handleLike(selectedImage.id)}>
+									<Ionicons name="heart-outline" size={20} color="#0088cc" />
+									<Text style={photoStyles.likeCount}>{selectedImage.likes}</Text>
+								</Pressable>
+
+								{(isAdmin || selectedImage.user.id === authentication?.userId) && (
+									<Pressable
+										style={photoStyles.modalDeleteButton}
+										onPress={() => handleDelete(selectedImage.id)}
+										disabled={deletingImageId === selectedImage.id}
+									>
+										{deletingImageId === selectedImage.id ? (
+											<ActivityIndicator size="small" color="#ef4444" />
+										) : (
+											<Ionicons name="trash-outline" size={20} color="#ef4444" />
+										)}
 									</Pressable>
-
-									{(isAdmin || selectedImage.user.id === authentication?.userId) && (
-										<Pressable
-											style={photoStyles.modalDeleteButton}
-											onPress={() => handleDelete(selectedImage.id)}
-											disabled={deletingImageId === selectedImage.id}
-										>
-											{deletingImageId === selectedImage.id ? (
-												<ActivityIndicator size="small" color="#ef4444" />
-											) : (
-												<Ionicons name="trash-outline" size={20} color="#ef4444" />
-											)}
-										</Pressable>
-									)}
-								</View>
+								)}
 							</View>
 						</View>
 					</View>
@@ -230,6 +297,60 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 const photoStyles = StyleSheet.create({
 	container: {
 		marginVertical: 10,
+	},
+	modalContainer: {
+		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.92)',
+		justifyContent: 'space-between',
+		paddingVertical: 40,
+	},
+	modalHeader: {
+		width: '100%',
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		paddingHorizontal: 20,
+		zIndex: 10,
+	},
+	modalCounterText: {
+		color: '#94a3b8',
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	modalBody: {
+		flex: 1,
+		width: '100%',
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		position: 'relative',
+	},
+	modalImageWrapper: {
+		width: '100%',
+		height: '100%',
+		paddingHorizontal: 48,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	modalImage: {
+		width: '100%',
+		height: '100%',
+	},
+	navButton: {
+		position: 'absolute',
+		zIndex: 20,
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	navButtonLeft: {
+		left: 12,
+	},
+	navButtonRight: {
+		right: 12,
 	},
 	uploadCard: {
 		backgroundColor: '#ffffff',
@@ -371,26 +492,8 @@ const photoStyles = StyleSheet.create({
 		marginTop: 4,
 		maxWidth: 280,
 	},
-	modalOverlay: {
-		flex: 1,
-		backgroundColor: 'rgba(0, 0, 0, 0.92)',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	modalContent: {
-		width: '100%',
-		height: '100%',
-		justifyContent: 'space-between',
-		paddingVertical: 40,
-	},
 	modalCloseButton: {
-		alignSelf: 'flex-end',
-		paddingHorizontal: 20,
 		paddingTop: 10,
-	},
-	modalImage: {
-		flex: 1,
-		width: '100%',
 	},
 	modalFooter: {
 		flexDirection: 'row',
@@ -398,6 +501,7 @@ const photoStyles = StyleSheet.create({
 		justifyContent: 'space-between',
 		paddingHorizontal: 20,
 		paddingTop: 16,
+		zIndex: 10,
 	},
 	userInfo: {
 		flexDirection: 'row',

@@ -22,23 +22,34 @@ export class ImageController extends BaseController {
 		const pointOfInterest = await this.repos.pointOfInterest.findOneOrFail({id: params.pointOfInterestId});
 		const user = await this.repos.user.getById(userId);
 
-		params.files.map(file => {
-			const image = new Image({
-				fileExtension: file.fileExtension,
-				filename: file.filename,
-				mimeType: file.mimeType,
-				size: file.size,
-				url: this.repos.image.generateNewUrl({fileExtension: file.fileExtension}),
-				status: ImageStatusEnum.Pending,
-				altText: pointOfInterest.name,
-				pointOfInterest,
-				user,
-			});
+		await Promise.all(
+			params.files.map(async file => {
+				const fileBuffer = Buffer.from(file.base64, 'base64');
 
-			this.repos.image.persist(image);
+				const url = this.repos.image.generateNewUrl({fileExtension: file.fileExtension});
 
-			return image;
-		});
+				await this.spacesManagementService.upload({
+					key: url,
+					body: fileBuffer,
+					contentType: file.mimeType,
+					isPublic: true,
+				});
+
+				const image = new Image({
+					fileExtension: file.fileExtension,
+					filename: file.filename,
+					mimeType: file.mimeType,
+					size: file.size,
+					url,
+					status: ImageStatusEnum.Pending,
+					altText: pointOfInterest.name,
+					pointOfInterest,
+					user,
+				});
+
+				this.repos.image.persist(image);
+			}),
+		);
 
 		await this.flush();
 		return {success: true};
@@ -46,6 +57,8 @@ export class ImageController extends BaseController {
 
 	async deleteById(params: Params<Route<'deleteById'>>): Promise<Response<Route<'deleteById'>>> {
 		const image = await this.repos.image.getById(params.id);
+
+		await this.spacesManagementService.remove(image.url);
 
 		this.repos.image.remove(image);
 		await this.flush();

@@ -17,8 +17,8 @@ export class ImageRepository extends BaseRepository<Image> {
 		const day = String(now.getUTCDate()).padStart(2, '0');
 
 		const uniqueSuffix = Math.random().toString(36).substring(2, 8);
-		const filename = `${now.getTime()}-${uniqueSuffix}`;
+		const filename = `${now.getTime()}-${uniqueSuffix}${ext}`;
 
-		return path.posix.join('uploads', config.SPACES_DOCUMENT_ROOT || '', year, month, day, filename, '_original', ext);
+		return path.posix.join('uploads', config.SPACES_DOCUMENT_ROOT || '', year, month, day, filename);
 	}
 }
