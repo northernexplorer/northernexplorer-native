@@ -27,12 +27,15 @@ const ALERT_CONFIG = {
 export function AlertHandler({children}: {children: React.ReactNode}) {
 	const [activeAlert, setActiveAlert] = useState<AlertState>({message: null, type: 'error'});
 	const [isVisible, setIsVisible] = useState(false);
+	const [modalKey, setModalKey] = useState(0); // Forcing remount on present
 	const dispatch = useDispatch();
 
 	useEffect(() => {
 		return alertStore.subscribe(newState => {
 			if (newState.message) {
 				setActiveAlert(newState);
+				// Increment key so a brand-new native Modal presents over any currently active modals
+				setModalKey(prev => prev + 1);
 				setIsVisible(true);
 			} else {
 				setIsVisible(false);
@@ -63,41 +66,54 @@ export function AlertHandler({children}: {children: React.ReactNode}) {
 		<View style={styles.container}>
 			{children}
 
-			<Modal transparent visible={isVisible} animationType="fade" onRequestClose={() => handleButtonPress()}>
-				<View style={styles.overlay}>
-					<View style={styles.alertBox}>
-						<View style={[styles.iconCircle, {borderColor: config.color, backgroundColor: `${config.color}15`}]}>
-							<Text style={[styles.iconText, {color: config.color}]}>{config.icon}</Text>
-						</View>
-
-						<Text style={styles.title}>{displayTitle}</Text>
-						<Text style={styles.message}>{activeAlert.message}</Text>
-
-						{activeAlert.buttons && activeAlert.buttons.length > 0 ? (
-							<View style={styles.buttonRow}>
-								{activeAlert.buttons.map((btn, index) => {
-									const isDestructive = btn.style === 'destructive';
-									const isCancel = btn.style === 'cancel';
-
-									return (
-										<TouchableOpacity
-											key={btn.text || index}
-											style={[styles.actionButton, isDestructive && styles.destructiveButton, isCancel && styles.cancelButton]}
-											onPress={() => handleButtonPress(btn.onPress)}
-										>
-											<Text style={[styles.buttonText, isDestructive && styles.destructiveButtonText]}>{btn.text}</Text>
-										</TouchableOpacity>
-									);
-								})}
+			{isVisible && (
+				<Modal
+					key={modalKey}
+					transparent
+					visible={isVisible}
+					animationType="fade"
+					statusBarTranslucent
+					onRequestClose={() => handleButtonPress()}
+				>
+					<View style={styles.overlay}>
+						<View style={styles.alertBox}>
+							<View style={[styles.iconCircle, {borderColor: config.color, backgroundColor: `${config.color}15`}]}>
+								<Text style={[styles.iconText, {color: config.color}]}>{config.icon}</Text>
 							</View>
-						) : (
-							<TouchableOpacity style={styles.button} onPress={() => handleButtonPress()}>
-								<Text style={styles.buttonText}>Dismiss</Text>
-							</TouchableOpacity>
-						)}
+
+							<Text style={styles.title}>{displayTitle}</Text>
+							<Text style={styles.message}>{activeAlert.message}</Text>
+
+							{activeAlert.buttons && activeAlert.buttons.length > 0 ? (
+								<View style={styles.buttonRow}>
+									{activeAlert.buttons.map((btn, index) => {
+										const isDestructive = btn.style === 'destructive';
+										const isCancel = btn.style === 'cancel';
+
+										return (
+											<TouchableOpacity
+												key={btn.text || index}
+												style={[
+													styles.actionButton,
+													isDestructive && styles.destructiveButton,
+													isCancel && styles.cancelButton,
+												]}
+												onPress={() => handleButtonPress(btn.onPress)}
+											>
+												<Text style={[styles.buttonText, isDestructive && styles.destructiveButtonText]}>{btn.text}</Text>
+											</TouchableOpacity>
+										);
+									})}
+								</View>
+							) : (
+								<TouchableOpacity style={styles.button} onPress={() => handleButtonPress()}>
+									<Text style={styles.buttonText}>Dismiss</Text>
+								</TouchableOpacity>
+							)}
+						</View>
 					</View>
-				</View>
-			</Modal>
+				</Modal>
+			)}
 		</View>
 	);
 }
@@ -112,6 +128,8 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		padding: 24,
+		zIndex: 99999,
+		elevation: 99999,
 	},
 	alertBox: {
 		width: '100%',
