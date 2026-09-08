@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, GestureResponderEvent, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl} from '@northernexplorer/tools';
 import {ImageType} from '@northernexplorer/types';
@@ -39,7 +39,7 @@ export function PhotoPreviewModal({
 	if (!selectedImage || selectedIndex === null) return null;
 
 	const [isLiked, setIsLiked] = useState<boolean>(false);
-	const [likeCount, setLikeCount] = useState<number>(selectedImage.likes ?? 0);
+	const [likeCount, setLikeCount] = useState<number>(selectedImage.likes);
 
 	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
 	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
@@ -51,12 +51,12 @@ export function PhotoPreviewModal({
 	}, [hasLikedData]);
 
 	useEffect(() => {
-		setLikeCount(selectedImage.likes ?? 0);
+		setLikeCount(selectedImage.likes);
 	}, [selectedImage.id, selectedImage.likes]);
 
-	const canManage = isAdmin || selectedImage.user?.id === currentUserId;
+	const canManage = isAdmin || selectedImage.user.id === currentUserId;
 
-	const handleLikeToggle = async (e: React.SyntheticEvent) => {
+	const handleLikeToggle = async (e: GestureResponderEvent) => {
 		e.stopPropagation();
 		if (!currentUserId) return;
 
@@ -65,19 +65,13 @@ export function PhotoPreviewModal({
 
 		setIsLiked(nextState);
 		setLikeCount(nextCount);
-
-		try {
-			if (isLiked) {
-				await unlikeMutation({id: selectedImage.id});
-			} else {
-				await likeMutation({id: selectedImage.id});
-			}
-			await refetchLikeState();
-			onLikeChanged?.();
-		} catch {
-			setIsLiked(!nextState);
-			setLikeCount(likeCount);
+		if (isLiked) {
+			await unlikeMutation({id: selectedImage.id});
+		} else {
+			await likeMutation({id: selectedImage.id});
 		}
+		await refetchLikeState();
+		onLikeChanged?.();
 	};
 
 	return (
@@ -142,7 +136,7 @@ export function PhotoPreviewModal({
 				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
 					<View style={styles.userInfo}>
 						<View style={styles.avatarCircle}>
-							<Text style={styles.avatarText}>{selectedImage.user?.username?.charAt(0).toUpperCase() ?? 'U'}</Text>
+							<Text style={styles.avatarText}>{selectedImage.user.username.charAt(0).toUpperCase()}</Text>
 						</View>
 						<View>
 							<Text style={styles.userName}>{formatName(selectedImage.user)}</Text>
