@@ -99,20 +99,21 @@ export function Photos({data, refetch}: PhotosProps) {
 				</View>
 			)}
 
-			<PhotoPreviewModal
-				key={selectedImage?.id ?? 'photo-preview-modal'}
-				visible={selectedImage !== null}
-				selectedImage={selectedImage}
-				selectedIndex={selectedIndex !== -1 ? selectedIndex : null}
-				totalImages={images.length}
-				currentUserId={authentication?.userId}
-				isAdmin={isAdmin}
-				deletingImageId={deletingImageId}
-				onClose={() => setSelectedImageId(null)}
-				onPrevious={handlePreviousImage}
-				onNext={handleNextImage}
-				onDelete={handleDelete}
-			/>
+			{selectedImageId && (
+				<PhotoPreviewModal
+					key={selectedImage?.id ?? 'photo-preview-modal'}
+					selectedImageId={selectedImageId}
+					selectedIndex={selectedIndex !== -1 ? selectedIndex : 0}
+					totalImages={images.length}
+					currentUserId={authentication?.userId}
+					isAdmin={isAdmin}
+					deletingImageId={deletingImageId}
+					onClose={() => setSelectedImageId(null)}
+					onPrevious={handlePreviousImage}
+					onNext={handleNextImage}
+					onDelete={handleDelete}
+				/>
+			)}
 		</View>
 	);
 }

@@ -2,15 +2,13 @@ import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, GestureResponderEvent, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl} from '@northernexplorer/tools';
-import {ImageType} from '@northernexplorer/types';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
 
 type PhotoPreviewModalProps = {
-	visible: boolean;
-	selectedImage: ImageType | null;
-	selectedIndex: number | null;
+	selectedImageId: string;
+	selectedIndex: number;
 	totalImages: number;
 	currentUserId?: string;
 	isAdmin?: boolean;
@@ -23,8 +21,7 @@ type PhotoPreviewModalProps = {
 };
 
 export function PhotoPreviewModal({
-	visible,
-	selectedImage,
+	selectedImageId,
 	selectedIndex,
 	totalImages,
 	currentUserId,
@@ -36,25 +33,36 @@ export function PhotoPreviewModal({
 	onDelete,
 	onLikeChanged,
 }: PhotoPreviewModalProps) {
-	if (!selectedImage || selectedIndex === null) return null;
-
 	const [isLiked, setIsLiked] = useState<boolean>(false);
-	const [likeCount, setLikeCount] = useState<number>(selectedImage.likes);
+	const [likeCount, setLikeCount] = useState<number>(0);
 
 	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
 	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
 
-	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ImageController', 'hasLiked', {id: selectedImage.id});
+	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ImageController', 'hasLiked', {id: selectedImageId});
+	const {data: imageData} = useApiFetch('location', 'ImageController', 'getById', {id: selectedImageId});
 
 	useEffect(() => {
 		setIsLiked(Boolean(hasLikedData?.liked));
 	}, [hasLikedData]);
 
 	useEffect(() => {
-		setLikeCount(selectedImage.likes);
-	}, [selectedImage.id, selectedImage.likes]);
+		if (imageData) {
+			setLikeCount(imageData.likes);
+		}
+	}, [imageData]);
 
-	const canManage = isAdmin || selectedImage.user.id === currentUserId;
+	if (!imageData) {
+		return (
+			<Modal transparent animationType="fade" onRequestClose={onClose}>
+				<View style={[styles.modalContainer, {justifyContent: 'center', alignItems: 'center'}]}>
+					<ActivityIndicator size="large" color="#ffffff" />
+				</View>
+			</Modal>
+		);
+	}
+
+	const canManage = isAdmin || imageData.user.id === currentUserId;
 
 	const handleLikeToggle = async (e: GestureResponderEvent) => {
 		e.stopPropagation();
@@ -66,16 +74,16 @@ export function PhotoPreviewModal({
 		setIsLiked(nextState);
 		setLikeCount(nextCount);
 		if (isLiked) {
-			await unlikeMutation({id: selectedImage.id});
+			await unlikeMutation({id: imageData.id});
 		} else {
-			await likeMutation({id: selectedImage.id});
+			await likeMutation({id: imageData.id});
 		}
 		await refetchLikeState();
 		onLikeChanged?.();
 	};
 
 	return (
-		<Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+		<Modal transparent animationType="fade" onRequestClose={onClose}>
 			<Pressable style={styles.modalContainer} onPress={onClose}>
 				{/* Header */}
 				<Pressable style={styles.modalHeader} onPress={e => e.stopPropagation()}>
@@ -112,7 +120,7 @@ export function PhotoPreviewModal({
 
 					<View style={styles.modalImageWrapper} pointerEvents="box-none">
 						<Image
-							source={{uri: getImageUrl({path: selectedImage.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
+							source={{uri: getImageUrl({path: imageData.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
 							style={styles.modalImage}
 							resizeMode="contain"
 						/>
@@ -136,11 +144,11 @@ export function PhotoPreviewModal({
 				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
 					<View style={styles.userInfo}>
 						<View style={styles.avatarCircle}>
-							<Text style={styles.avatarText}>{selectedImage.user.username.charAt(0).toUpperCase()}</Text>
+							<Text style={styles.avatarText}>{imageData.user.username.charAt(0).toUpperCase()}</Text>
 						</View>
 						<View>
-							<Text style={styles.userName}>{formatName(selectedImage.user)}</Text>
-							{selectedImage.altText && <Text style={styles.altText}>{selectedImage.altText}</Text>}
+							<Text style={styles.userName}>{formatName(imageData.user)}</Text>
+							{imageData.altText && <Text style={styles.altText}>{imageData.altText}</Text>}
 						</View>
 					</View>
 
@@ -157,11 +165,11 @@ export function PhotoPreviewModal({
 								style={styles.modalDeleteButton}
 								onPress={e => {
 									e.stopPropagation();
-									onDelete(selectedImage.id);
+									onDelete(imageData.id);
 								}}
-								disabled={deletingImageId === selectedImage.id}
+								disabled={deletingImageId === imageData.id}
 							>
-								{deletingImageId === selectedImage.id ? (
+								{deletingImageId === imageData.id ? (
 									<ActivityIndicator size="small" color="#ef4444" />
 								) : (
 									<Ionicons name="trash-outline" size={20} color="#ef4444" />

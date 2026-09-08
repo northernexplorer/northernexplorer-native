@@ -80,6 +80,12 @@ export class ImageController extends BaseController {
 		return {success: true};
 	}
 
+	async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
+		const image = await this.repos.image.getById(params.id);
+
+		return {...image, likes: image.likes.length, pointOfInterest: undefined};
+	}
+
 	async deleteById(params: Params<Route<'deleteById'>>, auth?: AuthContext): Promise<Response<Route<'deleteById'>>> {
 		const image = await this.repos.image.getById(params.id);
 		this.permissionService.canEditImage({targetId: image.user.id}, auth);
@@ -157,9 +163,10 @@ export class ImageController extends BaseController {
 	}
 
 	async hasLiked(params: Params<Route<'hasLiked'>>, auth?: AuthContext): Promise<Response<Route<'hasLiked'>>> {
-		if (!auth?.userId) return {liked: false};
+		if (!auth?.userId) return {liked: false, likeCount: 0};
 
 		const like = await this.repos.imageLike.findLike(params.id, auth.userId);
-		return {liked: Boolean(like)};
+		const image = await this.repos.image.getById(params.id);
+		return {liked: Boolean(like), likeCount: image.likes.length};
 	}
 }
