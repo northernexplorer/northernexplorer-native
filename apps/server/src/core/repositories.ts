@@ -15,6 +15,8 @@ import {
 	Organization,
 	Image,
 	ImageRepository,
+	ImageLikeRepository,
+	ImageLike,
 } from '../location';
 import {
 	Session,
@@ -38,17 +40,18 @@ export function repositories(em: EntityManager) {
 		city: new CityRepository(em, CityCache),
 		country: new CountryRepository(em, Country),
 		image: new ImageRepository(em, Image),
-		pointOfInterest: new PointOfInterestRepository(em, PointOfInterest),
-		user: new UserRepository(em, User),
-		review: new ReviewRepository(em, Review),
+		imageLike: new ImageLikeRepository(em, ImageLike),
 		organization: new OrganizationRepository(em, Organization),
 		migration: new MigrationRepository(em, Migration),
+		pointOfInterest: new PointOfInterestRepository(em, PointOfInterest),
 		region: new RegionRepository(em, Region),
+		review: new ReviewRepository(em, Review),
 		session: new SessionRepository(em, Session),
 		subscription: new SubscriptionRepository(em, Subscription),
 		subscriptionFeature: new SubscriptionFeatureRepository(em, SubscriptionFeature),
 		subscriptionLevel: new SubscriptionLevelRepository(em, SubscriptionLevel),
 		support: new SupportRepository(em, Support),
+		user: new UserRepository(em, User),
 		weather: new WeatherRepository(em, WeatherCache),
 	};
 }

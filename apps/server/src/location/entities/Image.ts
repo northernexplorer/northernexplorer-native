@@ -1,8 +1,10 @@
-import {Entity, PrimaryKey, Property, ManyToOne, Enum} from '@mikro-orm/decorators/legacy';
+import {Entity, PrimaryKey, Property, ManyToOne, OneToMany, Enum} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
 import {ImageStatusEnum} from '@northernexplorer/types';
+import {Collection} from '@mikro-orm/core';
 import {User} from '../../user';
 import {PointOfInterest} from './PointOfInterest';
+import {ImageLike} from './ImageLike';
 
 type ImageInput = {
 	url: string;
@@ -39,8 +41,8 @@ export class Image {
 	@Property({type: 'number'})
 	size: number;
 
-	@Property({type: 'number'})
-	likes = 0;
+	@OneToMany(() => ImageLike, like => like.image)
+	likes = new Collection<ImageLike>(this);
 
 	@Property({type: 'text', nullable: true})
 	altText?: string;

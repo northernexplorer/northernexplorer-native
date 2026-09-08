@@ -61,7 +61,6 @@ export function Photos({data, refetch}: PhotosProps) {
 		refetch();
 	};
 
-	// 2. Add the handleUnlike handler
 	const handleUnlike = async (imageId: string) => {
 		await unlikeMutation({id: imageId});
 		refetch();

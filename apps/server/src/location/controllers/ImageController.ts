@@ -5,6 +5,7 @@ import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 import {Image} from '../entities/Image';
 import {SpacesManagementService} from '../services/SpacesManagementService';
+import {ImageLike} from '../entities/ImageLike';
 
 type Route<M extends keyof ROUTES['location']['ImageController']> = RouteDefinition<'location', 'ImageController'>[M];
 
@@ -97,22 +98,50 @@ export class ImageController extends BaseController {
 	}
 
 	async like(params: Params<Route<'like'>>, auth?: AuthContext): Promise<Response<Route<'like'>>> {
-		this.permissionService.isLoggedIn(auth);
+		const {userId} = this.permissionService.isLoggedIn(auth);
+		const user = await this.repos.user.getById(userId);
+
 		const image = await this.repos.image.getById(params.id);
 
-		image.likes = image.likes + 1;
+		const existingLike = await this.repos.imageLike.findOne({
+			image: image.id,
+			user: userId,
+		});
+
+		if (existingLike) {
+			return {success: true};
+		}
+
+		const newLike = new ImageLike({
+			image,
+			user,
+		});
+
 		image.user.score = image.user.score + 1;
+
+		this.persist(newLike);
 		await this.flush();
 
 		return {success: true};
 	}
 
 	async unLike(params: Params<Route<'unLike'>>, auth?: AuthContext): Promise<Response<Route<'unLike'>>> {
-		this.permissionService.isLoggedIn(auth);
+		const {userId} = this.permissionService.isLoggedIn(auth);
+
+		const existingLike = await this.repos.imageLike.findOne({
+			image: params.id,
+			user: userId,
+		});
+
+		if (!existingLike) {
+			return {success: true};
+		}
+
 		const image = await this.repos.image.getById(params.id);
 
-		image.likes = image.likes - 1;
-		image.user.score = image.user.score - 1;
+		image.user.score = Math.max(0, image.user.score - 1);
+
+		this.repos.imageLike.remove(existingLike);
 		await this.flush();
 
 		return {success: true};
