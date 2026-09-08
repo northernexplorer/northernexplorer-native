@@ -116,8 +116,10 @@ export function Photos({data, refetch}: PhotosProps) {
 								image={image}
 								isMine={isMine}
 								canManage={canManage}
+								likeCount={image.likes}
 								onSelect={() => setSelectedImageId(image.id)}
 								onDelete={handleDelete}
+								onLikeChanged={refetch}
 							/>
 						);
 					})}

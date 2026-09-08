@@ -68,6 +68,12 @@ export const ImageController = {
 			success: boolean;
 		},
 	},
+	hasLiked: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			liked: boolean;
+		},
+	},
 	updateStatus: {
 		params: {} as {id: string; status: ImageStatusEnum},
 		response: null as unknown as {
