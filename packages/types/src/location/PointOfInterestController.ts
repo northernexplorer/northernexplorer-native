@@ -3,6 +3,7 @@ import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
 import {ReviewSummary} from './ReviewController';
 import {OrganizationType} from './OrganizationController';
+import {ImageType} from './ImageController';
 
 export enum PublishStatusEnum {
 	Published = 'Published',
@@ -37,6 +38,7 @@ export type PointOfInterestType = {
 	type: PointOfInterestTypeEnum[];
 	organization: OrganizationType;
 	averageRating?: number;
+	images?: ImageType[];
 };
 
 export type PointOfInterestEditType = {

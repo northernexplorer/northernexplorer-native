@@ -5,6 +5,7 @@ import {Ionicons} from '@expo/vector-icons';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString, Spinner} from '@northernexplorer/tools';
 import {RolesEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
+import {Photos} from './components/Photos';
 import {styles} from '~/location/PointOfInterestDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -42,6 +43,7 @@ export function PointOfInterestDetails() {
 	if (loading || !data) return <Spinner />;
 
 	const reviewCount = data.reviews?.length ?? 0;
+	const photoCount = data.images?.length ?? 0;
 	const rawRating = typeof data.averageRating === 'number' ? data.averageRating : parseFloat(String(data.averageRating));
 	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
 
@@ -124,7 +126,23 @@ export function PointOfInterestDetails() {
 				<View style={styles.divider} />
 
 				<Text style={styles.body}>{data.description}</Text>
+
 				<View style={styles.divider} />
+
+				{/* Photos Section */}
+				<View style={sectionStyles.header}>
+					<Ionicons name="images-outline" size={20} color="#0f172a" />
+					<Text style={sectionStyles.title}>Photos ({photoCount})</Text>
+				</View>
+				<Photos data={data} loading={loading} refetch={refetch} />
+
+				<View style={styles.divider} />
+
+				{/* Reviews Section */}
+				<View style={sectionStyles.header}>
+					<Ionicons name="chatbox-ellipses-outline" size={20} color="#0f172a" />
+					<Text style={sectionStyles.title}>Reviews ({reviewCount})</Text>
+				</View>
 				<Reviews data={data} loading={loading} refetch={refetch} />
 			</View>
 		</View>
@@ -158,5 +176,19 @@ const ratingStyles = StyleSheet.create({
 		fontSize: 13,
 		color: '#94a3b8',
 		marginLeft: 2,
+	},
+});
+
+const sectionStyles = StyleSheet.create({
+	header: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		marginBottom: 12,
+	},
+	title: {
+		fontSize: 18,
+		fontWeight: '700',
+		color: '#0f172a',
 	},
 });

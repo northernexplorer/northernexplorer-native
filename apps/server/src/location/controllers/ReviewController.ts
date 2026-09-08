@@ -35,7 +35,7 @@ export class ReviewController extends BaseController {
 		const review = await this.repos.review.getById(id);
 
 		review.status = ReviewStatusEnum.Approved;
-		review.user.score = review.user.score + 10;
+		review.user.score = review.user.score + 20;
 
 		await this.flush();
 
@@ -61,8 +61,8 @@ export class ReviewController extends BaseController {
 		this.permissionService.canEditReview({targetId: review.user.id}, auth);
 
 		// Deduct points if deleting an approved review
-		if (review.status === ReviewStatusEnum.Approved && review.user.score >= 10) {
-			review.user.score = review.user.score - 10;
+		if (review.status === ReviewStatusEnum.Approved) {
+			review.user.score = review.user.score - 20;
 		}
 
 		this.repos.review.remove(review);
@@ -81,9 +81,9 @@ export class ReviewController extends BaseController {
 		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
 		let status = ReviewStatusEnum.Pending;
-		if (userReviewCount >= 10 || user.score >= 500) {
+		if (userReviewCount >= 20 || user.score >= 500) {
 			status = ReviewStatusEnum.Approved;
-			user.score = user.score + 10;
+			user.score = user.score + 20;
 		}
 
 		const review = this.repos.review.createReview({
