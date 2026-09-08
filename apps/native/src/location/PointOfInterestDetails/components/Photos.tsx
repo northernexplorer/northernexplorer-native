@@ -4,14 +4,13 @@ import {Ionicons} from '@expo/vector-icons';
 import {Spinner} from '@northernexplorer/tools';
 import {PointOfInterestType, RolesEnum} from '@northernexplorer/types';
 import {Link} from 'expo-router';
+import {PhotoUploadCard} from './PhotoUploadCard';
+import {PhotoGridItem} from './PhotoGridItem';
+import {PhotoPreviewModal} from './PhotoPreviewModal';
 import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {alertStore} from '~/core/alertStore';
-
-import {PhotoUploadCard} from './PhotoUploadCard';
-import {PhotoGridItem} from './PhotoGridItem';
-import {PhotoPreviewModal} from './PhotoPreviewModal';
 
 type PhotosProps = {
 	data: PointOfInterestType;
