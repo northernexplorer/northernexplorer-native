@@ -10,11 +10,25 @@ sudo apt update
 # Codegen
 sudo apt install -y dos2unix
 
-# Docker
-sudo apt install -y curl
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh ./get-docker.sh
-rm -f get-docker.sh
+# Docker (Manual Repository Setup to Bypass Distro Detection Issues)
+sudo apt install -y ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Resolve Debian codename or default to bookworm if custom/unrecognized
+DEBIAN_CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
+if [ -z "$DEBIAN_CODENAME" ]; then
+    DEBIAN_CODENAME="bookworm"
+fi
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $DEBIAN_CODENAME stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo usermod -aG docker "$(id -un)"
 
 # Yakuake
@@ -48,5 +62,3 @@ fi
 echo "Enabling Corepack and setting up Yarn..."
 corepack enable
 corepack prepare yarn@stable --activate
-
-source ~/.bashrc
