@@ -1,4 +1,4 @@
-import {ImageStatusEnum, Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {ImageStatusEnum, Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
@@ -21,6 +21,7 @@ export class ImageController extends BaseController {
 
 		const pointOfInterest = await this.repos.pointOfInterest.findOneOrFail({id: params.pointOfInterestId});
 		const user = await this.repos.user.getById(userId);
+		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
 		await Promise.all(
 			params.files.map(async file => {
@@ -35,13 +36,19 @@ export class ImageController extends BaseController {
 					isPublic: true,
 				});
 
+				let status = ImageStatusEnum.Pending;
+				if (userReviewCount >= 10 || user.score >= 500) {
+					status = ImageStatusEnum.Approved;
+					user.score = user.score + 10;
+				}
+
 				const image = new Image({
 					fileExtension: file.fileExtension,
 					filename: file.filename,
 					mimeType: file.mimeType,
 					size: file.size,
 					url,
-					status: ImageStatusEnum.Pending,
+					status,
 					altText: pointOfInterest.name,
 					pointOfInterest,
 					user,
@@ -60,7 +67,12 @@ export class ImageController extends BaseController {
 
 		await this.spacesManagementService.remove(image.url);
 
+		if (image.status === ImageStatusEnum.Approved) {
+			image.user.score = image.user.score - 10;
+		}
+
 		this.repos.image.remove(image);
+
 		await this.flush();
 
 		return {success: true};

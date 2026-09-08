@@ -19,6 +19,7 @@
 		"test:deps": "depcheck --specials=typescript"
 	},
 	"dependencies": {
+		"@northernexplorer/types": "*",
 		"expo-image-picker": "^57.0.16"
 	}
 }
