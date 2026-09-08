@@ -6,7 +6,6 @@ import {
 	PublishStatusEnum,
 	RegionType,
 	ReviewStatusEnum,
-	ReviewSummary,
 	ReviewType,
 	VisitedFilterEnum,
 } from '@northernexplorer/types';

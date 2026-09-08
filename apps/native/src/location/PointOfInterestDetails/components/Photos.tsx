@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {ActivityIndicator, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl, ImageUpload, Spinner} from '@northernexplorer/tools';
-import {ImageType, ImageStatusEnum, PointOfInterestType, RolesEnum, UploadImageFileInput, FileUpload} from '@northernexplorer/types';
+import {ImageStatusEnum, PointOfInterestType, RolesEnum, UploadImageFileInput, FileUpload} from '@northernexplorer/types';
 import {Link} from 'expo-router';
 import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
