@@ -78,7 +78,7 @@ export function UserAvatar(props: Props) {
 	if (!subscriptionData || subscriptionLoading) return null;
 
 	const subscriptionLevel = subscriptionData.subscriptionLevel.name;
-	const tierColor = subscriptionLevel ? SUBSCRIPTION_TIER_COLORS[subscriptionLevel] : undefined;
+	const tierColor = subscriptionLevel && subscriptionLevel !== 'Core' ? SUBSCRIPTION_TIER_COLORS[subscriptionLevel] : undefined;
 	const backgroundColor = generateBackgroundColor(userData.username);
 	const initial = userData.firstName ? userData.firstName.charAt(0).toUpperCase() : '?';
 
