@@ -2009,7 +2009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/jsonlint-lines-primitives@npm:^2.0.2, @mapbox/jsonlint-lines-primitives@npm:~2.0.2":
+"@mapbox/jsonlint-lines-primitives@npm:^2.0.2, @mapbox/jsonlint-lines-primitives@npm:^2.0.3, @mapbox/jsonlint-lines-primitives@npm:~2.0.2":
   version: 2.0.3
   resolution: "@mapbox/jsonlint-lines-primitives@npm:2.0.3"
   checksum: 10c0/e114b27757a21ccbf20e3c99761e8b48d2527cb321f47e5a4d9aa4b5781b16f15b1f6f4ab678a4329f93668956281a05b56387331dc0260981a2ef695414fc1d
@@ -2071,12 +2071,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@maplibre/maplibre-gl-style-spec@npm:24.8.5":
-  version: 24.8.5
-  resolution: "@maplibre/maplibre-gl-style-spec@npm:24.8.5"
+"@maplibre/maplibre-gl-style-spec@npm:26.2.1":
+  version: 26.2.1
+  resolution: "@maplibre/maplibre-gl-style-spec@npm:26.2.1"
   dependencies:
-    "@mapbox/jsonlint-lines-primitives": "npm:~2.0.2"
-    "@mapbox/unitbezier": "npm:^0.0.1"
+    "@mapbox/jsonlint-lines-primitives": "npm:^2.0.3"
+    "@mapbox/unitbezier": "npm:^1.0.0"
     json-stringify-pretty-compact: "npm:^4.0.0"
     minimist: "npm:^1.2.8"
     quickselect: "npm:^3.0.0"
@@ -2085,7 +2085,7 @@ __metadata:
     gl-style-format: dist/gl-style-format.mjs
     gl-style-migrate: dist/gl-style-migrate.mjs
     gl-style-validate: dist/gl-style-validate.mjs
-  checksum: 10c0/54bf2272dfcbdaafddb0883a193d906e009e0c3a90d346b83501f75f5291fd1eb9663bb2b5b45d36abb906055b5e16d0f4b45996c747b418aa624ff9604d74e4
+  checksum: 10c0/73a019f8bbdd64fd9da014baf68a38c80821de4339203000e0b417ff3350b95da80c5de21d48bcee34f44b1f5950c2c31a913b968f0ad765331f3fecb075cedf
   languageName: node
   linkType: hard
 
@@ -2125,15 +2125,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@maplibre/maplibre-react-native@npm:^11.3.7":
-  version: 11.3.7
-  resolution: "@maplibre/maplibre-react-native@npm:11.3.7"
+"@maplibre/maplibre-react-native@npm:^11.3.9":
+  version: 11.3.9
+  resolution: "@maplibre/maplibre-react-native@npm:11.3.9"
   dependencies:
-    "@maplibre/maplibre-gl-style-spec": "npm:24.8.5"
-    "@turf/distance": "npm:^7.3.5"
-    "@turf/helpers": "npm:^7.3.5"
-    "@turf/length": "npm:^7.3.5"
-    "@turf/nearest-point-on-line": "npm:^7.3.5"
+    "@maplibre/maplibre-gl-style-spec": "npm:26.2.1"
+    "@turf/distance": "npm:^7.4.0"
+    "@turf/helpers": "npm:^7.4.0"
+    "@turf/length": "npm:^7.4.0"
+    "@turf/nearest-point-on-line": "npm:^7.4.0"
   peerDependencies:
     "@types/geojson": ^7946.0.0
     "@types/react": ">=19.1.0"
@@ -2147,7 +2147,7 @@ __metadata:
       optional: true
     expo:
       optional: true
-  checksum: 10c0/7c6515e425ffdc869c53f00c2fdb5bdcb9f972ff2e0de14f46f5a0a97995d3ac979a07bba8eee3e6a6a94c10f682a8d52defb446a59c8b5895b6126b503198b4
+  checksum: 10c0/53f378c3eef0466b0e4af0da9b1d04f1747e09ac0fd229b0138fb0a8dd363d9b5f13cf35d1aa1780cef3b1eabab5315937d917a0abaa204b40cb5340912cec4d
   languageName: node
   linkType: hard
 
@@ -2957,7 +2957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turf/distance@npm:7.4.0, @turf/distance@npm:^7.3.5":
+"@turf/distance@npm:7.4.0, @turf/distance@npm:^7.4.0":
   version: 7.4.0
   resolution: "@turf/distance@npm:7.4.0"
   dependencies:
@@ -2969,7 +2969,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turf/helpers@npm:7.4.0, @turf/helpers@npm:^7.3.5":
+"@turf/helpers@npm:7.4.0, @turf/helpers@npm:^7.4.0":
   version: 7.4.0
   resolution: "@turf/helpers@npm:7.4.0"
   dependencies:
@@ -2990,7 +2990,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turf/length@npm:^7.3.5":
+"@turf/length@npm:^7.4.0":
   version: 7.4.0
   resolution: "@turf/length@npm:7.4.0"
   dependencies:
@@ -3014,7 +3014,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turf/nearest-point-on-line@npm:^7.3.5":
+"@turf/nearest-point-on-line@npm:^7.4.0":
   version: 7.4.0
   resolution: "@turf/nearest-point-on-line@npm:7.4.0"
   dependencies:
@@ -8693,7 +8693,7 @@ __metadata:
   resolution: "northernexplorer-native@workspace:apps/native"
   dependencies:
     "@expo/vector-icons": "npm:^15.0.2"
-    "@maplibre/maplibre-react-native": "npm:^11.3.7"
+    "@maplibre/maplibre-react-native": "npm:^11.3.9"
     "@northernexplorer/tools": "npm:*"
     "@northernexplorer/types": "npm:*"
     "@react-native-async-storage/async-storage": "npm:2.2.0"
