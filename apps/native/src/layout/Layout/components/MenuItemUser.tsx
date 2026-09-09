@@ -4,13 +4,9 @@ import {Ionicons} from '@expo/vector-icons';
 import React from 'react';
 import {styles} from '~/layout/Layout/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
 
-interface Props {
-	isMobileDrawer: boolean;
-	setIsMenuOpen: (isOpen: boolean) => void;
-}
-
-export function MenuItemUser({isMobileDrawer, setIsMenuOpen}: Props) {
+export function MenuItemUser() {
 	const currentPath = usePathname();
 	const isActiveProfile = currentPath.includes('/profile');
 	const isActiveLogout = currentPath.includes('/logout');
@@ -27,30 +23,25 @@ export function MenuItemUser({isMobileDrawer, setIsMenuOpen}: Props) {
 				alignItems: 'center',
 			}}
 		>
-			<Link href={profileHref} asChild>
-				<Pressable
-					onPress={() => setIsMenuOpen(false)}
-					style={StyleSheet.flatten([
-						styles.menuItem,
-						isActiveProfile && !isActiveLogout && styles.activeItem,
-						isMobileDrawer && styles.drawerMenuItem,
-					])}
-				>
-					<Ionicons
-						name={isLoggedIn ? 'person-circle-outline' : 'log-in'}
-						size={isMobileDrawer ? 20 : 18}
-						color={isLoggedIn ? 'rgba(100,255,100,0.6)' : '#d9d9d9'}
-					/>
-				</Pressable>
-			</Link>
+			{!isLoggedIn && (
+				<Link href={profileHref} asChild>
+					<Pressable style={StyleSheet.flatten([styles.menuItem, isActiveProfile && !isActiveLogout && styles.activeItem])}>
+						<Ionicons name="log-in" size={18} color="#d9d9d9" />
+					</Pressable>
+				</Link>
+			)}
 
 			{isLoggedIn && (
+				<Link href={profileHref} asChild>
+					<Pressable style={StyleSheet.flatten([styles.menuItemAvatar, isActiveProfile && !isActiveLogout && styles.activeItemAvatar])}>
+						<UserAvatar size={30} username={authentication.username} />
+					</Pressable>
+				</Link>
+			)}
+			{isLoggedIn && (
 				<Link href={logoutHref} asChild>
-					<Pressable
-						onPress={() => setIsMenuOpen(false)}
-						style={StyleSheet.flatten([styles.menuItem, isActiveLogout && styles.activeItem, isMobileDrawer && styles.drawerMenuItem])}
-					>
-						<Ionicons name="log-out" size={isMobileDrawer ? 20 : 18} color={isActiveLogout ? 'white' : 'rgba(255,100,100,0.6)'} />
+					<Pressable style={StyleSheet.flatten([styles.menuItem, isActiveLogout && styles.activeItem])}>
+						<Ionicons name="log-out" size={18} color={isActiveLogout ? 'white' : 'rgba(255,100,100,0.6)'} />
 					</Pressable>
 				</Link>
 			)}

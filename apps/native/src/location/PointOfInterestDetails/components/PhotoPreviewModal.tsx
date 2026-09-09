@@ -5,6 +5,7 @@ import {formatName, getImageUrl} from '@northernexplorer/tools';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
+import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
 
 type PhotoPreviewModalProps = {
 	selectedImageId: string;
@@ -131,9 +132,7 @@ export function PhotoPreviewModal({
 				{/* Footer Bar */}
 				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
 					<View style={styles.userInfo}>
-						<View style={styles.avatarCircle}>
-							<Text style={styles.avatarText}>{imageData.user.username.charAt(0).toUpperCase()}</Text>
-						</View>
+						<UserAvatar username={imageData.user.username} />
 						<View>
 							<Text style={styles.userName}>{formatName(imageData.user)}</Text>
 							{imageData.altText && <Text style={styles.altText}>{imageData.altText}</Text>}
@@ -240,19 +239,6 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 10,
-	},
-	avatarCircle: {
-		width: 36,
-		height: 36,
-		borderRadius: 18,
-		backgroundColor: '#0284c7',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	avatarText: {
-		color: '#ffffff',
-		fontWeight: '700',
-		fontSize: 14,
 	},
 	userName: {
 		color: '#ffffff',

@@ -2,6 +2,7 @@ import path from 'node:path';
 import {BaseRepository} from '../../core/BaseRepository';
 import {Image} from '../../location';
 import {config} from '../../config';
+import {User} from '../../user';
 
 export class ImageRepository extends BaseRepository<Image> {
 	async getById(id: string) {
@@ -20,5 +21,9 @@ export class ImageRepository extends BaseRepository<Image> {
 		const filename = `${now.getTime()}-${uniqueSuffix}${ext}`;
 
 		return path.posix.join('uploads', config.SPACES_DOCUMENT_ROOT || '', year, month, day, filename);
+	}
+
+	getDuplicate(hash: string, user: User) {
+		return this.findOne({hash, user});
 	}
 }

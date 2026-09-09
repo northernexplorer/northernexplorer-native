@@ -2009,7 +2009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/jsonlint-lines-primitives@npm:^2.0.2, @mapbox/jsonlint-lines-primitives@npm:~2.0.2":
+"@mapbox/jsonlint-lines-primitives@npm:^2.0.2, @mapbox/jsonlint-lines-primitives@npm:^2.0.3, @mapbox/jsonlint-lines-primitives@npm:~2.0.2":
   version: 2.0.3
   resolution: "@mapbox/jsonlint-lines-primitives@npm:2.0.3"
   checksum: 10c0/e114b27757a21ccbf20e3c99761e8b48d2527cb321f47e5a4d9aa4b5781b16f15b1f6f4ab678a4329f93668956281a05b56387331dc0260981a2ef695414fc1d
@@ -2071,12 +2071,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@maplibre/maplibre-gl-style-spec@npm:24.8.5":
-  version: 24.8.5
-  resolution: "@maplibre/maplibre-gl-style-spec@npm:24.8.5"
+"@maplibre/maplibre-gl-style-spec@npm:26.2.1":
+  version: 26.2.1
+  resolution: "@maplibre/maplibre-gl-style-spec@npm:26.2.1"
   dependencies:
-    "@mapbox/jsonlint-lines-primitives": "npm:~2.0.2"
-    "@mapbox/unitbezier": "npm:^0.0.1"
+    "@mapbox/jsonlint-lines-primitives": "npm:^2.0.3"
+    "@mapbox/unitbezier": "npm:^1.0.0"
     json-stringify-pretty-compact: "npm:^4.0.0"
     minimist: "npm:^1.2.8"
     quickselect: "npm:^3.0.0"
@@ -2085,7 +2085,7 @@ __metadata:
     gl-style-format: dist/gl-style-format.mjs
     gl-style-migrate: dist/gl-style-migrate.mjs
     gl-style-validate: dist/gl-style-validate.mjs
-  checksum: 10c0/54bf2272dfcbdaafddb0883a193d906e009e0c3a90d346b83501f75f5291fd1eb9663bb2b5b45d36abb906055b5e16d0f4b45996c747b418aa624ff9604d74e4
+  checksum: 10c0/73a019f8bbdd64fd9da014baf68a38c80821de4339203000e0b417ff3350b95da80c5de21d48bcee34f44b1f5950c2c31a913b968f0ad765331f3fecb075cedf
   languageName: node
   linkType: hard
 
@@ -2125,15 +2125,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@maplibre/maplibre-react-native@npm:^11.3.7":
-  version: 11.3.7
-  resolution: "@maplibre/maplibre-react-native@npm:11.3.7"
+"@maplibre/maplibre-react-native@npm:^11.3.9":
+  version: 11.3.9
+  resolution: "@maplibre/maplibre-react-native@npm:11.3.9"
   dependencies:
-    "@maplibre/maplibre-gl-style-spec": "npm:24.8.5"
-    "@turf/distance": "npm:^7.3.5"
-    "@turf/helpers": "npm:^7.3.5"
-    "@turf/length": "npm:^7.3.5"
-    "@turf/nearest-point-on-line": "npm:^7.3.5"
+    "@maplibre/maplibre-gl-style-spec": "npm:26.2.1"
+    "@turf/distance": "npm:^7.4.0"
+    "@turf/helpers": "npm:^7.4.0"
+    "@turf/length": "npm:^7.4.0"
+    "@turf/nearest-point-on-line": "npm:^7.4.0"
   peerDependencies:
     "@types/geojson": ^7946.0.0
     "@types/react": ">=19.1.0"
@@ -2147,7 +2147,7 @@ __metadata:
       optional: true
     expo:
       optional: true
-  checksum: 10c0/7c6515e425ffdc869c53f00c2fdb5bdcb9f972ff2e0de14f46f5a0a97995d3ac979a07bba8eee3e6a6a94c10f682a8d52defb446a59c8b5895b6126b503198b4
+  checksum: 10c0/53f378c3eef0466b0e4af0da9b1d04f1747e09ac0fd229b0138fb0a8dd363d9b5f13cf35d1aa1780cef3b1eabab5315937d917a0abaa204b40cb5340912cec4d
   languageName: node
   linkType: hard
 
@@ -2171,49 +2171,49 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mikro-orm/cli@npm:^7.1.14":
-  version: 7.1.14
-  resolution: "@mikro-orm/cli@npm:7.1.14"
+"@mikro-orm/cli@npm:^7.1.15":
+  version: 7.1.15
+  resolution: "@mikro-orm/cli@npm:7.1.15"
   dependencies:
-    "@mikro-orm/core": "npm:7.1.14"
-    mikro-orm: "npm:7.1.14"
+    "@mikro-orm/core": "npm:7.1.15"
+    mikro-orm: "npm:7.1.15"
     yargs: "npm:17.7.2"
   bin:
     mikro-orm: cli.js
-  checksum: 10c0/ad9acd9ec200f1f1a9ee70e98f2575ad4bb1203f31f0c0745e92a257ff28e316860af9034075c0ca974a3cf3c92e8117810b73cc87140f503e9bcb9005afdc40
+  checksum: 10c0/493d22f14ab064b395313ad4e5100d9ca1df15396b4ba3b8dd143bd31d6acc89c11f23e77902293e70e647f50c0760b74ae5c8478e1c3e53153ed756aaedcc69
   languageName: node
   linkType: hard
 
-"@mikro-orm/core@npm:7.1.14, @mikro-orm/core@npm:^7.1.14":
-  version: 7.1.14
-  resolution: "@mikro-orm/core@npm:7.1.14"
+"@mikro-orm/core@npm:7.1.15, @mikro-orm/core@npm:^7.1.15":
+  version: 7.1.15
+  resolution: "@mikro-orm/core@npm:7.1.15"
   peerDependencies:
     dataloader: 2.2.3
   peerDependenciesMeta:
     dataloader:
       optional: true
-  checksum: 10c0/dd536edb203a26aeb37de7e01963ed4a70e4a065e0a99894e167fa9205c731c073a600e3fc4fa43fbaf224e33953ee4217ffba244b54211922ab4626b6839ed0
+  checksum: 10c0/57e71f5fa0649cabb628164adb4aff28e0d66969964c423632498ebca1d4d823e2a13be649950b59408b863031cc615d2539b24bd8a38d856a27fe77e02d2afd
   languageName: node
   linkType: hard
 
-"@mikro-orm/decorators@npm:^7.1.14":
-  version: 7.1.14
-  resolution: "@mikro-orm/decorators@npm:7.1.14"
+"@mikro-orm/decorators@npm:^7.1.15":
+  version: 7.1.15
+  resolution: "@mikro-orm/decorators@npm:7.1.15"
   peerDependencies:
-    "@mikro-orm/core": 7.1.14
+    "@mikro-orm/core": 7.1.15
     reflect-metadata: ^0.1.0 || ^0.2.0
   peerDependenciesMeta:
     reflect-metadata:
       optional: true
-  checksum: 10c0/e6be2ab52347baa0a6876cf0114bdda98f3f1c45f2225fe33d98316f6dae68bc72395b63569fb57059260094db8cc79b189dadfe0efb68547531306449291501
+  checksum: 10c0/9d10ca9437c61c45f9d2ebd9981c400f9c13c47da5f5742b0bc828712e599ea63119f501a98d855bb4b2d5505bb573939b38858c6afeb5a06f9eccdf48d86128
   languageName: node
   linkType: hard
 
-"@mikro-orm/postgresql@npm:^7.1.14":
-  version: 7.1.14
-  resolution: "@mikro-orm/postgresql@npm:7.1.14"
+"@mikro-orm/postgresql@npm:^7.1.15":
+  version: 7.1.15
+  resolution: "@mikro-orm/postgresql@npm:7.1.15"
   dependencies:
-    "@mikro-orm/sql": "npm:7.1.14"
+    "@mikro-orm/sql": "npm:7.1.15"
     kysely: "npm:0.29.5"
     pg: "npm:8.23.0"
     pg-cursor: "npm:2.22.0"
@@ -2221,19 +2221,19 @@ __metadata:
     postgres-date: "npm:2.1.0"
     postgres-interval: "npm:4.1.0"
   peerDependencies:
-    "@mikro-orm/core": 7.1.14
-  checksum: 10c0/acd7714695fc536b5b7d689b94f5a265ade495b2e668da8747ad71deaee711a0ce22061c736752f016212f90981333a9e7477e1a4841de2b51326e0c53a77396
+    "@mikro-orm/core": 7.1.15
+  checksum: 10c0/c79c5ccbe0fac9de77bfd3636d1e7c1c3ede09072fd2c09baeb75a7af1d7c7c1b25fc9fb6d0a46f1325f758cfe0352ca6dad86d5608ee30833e8153263c35d54
   languageName: node
   linkType: hard
 
-"@mikro-orm/sql@npm:7.1.14":
-  version: 7.1.14
-  resolution: "@mikro-orm/sql@npm:7.1.14"
+"@mikro-orm/sql@npm:7.1.15":
+  version: 7.1.15
+  resolution: "@mikro-orm/sql@npm:7.1.15"
   dependencies:
     kysely: "npm:0.29.5"
   peerDependencies:
-    "@mikro-orm/core": 7.1.14
-  checksum: 10c0/2e6a3aba3261b84041d73671f8e364260e95569fd45dbb2647921e2b8399b21b3732ad8aa065785d3260fac352fbfd5faecd2ce895ddb4ed8efa25ee28c01a88
+    "@mikro-orm/core": 7.1.15
+  checksum: 10c0/8e1d09fe4fd36d5d5f17c1bb6ab6c109bef5398b02b4251da38974dd7db871f78f25802c534a29652aa6f33bf64d81676d77952347399f936634345b65307e3c
   languageName: node
   linkType: hard
 
@@ -2957,7 +2957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turf/distance@npm:7.4.0, @turf/distance@npm:^7.3.5":
+"@turf/distance@npm:7.4.0, @turf/distance@npm:^7.4.0":
   version: 7.4.0
   resolution: "@turf/distance@npm:7.4.0"
   dependencies:
@@ -2969,7 +2969,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turf/helpers@npm:7.4.0, @turf/helpers@npm:^7.3.5":
+"@turf/helpers@npm:7.4.0, @turf/helpers@npm:^7.4.0":
   version: 7.4.0
   resolution: "@turf/helpers@npm:7.4.0"
   dependencies:
@@ -2990,7 +2990,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turf/length@npm:^7.3.5":
+"@turf/length@npm:^7.4.0":
   version: 7.4.0
   resolution: "@turf/length@npm:7.4.0"
   dependencies:
@@ -3014,7 +3014,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turf/nearest-point-on-line@npm:^7.3.5":
+"@turf/nearest-point-on-line@npm:^7.4.0":
   version: 7.4.0
   resolution: "@turf/nearest-point-on-line@npm:7.4.0"
   dependencies:
@@ -8356,10 +8356,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mikro-orm@npm:7.1.14":
-  version: 7.1.14
-  resolution: "mikro-orm@npm:7.1.14"
-  checksum: 10c0/9ec8f82ac12815bde9c1757ce357768cd6f17cf162d6c86e62498af13b9e148b31f0a382791d58c773e87ba69212688f7d67b487b41750ba2342f498bfa597b8
+"mikro-orm@npm:7.1.15":
+  version: 7.1.15
+  resolution: "mikro-orm@npm:7.1.15"
+  checksum: 10c0/1a96a843cdc33a0799036c3f0c10edc620ac99d326bc9bd93f3f2c9ed75c157418ac52ea2ecbd9630708f1d344b6644bfbd70f536e7ad489900942fc888f1e28
   languageName: node
   linkType: hard
 
@@ -8696,7 +8696,7 @@ __metadata:
   resolution: "northernexplorer-native@workspace:apps/native"
   dependencies:
     "@expo/vector-icons": "npm:^15.0.2"
-    "@maplibre/maplibre-react-native": "npm:^11.3.7"
+    "@maplibre/maplibre-react-native": "npm:^11.3.9"
     "@northernexplorer/tools": "npm:*"
     "@northernexplorer/types": "npm:*"
     "@react-native-async-storage/async-storage": "npm:2.2.0"
@@ -8734,10 +8734,10 @@ __metadata:
   resolution: "northernexplorer-server@workspace:apps/server"
   dependencies:
     "@aws-sdk/client-s3": "npm:^3.1127.0"
-    "@mikro-orm/cli": "npm:^7.1.14"
-    "@mikro-orm/core": "npm:^7.1.14"
-    "@mikro-orm/decorators": "npm:^7.1.14"
-    "@mikro-orm/postgresql": "npm:^7.1.14"
+    "@mikro-orm/cli": "npm:^7.1.15"
+    "@mikro-orm/core": "npm:^7.1.15"
+    "@mikro-orm/decorators": "npm:^7.1.15"
+    "@mikro-orm/postgresql": "npm:^7.1.15"
     "@northernexplorer/types": "npm:*"
     "@types/cors": "npm:^2.8.17"
     "@types/express": "npm:^4.17.21"
