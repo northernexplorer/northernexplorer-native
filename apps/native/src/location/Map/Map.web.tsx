@@ -28,6 +28,7 @@ export function Map() {
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
 	const [zoom, setZoom] = useState(initialZoom);
 	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
+	const [userMarker, setUserMarker] = useState(false);
 
 	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number}>({
 		lat: initialLat,
@@ -85,7 +86,10 @@ export function Map() {
 					zoom: initialZoom,
 				}}
 				mapStyle={baseLayer}
-				onClick={() => setSelectedSite(null)}
+				onClick={() => {
+					setSelectedSite(null);
+					setUserMarker(false);
+				}}
 				onLoad={updateMapState}
 				onMoveEnd={updateMapState}
 				interactiveLayerIds={['pointOfInterestsLayer']}
@@ -167,6 +171,30 @@ export function Map() {
 							<div style={styles.popupArrow} />
 						</div>
 					</Marker>
+				)}
+
+				{coords && (
+					<>
+						<Marker
+							onClick={e => {
+								e.originalEvent.stopPropagation();
+								setUserMarker(prev => !prev);
+								setSelectedSite(null);
+							}}
+							latitude={coords.lat}
+							longitude={coords.lon}
+						/>
+
+						{userMarker && (
+							<Marker latitude={coords.lat} longitude={coords.lon} anchor="bottom" offset={[0, -60]}>
+								<div style={styles.popupContainer} onClick={e => e.stopPropagation()}>
+									<h3 style={styles.popupTitle}>Your Current Location</h3>
+									<p style={styles.popupDescription}>{coords.lat}</p>
+									<p style={styles.popupDescription}>{coords.lon}</p>
+								</div>
+							</Marker>
+						)}
+					</>
 				)}
 			</MapGL>
 		</div>
