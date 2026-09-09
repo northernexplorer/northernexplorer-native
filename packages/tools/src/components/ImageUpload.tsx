@@ -48,6 +48,7 @@ export function ImageUpload<T extends string>({
 
 		if (multiple && remainingSlots <= 0) {
 			Alert.alert('Limit Reached', `You can only upload up to ${maxImages} images.`);
+			setIsPicking(false);
 			return;
 		}
 
@@ -59,23 +60,49 @@ export function ImageUpload<T extends string>({
 		});
 
 		if (!result.canceled && result.assets.length > 0) {
-			const formattedImages: UploadImageFileInput[] = result.assets.map(asset => {
+			// Track existing identifiers to check against
+			const existingUris = new Set(value.map(item => item.uri));
+			const existingFilenames = new Set(value.map(item => item.filename));
+
+			const newFormattedImages: UploadImageFileInput[] = [];
+			let duplicateCount = 0;
+
+			for (const asset of result.assets) {
 				const filename = asset.fileName || asset.uri.split('/').pop() || 'image.jpg';
 				const fileExtension = filename.split('.').pop()?.toLowerCase() || 'jpg';
 
-				return {
+				// Check if this image has already been added
+				if (existingUris.has(asset.uri) || existingFilenames.has(filename)) {
+					duplicateCount++;
+					continue;
+				}
+
+				// Keep track within the current selection batch as well
+				existingUris.add(asset.uri);
+				existingFilenames.add(filename);
+
+				newFormattedImages.push({
 					uri: asset.uri,
 					filename,
 					mimeType: asset.mimeType || 'image/jpeg',
 					size: asset.fileSize || 0,
 					fileExtension,
-				};
-			});
+				});
+			}
 
-			if (multiple) {
-				updateField(fieldName, [...value, ...formattedImages]);
-			} else {
-				updateField(fieldName, [formattedImages[0]]);
+			if (duplicateCount > 0) {
+				Alert.alert(
+					'Duplicate Images Skipped',
+					`${duplicateCount} ${duplicateCount === 1 ? 'image was' : 'images were'} already selected and ${duplicateCount === 1 ? 'was' : 'were'} skipped.`,
+				);
+			}
+
+			if (newFormattedImages.length > 0) {
+				if (multiple) {
+					updateField(fieldName, [...value, ...newFormattedImages]);
+				} else {
+					updateField(fieldName, [newFormattedImages[0]]);
+				}
 			}
 		}
 		setIsPicking(false);
