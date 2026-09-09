@@ -6,6 +6,12 @@ export enum ImageStatusEnum {
 	Approved = 'Approved',
 }
 
+export enum ImageUploadStatus {
+	Success = 'Success',
+	Duplicate = 'Duplicate',
+	Error = 'Error',
+}
+
 export interface ImageType {
 	id: string;
 	version: number;
@@ -47,8 +53,9 @@ export const ImageController = {
 			files: FileUpload[];
 		},
 		response: null as unknown as {
-			success: boolean;
-		},
+			file: string;
+			status: ImageUploadStatus;
+		}[],
 	},
 	deleteById: {
 		params: {} as {id: string},

@@ -1,4 +1,5 @@
-import {ImageStatusEnum, Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {createHash} from 'node:crypto';
+import {ImageStatusEnum, ImageUploadStatus, Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
@@ -41,9 +42,17 @@ export class ImageController extends BaseController {
 		const user = await this.repos.user.getById(userId);
 		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
+		const results: {file: string; status: ImageUploadStatus}[] = [];
+
 		await Promise.all(
 			params.files.map(async file => {
 				const fileBuffer = Buffer.from(file.base64, 'base64');
+				const hash = createHash('sha256').update(fileBuffer).digest('hex');
+				const isDuplicate = await this.repos.image.getDuplicate(hash, user);
+				if (isDuplicate) {
+					results.push({file: file.uri, status: ImageUploadStatus.Duplicate});
+					return;
+				}
 
 				const url = this.repos.image.generateNewUrl({fileExtension: file.fileExtension});
 
@@ -57,7 +66,6 @@ export class ImageController extends BaseController {
 				let status = ImageStatusEnum.Pending;
 				if (userReviewCount >= 10 || user.score >= 500) {
 					status = ImageStatusEnum.Approved;
-					user.score = user.score + 10;
 				}
 
 				const image = new Image({
@@ -70,14 +78,21 @@ export class ImageController extends BaseController {
 					altText: pointOfInterest.name,
 					pointOfInterest,
 					user,
+					hash,
 				});
 
 				this.repos.image.persist(image);
+				results.push({file: file.uri, status: ImageUploadStatus.Success});
 			}),
 		);
 
+		const successCount = results.filter(r => r.status === ImageUploadStatus.Success).length;
+		if ((userReviewCount >= 10 || user.score >= 500) && successCount > 0) {
+			user.score += successCount * 10;
+		}
+
 		await this.flush();
-		return {success: true};
+		return results;
 	}
 
 	async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
@@ -95,6 +110,7 @@ export class ImageController extends BaseController {
 		if (image.status === ImageStatusEnum.Approved) {
 			image.user.score = image.user.score - 10;
 		}
+		image.user.score = image.user.score - image.likes.length;
 
 		this.repos.image.remove(image);
 

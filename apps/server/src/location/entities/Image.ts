@@ -16,6 +16,7 @@ type ImageInput = {
 	altText?: string;
 	user: User;
 	status: ImageStatusEnum;
+	hash: string;
 };
 
 @Entity()
@@ -62,6 +63,9 @@ export class Image {
 	@Enum(() => ImageStatusEnum)
 	status: ImageStatusEnum;
 
+	@Property({type: 'string', index: true})
+	hash: string;
+
 	constructor(data: ImageInput) {
 		this.url = data.url;
 		this.fileExtension = data.fileExtension;
@@ -72,5 +76,6 @@ export class Image {
 		this.altText = data.altText;
 		this.user = data.user;
 		this.status = data.status;
+		this.hash = data.hash;
 	}
 }
