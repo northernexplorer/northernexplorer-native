@@ -10,6 +10,7 @@ import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {alertStore} from '~/core/alertStore';
+import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
 
 type ReviewsProps = {
 	data: PointOfInterestType;
@@ -89,9 +90,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 							<View key={review.id} style={[globalStyles.reviewCard, reviewStyles.myReviewCard]}>
 								<View style={globalStyles.headerRow}>
 									<View style={reviewStyles.userInfo}>
-										<View style={reviewStyles.avatarCircle}>
-											<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
-										</View>
+										<UserAvatar username={review.user.username} />
 										<View>
 											<View style={reviewStyles.nameBadgeRow}>
 												<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
@@ -166,9 +165,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 							<View key={review.id} style={globalStyles.reviewCard}>
 								<View style={globalStyles.headerRow}>
 									<View style={reviewStyles.userInfo}>
-										<View style={[reviewStyles.avatarCircle, reviewStyles.otherAvatarCircle]}>
-											<Text style={reviewStyles.avatarText}>{review.user.username.charAt(0).toUpperCase() || 'U'}</Text>
-										</View>
+										<UserAvatar username={review.user.username} />
 										<View>
 											<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
 											<RenderStars rating={review.rating} />
@@ -267,22 +264,6 @@ const reviewStyles = StyleSheet.create({
 		paddingHorizontal: 8,
 		paddingVertical: 4,
 		borderRadius: 6,
-	},
-	avatarCircle: {
-		width: 38,
-		height: 38,
-		borderRadius: 19,
-		backgroundColor: '#0088cc',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	otherAvatarCircle: {
-		backgroundColor: '#64748b',
-	},
-	avatarText: {
-		color: '#ffffff',
-		fontWeight: '700',
-		fontSize: 15,
 	},
 	nameBadgeRow: {
 		flexDirection: 'row',
