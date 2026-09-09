@@ -1,5 +1,6 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useApiFetch} from '~/core/useApiFetch';
 
 const AVATAR_COLORS = [
@@ -36,10 +37,10 @@ const AVATAR_COLORS = [
 ];
 
 const SUBSCRIPTION_TIER_COLORS: Record<string, string> = {
-	Core: '#CD7F32', // Bronze
-	Pathfinder: '#C0C0C0', // Silver
-	Trailblazer: '#FFD700', // Gold
-	Explorer: '#00F0FF', // Cyan / Platinum Diamond
+	Core: '#d19462', // Bronze
+	Pathfinder: '#c0c9d5', // Silver
+	Trailblazer: '#b99210', // Gold
+	Explorer: '#10b3b9', // Cyan / Diamond
 	Pioneer: '#10B981', // Imperial Emerald
 };
 
@@ -56,8 +57,6 @@ function getHashCode(str: string): number {
 }
 
 function generateBackgroundColor(username: string): string {
-	if (!username) return AVATAR_COLORS[0];
-
 	const hash = getHashCode(username);
 	const index = hash % AVATAR_COLORS.length;
 
@@ -73,38 +72,58 @@ export function UserAvatar(props: Props) {
 	const {size = 36, username} = props;
 
 	const {data: userData, loading: userLoading} = useApiFetch('user', 'UserController', 'getByUsername', {username});
-
-	const {data: subscriptionData} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
+	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
 
 	if (!userData || userLoading) return null;
+	if (!subscriptionData || subscriptionLoading) return null;
 
-	const subscriptionLevel = subscriptionData?.subscriptionLevel.name;
-	const outlineColor = subscriptionLevel ? SUBSCRIPTION_TIER_COLORS[subscriptionLevel] : undefined;
+	const subscriptionLevel = subscriptionData.subscriptionLevel.name;
+	const tierColor = subscriptionLevel ? SUBSCRIPTION_TIER_COLORS['Core'] : undefined;
 	const backgroundColor = generateBackgroundColor(userData.username);
 	const initial = userData.firstName ? userData.firstName.charAt(0).toUpperCase() : '?';
 
-	const borderWidth = outlineColor ? Math.max(2, Math.round(size * 0.06)) : 0;
+	// Scale icon size relative to avatar size
+	const iconSize = Math.max(12, Math.round(size * 0.42));
+	const badgeWrapperSize = iconSize + 2;
 
 	return (
-		<View
-			style={[
-				styles.avatarCircle,
-				{
-					backgroundColor,
-					width: size,
-					height: size,
-					borderRadius: size / 2,
-					borderColor: outlineColor || 'transparent',
-					borderWidth: borderWidth,
-				},
-			]}
-		>
-			<Text style={[styles.avatarText, {fontSize: Math.round(size * 0.4)}]}>{initial}</Text>
+		<View style={[styles.container, {width: size, height: size}]}>
+			<View
+				style={[
+					styles.avatarCircle,
+					{
+						backgroundColor,
+						width: size,
+						height: size,
+						borderRadius: size / 2,
+					},
+				]}
+			>
+				<Text style={[styles.avatarText, {fontSize: Math.round(size * 0.4)}]}>{initial}</Text>
+			</View>
+
+			{tierColor && (
+				<View
+					style={[
+						styles.badgeWrapper,
+						{
+							width: badgeWrapperSize,
+							height: badgeWrapperSize,
+							borderRadius: badgeWrapperSize / 2,
+						},
+					]}
+				>
+					<MaterialCommunityIcons name="star" size={iconSize} color={tierColor} />
+				</View>
+			)}
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
+	container: {
+		position: 'relative',
+	},
 	avatarCircle: {
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -112,5 +131,18 @@ const styles = StyleSheet.create({
 	avatarText: {
 		color: '#ffffff',
 		fontWeight: '700',
+	},
+	badgeWrapper: {
+		position: 'absolute',
+		bottom: -2,
+		right: -2,
+		backgroundColor: '#ffffff',
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000000',
+		shadowOffset: {width: 0, height: 1},
+		shadowOpacity: 0.25,
+		shadowRadius: 1.5,
+		elevation: 3,
 	},
 });
