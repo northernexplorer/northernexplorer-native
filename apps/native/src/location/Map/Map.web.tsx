@@ -188,7 +188,7 @@ export function Map() {
 
 						{userMarker && (
 							<Marker latitude={coords.lat} longitude={coords.lon} anchor="bottom" offset={[0, -60]}>
-								<div style={styles.popupContainer} onClick={e => e.stopPropagation()}>
+								<div style={styles.popupContainer}>
 									<h3 style={styles.popupTitle}>Your Current Location</h3>
 									<p style={styles.popupDescription}>{coords.lat}</p>
 									<p style={styles.popupDescription}>{coords.lon}</p>
