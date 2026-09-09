@@ -4,12 +4,12 @@ import {Ionicons} from '@expo/vector-icons';
 import {ImageUpload} from '@northernexplorer/tools';
 import {FileUpload, UploadImageFileInput} from '@northernexplorer/types';
 import {alertStore} from '~/core/alertStore';
+import {useApiMutation} from '~/core/useApiMutation';
 
 type PhotoUploadCardProps = {
 	pointOfInterestId: string;
 	maxImages?: number;
 	maxSizeBytes?: number;
-	uploadMutation: (payload: {pointOfInterestId: string; files: FileUpload[]}) => Promise<unknown>;
 	refetch: () => void;
 };
 
@@ -36,11 +36,12 @@ export function PhotoUploadCard({
 	pointOfInterestId,
 	maxImages = DEFAULT_MAX_IMAGES,
 	maxSizeBytes = DEFAULT_MAX_SIZE_BYTES,
-	uploadMutation,
 	refetch,
 }: PhotoUploadCardProps) {
 	const [stagedUploads, setStagedUploads] = useState<UploadImageFileInput[]>([]);
 	const [isUploading, setIsUploading] = useState(false);
+
+	const {mutate: uploadMutation} = useApiMutation('location', 'ImageController', 'upload');
 
 	const handleConfirmUpload = async () => {
 		if (stagedUploads.length === 0) return;
@@ -60,13 +61,10 @@ export function PhotoUploadCard({
 		setIsUploading(true);
 
 		const preparedFiles: FileUpload[] = await Promise.all(
-			stagedUploads.map(async file => {
-				const base64 = await uriToBase64(file.uri);
-				return {
-					...file,
-					base64,
-				};
-			}),
+			stagedUploads.map(async file => ({
+				...file,
+				base64: await uriToBase64(file.uri),
+			})),
 		);
 
 		const totalBase64SizeBytes = preparedFiles.reduce((acc, file) => {
