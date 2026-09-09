@@ -1,14 +1,14 @@
-import React from 'react';
-import {ActivityIndicator, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, GestureResponderEvent, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl} from '@northernexplorer/tools';
-import {ImageType} from '@northernexplorer/types';
 import {config} from '~/config';
+import {useApiMutation} from '~/core/useApiMutation';
+import {useApiFetch} from '~/core/useApiFetch';
 
 type PhotoPreviewModalProps = {
-	visible: boolean;
-	selectedImage: ImageType | null;
-	selectedIndex: number | null;
+	selectedImageId: string;
+	selectedIndex: number;
 	totalImages: number;
 	currentUserId?: string;
 	isAdmin?: boolean;
@@ -16,13 +16,11 @@ type PhotoPreviewModalProps = {
 	onClose: () => void;
 	onPrevious: () => void;
 	onNext: () => void;
-	onLike: (imageId: string) => void;
 	onDelete: (imageId: string) => void;
 };
 
 export function PhotoPreviewModal({
-	visible,
-	selectedImage,
+	selectedImageId,
 	selectedIndex,
 	totalImages,
 	currentUserId,
@@ -31,77 +29,135 @@ export function PhotoPreviewModal({
 	onClose,
 	onPrevious,
 	onNext,
-	onLike,
 	onDelete,
 }: PhotoPreviewModalProps) {
-	if (!selectedImage || selectedIndex === null) return null;
+	const [isLiked, setIsLiked] = useState<boolean>(false);
 
-	const canManage = isAdmin || selectedImage.user.id === currentUserId;
+	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
+	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
+
+	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ImageController', 'hasLiked', {id: selectedImageId});
+	const {data: imageData, refetch: refetchImage} = useApiFetch('location', 'ImageController', 'getById', {id: selectedImageId});
+
+	useEffect(() => {
+		setIsLiked(Boolean(hasLikedData?.liked));
+	}, [hasLikedData]);
+
+	if (!imageData) {
+		return (
+			<Modal transparent animationType="fade" onRequestClose={onClose}>
+				<View style={[styles.modalContainer, {justifyContent: 'center', alignItems: 'center'}]}>
+					<ActivityIndicator size="large" color="#ffffff" />
+				</View>
+			</Modal>
+		);
+	}
+
+	const canManage = isAdmin || imageData.user.id === currentUserId;
+
+	const handleLikeToggle = async (e: GestureResponderEvent) => {
+		e.stopPropagation();
+		if (!currentUserId) return;
+
+		const nextState = !isLiked;
+		setIsLiked(nextState);
+
+		if (isLiked) {
+			await unlikeMutation({id: imageData.id});
+		} else {
+			await likeMutation({id: imageData.id});
+		}
+		await Promise.all([refetchLikeState(), refetchImage()]);
+	};
 
 	return (
-		<Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-			<View style={styles.modalContainer}>
-				<Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
-
-				{/* Header controls */}
-				<View style={styles.modalHeader} pointerEvents="box-none">
+		<Modal transparent animationType="fade" onRequestClose={onClose}>
+			<Pressable style={styles.modalContainer} onPress={onClose}>
+				{/* Header */}
+				<Pressable style={styles.modalHeader} onPress={e => e.stopPropagation()}>
 					<Text style={styles.modalCounterText}>
 						{selectedIndex + 1} / {totalImages}
 					</Text>
 
-					<Pressable style={styles.modalCloseButton} onPress={onClose} hitSlop={12}>
+					<Pressable
+						style={styles.modalCloseButton}
+						onPress={e => {
+							e.stopPropagation();
+							onClose();
+						}}
+						hitSlop={12}
+					>
 						<Ionicons name="close" size={24} color="#ffffff" />
 					</Pressable>
-				</View>
+				</Pressable>
 
-				{/* Center photo display area with navigation arrows */}
-				<View style={styles.modalBody} pointerEvents="box-none">
+				{/* Middle Area */}
+				<View style={styles.modalBody}>
 					{selectedIndex > 0 && (
-						<Pressable style={[styles.navButton, styles.navButtonLeft]} onPress={onPrevious} hitSlop={12}>
+						<Pressable
+							style={[styles.navButton, styles.navButtonLeft]}
+							onPress={e => {
+								e.stopPropagation();
+								onPrevious();
+							}}
+							hitSlop={12}
+						>
 							<Ionicons name="chevron-back" size={28} color="#ffffff" />
 						</Pressable>
 					)}
 
-					<Pressable style={styles.modalImageWrapper} onPress={onClose}>
+					<View style={styles.modalImageWrapper} pointerEvents="box-none">
 						<Image
-							source={{uri: getImageUrl({path: selectedImage.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
+							source={{uri: getImageUrl({path: imageData.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
 							style={styles.modalImage}
 							resizeMode="contain"
 						/>
-					</Pressable>
+					</View>
 
 					{selectedIndex < totalImages - 1 && (
-						<Pressable style={[styles.navButton, styles.navButtonRight]} onPress={onNext} hitSlop={12}>
+						<Pressable
+							style={[styles.navButton, styles.navButtonRight]}
+							onPress={e => {
+								e.stopPropagation();
+								onNext();
+							}}
+							hitSlop={12}
+						>
 							<Ionicons name="chevron-forward" size={28} color="#ffffff" />
 						</Pressable>
 					)}
 				</View>
 
-				{/* Footer controls */}
-				<View style={styles.modalFooter} pointerEvents="box-none">
+				{/* Footer Bar */}
+				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
 					<View style={styles.userInfo}>
 						<View style={styles.avatarCircle}>
-							<Text style={styles.avatarText}>{selectedImage.user.username.charAt(0).toUpperCase()}</Text>
+							<Text style={styles.avatarText}>{imageData.user.username.charAt(0).toUpperCase()}</Text>
 						</View>
 						<View>
-							<Text style={styles.userName}>{formatName(selectedImage.user)}</Text>
-							{selectedImage.altText && <Text style={styles.altText}>{selectedImage.altText}</Text>}
+							<Text style={styles.userName}>{formatName(imageData.user)}</Text>
+							{imageData.altText && <Text style={styles.altText}>{imageData.altText}</Text>}
 						</View>
 					</View>
 
 					<View style={styles.modalActions}>
-						<Pressable style={styles.likeButton} onPress={() => onLike(selectedImage.id)}>
-							<Ionicons name="heart-outline" size={20} color="#0088cc" />
-							<Text style={styles.likeCount}>{selectedImage.likes}</Text>
-						</Pressable>
+						{currentUserId && (
+							<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
+								<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
+								<Text style={styles.likeCount}>{imageData.likes}</Text>
+							</Pressable>
+						)}
 
 						{canManage && (
 							<Pressable
 								style={styles.modalDeleteButton}
-								onPress={() => onDelete(selectedImage.id)}
-								disabled={deletingImageId === selectedImage.id}
+								onPress={e => {
+									e.stopPropagation();
+									onDelete(imageData.id);
+								}}
+								disabled={deletingImageId === imageData.id}
 							>
-								{deletingImageId === selectedImage.id ? (
+								{deletingImageId === imageData.id ? (
 									<ActivityIndicator size="small" color="#ef4444" />
 								) : (
 									<Ionicons name="trash-outline" size={20} color="#ef4444" />
@@ -109,8 +165,8 @@ export function PhotoPreviewModal({
 							</Pressable>
 						)}
 					</View>
-				</View>
-			</View>
+				</Pressable>
+			</Pressable>
 		</Modal>
 	);
 }
@@ -128,7 +184,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		paddingHorizontal: 20,
-		zIndex: 10,
 	},
 	modalCounterText: {
 		color: '#94a3b8',
@@ -174,12 +229,12 @@ const styles = StyleSheet.create({
 		right: 12,
 	},
 	modalFooter: {
+		width: '100%',
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		paddingHorizontal: 20,
 		paddingTop: 16,
-		zIndex: 10,
 	},
 	userInfo: {
 		flexDirection: 'row',
@@ -221,6 +276,9 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 12,
 		paddingVertical: 6,
 		borderRadius: 16,
+	},
+	likeButtonActive: {
+		backgroundColor: 'rgba(239, 68, 68, 0.15)',
 	},
 	likeCount: {
 		color: '#ffffff',

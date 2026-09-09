@@ -134,7 +134,7 @@ export function PointOfInterestDetails() {
 					<Ionicons name="images-outline" size={20} color="#0f172a" />
 					<Text style={sectionStyles.title}>Photos ({photoCount})</Text>
 				</View>
-				<Photos data={data} loading={loading} refetch={refetch} />
+				<Photos data={data} refetch={refetch} />
 
 				<View style={styles.divider} />
 
@@ -143,7 +143,7 @@ export function PointOfInterestDetails() {
 					<Ionicons name="chatbox-ellipses-outline" size={20} color="#0f172a" />
 					<Text style={sectionStyles.title}>Reviews ({reviewCount})</Text>
 				</View>
-				<Reviews data={data} loading={loading} refetch={refetch} />
+				<Reviews data={data} refetch={refetch} />
 			</View>
 		</View>
 	);

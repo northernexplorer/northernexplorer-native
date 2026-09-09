@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {Spinner} from '@northernexplorer/tools';
 import {PointOfInterestType, RolesEnum} from '@northernexplorer/types';
 import {Link} from 'expo-router';
 import {PhotoUploadCard} from './PhotoUploadCard';
@@ -15,23 +14,20 @@ import {alertStore} from '~/core/alertStore';
 type PhotosProps = {
 	data: PointOfInterestType;
 	refetch: () => void;
-	loading: boolean;
 };
 
-export function Photos({data, refetch, loading}: PhotosProps) {
+export function Photos({data, refetch}: PhotosProps) {
 	const authentication = useAuthentication();
-	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+	const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
 
 	const {mutate: deleteMutation} = useApiMutation('location', 'ImageController', 'deleteById');
 	const {mutate: uploadMutation} = useApiMutation('location', 'ImageController', 'upload');
-	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
-
-	if (loading) return <Spinner />;
 
 	const images = data.images || [];
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
-	const selectedImage = selectedImageIndex !== null ? images[selectedImageIndex] : null;
+
+	const selectedIndex = selectedImageId !== null ? images.findIndex(img => img.id === selectedImageId) : -1;
 
 	const handleDelete = (imageId: string) => {
 		alertStore.showAlert({
@@ -46,8 +42,8 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 					onPress: async () => {
 						setDeletingImageId(imageId);
 						await deleteMutation({id: imageId});
-						if (selectedImage?.id === imageId) {
-							setSelectedImageIndex(null);
+						if (selectedImageId === imageId) {
+							setSelectedImageId(null);
 						}
 						refetch();
 						setDeletingImageId(null);
@@ -57,20 +53,15 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 		});
 	};
 
-	const handleLike = async (imageId: string) => {
-		await likeMutation({id: imageId});
-		refetch();
-	};
-
 	const handlePreviousImage = () => {
-		if (selectedImageIndex !== null && selectedImageIndex > 0) {
-			setSelectedImageIndex(selectedImageIndex - 1);
+		if (selectedIndex > 0) {
+			setSelectedImageId(images[selectedIndex - 1].id);
 		}
 	};
 
 	const handleNextImage = () => {
-		if (selectedImageIndex !== null && selectedImageIndex < images.length - 1) {
-			setSelectedImageIndex(selectedImageIndex + 1);
+		if (selectedIndex !== -1 && selectedIndex < images.length - 1) {
+			setSelectedImageId(images[selectedIndex + 1].id);
 		}
 	};
 
@@ -87,12 +78,10 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 				<PhotoUploadCard pointOfInterestId={data.id} uploadMutation={uploadMutation} refetch={refetch} />
 			)}
 
-			{/* Header */}
 			<View style={styles.headerSection}>
 				<Text style={globalStyles.reviewTitle}>Community Photos ({images.length})</Text>
 			</View>
 
-			{/* Empty State */}
 			{images.length === 0 ? (
 				<View style={styles.emptyState}>
 					<Ionicons name="images-outline" size={44} color="#cbd5e1" />
@@ -100,41 +89,29 @@ export function Photos({data, refetch, loading}: PhotosProps) {
 					<Text style={styles.emptySubtitle}>Be the first to share photos of this location with the community.</Text>
 				</View>
 			) : (
-				/* Photo Grid */
 				<View style={styles.gridContainer}>
-					{images.map((image, index) => {
-						const isMine = image.user.id === authentication?.userId;
-						const canManage = Boolean(isAdmin || isMine);
+					{images.map(image => {
+						const isMine = Boolean(authentication?.userId && image.user.id === authentication.userId);
 
-						return (
-							<PhotoGridItem
-								key={image.id}
-								image={image}
-								isMine={isMine}
-								canManage={canManage}
-								onSelect={() => setSelectedImageIndex(index)}
-								onDelete={handleDelete}
-							/>
-						);
+						return <PhotoGridItem key={image.id} image={image} isMine={isMine} onSelect={() => setSelectedImageId(image.id)} />;
 					})}
 				</View>
 			)}
 
-			{/* Fullscreen Photo Modal Preview */}
-			<PhotoPreviewModal
-				visible={selectedImageIndex !== null}
-				selectedImage={selectedImage}
-				selectedIndex={selectedImageIndex}
-				totalImages={images.length}
-				currentUserId={authentication?.userId}
-				isAdmin={isAdmin}
-				deletingImageId={deletingImageId}
-				onClose={() => setSelectedImageIndex(null)}
-				onPrevious={handlePreviousImage}
-				onNext={handleNextImage}
-				onLike={handleLike}
-				onDelete={handleDelete}
-			/>
+			{selectedImageId && (
+				<PhotoPreviewModal
+					selectedImageId={selectedImageId}
+					selectedIndex={selectedIndex !== -1 ? selectedIndex : 0}
+					totalImages={images.length}
+					currentUserId={authentication?.userId}
+					isAdmin={isAdmin}
+					deletingImageId={deletingImageId}
+					onClose={() => setSelectedImageId(null)}
+					onPrevious={handlePreviousImage}
+					onNext={handleNextImage}
+					onDelete={handleDelete}
+				/>
+			)}
 		</View>
 	);
 }

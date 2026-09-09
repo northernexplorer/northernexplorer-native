@@ -5,6 +5,7 @@ import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 import {Image} from '../entities/Image';
 import {SpacesManagementService} from '../services/SpacesManagementService';
+import {ImageLike} from '../entities/ImageLike';
 
 type Route<M extends keyof ROUTES['location']['ImageController']> = RouteDefinition<'location', 'ImageController'>[M];
 
@@ -79,6 +80,12 @@ export class ImageController extends BaseController {
 		return {success: true};
 	}
 
+	async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
+		const image = await this.repos.image.getById(params.id);
+
+		return {...image, likes: image.likes.length, pointOfInterest: undefined};
+	}
+
 	async deleteById(params: Params<Route<'deleteById'>>, auth?: AuthContext): Promise<Response<Route<'deleteById'>>> {
 		const image = await this.repos.image.getById(params.id);
 		this.permissionService.canEditImage({targetId: image.user.id}, auth);
@@ -97,10 +104,50 @@ export class ImageController extends BaseController {
 	}
 
 	async like(params: Params<Route<'like'>>, auth?: AuthContext): Promise<Response<Route<'like'>>> {
-		this.permissionService.isLoggedIn(auth);
+		const {userId} = this.permissionService.isLoggedIn(auth);
+		const user = await this.repos.user.getById(userId);
+
 		const image = await this.repos.image.getById(params.id);
 
-		image.likes = image.likes + 1;
+		const existingLike = await this.repos.imageLike.findOne({
+			image: image.id,
+			user: userId,
+		});
+
+		if (existingLike) {
+			return {success: true};
+		}
+
+		const newLike = new ImageLike({
+			image,
+			user,
+		});
+
+		image.user.score = image.user.score + 1;
+
+		this.persist(newLike);
+		await this.flush();
+
+		return {success: true};
+	}
+
+	async unLike(params: Params<Route<'unLike'>>, auth?: AuthContext): Promise<Response<Route<'unLike'>>> {
+		const {userId} = this.permissionService.isLoggedIn(auth);
+
+		const existingLike = await this.repos.imageLike.findOne({
+			image: params.id,
+			user: userId,
+		});
+
+		if (!existingLike) {
+			return {success: true};
+		}
+
+		const image = await this.repos.image.getById(params.id);
+
+		image.user.score = Math.max(0, image.user.score - 1);
+
+		this.repos.imageLike.remove(existingLike);
 		await this.flush();
 
 		return {success: true};
@@ -113,5 +160,13 @@ export class ImageController extends BaseController {
 		await this.flush();
 
 		return {success: true};
+	}
+
+	async hasLiked(params: Params<Route<'hasLiked'>>, auth?: AuthContext): Promise<Response<Route<'hasLiked'>>> {
+		if (!auth?.userId) return {liked: false, likeCount: 0};
+
+		const like = await this.repos.imageLike.findLike(params.id, auth.userId);
+		const image = await this.repos.image.getById(params.id);
+		return {liked: Boolean(like), likeCount: image.likes.length};
 	}
 }

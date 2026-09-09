@@ -35,7 +35,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 	async getPointOfInterestById(id: string, currentUserId?: string): Promise<PointOfInterestType> {
 		const site = await this.findOneOrFail(
 			{id},
-			{populate: ['country', 'region', 'reviews', 'reviews.user', 'organization', 'images', 'images.user']},
+			{populate: ['country', 'region', 'reviews', 'reviews.user', 'organization', 'images', 'images.user', 'images.likes']},
 		);
 
 		// Filter reviews: show published reviews OR reviews belonging to the current user
@@ -79,7 +79,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 				filename: image.filename,
 				mimeType: image.mimeType,
 				size: image.size,
-				likes: image.likes,
+				likes: image.likes.length,
 				altText: image.altText,
 				processed: image.processed,
 				createdAt: image.createdAt,

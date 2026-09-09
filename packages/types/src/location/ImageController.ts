@@ -56,10 +56,27 @@ export const ImageController = {
 			success: boolean;
 		},
 	},
+	getById: {
+		params: {} as {id: string},
+		response: {} as unknown as ImageType,
+	},
 	like: {
 		params: {} as {id: string},
 		response: null as unknown as {
 			success: boolean;
+		},
+	},
+	unLike: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			success: boolean;
+		},
+	},
+	hasLiked: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			liked: boolean;
+			likeCount: number;
 		},
 	},
 	updateStatus: {

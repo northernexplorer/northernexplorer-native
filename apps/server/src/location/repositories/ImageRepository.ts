@@ -5,7 +5,7 @@ import {config} from '../../config';
 
 export class ImageRepository extends BaseRepository<Image> {
 	async getById(id: string) {
-		return this.findOneOrFail({id}, {populate: ['user']});
+		return this.findOneOrFail({id}, {populate: ['user', 'likes']});
 	}
 
 	generateNewUrl({fileExtension}: {fileExtension: string}): string {
