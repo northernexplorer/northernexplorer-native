@@ -37,11 +37,11 @@ const AVATAR_COLORS = [
 ];
 
 const SUBSCRIPTION_TIER_COLORS: Record<string, string> = {
-	Core: '#d19462', // Bronze
-	Pathfinder: '#c0c9d5', // Silver
-	Trailblazer: '#b99210', // Gold
-	Explorer: '#10b3b9', // Cyan / Diamond
-	Pioneer: '#10B981', // Imperial Emerald
+	Core: '#E07A5F', // Burnt Amber / Copper
+	Pathfinder: '#38BDF8', // Crystalline Aquamarine
+	Trailblazer: '#FACC15', // Pure Yellow Gold
+	Explorer: '#10B981', // Vibrant Imperial Emerald
+	Pioneer: '#b91010', // Ruby
 };
 
 function getHashCode(str: string): number {
@@ -78,7 +78,7 @@ export function UserAvatar(props: Props) {
 	if (!subscriptionData || subscriptionLoading) return null;
 
 	const subscriptionLevel = subscriptionData.subscriptionLevel.name;
-	const tierColor = subscriptionLevel ? SUBSCRIPTION_TIER_COLORS['Core'] : undefined;
+	const tierColor = subscriptionLevel ? SUBSCRIPTION_TIER_COLORS[subscriptionLevel] : undefined;
 	const backgroundColor = generateBackgroundColor(userData.username);
 	const initial = userData.firstName ? userData.firstName.charAt(0).toUpperCase() : '?';
 
