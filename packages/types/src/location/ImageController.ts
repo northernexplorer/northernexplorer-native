@@ -53,8 +53,9 @@ export const ImageController = {
 			files: FileUpload[];
 		},
 		response: null as unknown as {
-			success: boolean;
-		},
+			file: string;
+			status: ImageUploadStatus;
+		}[],
 	},
 	deleteById: {
 		params: {} as {id: string},

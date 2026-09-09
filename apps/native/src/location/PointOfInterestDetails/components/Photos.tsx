@@ -74,7 +74,7 @@ export function Photos({data, refetch}: PhotosProps) {
 					</Pressable>
 				</Link>
 			) : (
-				<PhotoUploadCard pointOfInterestId={data.id} refetch={refetch} />
+				<PhotoUploadCard pointOfInterestId={data.id} />
 			)}
 
 			<View style={styles.headerSection}>
