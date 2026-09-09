@@ -5968,7 +5968,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:~57.0.18, expo@npm:~57.0.21":
+"expo@npm:~57.0.21":
   version: 57.0.21
   resolution: "expo@npm:57.0.21"
   dependencies:
@@ -8679,12 +8679,9 @@ __metadata:
     eslint-plugin-jsonc: "npm:^3.4.2"
     eslint-plugin-prettier: "npm:^5.5.6"
     eslint-plugin-react: "npm:^7.37.5"
-    expo: "npm:~57.0.18"
     expo-doctor: "npm:^1.20.1"
     jsonc-eslint-parser: "npm:^3.1.0"
     prettier: "npm:^3.9.6"
-    react: "npm:19.2.3"
-    react-native: "npm:0.86.3"
     sort-package-json: "npm:^4.0.0"
     tsx: "npm:^4.23.13"
     typescript: "npm:^6.0.3"
