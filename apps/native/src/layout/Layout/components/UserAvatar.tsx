@@ -37,11 +37,19 @@ const AVATAR_COLORS = [
 ];
 
 const SUBSCRIPTION_TIER_COLORS: Record<string, string> = {
-	Core: '#E07A5F', // Burnt Amber / Copper
-	Pathfinder: '#38BDF8', // Crystalline Aquamarine
-	Trailblazer: '#FACC15', // Pure Yellow Gold
-	Explorer: '#10B981', // Vibrant Imperial Emerald
-	Pioneer: '#b91010', // Ruby
+	Core: '#B45309', // Warm Metallic Bronze
+	Pathfinder: '#64748B', // Steel Silver
+	Trailblazer: '#e1b800', // Rich Gold
+	Explorer: '#059669', // Vivid Emerald
+	Pioneer: '#DC2626', // Deep Ruby Red
+};
+
+const SUBSCRIPTION_BADGE_BG_COLORS: Record<string, string> = {
+	Core: '#FEF3C7', // Light Warm Cream / Copper Tint
+	Pathfinder: '#F1F5F9', // Bright Ice Silver White
+	Trailblazer: '#FEF9C3', // Soft Champagne Gold Glow
+	Explorer: '#D1FAE5', // Mint Ice
+	Pioneer: '#FEE2E2', // Light Rose Pearl
 };
 
 function getHashCode(str: string): number {
@@ -78,7 +86,10 @@ export function UserAvatar(props: Props) {
 	if (!subscriptionData || subscriptionLoading) return null;
 
 	const subscriptionLevel = subscriptionData.subscriptionLevel.name;
-	const tierColor = subscriptionLevel && subscriptionLevel !== 'Core' ? SUBSCRIPTION_TIER_COLORS[subscriptionLevel] : undefined;
+	const tierColor = subscriptionLevel !== 'Core' ? SUBSCRIPTION_TIER_COLORS[subscriptionLevel] : undefined;
+
+	const badgeBackgroundColor = SUBSCRIPTION_BADGE_BG_COLORS[subscriptionLevel] ?? '#ffffff';
+
 	const backgroundColor = generateBackgroundColor(userData.username);
 	const initial = userData.firstName ? userData.firstName.charAt(0).toUpperCase() : '?';
 
@@ -107,6 +118,7 @@ export function UserAvatar(props: Props) {
 					style={[
 						styles.badgeWrapper,
 						{
+							backgroundColor: badgeBackgroundColor,
 							width: badgeWrapperSize,
 							height: badgeWrapperSize,
 							borderRadius: badgeWrapperSize / 2,
@@ -136,7 +148,6 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		bottom: -2,
 		right: -2,
-		backgroundColor: '#ffffff',
 		alignItems: 'center',
 		justifyContent: 'center',
 		shadowColor: '#000000',
