@@ -79,19 +79,18 @@ interface Props {
 export function UserAvatar(props: Props) {
 	const {size = 36, username} = props;
 
-	const {data: userData, loading: userLoading} = useApiFetch('user', 'UserController', 'getByUsername', {username});
-	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
+	const {data: userData} = useApiFetch('user', 'UserController', 'getByUsername', {username});
+	const {data: subscriptionData} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
 
-	if (!userData || userLoading) return null;
-	if (!subscriptionData || subscriptionLoading) return null;
+	if (!username) return null;
 
-	const subscriptionLevel = subscriptionData.subscriptionLevel.name;
-	const tierColor = subscriptionLevel !== 'Core' ? SUBSCRIPTION_TIER_COLORS[subscriptionLevel] : undefined;
+	const subscriptionLevel = subscriptionData?.subscriptionLevel.name;
+	const tierColor = subscriptionLevel && subscriptionLevel !== 'Core' ? SUBSCRIPTION_TIER_COLORS[subscriptionLevel] : undefined;
 
-	const badgeBackgroundColor = SUBSCRIPTION_BADGE_BG_COLORS[subscriptionLevel] ?? '#ffffff';
+	const badgeBackgroundColor = (subscriptionLevel && SUBSCRIPTION_BADGE_BG_COLORS[subscriptionLevel]) ?? '#ffffff';
 
-	const backgroundColor = generateBackgroundColor(userData.username);
-	const initial = userData.firstName ? userData.firstName.charAt(0).toUpperCase() : '?';
+	const backgroundColor = generateBackgroundColor(userData?.username || username);
+	const initial = (userData?.firstName ? userData.firstName.charAt(0) : username.charAt(0)).toUpperCase();
 
 	// Scale icon size relative to avatar size
 	const iconSize = Math.max(12, Math.round(size * 0.42));
