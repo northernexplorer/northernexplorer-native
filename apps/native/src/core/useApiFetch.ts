@@ -8,6 +8,8 @@ import {setAuthentication} from '~/user/state/authentication/authenticationSlice
 import {alertStore} from '~/core/alertStore';
 import {useIsOffline} from '~/core/ConnectivityProvider';
 
+const apiCache = new Map<string, any>();
+
 export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C], M extends keyof ROUTES[C][K]>(
 	category: C,
 	controller: K,
@@ -15,8 +17,21 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	params: GetParams<C, K, M> | null,
 ) {
 	const {isOffline} = useIsOffline();
-	const [data, setData] = useState<GetResponse<C, K, M> | null>(null);
-	const [loading, setLoading] = useState(true);
+	const serializedParams = params ? JSON.stringify(params) : null;
+	const cacheKey = serializedParams !== null ? `${category}:${String(controller)}:${String(method)}:${serializedParams}` : null;
+
+	const [data, setData] = useState<GetResponse<C, K, M> | null>(() => {
+		if (cacheKey && apiCache.has(cacheKey)) {
+			return apiCache.get(cacheKey);
+		}
+		return null;
+	});
+	const [loading, setLoading] = useState<boolean>(() => {
+		if (cacheKey && apiCache.has(cacheKey)) {
+			return false;
+		}
+		return true;
+	});
 	const [error, setError] = useState<Error | null>(null);
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
@@ -24,7 +39,9 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const fetchData = useCallback(async () => {
 		if (isOffline) {
 			setLoading(false);
-			setData(null);
+			if (cacheKey && apiCache.has(cacheKey)) {
+				setData(apiCache.get(cacheKey));
+			}
 			return;
 		}
 		if (!params) {
@@ -33,7 +50,9 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 			return;
 		}
 
-		setLoading(true);
+		if (!cacheKey || !apiCache.has(cacheKey)) {
+			setLoading(true);
+		}
 		setError(null);
 
 		try {
@@ -51,6 +70,9 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 					}
 				},
 			);
+			if (cacheKey) {
+				apiCache.set(cacheKey, result);
+			}
 			setData(result);
 		} catch (err) {
 			const e = err instanceof Error ? err : new Error(typeof err === 'string' ? err : 'Network request failed');
@@ -78,7 +100,7 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 		} finally {
 			setLoading(false);
 		}
-	}, [category, controller, method, params ? JSON.stringify(params) : null, authentication?.accessToken, authentication?.refreshToken]);
+	}, [category, controller, method, serializedParams, cacheKey, isOffline, authentication?.accessToken, authentication?.refreshToken, dispatch, authentication]);
 	useFocusEffect(
 		useCallback(() => {
 			fetchData();
