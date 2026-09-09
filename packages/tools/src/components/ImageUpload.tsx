@@ -13,6 +13,7 @@ interface Props<T extends string> {
 	maxImages?: number;
 	error?: string;
 	loading?: boolean;
+	renderOverlay?: (item: UploadImageFileInput, index: number) => React.ReactNode;
 }
 
 export function ImageUpload<T extends string>({
@@ -24,6 +25,7 @@ export function ImageUpload<T extends string>({
 	maxImages = 10,
 	error,
 	loading = false,
+	renderOverlay,
 }: Props<T>) {
 	const [isPicking, setIsPicking] = useState(false);
 
@@ -102,6 +104,7 @@ export function ImageUpload<T extends string>({
 						renderItem={({item, index}) => (
 							<View style={styles.imageWrapper}>
 								<Image source={{uri: item.uri}} style={styles.previewImage} />
+								{renderOverlay ? renderOverlay(item, index) : null}
 								{!loading && (
 									<TouchableOpacity
 										style={styles.removeButton}
@@ -164,6 +167,8 @@ const styles = StyleSheet.create({
 	},
 	imageWrapper: {
 		position: 'relative',
+		overflow: 'hidden',
+		borderRadius: 8,
 	},
 	previewImage: {
 		width: 76,
@@ -175,15 +180,12 @@ const styles = StyleSheet.create({
 	},
 	removeButton: {
 		position: 'absolute',
-		top: -6,
-		right: -6,
+		top: 2,
+		right: 2,
 		backgroundColor: '#ffffff',
 		borderRadius: 10,
-		shadowColor: '#0f172a',
-		shadowOffset: {width: 0, height: 1},
-		shadowOpacity: 0.15,
-		shadowRadius: 2,
-		elevation: 2,
+		zIndex: 10,
+		elevation: 1,
 	},
 	uploadButton: {
 		borderWidth: 1,

@@ -92,7 +92,7 @@ export class ImageController extends BaseController {
 		}
 
 		await this.flush();
-		return {success: true};
+		return results;
 	}
 
 	async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {

@@ -12,11 +12,6 @@ type PhotoUploadCardProps = {
 	maxSizeBytes?: number;
 };
 
-type UploadResultItem = {
-	file: string;
-	status: ImageUploadStatus;
-};
-
 const DEFAULT_MAX_IMAGES = 10;
 const DEFAULT_MAX_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 
@@ -39,12 +34,16 @@ const uriToBase64 = async (uri: string): Promise<string> => {
 export function PhotoUploadCard({pointOfInterestId, maxImages = DEFAULT_MAX_IMAGES, maxSizeBytes = DEFAULT_MAX_SIZE_BYTES}: PhotoUploadCardProps) {
 	const [stagedUploads, setStagedUploads] = useState<UploadImageFileInput[]>([]);
 	const [isUploading, setIsUploading] = useState(false);
-	const [uploadResults, setUploadResults] = useState<UploadResultItem[]>([]);
+
+	// Track upload statuses mapped by file URI
+	const [statusMap, setStatusMap] = useState<Record<string, ImageUploadStatus | undefined>>({});
 
 	const {mutate: uploadMutation} = useApiMutation('location', 'ImageController', 'upload');
 
+	// Filter to get only files that have not been uploaded yet or previously failed
+	const pendingUploads = stagedUploads.filter(file => statusMap[file.uri] !== ImageUploadStatus.Success);
 	const handleConfirmUpload = async () => {
-		if (stagedUploads.length === 0) return;
+		if (pendingUploads.length === 0) return;
 
 		if (stagedUploads.length > maxImages) {
 			const excessCount = stagedUploads.length - maxImages;
@@ -58,51 +57,63 @@ export function PhotoUploadCard({pointOfInterestId, maxImages = DEFAULT_MAX_IMAG
 			return;
 		}
 
-		const rawTotalBytes = stagedUploads.reduce((acc, file) => acc + file.size, 0);
+		const rawTotalBytes = pendingUploads.reduce((acc, file) => acc + file.size, 0);
 		if (rawTotalBytes > maxSizeBytes) {
 			alertStore.showAlert({
 				title: 'Payload Too Large',
-				message: 'The total size of the selected photos exceeds the 50 MB limit. Please remove some photos and try again.',
+				message: 'The total size of the selected new photos exceeds the 50 MB limit. Please remove some photos and try again.',
 				type: 'warning',
 			});
 			return;
 		}
 
 		setIsUploading(true);
-		setUploadResults([]);
 
-		try {
-			const preparedFiles: FileUpload[] = await Promise.all(
-				stagedUploads.map(async file => ({
-					...file,
-					base64: await uriToBase64(file.uri),
-				})),
-			);
+		// Convert only pending/new files to Base64
+		const preparedFiles: FileUpload[] = await Promise.all(
+			pendingUploads.map(async file => ({
+				...file,
+				base64: await uriToBase64(file.uri),
+			})),
+		);
 
-			// uploadMutation directly returns Array<{ file: string; status: ImageUploadStatus }>
-			const response = await uploadMutation({
-				pointOfInterestId,
-				files: preparedFiles,
+		const response = await uploadMutation({
+			pointOfInterestId,
+			files: preparedFiles,
+		});
+
+		if (response) {
+			// Merge incoming upload statuses into statusMap
+			setStatusMap(prev => {
+				const nextMap = {...prev};
+				response.forEach((result, idx) => {
+					// Match status back to file URI by response payload or fallback to pending batch index
+					const targetUri = pendingUploads.find(p => p.uri === result.file || p.filename === result.file)?.uri || pendingUploads[idx]?.uri;
+					if (targetUri) {
+						nextMap[targetUri] = result.status;
+					}
+				});
+				return nextMap;
 			});
-
-			if (Array.isArray(response)) {
-				setUploadResults(response);
-			}
-
-			setStagedUploads([]);
-		} catch (error) {
-			alertStore.showAlert({
-				title: 'Upload Failed',
-				message: error instanceof Error ? error.message : 'An error occurred during upload. Please try again.',
-				type: 'error',
-			});
-		} finally {
-			setIsUploading(false);
 		}
+
+		setIsUploading(false);
 	};
 
-	const handleClearResults = () => {
-		setUploadResults([]);
+	const handleFieldUpdate = (_: string, newValues: UploadImageFileInput[]) => {
+		// Clean up status entries for removed photos
+		const currentUris = new Set(newValues.map(v => v.uri));
+		setStatusMap(prev => {
+			const nextMap: Record<string, ImageUploadStatus | undefined> = {};
+			Object.keys(prev).forEach(uri => {
+				if (currentUris.has(uri)) {
+					nextMap[uri] = prev[uri];
+				}
+			});
+			return nextMap;
+		});
+
+		setStagedUploads(newValues);
 	};
 
 	return (
@@ -116,45 +127,38 @@ export function PhotoUploadCard({pointOfInterestId, maxImages = DEFAULT_MAX_IMAG
 				maxImages={maxImages}
 				value={stagedUploads}
 				loading={isUploading}
-				updateField={(_, val) => {
-					if (uploadResults.length > 0) setUploadResults([]);
-					setStagedUploads(val);
+				updateField={handleFieldUpdate}
+				renderOverlay={item => {
+					const status = statusMap[item.uri];
+					if (!status) return null;
+
+					const isSuccess = status === ImageUploadStatus.Success;
+					const isDuplicate = status === ImageUploadStatus.Duplicate;
+
+					let overlayStyle = styles.overlaySuccess;
+					let iconName: keyof typeof Ionicons.glyphMap = 'checkmark-circle';
+					let labelText = 'Uploaded';
+
+					if (isDuplicate) {
+						overlayStyle = styles.overlayDuplicate;
+						iconName = 'alert-circle';
+						labelText = 'Duplicate';
+					} else if (!isSuccess) {
+						overlayStyle = styles.overlayError;
+						iconName = 'close-circle';
+						labelText = 'Failed';
+					}
+
+					return (
+						<View style={[styles.fullOverlay, overlayStyle]}>
+							<Ionicons name={iconName} size={20} color="#ffffff" />
+							<Text style={styles.overlayText}>{labelText}</Text>
+						</View>
+					);
 				}}
 			/>
 
-			{uploadResults.length > 0 && (
-				<View style={styles.resultsContainer}>
-					<View style={styles.resultsHeader}>
-						<Text style={styles.resultsTitle}>Upload Summary</Text>
-						<Pressable onPress={handleClearResults} hitSlop={8}>
-							<Ionicons name="close-circle" size={18} color="#64748b" />
-						</Pressable>
-					</View>
-
-					{uploadResults.map((res, idx) => {
-						const isSuccess = res.status === ImageUploadStatus.Success;
-						const filename = stagedUploads.find(f => f.uri === res.file)?.filename || `Photo ${idx + 1}`;
-
-						return (
-							<View key={`${res.file}-${idx}`} style={styles.resultRow}>
-								<Ionicons
-									name={isSuccess ? 'checkmark-circle' : 'alert-circle'}
-									size={16}
-									color={isSuccess ? '#16a34a' : '#d97706'}
-								/>
-								<Text style={styles.resultFilename} numberOfLines={1} ellipsizeMode="middle">
-									{filename}
-								</Text>
-								<Text style={[styles.resultBadge, isSuccess ? styles.badgeSuccess : styles.badgeDuplicate]}>
-									{isSuccess ? 'Uploaded' : 'Duplicate'}
-								</Text>
-							</View>
-						);
-					})}
-				</View>
-			)}
-
-			{stagedUploads.length > 0 && (
+			{pendingUploads.length > 0 && (
 				<Pressable
 					style={[styles.submitButton, isUploading && styles.submitButtonDisabled]}
 					onPress={handleConfirmUpload}
@@ -166,7 +170,7 @@ export function PhotoUploadCard({pointOfInterestId, maxImages = DEFAULT_MAX_IMAG
 						<>
 							<Ionicons name="cloud-upload" size={18} color="#ffffff" />
 							<Text style={styles.submitButtonText}>
-								Upload {stagedUploads.length} {stagedUploads.length === 1 ? 'Photo' : 'Photos'}
+								Upload {pendingUploads.length} {pendingUploads.length === 1 ? 'Photo' : 'Photos'}
 							</Text>
 						</>
 					)}
@@ -215,52 +219,27 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: '600',
 	},
-	resultsContainer: {
-		marginTop: 12,
-		backgroundColor: '#f8fafc',
+	fullOverlay: {
+		...StyleSheet.absoluteFill,
 		borderRadius: 8,
-		borderWidth: 1,
-		borderColor: '#cbd5e1',
-		padding: 10,
-		gap: 6,
-	},
-	resultsHeader: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
 		alignItems: 'center',
-		marginBottom: 4,
+		justifyContent: 'center',
+		gap: 2,
+		padding: 4,
 	},
-	resultsTitle: {
-		fontSize: 12,
+	overlaySuccess: {
+		backgroundColor: 'rgba(22, 163, 74, 0.65)',
+	},
+	overlayDuplicate: {
+		backgroundColor: 'rgba(217, 119, 6, 0.70)',
+	},
+	overlayError: {
+		backgroundColor: 'rgba(220, 38, 38, 0.70)',
+	},
+	overlayText: {
+		color: '#ffffff',
+		fontSize: 10,
 		fontWeight: '700',
-		color: '#334155',
-		textTransform: 'uppercase',
-		letterSpacing: 0.5,
-	},
-	resultRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
-	},
-	resultFilename: {
-		flex: 1,
-		fontSize: 13,
-		color: '#1e293b',
-	},
-	resultBadge: {
-		fontSize: 11,
-		fontWeight: '600',
-		paddingVertical: 2,
-		paddingHorizontal: 6,
-		borderRadius: 4,
-		overflow: 'hidden',
-	},
-	badgeSuccess: {
-		backgroundColor: '#dcfce7',
-		color: '#15803d',
-	},
-	badgeDuplicate: {
-		backgroundColor: '#fef3c7',
-		color: '#b45309',
+		textAlign: 'center',
 	},
 });
