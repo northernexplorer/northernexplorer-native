@@ -6,6 +6,12 @@ export enum ImageStatusEnum {
 	Approved = 'Approved',
 }
 
+export enum ImageUploadStatus {
+	Success = 'Success',
+	Duplicate = 'Duplicate',
+	Error = 'Error',
+}
+
 export interface ImageType {
 	id: string;
 	version: number;
