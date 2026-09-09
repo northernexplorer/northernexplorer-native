@@ -57,7 +57,6 @@ export class ImageController extends BaseController {
 				let status = ImageStatusEnum.Pending;
 				if (userReviewCount >= 10 || user.score >= 500) {
 					status = ImageStatusEnum.Approved;
-					user.score = user.score + 10;
 				}
 
 				const image = new Image({
@@ -70,11 +69,16 @@ export class ImageController extends BaseController {
 					altText: pointOfInterest.name,
 					pointOfInterest,
 					user,
+					hash,
 				});
 
 				this.repos.image.persist(image);
 			}),
 		);
+
+		if (userReviewCount >= 10 || user.score >= 500) {
+			user.score = user.score + params.files.length * 10;
+		}
 
 		await this.flush();
 		return {success: true};
@@ -95,6 +99,7 @@ export class ImageController extends BaseController {
 		if (image.status === ImageStatusEnum.Approved) {
 			image.user.score = image.user.score - 10;
 		}
+		image.user.score = image.user.score - image.likes.length;
 
 		this.repos.image.remove(image);
 
