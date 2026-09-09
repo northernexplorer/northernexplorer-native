@@ -79,11 +79,10 @@ interface Props {
 export function UserAvatar(props: Props) {
 	const {size = 36, username} = props;
 
-	const {data: userData, loading: userLoading} = useApiFetch('user', 'UserController', 'getByUsername', {username});
-	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
+	const {data: userData} = useApiFetch('user', 'UserController', 'getByUsername', {username});
+	const {data: subscriptionData} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
 
-	if (!userData || userLoading) return null;
-	if (!subscriptionData || subscriptionLoading) return null;
+	if (!userData || !subscriptionData) return null;
 
 	const subscriptionLevel = subscriptionData.subscriptionLevel.name;
 	const tierColor = subscriptionLevel !== 'Core' ? SUBSCRIPTION_TIER_COLORS[subscriptionLevel] : undefined;

@@ -34,7 +34,7 @@ export function MenuItemUser() {
 			{isLoggedIn && (
 				<Link href={profileHref} asChild>
 					<Pressable style={StyleSheet.flatten([styles.menuItemAvatar, isActiveProfile && !isActiveLogout && styles.activeItemAvatar])}>
-						<UserAvatar size={30} username={authentication.username} />
+						<UserAvatar key={authentication.username} size={30} username={authentication.username} />
 					</Pressable>
 				</Link>
 			)}
