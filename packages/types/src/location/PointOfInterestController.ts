@@ -3,6 +3,7 @@ import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
 import {ReviewSummary} from './ReviewController';
 import {OrganizationType} from './OrganizationController';
+import {ImageType} from './ImageController';
 
 export enum PublishStatusEnum {
 	Published = 'Published',
@@ -13,6 +14,12 @@ export enum PointOfInterestTypeEnum {
 	Cave = 'Cave',
 	HistoricSite = 'HistoricSite',
 	Waterfall = 'Waterfall',
+}
+
+export enum VisitedFilterEnum {
+	All = 'All',
+	Visited = 'Visited',
+	Unvisited = 'Unvisited',
 }
 
 export type PointOfInterestType = {
@@ -31,6 +38,7 @@ export type PointOfInterestType = {
 	type: PointOfInterestTypeEnum[];
 	organization: OrganizationType;
 	averageRating?: number;
+	images?: ImageType[];
 };
 
 export type PointOfInterestEditType = {
@@ -51,7 +59,7 @@ export type PointOfInterestEditType = {
 
 export const PointOfInterestController = {
 	getNearbyPointOfInterests: {
-		params: {} as {lat: number; lon: number; limit: number; selectedPoiTypes?: PointOfInterestTypeEnum[]},
+		params: {} as {lat: number; lon: number; limit: number; selectedPoiTypes?: PointOfInterestTypeEnum[]; visitedFilter?: VisitedFilterEnum},
 		response: null as unknown as PointOfInterestType[],
 	},
 	getPointOfInterestById: {

@@ -14,16 +14,17 @@ export class PointOfInterestController extends BaseController {
 
 	public async getNearbyPointOfInterests(
 		params: Params<Route<'getNearbyPointOfInterests'>>,
+		auth?: AuthContext,
 	): Promise<Response<Route<'getNearbyPointOfInterests'>>> {
-		const {lat, lon, limit, selectedPoiTypes} = params;
-		return this.repos.pointOfInterest.getClosestPointOfInterests(lat, lon, limit, selectedPoiTypes);
+		const {lat, lon, limit, selectedPoiTypes, visitedFilter} = params;
+		return this.repos.pointOfInterest.getClosestPointOfInterests(lat, lon, limit, auth?.userId, selectedPoiTypes, visitedFilter);
 	}
 
 	public async getPointOfInterestById(
 		params: Params<Route<'getPointOfInterestById'>>,
 		auth?: AuthContext,
 	): Promise<Response<Route<'getPointOfInterestById'>>> {
-		const pointOfInterest = await this.repos.pointOfInterest.getPointOfInterestById(params.id);
+		const pointOfInterest = await this.repos.pointOfInterest.getPointOfInterestById(params.id, auth?.userId);
 		if (pointOfInterest.status === PublishStatusEnum.Draft) {
 			this.permissionService.canAccessAdmin(auth);
 		}

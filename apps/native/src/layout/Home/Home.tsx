@@ -1,13 +1,11 @@
 import React from 'react';
 import {View, ActivityIndicator, Text, ScrollView} from 'react-native';
 import {WeatherWidget} from './components/WeatherWidget';
-import {ForecastWidget} from './components/ForecastWidget';
 import {LunarWidget} from './components/LunarWidget';
 import {FieldNoteWidget} from './components/FieldNoteWidget';
 import {CompassWidget} from '~/layout/Home/components/CompassWidget';
 import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
 import {useWeather} from '~/environment/state/weather/useWeather';
-import {useForecast} from '~/environment/state/forecast/useForecast';
 import {useLunar} from '~/environment/state/lunar/useLunar';
 import {useFieldNote} from '~/environment/state/fieldNote/useFieldNote';
 import {useLocation} from '~/location/state/location/useLocation';
@@ -18,7 +16,6 @@ import {SignalWidget} from '~/layout/Home/components/SignalWidget';
 
 export function Home() {
 	const weather = useWeather();
-	const forecast = useForecast();
 	const lunar = useLunar();
 	const fieldNote = useFieldNote();
 	const coords = useLocation();
@@ -32,7 +29,7 @@ export function Home() {
 
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
-	const isCoreReady = !!weather && !!forecast && !!lunar && !!fieldNote;
+	const isCoreReady = !!weather && !!lunar && !!fieldNote;
 
 	if (!isCoreReady) {
 		return (
@@ -80,11 +77,6 @@ export function Home() {
 						<FieldNoteWidget data={fieldNote} />
 					</View>
 				</View>
-			</View>
-
-			<Text style={styles.exploreHeader}>Plan Ahead...</Text>
-			<View style={styles.forecastSection}>
-				<ForecastWidget data={forecast} />
 			</View>
 
 			<Text style={styles.exploreHeader}>Start Exploring...</Text>

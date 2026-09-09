@@ -1,6 +1,6 @@
 import {Entity, Enum, ManyToOne, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
-import {ReviewRatingEnum} from '@northernexplorer/types';
+import {EntranceCostEnum, ReviewRatingEnum, ReviewStatusEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {User} from '../../user';
 import {PointOfInterest} from '../index';
 
@@ -8,7 +8,11 @@ type ReviewInput = {
 	user: User;
 	pointOfInterest: PointOfInterest;
 	rating: ReviewRatingEnum;
+	difficulty: SiteDifficultyEnum;
+	entranceCost: EntranceCostEnum;
+	conditions: SiteConditionEnum[];
 	description: string;
+	status: ReviewStatusEnum;
 };
 
 @Entity()
@@ -37,10 +41,26 @@ export class Review {
 	@Enum(() => ReviewRatingEnum)
 	rating: ReviewRatingEnum;
 
+	@Enum(() => SiteDifficultyEnum)
+	difficulty: SiteDifficultyEnum;
+
+	@Enum(() => EntranceCostEnum)
+	entranceCost: EntranceCostEnum;
+
+	@Enum({type: () => SiteConditionEnum, items: () => SiteConditionEnum, array: true})
+	conditions: SiteConditionEnum[];
+
+	@Enum(() => ReviewStatusEnum)
+	status: ReviewStatusEnum;
+
 	constructor(data: ReviewInput) {
 		this.description = data.description;
 		this.user = data.user;
 		this.pointOfInterest = data.pointOfInterest;
 		this.rating = data.rating;
+		this.difficulty = data.difficulty;
+		this.entranceCost = data.entranceCost;
+		this.conditions = data.conditions;
+		this.status = data.status;
 	}
 }
