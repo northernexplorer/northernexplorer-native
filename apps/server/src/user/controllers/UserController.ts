@@ -191,6 +191,15 @@ export class UserController extends BaseController {
 		};
 	}
 
+	async getAvatarDetails(params: Params<Route<'getAvatarDetails'>>, auth?: AuthContext): Promise<Response<Route<'getAvatarDetails'>>> {
+		const user = await this.repos.user.getByUsername(params.username.toLowerCase());
+
+		const subscription = await this.repos.subscription.getById(user.subscription.id);
+		const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
+
+		return {firstName: user.firstName, subscriptionLevelName: subscriptionLevel.name, username: user.username};
+	}
+
 	async getByUsername(params: Params<Route<'getByUsername'>>, auth?: AuthContext): Promise<Response<Route<'getByUsername'>>> {
 		const user = await this.repos.user.getByUsername(params.username.toLowerCase());
 		this.permissionService.canAccessProfile({targetId: user.id}, auth);
