@@ -1,35 +1,59 @@
-import React from 'react';
-import {View, Text, ScrollView, Image, Pressable, StyleSheet} from 'react-native';
-import {Link} from 'expo-router';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import React, {useState} from 'react';
+import {View, Text, ScrollView, StyleSheet} from 'react-native';
 import {ImageType} from '@northernexplorer/types';
+import {PhotoGridItem} from '~/location/PointOfInterestDetails/components/PhotoGridItem';
+import {PhotoPreviewModal} from '~/location/PointOfInterestDetails/components/PhotoPreviewModal';
 
 interface TopImagesWidgetProps {
 	data: ImageType[];
+	currentUserId?: string;
+	onDelete?: (imageId: string) => void;
 }
 
-export function TopImagesWidget({data}: TopImagesWidgetProps) {
+export function TopImagesWidget({data, currentUserId}: TopImagesWidgetProps) {
+	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+	const selectedImage = selectedIndex !== null ? data[selectedIndex] : null;
+
+	const handlePrevious = () => {
+		if (selectedIndex !== null && selectedIndex > 0) {
+			setSelectedIndex(selectedIndex - 1);
+		}
+	};
+
+	const handleNext = () => {
+		if (selectedIndex !== null && selectedIndex < data.length - 1) {
+			setSelectedIndex(selectedIndex + 1);
+		}
+	};
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.headerTitle}>Top Photos</Text>
 			<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-				{data.map(item => (
-					<Link key={item.id} href={`/media/image/${item.id}`} asChild>
-						<Pressable style={styles.card}>
-							<Image source={{uri: item.url}} style={styles.image} resizeMode="cover" />
-							<View style={styles.overlay}>
-								<View style={styles.likeBadge}>
-									<MaterialCommunityIcons name="heart" size={14} color="#FF4B4B" />
-									<Text style={styles.likeText}>{item.likes}</Text>
-								</View>
-								<Text style={styles.authorText} numberOfLines={1}>
-									by @{item.user.username}
-								</Text>
-							</View>
-						</Pressable>
-					</Link>
+				{data.map((item, index) => (
+					<View key={item.id} style={styles.itemWrapper}>
+						<PhotoGridItem
+							image={item}
+							isMine={Boolean(currentUserId && item.user.id === currentUserId)}
+							onSelect={() => setSelectedIndex(index)}
+						/>
+					</View>
 				))}
 			</ScrollView>
+
+			{selectedImage && selectedIndex !== null && (
+				<PhotoPreviewModal
+					selectedImageId={selectedImage.id}
+					selectedIndex={selectedIndex}
+					totalImages={data.length}
+					currentUserId={currentUserId}
+					isAdmin={false}
+					onClose={() => setSelectedIndex(null)}
+					onPrevious={handlePrevious}
+					onNext={handleNext}
+				/>
+			)}
 		</View>
 	);
 }
@@ -47,49 +71,7 @@ const styles = StyleSheet.create({
 	scrollContent: {
 		gap: 12,
 	},
-	card: {
-		width: 200,
-		height: 140,
-		borderRadius: 12,
-		overflow: 'hidden',
-		backgroundColor: 'rgba(255, 255, 255, 0.05)',
-		position: 'relative',
-	},
-	image: {
-		width: '100%',
-		height: '100%',
-	},
-	overlay: {
-		position: 'absolute',
-		bottom: 0,
-		left: 0,
-		right: 0,
-		padding: 8,
-		backgroundColor: 'rgba(0, 0, 0, 0.45)',
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-	},
-	likeBadge: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 4,
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
-		paddingHorizontal: 6,
-		paddingVertical: 2,
-		borderRadius: 8,
-	},
-	likeText: {
-		color: '#ffffff',
-		fontSize: 12,
-		fontWeight: '600',
-	},
-	authorText: {
-		color: 'rgba(255, 255, 255, 0.85)',
-		fontSize: 11,
-		fontWeight: '500',
-		flexShrink: 1,
-		textAlign: 'right',
-		marginLeft: 6,
+	itemWrapper: {
+		width: 140, // Fixed width container for horizontal scroll item sizing
 	},
 });

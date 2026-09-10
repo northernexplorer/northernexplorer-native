@@ -13,11 +13,11 @@ type PhotoPreviewModalProps = {
 	totalImages: number;
 	currentUserId?: string;
 	isAdmin?: boolean;
-	deletingImageId: string | null;
+	deletingImageId?: string | null;
 	onClose: () => void;
 	onPrevious: () => void;
 	onNext: () => void;
-	onDelete: (imageId: string) => void;
+	onDelete?: (imageId: string) => void;
 };
 
 export function PhotoPreviewModal({
@@ -54,7 +54,7 @@ export function PhotoPreviewModal({
 		);
 	}
 
-	const canManage = isAdmin || imageData.user.id === currentUserId;
+	const canManage = Boolean(onDelete) && (isAdmin || imageData.user.id === currentUserId);
 
 	const handleLikeToggle = async (e: GestureResponderEvent) => {
 		e.stopPropagation();
@@ -152,7 +152,7 @@ export function PhotoPreviewModal({
 								style={styles.modalDeleteButton}
 								onPress={e => {
 									e.stopPropagation();
-									onDelete(imageData.id);
+									onDelete?.(imageData.id);
 								}}
 								disabled={deletingImageId === imageData.id}
 							>
