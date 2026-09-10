@@ -1,11 +1,11 @@
 import React from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {getImageUrl} from '@northernexplorer/tools';
-import {ImageStatusEnum, ImageType} from '@northernexplorer/types';
+import {ImageStatusEnum, ImageType, PendingImageType} from '@northernexplorer/types';
 import {config} from '~/config';
 
 type PhotoGridItemProps = {
-	image: ImageType;
+	image: ImageType | PendingImageType;
 	isMine: boolean;
 	onSelect: () => void;
 };

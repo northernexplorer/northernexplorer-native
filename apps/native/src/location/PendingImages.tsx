@@ -1,16 +1,22 @@
-import React from 'react';
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {Redirect, useRouter} from 'expo-router';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import {Redirect} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {Spinner} from '@northernexplorer/tools';
 import {RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
+import {useApiMutation} from '~/core/useApiMutation';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {PhotoGridItem} from '~/location/PointOfInterestDetails/components/PhotoGridItem';
+import {PhotoPreviewModal} from '~/location/PointOfInterestDetails/components/PhotoPreviewModal';
 
 export function PendingImages() {
-	const router = useRouter();
 	const authentication = useAuthentication();
-	const {data: images, loading} = useApiFetch('location', 'ImageController', 'getPendingImages', {});
+	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
+
+	const {data: images, loading, refetch} = useApiFetch('location', 'ImageController', 'getPendingImages', {});
+	const {mutate: deleteMutation} = useApiMutation('location', 'ImageController', 'rejectImage');
 
 	if (!authentication) return <Redirect href="/profile/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
@@ -25,26 +31,47 @@ export function PendingImages() {
 		);
 	}
 
+	const currentUserId = authentication.userId;
+	const isAdmin = authentication.roles.includes(RolesEnum.Admin);
+	const selectedImage = selectedImageIndex !== null ? images[selectedImageIndex] : null;
+
+	const handleDeleteImage = async (imageId: string) => {
+		setDeletingImageId(imageId);
+		try {
+			await deleteMutation({id: imageId});
+			await refetch();
+			if (selectedImageIndex !== null) {
+				if (images.length <= 1) {
+					setSelectedImageIndex(null);
+				} else if (selectedImageIndex >= images.length - 1) {
+					setSelectedImageIndex(images.length - 2);
+				}
+			}
+		} finally {
+			setDeletingImageId(null);
+		}
+	};
+
 	return (
 		<View style={styles.grid}>
-			{images.map(image => (
-				<Pressable
-					key={image.id}
-					style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
-					onPress={() => router.push(`/admin/pending-images/${image.id}`)}
-				>
-					<Image source={{uri: image.url}} style={styles.image} resizeMode="cover" />
-
-					<View style={styles.cardOverlay}>
-						<Text style={styles.poiName} numberOfLines={1}>
-							{image.pointOfInterest.name}
-						</Text>
-						<Text style={styles.userName} numberOfLines={1}>
-							By {image.user.username || `${image.user.firstName} ${image.user.lastName}`.trim() || 'Anonymous'}
-						</Text>
-					</View>
-				</Pressable>
+			{images.map((image, index) => (
+				<PhotoGridItem key={image.id} image={image} isMine={image.user.id === currentUserId} onSelect={() => setSelectedImageIndex(index)} />
 			))}
+
+			{selectedImage && selectedImageIndex !== null && (
+				<PhotoPreviewModal
+					selectedImageId={selectedImage.id}
+					selectedIndex={selectedImageIndex}
+					totalImages={images.length}
+					currentUserId={currentUserId}
+					isAdmin={isAdmin}
+					deletingImageId={deletingImageId}
+					onClose={() => setSelectedImageIndex(null)}
+					onPrevious={() => setSelectedImageIndex(prev => (prev !== null && prev > 0 ? prev - 1 : prev))}
+					onNext={() => setSelectedImageIndex(prev => (prev !== null && prev < images.length - 1 ? prev + 1 : prev))}
+					onDelete={handleDeleteImage}
+				/>
+			)}
 		</View>
 	);
 }
@@ -53,42 +80,8 @@ const styles = StyleSheet.create({
 	grid: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: 16,
+		gap: 12,
 		paddingBottom: 24,
-	},
-	card: {
-		width: '47%',
-		aspectRatio: 1,
-		backgroundColor: '#1a1a1a',
-		borderRadius: 12,
-		overflow: 'hidden',
-		position: 'relative',
-	},
-	cardPressed: {
-		opacity: 0.8,
-		transform: [{scale: 0.98}],
-	},
-	image: {
-		width: '100%',
-		height: '100%',
-	},
-	cardOverlay: {
-		position: 'absolute',
-		bottom: 0,
-		left: 0,
-		right: 0,
-		backgroundColor: 'rgba(0, 0, 0, 0.65)',
-		padding: 8,
-	},
-	poiName: {
-		fontSize: 13,
-		fontWeight: '600',
-		color: '#ffffff',
-	},
-	userName: {
-		fontSize: 11,
-		color: '#d1d5db',
-		marginTop: 2,
 	},
 	emptyContainer: {
 		flex: 1,
