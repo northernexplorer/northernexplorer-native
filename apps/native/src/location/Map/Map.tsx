@@ -28,6 +28,7 @@ export function Map() {
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
 	const [zoom, setZoom] = useState(initialZoom);
 	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
+	const [userMarker, setUserMarker] = useState(false);
 
 	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number}>({
 		lat: initialLat,
@@ -102,6 +103,7 @@ export function Map() {
 				onRegionDidChange={onRegionDidChange}
 				onPress={() => {
 					if (selectedSite) setSelectedSite(null);
+					if (userMarker) setUserMarker(false);
 				}}
 			>
 				<Camera ref={cameraRef} zoom={initialZoom} center={[initialLon, initialLat]} />
@@ -180,6 +182,35 @@ export function Map() {
 							<View style={styles.popupArrow} />
 						</View>
 					</Marker>
+				)}
+
+				{coords && (
+					<>
+						<Marker
+							onPress={e => {
+								e.stopPropagation();
+								setUserMarker(prev => !prev);
+								setSelectedSite(null);
+							}}
+							lngLat={[coords.lon, coords.lat]}
+							anchor="bottom"
+						>
+							<View style={styles.locationPin}>
+								<View style={styles.locationPinCenter} />
+							</View>
+						</Marker>
+
+						{userMarker && (
+							<Marker lngLat={[coords.lon, coords.lat]} anchor="bottom" offset={[0, -45]}>
+								<View style={styles.popupContainer}>
+									<Text style={styles.popupTitle}>Your Location</Text>
+									<Text style={styles.popupDescription}>{coords.lat}</Text>
+									<Text style={styles.popupDescription}>{coords.lon}</Text>
+									<View style={styles.popupArrow} />
+								</View>
+							</Marker>
+						)}
+					</>
 				)}
 			</NativeMap>
 		</View>
@@ -262,5 +293,21 @@ const styles = StyleSheet.create({
 		color: '#fff',
 		fontWeight: '700',
 		fontSize: 16,
+	},
+	locationPin: {
+		width: 32,
+		height: 32,
+		backgroundColor: '#0088cc',
+		borderRadius: 18,
+		borderBottomLeftRadius: 4,
+		transform: [{rotate: '-45deg'}],
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	locationPinCenter: {
+		width: 12,
+		height: 12,
+		backgroundColor: '#fff',
+		borderRadius: 6,
 	},
 });
