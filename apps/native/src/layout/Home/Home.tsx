@@ -28,8 +28,7 @@ export function Home() {
 		coords ? {lat: coords.lat, lon: coords.lon, limit: 5} : null,
 	);
 
-	const {data: topImagesData} = useApiFetch('location', 'ImageController', 'topFiveImages', {});
-
+	const {data: topImagesData} = useApiFetch('location', 'ImageController', 'topImages', {});
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
 	const isCoreReady = !!weather && !!lunar && !!fieldNote;
@@ -83,7 +82,7 @@ export function Home() {
 				</View>
 			</View>
 
-			{/* Top Images Widget */}
+			{/* Top Images Gallery Widget */}
 			{topImagesData && topImagesData.length > 0 && <TopImagesWidget data={topImagesData} />}
 
 			{/* Points of Interest Section */}

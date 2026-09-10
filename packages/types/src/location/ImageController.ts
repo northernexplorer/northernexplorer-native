@@ -99,7 +99,7 @@ export const ImageController = {
 			total: number;
 		},
 	},
-	topFiveImages: {
+	topImages: {
 		params: {},
 		response: null as unknown as ImageType[],
 	},

@@ -1,10 +1,10 @@
 import path from 'node:path';
 import {ImageStatusEnum} from '@northernexplorer/types';
+import {sql} from '@mikro-orm/core';
 import {BaseRepository} from '../../core/BaseRepository';
 import {Image} from '../../location';
 import {config} from '../../config';
 import {User} from '../../user';
-import {sql} from '@mikro-orm/core';
 
 export class ImageRepository extends BaseRepository<Image> {
 	async getById(id: string) {
@@ -29,7 +29,7 @@ export class ImageRepository extends BaseRepository<Image> {
 		return this.findOne({hash, user});
 	}
 
-	async topFiveImages() {
+	async topImages() {
 		const thirtyDaysAgo = new Date();
 		thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -43,7 +43,7 @@ export class ImageRepository extends BaseRepository<Image> {
        WHERE i.status = ${status} AND i.created_at >= ${thirtyDaysAgo}
        GROUP BY i.id
        ORDER BY COUNT(l.id) DESC
-       LIMIT 5
+       LIMIT 6
     `);
 
 		if (rows.length === 0) {
@@ -56,5 +56,6 @@ export class ImageRepository extends BaseRepository<Image> {
 
 		await this.getEntityManager().populate(entities, ['user', 'pointOfInterest', 'likes']);
 
-		return ids.map(id => entities.find(e => e.id === id)).filter((e): e is Image => e !== undefined);	}
+		return ids.map(id => entities.find(e => e.id === id)).filter((e): e is Image => e !== undefined);
+	}
 }

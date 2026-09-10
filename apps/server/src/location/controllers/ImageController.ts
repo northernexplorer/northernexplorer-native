@@ -18,8 +18,8 @@ export class ImageController extends BaseController {
 		super(repos);
 	}
 
-	async topFiveImages(): Promise<Response<Route<'topFiveImages'>>> {
-		const images = await this.repos.image.topFiveImages();
+	async topImages(): Promise<Response<Route<'topImages'>>> {
+		const images = await this.repos.image.topImages();
 
 		return images.map(image => ({
 			...image,

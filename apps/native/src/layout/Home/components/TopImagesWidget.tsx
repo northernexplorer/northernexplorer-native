@@ -1,16 +1,15 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import {ImageType} from '@northernexplorer/types';
 import {PhotoGridItem} from '~/location/PointOfInterestDetails/components/PhotoGridItem';
 import {PhotoPreviewModal} from '~/location/PointOfInterestDetails/components/PhotoPreviewModal';
 
 interface TopImagesWidgetProps {
 	data: ImageType[];
-	currentUserId?: string;
 	onDelete?: (imageId: string) => void;
 }
 
-export function TopImagesWidget({data, currentUserId}: TopImagesWidgetProps) {
+export function TopImagesWidget({data}: TopImagesWidgetProps) {
 	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
 	const selectedImage = selectedIndex !== null ? data[selectedIndex] : null;
@@ -29,18 +28,14 @@ export function TopImagesWidget({data, currentUserId}: TopImagesWidgetProps) {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.headerTitle}>Top Photos</Text>
-			<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-				{data.map((item, index) => (
-					<View key={item.id} style={styles.itemWrapper}>
-						<PhotoGridItem
-							image={item}
-							isMine={Boolean(currentUserId && item.user.id === currentUserId)}
-							onSelect={() => setSelectedIndex(index)}
-						/>
+			<Text style={styles.headerTitle}>Featured Gallery</Text>
+			<View style={styles.galleryGrid}>
+				{data.slice(0, 6).map((item, index) => (
+					<View key={item.id} style={styles.gridItemWrapper}>
+						<PhotoGridItem image={item} isMine={false} onSelect={() => setSelectedIndex(index)} />
 					</View>
 				))}
-			</ScrollView>
+			</View>
 
 			{selectedImage && selectedIndex !== null && (
 				<PhotoPreviewModal
@@ -60,18 +55,25 @@ export function TopImagesWidget({data, currentUserId}: TopImagesWidgetProps) {
 
 const styles = StyleSheet.create({
 	container: {
-		marginTop: 20,
+		marginTop: 24,
+		marginBottom: 12,
 	},
 	headerTitle: {
 		color: '#ffffff',
-		fontSize: 18,
+		fontSize: 20,
 		fontWeight: '700',
-		marginBottom: 12,
+		marginBottom: 14,
+		letterSpacing: 0.3,
 	},
-	scrollContent: {
+	galleryGrid: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
 		gap: 12,
 	},
-	itemWrapper: {
-		width: 140, // Fixed width container for horizontal scroll item sizing
+	gridItemWrapper: {
+		width: '48.2%', // Two equal columns with gap calculation
+		aspectRatio: 1.1, // Gives images a larger, open visual frame
+		borderRadius: 12,
+		overflow: 'hidden',
 	},
 });
