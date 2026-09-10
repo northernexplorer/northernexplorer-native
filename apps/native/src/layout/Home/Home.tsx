@@ -80,10 +80,10 @@ export function Home() {
 						<FieldNoteWidget data={fieldNote} />
 					</View>
 				</View>
-			</View>
 
-			{/* Top Images Gallery Widget */}
-			{topImagesData && topImagesData.length > 0 && <TopImagesWidget data={topImagesData} />}
+				{/* Top Images Gallery Widget */}
+				{topImagesData && topImagesData.length > 0 && <TopImagesWidget data={topImagesData} />}
+			</View>
 
 			{/* Points of Interest Section */}
 			<Text style={styles.exploreHeader}>Start Exploring...</Text>

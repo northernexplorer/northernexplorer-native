@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Image, Pressable, LayoutChangeEvent} from 'react-native';
 import {ImageType} from '@northernexplorer/types';
-import {PhotoGridItem} from '~/location/PointOfInterestDetails/components/PhotoGridItem';
+import {formatName, getImageUrl} from '@northernexplorer/tools';
+import {config} from '~/config';
 import {PhotoPreviewModal} from '~/location/PointOfInterestDetails/components/PhotoPreviewModal';
 
 interface TopImagesWidgetProps {
@@ -11,6 +12,7 @@ interface TopImagesWidgetProps {
 
 export function TopImagesWidget({data}: TopImagesWidgetProps) {
 	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+	const [tileSize, setTileSize] = useState<number>(0);
 
 	const selectedImage = selectedIndex !== null ? data[selectedIndex] : null;
 
@@ -26,15 +28,52 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 		}
 	};
 
+	const handleLayout = (event: LayoutChangeEvent) => {
+		const {width} = event.nativeEvent.layout;
+		if (width > 0) {
+			const availableWidth = width - 24 - 12;
+			setTileSize(Math.floor(availableWidth / 3));
+		}
+	};
+
 	return (
-		<View style={styles.container}>
-			<Text style={styles.headerTitle}>Featured Gallery</Text>
+		<View style={styles.container} onLayout={handleLayout}>
 			<View style={styles.galleryGrid}>
-				{data.slice(0, 6).map((item, index) => (
-					<View key={item.id} style={styles.gridItemWrapper}>
-						<PhotoGridItem image={item} isMine={false} onSelect={() => setSelectedIndex(index)} />
-					</View>
-				))}
+				{data.slice(0, 6).map((item, index) => {
+					const imageUri = getImageUrl({
+						path: item.url,
+						cdn: config.CONTENT_DELIVERY_NETWORK,
+					});
+
+					const authorName = item.user ? formatName(item.user) : null;
+					const locationName = item.pointOfInterest?.name;
+
+					return (
+						<Pressable
+							key={item.id}
+							style={[styles.gridItem, tileSize > 0 ? {width: tileSize, height: tileSize} : {width: '31.5%', aspectRatio: 1}]}
+							onPress={() => setSelectedIndex(index)}
+						>
+							<Image source={{uri: imageUri}} style={styles.thumbnail} resizeMode="cover" />
+
+							{locationName && (
+								<View style={styles.gridLocationBadge}>
+									<Text style={styles.gridBadgeText} numberOfLines={1}>
+										{locationName}
+									</Text>
+								</View>
+							)}
+
+							{authorName && (
+								<View style={styles.gridAuthorBadge}>
+									<Text style={styles.gridBadgeText} numberOfLines={1}>
+										{authorName}
+									</Text>
+								</View>
+							)}
+						</Pressable>
+					);
+				})}
 			</View>
 
 			{selectedImage && selectedIndex !== null && (
@@ -54,25 +93,56 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 
 const styles = StyleSheet.create({
 	container: {
-		marginTop: 24,
-		marginBottom: 12,
-	},
-	headerTitle: {
-		color: '#ffffff',
-		fontSize: 20,
-		fontWeight: '700',
-		marginBottom: 14,
-		letterSpacing: 0.3,
+		width: '100%',
+		padding: 12,
+		backgroundColor: 'rgba(255, 255, 255, 0.08)',
+		borderColor: 'rgba(255, 255, 255, 0.12)',
+		borderWidth: 1,
+		borderRadius: 16,
 	},
 	galleryGrid: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: 12,
+		gap: 6,
 	},
-	gridItemWrapper: {
-		width: '48.2%', // Two equal columns with gap calculation
-		aspectRatio: 1.1, // Gives images a larger, open visual frame
-		borderRadius: 12,
+	gridItem: {
+		borderRadius: 8,
 		overflow: 'hidden',
+		position: 'relative',
+		backgroundColor: '#f1f5f9',
+		borderWidth: 1,
+		borderColor: '#cbd5e1',
+	},
+	thumbnail: {
+		width: '100%',
+		height: '100%',
+	},
+	gridLocationBadge: {
+		position: 'absolute',
+		top: 4,
+		left: 4,
+		alignSelf: 'flex-start',
+		maxWidth: '85%',
+		backgroundColor: '#0284c7',
+		paddingHorizontal: 6,
+		paddingVertical: 2,
+		borderRadius: 4,
+	},
+	gridAuthorBadge: {
+		position: 'absolute',
+		bottom: 4,
+		left: 4,
+		alignSelf: 'flex-start',
+		maxWidth: '85%',
+		backgroundColor: 'rgba(15, 23, 42, 0.85)',
+		paddingHorizontal: 6,
+		paddingVertical: 2,
+		borderRadius: 4,
+	},
+	gridBadgeText: {
+		color: '#ffffff',
+		fontSize: 9,
+		fontWeight: '700',
+		textTransform: 'uppercase',
 	},
 });
