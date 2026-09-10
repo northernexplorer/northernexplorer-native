@@ -14,9 +14,11 @@ export function PendingImages() {
 	const authentication = useAuthentication();
 	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
+	const [approvingImageId, setApprovingImageId] = useState<string | null>(null);
 
 	const {data: images, loading, refetch} = useApiFetch('location', 'ImageController', 'getPendingImages', {});
-	const {mutate: deleteMutation} = useApiMutation('location', 'ImageController', 'rejectImage');
+	const {mutate: approveMutation} = useApiMutation('location', 'ImageController', 'approveImage');
+	const {mutate: rejectMutation} = useApiMutation('location', 'ImageController', 'rejectImage');
 
 	if (!authentication) return <Redirect href="/profile/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
@@ -35,18 +37,33 @@ export function PendingImages() {
 	const isAdmin = authentication.roles.includes(RolesEnum.Admin);
 	const selectedImage = selectedImageIndex !== null ? images[selectedImageIndex] : null;
 
-	const handleDeleteImage = async (imageId: string) => {
+	const handleNextOrCloseIndex = () => {
+		if (selectedImageIndex !== null) {
+			if (images.length <= 1) {
+				setSelectedImageIndex(null);
+			} else if (selectedImageIndex >= images.length - 1) {
+				setSelectedImageIndex(images.length - 2);
+			}
+		}
+	};
+
+	const handleApproveImage = async (imageId: string) => {
+		setApprovingImageId(imageId);
+		try {
+			await approveMutation({id: imageId});
+			await refetch();
+			handleNextOrCloseIndex();
+		} finally {
+			setApprovingImageId(null);
+		}
+	};
+
+	const handleRejectImage = async (imageId: string) => {
 		setDeletingImageId(imageId);
 		try {
-			await deleteMutation({id: imageId});
+			await rejectMutation({id: imageId});
 			await refetch();
-			if (selectedImageIndex !== null) {
-				if (images.length <= 1) {
-					setSelectedImageIndex(null);
-				} else if (selectedImageIndex >= images.length - 1) {
-					setSelectedImageIndex(images.length - 2);
-				}
-			}
+			handleNextOrCloseIndex();
 		} finally {
 			setDeletingImageId(null);
 		}
@@ -66,10 +83,13 @@ export function PendingImages() {
 					currentUserId={currentUserId}
 					isAdmin={isAdmin}
 					deletingImageId={deletingImageId}
+					approvingImageId={approvingImageId}
 					onClose={() => setSelectedImageIndex(null)}
 					onPrevious={() => setSelectedImageIndex(prev => (prev !== null && prev > 0 ? prev - 1 : prev))}
 					onNext={() => setSelectedImageIndex(prev => (prev !== null && prev < images.length - 1 ? prev + 1 : prev))}
-					onDelete={handleDeleteImage}
+					onDelete={handleRejectImage}
+					onApprove={handleApproveImage}
+					onReject={handleRejectImage}
 				/>
 			)}
 		</View>
