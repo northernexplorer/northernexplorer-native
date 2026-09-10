@@ -166,7 +166,17 @@ export function Map() {
 								)}
 
 								<h3 style={styles.popupTitle}>{selectedSite.name}</h3>
-								<p style={styles.popupDescription}>{selectedSite.description}</p>
+								<p
+									style={{
+										...styles.popupDescription,
+										display: '-webkit-box',
+										WebkitLineClamp: 6,
+										WebkitBoxOrient: 'vertical',
+										overflow: 'hidden',
+									}}
+								>
+									{selectedSite.description}
+								</p>
 							</Link>
 
 							<div style={styles.popupArrow} />
