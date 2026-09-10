@@ -42,7 +42,6 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 					selectedImageId={selectedImage.id}
 					selectedIndex={selectedIndex}
 					totalImages={data.length}
-					currentUserId={currentUserId}
 					isAdmin={false}
 					onClose={() => setSelectedIndex(null)}
 					onPrevious={handlePrevious}
