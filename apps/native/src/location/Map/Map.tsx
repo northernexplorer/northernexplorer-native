@@ -172,7 +172,9 @@ export function Map() {
 
 							<View style={styles.popupContent}>
 								<Text style={styles.popupTitle}>{selectedSite.name}</Text>
-								<Text style={styles.popupDescription}>{selectedSite.description}</Text>
+								<Text style={styles.popupDescription} numberOfLines={6} ellipsizeMode="tail">
+									{selectedSite.description}
+								</Text>
 							</View>
 
 							<View style={styles.popupArrow} />
