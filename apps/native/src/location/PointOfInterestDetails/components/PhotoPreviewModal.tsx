@@ -6,6 +6,7 @@ import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
+import {alertStore} from '~/core/alertStore';
 
 type PhotoPreviewModalProps = {
 	selectedImageId: string;
@@ -77,6 +78,62 @@ export function PhotoPreviewModal({
 			await likeMutation({id: imageData.id});
 		}
 		await Promise.all([refetchLikeState(), refetchImage()]);
+	};
+
+	const handleApprove = (e: GestureResponderEvent) => {
+		e.stopPropagation();
+		if (!onApprove) return;
+
+		alertStore.showAlert({
+			title: 'Approve Image',
+			message: 'Are you sure you want to approve this image for public display?',
+			type: 'warning',
+			buttons: [
+				{text: 'Cancel', style: 'cancel'},
+				{
+					text: 'Approve',
+					style: 'default',
+					onPress: () => onApprove(imageData.id),
+				},
+			],
+		});
+	};
+
+	const handleReject = (e: GestureResponderEvent) => {
+		e.stopPropagation();
+		if (!onReject) return;
+
+		alertStore.showAlert({
+			title: 'Reject Image',
+			message: 'Are you sure you want to reject this image?',
+			type: 'warning',
+			buttons: [
+				{text: 'Cancel', style: 'cancel'},
+				{
+					text: 'Reject',
+					style: 'destructive',
+					onPress: () => onReject(imageData.id),
+				},
+			],
+		});
+	};
+
+	const handleDelete = (e: GestureResponderEvent) => {
+		e.stopPropagation();
+
+		alertStore.showAlert({
+			title: 'Delete Photo',
+			message: 'Are you sure you want to delete this photo? This action cannot be undone.',
+			type: 'warning',
+			buttons: [
+				{text: 'Cancel', style: 'cancel'},
+				{
+					text: 'Delete',
+					style: 'destructive',
+					onPress: () => onDelete(imageData.id),
+				},
+			],
+		});
 	};
 
 	return (
@@ -152,10 +209,7 @@ export function PhotoPreviewModal({
 						{isAdmin && onApprove && (
 							<Pressable
 								style={[styles.actionButton, styles.approveButton]}
-								onPress={e => {
-									e.stopPropagation();
-									onApprove(imageData.id);
-								}}
+								onPress={handleApprove}
 								disabled={isApproving || isDeleting}
 							>
 								{isApproving ? (
@@ -170,14 +224,7 @@ export function PhotoPreviewModal({
 						)}
 
 						{isAdmin && onReject && (
-							<Pressable
-								style={[styles.actionButton, styles.rejectButton]}
-								onPress={e => {
-									e.stopPropagation();
-									onReject(imageData.id);
-								}}
-								disabled={isApproving || isDeleting}
-							>
+							<Pressable style={[styles.actionButton, styles.rejectButton]} onPress={handleReject} disabled={isApproving || isDeleting}>
 								{isDeleting ? (
 									<ActivityIndicator size="small" color="#ffffff" />
 								) : (
@@ -197,16 +244,9 @@ export function PhotoPreviewModal({
 							</Pressable>
 						)}
 
-						{/* Standard Delete Button */}
-						{canManage && (
-							<Pressable
-								style={styles.modalDeleteButton}
-								onPress={e => {
-									e.stopPropagation();
-									onDelete(imageData.id);
-								}}
-								disabled={isDeleting || isApproving}
-							>
+						{/* Standard Delete Button (When not using dedicated reject) */}
+						{canManage && !onReject && (
+							<Pressable style={styles.modalDeleteButton} onPress={handleDelete} disabled={isDeleting || isApproving}>
 								{isDeleting ? (
 									<ActivityIndicator size="small" color="#ef4444" />
 								) : (
