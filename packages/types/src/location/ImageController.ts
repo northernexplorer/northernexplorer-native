@@ -1,5 +1,5 @@
 import {UserSummary} from '../user';
-import {PointOfInterestType} from './PointOfInterestController';
+import {PointOfInterestSummary} from './PointOfInterestController';
 
 export enum ImageStatusEnum {
 	Pending = 'Pending',
@@ -23,7 +23,7 @@ export interface ImageType {
 	likes: number;
 	altText?: string;
 	processed: boolean;
-	pointOfInterest?: PointOfInterestType | string;
+	pointOfInterest?: PointOfInterestSummary;
 	user: UserSummary;
 	createdAt: string | Date;
 	status: ImageStatusEnum;
@@ -98,5 +98,9 @@ export const ImageController = {
 			images: ImageType[];
 			total: number;
 		},
+	},
+	topFiveImages: {
+		params: {},
+		response: null as unknown as ImageType[],
 	},
 };

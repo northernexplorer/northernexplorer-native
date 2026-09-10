@@ -5,14 +5,15 @@ import {LunarWidget} from './components/LunarWidget';
 import {FieldNoteWidget} from './components/FieldNoteWidget';
 import {CompassWidget} from '~/layout/Home/components/CompassWidget';
 import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
+import {TopImagesWidget} from '~/layout/Home/components/TopImagesWidget';
+import {FlashlightWidget} from '~/layout/Home/components/FlashlightWidget';
+import {SignalWidget} from '~/layout/Home/components/SignalWidget';
 import {useWeather} from '~/environment/state/weather/useWeather';
 import {useLunar} from '~/environment/state/lunar/useLunar';
 import {useFieldNote} from '~/environment/state/fieldNote/useFieldNote';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {styles} from '~/layout/Home/styles';
-import {FlashlightWidget} from '~/layout/Home/components/FlashlightWidget';
-import {SignalWidget} from '~/layout/Home/components/SignalWidget';
 
 export function Home() {
 	const weather = useWeather();
@@ -26,6 +27,8 @@ export function Home() {
 		'getNearbyPointOfInterests',
 		coords ? {lat: coords.lat, lon: coords.lon, limit: 5} : null,
 	);
+
+	const {data: topImagesData} = useApiFetch('location', 'ImageController', 'topFiveImages', {});
 
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
@@ -72,6 +75,7 @@ export function Home() {
 						</View>
 					)}
 				</View>
+
 				<View style={styles.heroRow}>
 					<View style={styles.fieldNote}>
 						<FieldNoteWidget data={fieldNote} />
@@ -79,6 +83,10 @@ export function Home() {
 				</View>
 			</View>
 
+			{/* Top Images Widget */}
+			{topImagesData && topImagesData.length > 0 && <TopImagesWidget data={topImagesData} />}
+
+			{/* Points of Interest Section */}
 			<Text style={styles.exploreHeader}>Start Exploring...</Text>
 			<View style={styles.pointOfInterestsSection}>
 				{!pointOfInterestData ? (
