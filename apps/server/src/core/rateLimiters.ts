@@ -1,7 +1,7 @@
 import rateLimit from 'express-rate-limit';
 
 export const globalLimiter = rateLimit({
-	windowMs: 5 * 60 * 1000,
+	windowMs: 2 * 60 * 1000, // 2 Minutes
 	max: 150,
 	standardHeaders: true,
 	legacyHeaders: false,
@@ -13,7 +13,7 @@ export const strictAuthLimiter = rateLimit({
 	max: 10,
 	standardHeaders: true,
 	legacyHeaders: false,
-	message: {error: 'Too many login attempts, please try again later.'},
+	message: {error: 'Too many attempts, please try again later.'},
 });
 
 export const STRICT_ROUTES: Record<string, string[] | undefined> = {
