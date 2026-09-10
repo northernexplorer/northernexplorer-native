@@ -191,7 +191,7 @@ export class UserController extends BaseController {
 		};
 	}
 
-	async getAvatarDetails(params: Params<Route<'getAvatarDetails'>>, auth?: AuthContext): Promise<Response<Route<'getAvatarDetails'>>> {
+	async getAvatarDetails(params: Params<Route<'getAvatarDetails'>>): Promise<Response<Route<'getAvatarDetails'>>> {
 		const user = await this.repos.user.getByUsername(params.username.toLowerCase());
 
 		const subscription = await this.repos.subscription.getById(user.subscription.id);
