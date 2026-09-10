@@ -199,11 +199,12 @@ export function Map() {
 						</Marker>
 
 						{userMarker && (
-							<Marker lngLat={[coords.lon, coords.lat]} anchor="bottom" offset={[0, -40]}>
+							<Marker lngLat={[coords.lon, coords.lat]} anchor="bottom" offset={[0, -45]}>
 								<View style={styles.popupContainer}>
 									<Text style={styles.popupTitle}>Your Location</Text>
 									<Text style={styles.popupDescription}>{coords.lat}</Text>
 									<Text style={styles.popupDescription}>{coords.lon}</Text>
+									<View style={styles.popupArrow} />
 								</View>
 							</Marker>
 						)}
