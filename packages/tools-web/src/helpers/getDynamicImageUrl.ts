@@ -9,20 +9,20 @@ export function getDynamicImageUrl({
 	size: 'large' | 'thumbnail';
 	processed: boolean;
 }): string {
-	// 1. If it's already a full network URL, return as-is
+	// Return network URLs as-is
 	if (path.startsWith('http://') || path.startsWith('https://')) {
 		return path;
 	}
 
-	// 2. Clean leading and trailing slash formatting
-	const cleanCdn = cdn.replace(/\/+$/, '');
-	let cleanPath = path.replace(/^\/+/, '');
+	// Trim slashes using string methods
+	const cleanCdn = cdn.endsWith('/') ? cdn.replace(/\/+$/g, '') : cdn;
+	const cleanPath = path.startsWith('/') ? path.replace(/^\/+/g, '') : path;
 
-	// 3. If image is processed and a size variant is requested, convert path to variant key
+	// Swap extension for size variant if processed
 	if (processed) {
-		// Strip existing extension (e.g., "uploads/images/file.png" -> "uploads/images/file")
-		const basePath = cleanPath.replace(/\.[^/.]+$/, '');
-		cleanPath = `${basePath}_${size}.jpg`;
+		const extIndex = cleanPath.lastIndexOf('.');
+		const basePath = extIndex !== -1 ? cleanPath.slice(0, extIndex) : cleanPath;
+		return `${cleanCdn}/${basePath}_${size}.jpg`;
 	}
 
 	return `${cleanCdn}/${cleanPath}`;
