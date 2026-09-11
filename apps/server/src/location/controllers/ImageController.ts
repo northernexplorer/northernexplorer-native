@@ -18,6 +18,32 @@ export class ImageController extends BaseController {
 		super(repos);
 	}
 
+	async topImages(): Promise<Response<Route<'topImages'>>> {
+		const images = await this.repos.image.topImages();
+
+		return images.map(image => ({
+			...image,
+			likes: image.likes.length,
+			user: {
+				id: image.user.id,
+				username: image.user.username,
+				firstName: image.user.firstName,
+				lastName: image.user.lastName,
+				score: image.user.score,
+			},
+			pointOfInterest: {
+				id: image.pointOfInterest.id,
+				name: image.pointOfInterest.name,
+				description: image.pointOfInterest.description,
+				image: image.pointOfInterest.image,
+				lat: image.pointOfInterest.lat,
+				lon: image.pointOfInterest.lon,
+				country: image.pointOfInterest.country,
+				region: image.pointOfInterest.region,
+			},
+		}));
+	}
+
 	async upload(params: Params<Route<'upload'>>, auth?: AuthContext): Promise<Response<Route<'upload'>>> {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 

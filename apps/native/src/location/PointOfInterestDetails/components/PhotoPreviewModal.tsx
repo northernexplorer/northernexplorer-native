@@ -14,12 +14,12 @@ type PhotoPreviewModalProps = {
 	totalImages: number;
 	currentUserId?: string;
 	isAdmin?: boolean;
-	deletingImageId: string | null;
+	deletingImageId?: string | null;
 	approvingImageId?: string | null;
 	onClose: () => void;
 	onPrevious: () => void;
 	onNext: () => void;
-	onDelete: (imageId: string) => void;
+	onDelete?: (imageId: string) => void;
 	onApprove?: (imageId: string) => void;
 	onReject?: (imageId: string) => void;
 };
@@ -61,7 +61,7 @@ export function PhotoPreviewModal({
 		);
 	}
 
-	const canManage = isAdmin || imageData.user.id === currentUserId;
+	const canManage = Boolean(onDelete) && (isAdmin || imageData.user.id === currentUserId);
 	const isDeleting = deletingImageId === imageData.id;
 	const isApproving = approvingImageId === imageData.id;
 
@@ -130,7 +130,7 @@ export function PhotoPreviewModal({
 				{
 					text: 'Delete',
 					style: 'destructive',
-					onPress: () => onDelete(imageData.id),
+					onPress: () => onDelete && onDelete(imageData.id),
 				},
 			],
 		});
