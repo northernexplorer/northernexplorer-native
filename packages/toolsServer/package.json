@@ -1,0 +1,28 @@
+{
+	"name": "@northernexplorer/tools-server",
+	"version": "1.0.0",
+	"private": true,
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"peerDependencies": {
+		"@expo/vector-icons": "*",
+		"react": "*",
+		"react-native": "*",
+		"react-native-safe-area-context": "*"
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist node_modules/.cache",
+		"test:deps": "depcheck --specials=typescript"
+	},
+	"dependencies": {
+		"@northernexplorer/types": "*",
+		"expo-image-picker": "^57.0.16"
+	},
+	"devDependencies": {
+		"@types/node": "^22.20.2"
+	}
+}

@@ -2237,9 +2237,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@northernexplorer/tools@npm:*, @northernexplorer/tools@workspace:packages/tools":
+"@northernexplorer/tools-server@npm:*, @northernexplorer/tools-server@workspace:packages/toolsServer":
   version: 0.0.0-use.local
-  resolution: "@northernexplorer/tools@workspace:packages/tools"
+  resolution: "@northernexplorer/tools-server@workspace:packages/toolsServer"
+  dependencies:
+    "@northernexplorer/types": "npm:*"
+    "@types/node": "npm:^22.20.2"
+    expo-image-picker: "npm:^57.0.16"
+  peerDependencies:
+    "@expo/vector-icons": "*"
+    react: "*"
+    react-native: "*"
+    react-native-safe-area-context: "*"
+  languageName: unknown
+  linkType: soft
+
+"@northernexplorer/tools-web@npm:*, @northernexplorer/tools-web@workspace:packages/toolsWeb":
+  version: 0.0.0-use.local
+  resolution: "@northernexplorer/tools-web@workspace:packages/toolsWeb"
   dependencies:
     "@northernexplorer/types": "npm:*"
     "@types/node": "npm:^22.20.2"
@@ -8738,7 +8753,7 @@ __metadata:
   dependencies:
     "@expo/vector-icons": "npm:^15.0.2"
     "@maplibre/maplibre-react-native": "npm:^11.3.9"
-    "@northernexplorer/tools": "npm:*"
+    "@northernexplorer/tools-web": "npm:*"
     "@northernexplorer/types": "npm:*"
     "@react-native-async-storage/async-storage": "npm:2.2.0"
     "@react-native-community/netinfo": "npm:12.0.1"
@@ -8779,6 +8794,7 @@ __metadata:
     "@mikro-orm/core": "npm:^7.1.15"
     "@mikro-orm/decorators": "npm:^7.1.15"
     "@mikro-orm/postgresql": "npm:^7.1.15"
+    "@northernexplorer/tools-server": "npm:*"
     "@northernexplorer/types": "npm:*"
     "@types/cors": "npm:^2.8.17"
     "@types/express": "npm:^4.17.21"
