@@ -1,18 +1,24 @@
 import {createHash} from 'node:crypto';
 import {ImageStatusEnum, ImageUploadStatus, Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {SpacesManagementService} from '@northernexplorer/tools';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 import {Image} from '../entities/Image';
-import {SpacesManagementService} from '../../../../../packages/tools/src/services/SpacesManagementService';
 import {ImageLike} from '../entities/ImageLike';
+import {config} from '../../config';
 
 type Route<M extends keyof ROUTES['location']['ImageController']> = RouteDefinition<'location', 'ImageController'>[M];
 
 export class ImageController extends BaseController {
 	private permissionService = new PermissionService();
-	private spacesManagementService = new SpacesManagementService();
+	private spacesManagementService = new SpacesManagementService({
+		region: config.SPACES_REGION,
+		defaultBucket: config.SPACES_BUCKET,
+		secretAccessKey: config.SPACES_ACCESS_KEY,
+		accessKeyId: config.SPACES_SECRET_KEY,
+	});
 
 	constructor(repos: Repositories) {
 		super(repos);
