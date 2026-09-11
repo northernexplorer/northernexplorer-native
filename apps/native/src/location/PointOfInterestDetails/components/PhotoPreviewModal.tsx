@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, GestureResponderEvent, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {formatName, getImageUrl} from '@northernexplorer/tools-web';
+import {formatName, getDynamicImageUrl} from '@northernexplorer/tools-web';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -174,7 +174,14 @@ export function PhotoPreviewModal({
 
 					<View style={styles.modalImageWrapper} pointerEvents="box-none">
 						<Image
-							source={{uri: getImageUrl({path: imageData.url, cdn: config.CONTENT_DELIVERY_NETWORK})}}
+							source={{
+								uri: getDynamicImageUrl({
+									processed: imageData.processed,
+									size: 'large',
+									path: imageData.url,
+									cdn: config.CONTENT_DELIVERY_NETWORK,
+								}),
+							}}
 							style={styles.modalImage}
 							resizeMode="contain"
 						/>
