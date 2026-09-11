@@ -169,20 +169,49 @@ export class ImageController extends BaseController {
 		return {success: true};
 	}
 
-	async updateStatus(params: Params<Route<'updateStatus'>>): Promise<Response<Route<'updateStatus'>>> {
-		const image = await this.repos.image.getById(params.id);
-
-		image.status = params.status;
-		await this.flush();
-
-		return {success: true};
-	}
-
 	async hasLiked(params: Params<Route<'hasLiked'>>, auth?: AuthContext): Promise<Response<Route<'hasLiked'>>> {
 		if (!auth?.userId) return {liked: false, likeCount: 0};
 
 		const like = await this.repos.imageLike.findLike(params.id, auth.userId);
 		const image = await this.repos.image.getById(params.id);
 		return {liked: Boolean(like), likeCount: image.likes.length};
+	}
+
+	async getPendingImages(params: Params<Route<'getPendingImages'>>, auth?: AuthContext): Promise<Response<Route<'getPendingImages'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		const images = await this.repos.image.find({status: ImageStatusEnum.Pending}, {populate: ['user', 'pointOfInterest']});
+		return images.map(image => ({...image}));
+	}
+
+	async approveImage(params: Params<Route<'approveImage'>>, auth?: AuthContext): Promise<Response<Route<'approveImage'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		const {id} = params;
+		const image = await this.repos.image.getById(id);
+
+		image.status = ImageStatusEnum.Approved;
+		image.user.score = image.user.score + 10;
+
+		await this.flush();
+
+		return {...image};
+	}
+
+	async rejectImage(params: Params<Route<'rejectImage'>>, auth?: AuthContext): Promise<Response<Route<'rejectImage'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		const {id} = params;
+		const image = await this.repos.image.getById(id);
+
+		await this.spacesManagementService.remove(image.url);
+
+		this.repos.image.remove(image);
+		await this.flush();
+
+		return {success: true};
 	}
 }

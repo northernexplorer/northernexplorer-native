@@ -6,6 +6,7 @@ import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
+import {alertStore} from '~/core/alertStore';
 
 type PhotoPreviewModalProps = {
 	selectedImageId: string;
@@ -14,10 +15,13 @@ type PhotoPreviewModalProps = {
 	currentUserId?: string;
 	isAdmin?: boolean;
 	deletingImageId: string | null;
+	approvingImageId?: string | null;
 	onClose: () => void;
 	onPrevious: () => void;
 	onNext: () => void;
 	onDelete: (imageId: string) => void;
+	onApprove?: (imageId: string) => void;
+	onReject?: (imageId: string) => void;
 };
 
 export function PhotoPreviewModal({
@@ -27,10 +31,13 @@ export function PhotoPreviewModal({
 	currentUserId,
 	isAdmin,
 	deletingImageId,
+	approvingImageId,
 	onClose,
 	onPrevious,
 	onNext,
 	onDelete,
+	onApprove,
+	onReject,
 }: PhotoPreviewModalProps) {
 	const [isLiked, setIsLiked] = useState<boolean>(false);
 
@@ -55,6 +62,8 @@ export function PhotoPreviewModal({
 	}
 
 	const canManage = isAdmin || imageData.user.id === currentUserId;
+	const isDeleting = deletingImageId === imageData.id;
+	const isApproving = approvingImageId === imageData.id;
 
 	const handleLikeToggle = async (e: GestureResponderEvent) => {
 		e.stopPropagation();
@@ -69,6 +78,62 @@ export function PhotoPreviewModal({
 			await likeMutation({id: imageData.id});
 		}
 		await Promise.all([refetchLikeState(), refetchImage()]);
+	};
+
+	const handleApprove = (e: GestureResponderEvent) => {
+		e.stopPropagation();
+		if (!onApprove) return;
+
+		alertStore.showAlert({
+			title: 'Approve Image',
+			message: 'Are you sure you want to approve this image for public display?',
+			type: 'warning',
+			buttons: [
+				{text: 'Cancel', style: 'cancel'},
+				{
+					text: 'Approve',
+					style: 'default',
+					onPress: () => onApprove(imageData.id),
+				},
+			],
+		});
+	};
+
+	const handleReject = (e: GestureResponderEvent) => {
+		e.stopPropagation();
+		if (!onReject) return;
+
+		alertStore.showAlert({
+			title: 'Reject Image',
+			message: 'Are you sure you want to reject this image?',
+			type: 'warning',
+			buttons: [
+				{text: 'Cancel', style: 'cancel'},
+				{
+					text: 'Reject',
+					style: 'destructive',
+					onPress: () => onReject(imageData.id),
+				},
+			],
+		});
+	};
+
+	const handleDelete = (e: GestureResponderEvent) => {
+		e.stopPropagation();
+
+		alertStore.showAlert({
+			title: 'Delete Photo',
+			message: 'Are you sure you want to delete this photo? This action cannot be undone.',
+			type: 'warning',
+			buttons: [
+				{text: 'Cancel', style: 'cancel'},
+				{
+					text: 'Delete',
+					style: 'destructive',
+					onPress: () => onDelete(imageData.id),
+				},
+			],
+		});
 	};
 
 	return (
@@ -133,13 +198,45 @@ export function PhotoPreviewModal({
 				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
 					<View style={styles.userInfo}>
 						<UserAvatar username={imageData.user.username} />
-						<View>
+						<View style={styles.userDetails}>
 							<Text style={styles.userName}>{formatName(imageData.user)}</Text>
 							{imageData.altText && <Text style={styles.altText}>{imageData.altText}</Text>}
 						</View>
 					</View>
 
 					<View style={styles.modalActions}>
+						{/* Admin Moderation Actions */}
+						{isAdmin && onApprove && (
+							<Pressable
+								style={[styles.actionButton, styles.approveButton]}
+								onPress={handleApprove}
+								disabled={isApproving || isDeleting}
+							>
+								{isApproving ? (
+									<ActivityIndicator size="small" color="#ffffff" />
+								) : (
+									<>
+										<Ionicons name="checkmark-circle-outline" size={18} color="#ffffff" />
+										<Text style={styles.actionButtonText}>Approve</Text>
+									</>
+								)}
+							</Pressable>
+						)}
+
+						{isAdmin && onReject && (
+							<Pressable style={[styles.actionButton, styles.rejectButton]} onPress={handleReject} disabled={isApproving || isDeleting}>
+								{isDeleting ? (
+									<ActivityIndicator size="small" color="#ffffff" />
+								) : (
+									<>
+										<Ionicons name="close-circle-outline" size={18} color="#ffffff" />
+										<Text style={styles.actionButtonText}>Reject</Text>
+									</>
+								)}
+							</Pressable>
+						)}
+
+						{/* Like Button */}
 						{currentUserId && (
 							<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
 								<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
@@ -147,16 +244,10 @@ export function PhotoPreviewModal({
 							</Pressable>
 						)}
 
-						{canManage && (
-							<Pressable
-								style={styles.modalDeleteButton}
-								onPress={e => {
-									e.stopPropagation();
-									onDelete(imageData.id);
-								}}
-								disabled={deletingImageId === imageData.id}
-							>
-								{deletingImageId === imageData.id ? (
+						{/* Standard Delete Button (When not using dedicated reject) */}
+						{canManage && !onReject && (
+							<Pressable style={styles.modalDeleteButton} onPress={handleDelete} disabled={isDeleting || isApproving}>
+								{isDeleting ? (
 									<ActivityIndicator size="small" color="#ef4444" />
 								) : (
 									<Ionicons name="trash-outline" size={20} color="#ef4444" />
@@ -232,13 +323,18 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		paddingHorizontal: 20,
+		paddingHorizontal: 16,
 		paddingTop: 16,
+		gap: 8,
 	},
 	userInfo: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 10,
+		flexShrink: 1,
+	},
+	userDetails: {
+		flexShrink: 1,
 	},
 	userName: {
 		color: '#ffffff',
@@ -252,7 +348,26 @@ const styles = StyleSheet.create({
 	modalActions: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 12,
+		gap: 8,
+	},
+	actionButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		paddingHorizontal: 10,
+		paddingVertical: 7,
+		borderRadius: 16,
+	},
+	approveButton: {
+		backgroundColor: '#16a34a',
+	},
+	rejectButton: {
+		backgroundColor: '#dc2626',
+	},
+	actionButtonText: {
+		color: '#ffffff',
+		fontSize: 12,
+		fontWeight: '600',
 	},
 	likeButton: {
 		flexDirection: 'row',
