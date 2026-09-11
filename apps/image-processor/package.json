@@ -17,6 +17,7 @@
 		"@mikro-orm/decorators": "^7.1.15",
 		"@mikro-orm/postgresql": "^7.1.15",
 		"@northernexplorer/types": "*",
+		"@types/sharp": "^0.32.0",
 		"bcrypt": "^6.0.0",
 		"cors": "^2.8.5",
 		"dotenv": "^17.4.2",
@@ -26,6 +27,7 @@
 		"pg-boss": "^12.26.3",
 		"reflect-metadata": "^0.2.2",
 		"resend": "^6.17.2",
+		"sharp": "^0.35.4",
 		"uuid": "^14.0.2"
 	},
 	"devDependencies": {
