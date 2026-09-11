@@ -24,6 +24,26 @@ export class ImageController extends BaseController {
 		super(repos);
 	}
 
+	/**
+	 * Helper to remove the original file as well as _large.jpg and _thumbnail.jpg variants from DigitalOcean Spaces.
+	 */
+	private async removeWithVariants(url: string): Promise<void> {
+		const originalKey = url.replace(/^\/+/, '');
+		const dotIndex = originalKey.lastIndexOf('.');
+		const basePath = dotIndex !== -1 ? originalKey.substring(0, dotIndex) : originalKey;
+
+		const largeKey = `${basePath}_large.jpg`;
+		const thumbnailKey = `${basePath}_thumbnail.jpg`;
+
+		// Deletes original file and variant keys in parallel.
+		// Ignores missing file errors (e.g. if variants haven't been processed yet).
+		await Promise.all([
+			this.spacesManagementService.remove(originalKey).catch(() => null),
+			this.spacesManagementService.remove(largeKey).catch(() => null),
+			this.spacesManagementService.remove(thumbnailKey).catch(() => null),
+		]);
+	}
+
 	async topImages(): Promise<Response<Route<'topImages'>>> {
 		const images = await this.repos.image.topImages();
 
@@ -137,7 +157,7 @@ export class ImageController extends BaseController {
 		const image = await this.repos.image.getById(params.id);
 		this.permissionService.canEditImage({targetId: image.user.id}, auth);
 
-		await this.spacesManagementService.remove(image.url);
+		await this.removeWithVariants(image.url);
 
 		if (image.status === ImageStatusEnum.Approved) {
 			image.user.score = image.user.score - 10;
@@ -239,7 +259,7 @@ export class ImageController extends BaseController {
 		const {id} = params;
 		const image = await this.repos.image.getById(id);
 
-		await this.spacesManagementService.remove(image.url);
+		await this.removeWithVariants(image.url);
 
 		this.repos.image.remove(image);
 		await this.flush();
