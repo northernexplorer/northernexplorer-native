@@ -19,8 +19,7 @@
 		"test:deps": "depcheck --specials=typescript"
 	},
 	"dependencies": {
-		"@northernexplorer/types": "*",
-		"expo-image-picker": "^57.0.16"
+		"@aws-sdk/client-s3": "^3.1127.0"
 	},
 	"devDependencies": {
 		"@types/node": "^22.20.2"

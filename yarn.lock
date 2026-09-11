@@ -2495,9 +2495,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@northernexplorer/tools-server@workspace:packages/tools-server"
   dependencies:
-    "@northernexplorer/types": "npm:*"
+    "@aws-sdk/client-s3": "npm:^3.1127.0"
     "@types/node": "npm:^22.20.2"
-    expo-image-picker: "npm:^57.0.16"
   peerDependencies:
     "@expo/vector-icons": "*"
     react: "*"
