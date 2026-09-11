@@ -2510,7 +2510,6 @@ __metadata:
   resolution: "@northernexplorer/tools-web@workspace:packages/tools-web"
   dependencies:
     "@northernexplorer/types": "npm:*"
-    "@types/node": "npm:^22.20.2"
     expo-image-picker: "npm:^57.0.16"
   peerDependencies:
     "@expo/vector-icons": "*"
@@ -8953,24 +8952,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "northernexplorer-image-processor@workspace:apps/image-processor"
   dependencies:
-    "@aws-sdk/client-s3": "npm:^3.1127.0"
     "@mikro-orm/cli": "npm:^7.1.15"
     "@mikro-orm/core": "npm:^7.1.15"
     "@mikro-orm/decorators": "npm:^7.1.15"
     "@mikro-orm/postgresql": "npm:^7.1.15"
+    "@northernexplorer/tools-server": "npm:*"
     "@northernexplorer/types": "npm:*"
-    "@types/cors": "npm:^2.8.17"
-    "@types/express": "npm:^4.17.21"
     "@types/sharp": "npm:^0.32.0"
-    bcrypt: "npm:^6.0.0"
-    cors: "npm:^2.8.5"
     dotenv: "npm:^17.4.2"
-    express: "npm:^4.21.0"
-    express-rate-limit: "npm:^8.6.2"
-    jsonwebtoken: "npm:^9.0.3"
-    pg-boss: "npm:^12.26.3"
     reflect-metadata: "npm:^0.2.2"
-    resend: "npm:^6.17.2"
     sharp: "npm:^0.35.4"
     uuid: "npm:^14.0.2"
   languageName: unknown
@@ -9053,7 +9043,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "northernexplorer-server@workspace:apps/server"
   dependencies:
-    "@aws-sdk/client-s3": "npm:^3.1127.0"
     "@mikro-orm/cli": "npm:^7.1.15"
     "@mikro-orm/core": "npm:^7.1.15"
     "@mikro-orm/decorators": "npm:^7.1.15"
