@@ -1,0 +1,29 @@
+{
+	"name": "northernexplorer-image-processor",
+	"version": "1.0.0",
+	"private": true,
+	"main": "src/index.ts",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist node_modules/.cache",
+		"dev": "tsx watch src/index.ts",
+		"schema": "yarn run mikro-orm schema:update -d",
+		"start": "node dist/index.js",
+		"test:deps": "depcheck --specials=typescript --ignores=\"@mikro-orm/cli\""
+	},
+	"dependencies": {
+		"@mikro-orm/core": "^7.1.15",
+		"@mikro-orm/decorators": "^7.1.15",
+		"@mikro-orm/postgresql": "^7.1.15",
+		"@northernexplorer/tools-server": "*",
+		"@northernexplorer/types": "*",
+		"@types/sharp": "^0.32.0",
+		"dotenv": "^17.4.2",
+		"reflect-metadata": "^0.2.2",
+		"sharp": "^0.35.4",
+		"uuid": "^14.0.2"
+	},
+	"devDependencies": {
+		"@mikro-orm/cli": "^7.1.15"
+	}
+}

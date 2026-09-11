@@ -1,5 +1,5 @@
 import React from 'react';
-import {DropdownField} from '@northernexplorer/tools';
+import {DropdownField} from '@northernexplorer/tools-web';
 import {PointOfInterestTypeEnum} from '@northernexplorer/types';
 
 interface ComponentProps<T extends string> {

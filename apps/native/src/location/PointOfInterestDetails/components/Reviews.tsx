@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {formatName} from '@northernexplorer/tools';
+import {formatName} from '@northernexplorer/tools-web';
 import {PointOfInterestType, ReviewStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {ReviewForm} from './ReviewForm';
 import {RenderStars} from './RenderStars';

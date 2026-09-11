@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import {defineConfig} from '@mikro-orm/postgresql';
-import {ReflectMetadataProvider} from '@mikro-orm/decorators/legacy';
 import dotenv from 'dotenv';
 import {entities} from './core/entities';
 
@@ -12,7 +11,6 @@ export default defineConfig({
 	dbName: process.env.DB_NAME || 'northernexplorer',
 	user: process.env.DB_USER || 'postgres',
 	password: process.env.DB_PASS || 'password',
-	metadataProvider: ReflectMetadataProvider,
 	entities,
 	debug: process.env.NODE_ENV !== 'production',
 });

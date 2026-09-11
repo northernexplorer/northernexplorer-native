@@ -16,7 +16,7 @@
 	"dependencies": {
 		"@expo/vector-icons": "^15.0.2",
 		"@maplibre/maplibre-react-native": "^11.3.9",
-		"@northernexplorer/tools": "*",
+		"@northernexplorer/tools-web": "*",
 		"@northernexplorer/types": "*",
 		"@react-native-async-storage/async-storage": "2.2.0",
 		"@react-native-community/netinfo": "12.0.1",

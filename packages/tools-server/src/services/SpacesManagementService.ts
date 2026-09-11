@@ -1,6 +1,6 @@
 import {Readable} from 'stream';
-import {S3Client, PutObjectCommand, DeleteObjectCommand, PutObjectCommandInput} from '@aws-sdk/client-s3';
-import {config} from '../../config';
+import {Buffer} from 'node:buffer';
+import {S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand, PutObjectCommandInput} from '@aws-sdk/client-s3';
 
 export interface UploadOptions {
 	bucket?: string;
@@ -16,24 +16,50 @@ export class SpacesManagementService {
 	private readonly defaultBucket: string;
 	private readonly region: string;
 
-	constructor() {
-		this.region = config.SPACES_REGION;
-		this.defaultBucket = config.SPACES_BUCKET;
+	constructor({
+		accessKeyId,
+		secretAccessKey,
+		region,
+		defaultBucket,
+	}: {
+		accessKeyId: string;
+		secretAccessKey: string;
+		region: string;
+		defaultBucket: string;
+	}) {
+		this.region = region;
+		this.defaultBucket = defaultBucket;
 
 		this.s3Client = new S3Client({
 			endpoint: `https://${this.region}.digitaloceanspaces.com`,
 			region: this.region,
 			credentials: {
-				accessKeyId: config.SPACES_ACCESS_KEY,
-				secretAccessKey: config.SPACES_SECRET_KEY,
+				accessKeyId,
+				secretAccessKey,
 			},
 		});
 	}
 
 	/**
-	 * Upload an item/file buffer to DigitalOcean Spaces.
-	 * Returns the final public or CDN URL of the uploaded object.
+	 * Get an object from DigitalOcean Spaces.
+	 * Returns the stream/buffer along with ContentType and Metadata.
 	 */
+	async getObject(key: string, bucket = this.defaultBucket) {
+		const command = new GetObjectCommand({
+			Bucket: bucket,
+			Key: key,
+		});
+
+		const response = await this.s3Client.send(command);
+
+		return {
+			body: response.Body,
+			contentType: response.ContentType,
+			contentLength: response.ContentLength,
+			metadata: response.Metadata,
+		};
+	}
+
 	async upload({key, body, contentType, bucket = this.defaultBucket, isPublic = true, metadata}: UploadOptions) {
 		const input: PutObjectCommandInput = {
 			Bucket: bucket,
@@ -47,9 +73,6 @@ export class SpacesManagementService {
 		await this.s3Client.send(new PutObjectCommand(input));
 	}
 
-	/**
-	 * Delete a single item from DigitalOcean Spaces.
-	 */
 	async remove(key: string, bucket = this.defaultBucket) {
 		const command = new DeleteObjectCommand({
 			Bucket: bucket,

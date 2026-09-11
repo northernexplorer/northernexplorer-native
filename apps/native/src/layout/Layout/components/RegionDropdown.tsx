@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {DropdownField} from '@northernexplorer/tools';
+import {DropdownField} from '@northernexplorer/tools-web';
 import {useApiFetch} from '~/core/useApiFetch';
 
 interface RegionDropdownProps<T extends string> extends ComponentProps<T> {

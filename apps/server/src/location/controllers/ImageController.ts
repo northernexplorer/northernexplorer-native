@@ -1,21 +1,47 @@
 import {createHash} from 'node:crypto';
 import {ImageStatusEnum, ImageUploadStatus, Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {SpacesManagementService} from '@northernexplorer/tools-server';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 import {Image} from '../entities/Image';
-import {SpacesManagementService} from '../services/SpacesManagementService';
 import {ImageLike} from '../entities/ImageLike';
+import {config} from '../../config';
 
 type Route<M extends keyof ROUTES['location']['ImageController']> = RouteDefinition<'location', 'ImageController'>[M];
 
 export class ImageController extends BaseController {
 	private permissionService = new PermissionService();
-	private spacesManagementService = new SpacesManagementService();
+	private spacesManagementService = new SpacesManagementService({
+		region: config.SPACES_REGION,
+		defaultBucket: config.SPACES_BUCKET,
+		secretAccessKey: config.SPACES_ACCESS_KEY,
+		accessKeyId: config.SPACES_SECRET_KEY,
+	});
 
 	constructor(repos: Repositories) {
 		super(repos);
+	}
+
+	/**
+	 * Helper to remove the original file as well as _large.jpg and _thumbnail.jpg variants from DigitalOcean Spaces.
+	 */
+	private async removeWithVariants(url: string): Promise<void> {
+		const originalKey = url.replace(/^\/+/, '');
+		const dotIndex = originalKey.lastIndexOf('.');
+		const basePath = dotIndex !== -1 ? originalKey.substring(0, dotIndex) : originalKey;
+
+		const largeKey = `${basePath}_large.jpg`;
+		const thumbnailKey = `${basePath}_thumbnail.jpg`;
+
+		// Deletes original file and variant keys in parallel.
+		// Ignores missing file errors (e.g. if variants haven't been processed yet).
+		await Promise.all([
+			this.spacesManagementService.remove(originalKey).catch(() => null),
+			this.spacesManagementService.remove(largeKey).catch(() => null),
+			this.spacesManagementService.remove(thumbnailKey).catch(() => null),
+		]);
 	}
 
 	async topImages(): Promise<Response<Route<'topImages'>>> {
@@ -131,7 +157,7 @@ export class ImageController extends BaseController {
 		const image = await this.repos.image.getById(params.id);
 		this.permissionService.canEditImage({targetId: image.user.id}, auth);
 
-		await this.spacesManagementService.remove(image.url);
+		await this.removeWithVariants(image.url);
 
 		if (image.status === ImageStatusEnum.Approved) {
 			image.user.score = image.user.score - 10;
@@ -233,7 +259,7 @@ export class ImageController extends BaseController {
 		const {id} = params;
 		const image = await this.repos.image.getById(id);
 
-		await this.spacesManagementService.remove(image.url);
+		await this.removeWithVariants(image.url);
 
 		this.repos.image.remove(image);
 		await this.flush();

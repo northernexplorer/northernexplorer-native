@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, Image, Pressable, LayoutChangeEvent, useWindowDimensions} from 'react-native';
 import {ImageType} from '@northernexplorer/types';
-import {formatName, getImageUrl} from '@northernexplorer/tools';
+import {formatName, getDynamicImageUrl} from '@northernexplorer/tools-web';
 import {config} from '~/config';
 import {PhotoPreviewModal} from '~/location/PointOfInterestDetails/components/PhotoPreviewModal';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -50,7 +50,9 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 		<View style={styles.container} onLayout={handleLayout}>
 			<View style={styles.galleryGrid}>
 				{data.slice(0, 6).map((item, index) => {
-					const imageUri = getImageUrl({
+					const imageUri = getDynamicImageUrl({
+						processed: item.processed,
+						size: 'thumbnail',
 						path: item.url,
 						cdn: config.CONTENT_DELIVERY_NETWORK,
 					});
