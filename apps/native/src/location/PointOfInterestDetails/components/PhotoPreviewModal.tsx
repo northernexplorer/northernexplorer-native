@@ -130,7 +130,7 @@ export function PhotoPreviewModal({
 				{
 					text: 'Delete',
 					style: 'destructive',
-					onPress: () => onDelete(imageData.id),
+					onPress: () => onDelete && onDelete(imageData.id),
 				},
 			],
 		});
