@@ -29,6 +29,25 @@ export interface ImageType {
 	status: ImageStatusEnum;
 }
 
+export interface PendingImageType {
+	id: string;
+	version: number;
+	url: string;
+	fileExtension: string;
+	filename: string;
+	mimeType: string;
+	size: number;
+	altText?: string;
+	processed: boolean;
+	createdAt: string | Date;
+	status: ImageStatusEnum;
+	pointOfInterest: {
+		id: string;
+		name: string;
+	};
+	user: UserSummary;
+}
+
 export interface UploadImageFileInput {
 	filename: string;
 	fileExtension: string;
@@ -63,6 +82,18 @@ export const ImageController = {
 			success: boolean;
 		},
 	},
+	getPendingImages: {
+		params: {} as Record<string, never>,
+		response: null as unknown as PendingImageType[],
+	},
+	approveImage: {
+		params: {} as {id: string},
+		response: null as unknown as PendingImageType,
+	},
+	rejectImage: {
+		params: {} as {id: string},
+		response: null as unknown as {success: boolean},
+	},
 	getById: {
 		params: {} as {id: string},
 		response: {} as unknown as ImageType,
@@ -84,12 +115,6 @@ export const ImageController = {
 		response: null as unknown as {
 			liked: boolean;
 			likeCount: number;
-		},
-	},
-	updateStatus: {
-		params: {} as {id: string; status: ImageStatusEnum},
-		response: null as unknown as {
-			success: boolean;
 		},
 	},
 	getPending: {

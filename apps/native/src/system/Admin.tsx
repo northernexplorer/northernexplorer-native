@@ -51,6 +51,15 @@ export function Admin() {
 				<Text style={styles.statLabel}>Pending Reviews</Text>
 			</Pressable>
 
+			{/* Pending Images Card */}
+			<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/pending-images')}>
+				<View style={[styles.iconBadge, {backgroundColor: '#f3e5f5'}]}>
+					<Ionicons name="image-outline" size={24} color="#7b1fa2" />
+				</View>
+				<Text style={styles.statValue}>{data?.pendingImages ?? 0}</Text>
+				<Text style={styles.statLabel}>Pending Images</Text>
+			</Pressable>
+
 			{/* Users Card */}
 			<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/users')}>
 				<View style={[styles.iconBadge, {backgroundColor: '#e3f2fd'}]}>
@@ -64,9 +73,6 @@ export function Admin() {
 }
 
 const styles = StyleSheet.create({
-	header: {
-		marginBottom: 24,
-	},
 	grid: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
@@ -109,28 +115,5 @@ const styles = StyleSheet.create({
 		fontWeight: '500',
 		color: '#6c757d',
 		marginTop: 2,
-	},
-	section: {
-		backgroundColor: '#ffffff',
-		borderRadius: 16,
-		padding: 16,
-		borderWidth: 1,
-		borderColor: '#e9ecef',
-	},
-	sectionTitle: {
-		fontSize: 16,
-		fontWeight: '600',
-		color: '#212529',
-		marginBottom: 12,
-	},
-	statusRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
-	},
-	statusText: {
-		fontSize: 14,
-		color: '#495057',
-		fontWeight: '500',
 	},
 });
