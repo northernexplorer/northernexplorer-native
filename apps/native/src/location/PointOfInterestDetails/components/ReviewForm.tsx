@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {FormField} from '@northernexplorer/tools';
+import {FormField} from '@northernexplorer/tools-web';
 import {EntranceCostEnum, ReviewRatingEnum, ReviewSummary, ReviewType, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {Link, useLocalSearchParams} from 'expo-router';
 import {CONDITION_OPTIONS, COST_OPTIONS, DIFFICULTY_OPTIONS, RATING_MAPPING} from './reviewOptions';

@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import {View, Text} from 'react-native';
 import {Link} from 'expo-router';
-import {Spinner} from '@northernexplorer/tools';
+import {Spinner} from '@northernexplorer/tools-web';
 import {SupportHeadingType} from '@northernexplorer/types';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';

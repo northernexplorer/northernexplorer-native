@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Redirect} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {Spinner} from '@northernexplorer/tools';
+import {Spinner} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useApiMutation} from '~/core/useApiMutation';

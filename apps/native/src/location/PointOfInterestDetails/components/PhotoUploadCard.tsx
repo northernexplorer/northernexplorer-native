@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {ImageUpload} from '@northernexplorer/tools';
+import {ImageUpload} from '@northernexplorer/tools-web';
 import {FileUpload, ImageUploadStatus, UploadImageFileInput} from '@northernexplorer/types';
 import {alertStore} from '~/core/alertStore';
 import {useApiMutation} from '~/core/useApiMutation';

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, Image, Pressable, LayoutChangeEvent, useWindowDimensions} from 'react-native';
 import {ImageType} from '@northernexplorer/types';
-import {formatName, getImageUrl} from '@northernexplorer/tools';
+import {formatName, getImageUrl} from '@northernexplorer/tools-web';
 import {config} from '~/config';
 import {PhotoPreviewModal} from '~/location/PointOfInterestDetails/components/PhotoPreviewModal';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';

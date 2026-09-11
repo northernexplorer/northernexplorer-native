@@ -1,7 +1,7 @@
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useLocalSearchParams, router} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {formatName, Spinner} from '@northernexplorer/tools';
+import {formatName, Spinner} from '@northernexplorer/tools-web';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useApiMutation} from '~/core/useApiMutation';
 import {alertStore} from '~/core/alertStore';

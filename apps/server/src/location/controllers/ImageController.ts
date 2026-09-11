@@ -1,6 +1,6 @@
 import {createHash} from 'node:crypto';
 import {ImageStatusEnum, ImageUploadStatus, Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
-import {SpacesManagementService} from '@northernexplorer/tools';
+import {SpacesManagementService} from '@northernexplorer/tools-server';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';

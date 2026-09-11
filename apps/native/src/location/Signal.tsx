@@ -4,7 +4,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import NetInfo, {NetInfoStateType, NetInfoState} from '@react-native-community/netinfo';
 import * as Location from 'expo-location';
-import {ProFeatureOnly, Spinner} from '@northernexplorer/tools';
+import {ProFeatureOnly, Spinner} from '@northernexplorer/tools-web';
 import {useApiFetch} from '~/core/useApiFetch';
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];

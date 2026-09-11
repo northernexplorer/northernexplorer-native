@@ -1,6 +1,6 @@
 import React from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {getImageUrl} from '@northernexplorer/tools';
+import {getImageUrl} from '@northernexplorer/tools-web';
 import {ImageStatusEnum, ImageType, PendingImageType} from '@northernexplorer/types';
 import {config} from '~/config';
 

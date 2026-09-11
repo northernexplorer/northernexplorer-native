@@ -3,7 +3,7 @@ import {View, Text, StyleSheet} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {RolesEnum} from '@northernexplorer/types';
-import {Spinner, Column, Table} from '@northernexplorer/tools';
+import {Spinner, Column, Table} from '@northernexplorer/tools-web';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 

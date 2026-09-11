@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View, Text, TextInput, Pressable, Switch, ScrollView} from 'react-native';
 import {Link, router} from 'expo-router';
-import {DateField, DropdownField, FormField} from '@northernexplorer/tools';
+import {DateField, DropdownField, FormField} from '@northernexplorer/tools-web';
 import {GenderEnum} from '@northernexplorer/types';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';

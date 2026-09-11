@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, GestureResponderEvent, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import {formatName, getImageUrl} from '@northernexplorer/tools';
+import {formatName, getImageUrl} from '@northernexplorer/tools-web';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
