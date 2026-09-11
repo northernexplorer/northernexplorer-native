@@ -7,14 +7,14 @@
 		"packages/*"
 	],
 	"scripts": {
-		"build:image-processor": "yarn workspace northernexplorer-server build",
+		"build:image-processor": "yarn workspace northernexplorer-image-processor build",
 		"build:migrate": "yarn workspace northernexplorer-migrate build",
 		"build:server": "yarn workspace northernexplorer-server build",
 		"build:tools-server": "yarn workspace @northernexplorer/tools-server build",
 		"build:tools-web": "yarn workspace @northernexplorer/tools-web build",
 		"build:types": "yarn workspace @northernexplorer/types build",
 		"build:web": "yarn workspace northernexplorer-native build:web",
-		"clean:image-processor": "yarn workspace @northernexplorer/image-processor clean",
+		"clean:image-processor": "yarn workspace northernexplorer-image-processor clean",
 		"clean:migrate": "yarn workspace northernexplorer-migrate clean",
 		"clean:native": "yarn workspace northernexplorer-native clean",
 		"clean:server": "yarn workspace northernexplorer-server clean",
