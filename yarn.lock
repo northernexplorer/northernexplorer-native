@@ -2491,9 +2491,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@northernexplorer/tools-server@npm:*, @northernexplorer/tools-server@workspace:packages/toolsServer":
+"@northernexplorer/tools-server@npm:*, @northernexplorer/tools-server@workspace:packages/tools-server":
   version: 0.0.0-use.local
-  resolution: "@northernexplorer/tools-server@workspace:packages/toolsServer"
+  resolution: "@northernexplorer/tools-server@workspace:packages/tools-server"
   dependencies:
     "@northernexplorer/types": "npm:*"
     "@types/node": "npm:^22.20.2"
@@ -2506,9 +2506,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@northernexplorer/tools-web@npm:*, @northernexplorer/tools-web@workspace:packages/toolsWeb":
+"@northernexplorer/tools-web@npm:*, @northernexplorer/tools-web@workspace:packages/tools-web":
   version: 0.0.0-use.local
-  resolution: "@northernexplorer/tools-web@workspace:packages/toolsWeb"
+  resolution: "@northernexplorer/tools-web@workspace:packages/tools-web"
   dependencies:
     "@northernexplorer/types": "npm:*"
     "@types/node": "npm:^22.20.2"
