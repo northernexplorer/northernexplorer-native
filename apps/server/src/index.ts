@@ -36,3 +36,5 @@ async function bootstrap() {
 }
 
 bootstrap();
+
+export {entities} from './core/entities';

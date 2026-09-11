@@ -5,7 +5,7 @@ import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 import {Image} from '../entities/Image';
-import {SpacesManagementService} from '../services/SpacesManagementService';
+import {SpacesManagementService} from '../../../../../packages/tools/src/services/SpacesManagementService';
 import {ImageLike} from '../entities/ImageLike';
 
 type Route<M extends keyof ROUTES['location']['ImageController']> = RouteDefinition<'location', 'ImageController'>[M];

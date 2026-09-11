@@ -8662,6 +8662,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"northernexplorer-image-processor@workspace:apps/image-processor":
+  version: 0.0.0-use.local
+  resolution: "northernexplorer-image-processor@workspace:apps/image-processor"
+  dependencies:
+    "@aws-sdk/client-s3": "npm:^3.1127.0"
+    "@mikro-orm/cli": "npm:^7.1.15"
+    "@mikro-orm/core": "npm:^7.1.15"
+    "@mikro-orm/decorators": "npm:^7.1.15"
+    "@mikro-orm/postgresql": "npm:^7.1.15"
+    "@northernexplorer/types": "npm:*"
+    "@types/cors": "npm:^2.8.17"
+    "@types/express": "npm:^4.17.21"
+    bcrypt: "npm:^6.0.0"
+    cors: "npm:^2.8.5"
+    dotenv: "npm:^17.4.2"
+    express: "npm:^4.21.0"
+    express-rate-limit: "npm:^8.6.2"
+    jsonwebtoken: "npm:^9.0.3"
+    pg-boss: "npm:^12.26.3"
+    reflect-metadata: "npm:^0.2.2"
+    resend: "npm:^6.17.2"
+    uuid: "npm:^14.0.2"
+  languageName: unknown
+  linkType: soft
+
 "northernexplorer-migrate@workspace:apps/migrate":
   version: 0.0.0-use.local
   resolution: "northernexplorer-migrate@workspace:apps/migrate"
