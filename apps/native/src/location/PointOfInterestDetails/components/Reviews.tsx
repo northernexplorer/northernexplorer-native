@@ -10,6 +10,7 @@ import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {alertStore} from '~/core/alertStore';
+import UserLikes from './UserLikes';
 
 type ReviewsProps = {
 	data: PointOfInterestType;
@@ -145,6 +146,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 								/>
 
 								<Text style={globalStyles.description}>{review.description}</Text>
+								<UserLikes/>
 							</View>
 						);
 					})}
@@ -212,6 +214,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 								/>
 
 								<Text style={globalStyles.description}>{review.description}</Text>
+								
 							</View>
 						);
 					})}

@@ -3,6 +3,8 @@ import {EntranceCostEnum, ReviewRatingEnum, SiteConditionEnum, SiteDifficultyEnu
 
 export type IoniconsName = keyof typeof Ionicons.glyphMap;
 
+
+
 export const formatEnumLabel = (str: string): string => {
 	return str
 		.toLowerCase()
