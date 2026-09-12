@@ -1,20 +1,73 @@
-import {ImageStatusEnum, Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {createHash} from 'node:crypto';
+import {ImageStatusEnum, ImageUploadStatus, Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {SpacesManagementService} from '@northernexplorer/tools-server';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 import {Image} from '../entities/Image';
-import {SpacesManagementService} from '../services/SpacesManagementService';
 import {ImageLike} from '../entities/ImageLike';
+import {config} from '../../config';
 
 type Route<M extends keyof ROUTES['location']['ImageController']> = RouteDefinition<'location', 'ImageController'>[M];
 
 export class ImageController extends BaseController {
 	private permissionService = new PermissionService();
-	private spacesManagementService = new SpacesManagementService();
+	private spacesManagementService = new SpacesManagementService({
+		region: config.SPACES_REGION,
+		defaultBucket: config.SPACES_BUCKET,
+		secretAccessKey: config.SPACES_ACCESS_KEY,
+		accessKeyId: config.SPACES_SECRET_KEY,
+	});
 
 	constructor(repos: Repositories) {
 		super(repos);
+	}
+
+	/**
+	 * Helper to remove the original file as well as _large.jpg and _thumbnail.jpg variants from DigitalOcean Spaces.
+	 */
+	private async removeWithVariants(url: string): Promise<void> {
+		const originalKey = url.replace(/^\/+/, '');
+		const dotIndex = originalKey.lastIndexOf('.');
+		const basePath = dotIndex !== -1 ? originalKey.substring(0, dotIndex) : originalKey;
+
+		const largeKey = `${basePath}_large.jpg`;
+		const thumbnailKey = `${basePath}_thumbnail.jpg`;
+
+		// Deletes original file and variant keys in parallel.
+		// Ignores missing file errors (e.g. if variants haven't been processed yet).
+		await Promise.all([
+			this.spacesManagementService.remove(originalKey).catch(() => null),
+			this.spacesManagementService.remove(largeKey).catch(() => null),
+			this.spacesManagementService.remove(thumbnailKey).catch(() => null),
+		]);
+	}
+
+	async topImages(): Promise<Response<Route<'topImages'>>> {
+		const images = await this.repos.image.topImages();
+
+		return images.map(image => ({
+			...image,
+			likes: image.likes.length,
+			user: {
+				id: image.user.id,
+				username: image.user.username,
+				firstName: image.user.firstName,
+				lastName: image.user.lastName,
+				score: image.user.score,
+			},
+			pointOfInterest: {
+				id: image.pointOfInterest.id,
+				name: image.pointOfInterest.name,
+				description: image.pointOfInterest.description,
+				image: image.pointOfInterest.image,
+				lat: image.pointOfInterest.lat,
+				lon: image.pointOfInterest.lon,
+				country: image.pointOfInterest.country,
+				region: image.pointOfInterest.region,
+			},
+		}));
 	}
 
 	async upload(params: Params<Route<'upload'>>, auth?: AuthContext): Promise<Response<Route<'upload'>>> {
@@ -41,9 +94,17 @@ export class ImageController extends BaseController {
 		const user = await this.repos.user.getById(userId);
 		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
+		const results: {file: string; status: ImageUploadStatus}[] = [];
+
 		await Promise.all(
 			params.files.map(async file => {
 				const fileBuffer = Buffer.from(file.base64, 'base64');
+				const hash = createHash('sha256').update(fileBuffer).digest('hex');
+				const isDuplicate = await this.repos.image.getDuplicate(hash, user);
+				if (isDuplicate) {
+					results.push({file: file.uri, status: ImageUploadStatus.Duplicate});
+					return;
+				}
 
 				const url = this.repos.image.generateNewUrl({fileExtension: file.fileExtension});
 
@@ -57,7 +118,6 @@ export class ImageController extends BaseController {
 				let status = ImageStatusEnum.Pending;
 				if (userReviewCount >= 10 || user.score >= 500) {
 					status = ImageStatusEnum.Approved;
-					user.score = user.score + 10;
 				}
 
 				const image = new Image({
@@ -70,14 +130,21 @@ export class ImageController extends BaseController {
 					altText: pointOfInterest.name,
 					pointOfInterest,
 					user,
+					hash,
 				});
 
 				this.repos.image.persist(image);
+				results.push({file: file.uri, status: ImageUploadStatus.Success});
 			}),
 		);
 
+		const successCount = results.filter(r => r.status === ImageUploadStatus.Success).length;
+		if ((userReviewCount >= 10 || user.score >= 500) && successCount > 0) {
+			user.score += successCount * 10;
+		}
+
 		await this.flush();
-		return {success: true};
+		return results;
 	}
 
 	async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
@@ -90,11 +157,12 @@ export class ImageController extends BaseController {
 		const image = await this.repos.image.getById(params.id);
 		this.permissionService.canEditImage({targetId: image.user.id}, auth);
 
-		await this.spacesManagementService.remove(image.url);
+		await this.removeWithVariants(image.url);
 
 		if (image.status === ImageStatusEnum.Approved) {
 			image.user.score = image.user.score - 10;
 		}
+		image.user.score = image.user.score - image.likes.length;
 
 		this.repos.image.remove(image);
 
@@ -153,20 +221,49 @@ export class ImageController extends BaseController {
 		return {success: true};
 	}
 
-	async updateStatus(params: Params<Route<'updateStatus'>>): Promise<Response<Route<'updateStatus'>>> {
-		const image = await this.repos.image.getById(params.id);
-
-		image.status = params.status;
-		await this.flush();
-
-		return {success: true};
-	}
-
 	async hasLiked(params: Params<Route<'hasLiked'>>, auth?: AuthContext): Promise<Response<Route<'hasLiked'>>> {
 		if (!auth?.userId) return {liked: false, likeCount: 0};
 
 		const like = await this.repos.imageLike.findLike(params.id, auth.userId);
 		const image = await this.repos.image.getById(params.id);
 		return {liked: Boolean(like), likeCount: image.likes.length};
+	}
+
+	async getPendingImages(params: Params<Route<'getPendingImages'>>, auth?: AuthContext): Promise<Response<Route<'getPendingImages'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		const images = await this.repos.image.find({status: ImageStatusEnum.Pending}, {populate: ['user', 'pointOfInterest']});
+		return images.map(image => ({...image}));
+	}
+
+	async approveImage(params: Params<Route<'approveImage'>>, auth?: AuthContext): Promise<Response<Route<'approveImage'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		const {id} = params;
+		const image = await this.repos.image.getById(id);
+
+		image.status = ImageStatusEnum.Approved;
+		image.user.score = image.user.score + 10;
+
+		await this.flush();
+
+		return {...image};
+	}
+
+	async rejectImage(params: Params<Route<'rejectImage'>>, auth?: AuthContext): Promise<Response<Route<'rejectImage'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		const {id} = params;
+		const image = await this.repos.image.getById(id);
+
+		await this.removeWithVariants(image.url);
+
+		this.repos.image.remove(image);
+		await this.flush();
+
+		return {success: true};
 	}
 }

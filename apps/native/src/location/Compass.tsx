@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, Animated, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {ProFeatureOnly, Spinner} from '@northernexplorer/tools';
+import {ProFeatureOnly, Spinner} from '@northernexplorer/tools-web';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useCompass} from '~/location/hooks/useCompass';
 

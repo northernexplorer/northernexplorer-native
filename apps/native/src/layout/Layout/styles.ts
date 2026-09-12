@@ -90,10 +90,23 @@ export const styles = StyleSheet.create({
 		borderRadius: 12,
 		gap: 8,
 	},
+	menuItemAvatar: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingHorizontal: 16,
+		borderRadius: 12,
+		gap: 8,
+	},
 	activeItem: {
 		backgroundColor: 'rgba(255,255,255,0.12)',
 		borderWidth: 1,
 		borderColor: 'rgba(255,255,255,0.12)',
+	},
+	activeItemAvatar: {
+		backgroundColor: 'rgba(255,255,255,0.12)',
+		borderWidth: 1,
+		borderColor: 'rgba(255,255,255,0.12)',
+		padding: 5,
 	},
 	menuText: {
 		color: 'rgba(255,255,255,0.72)',

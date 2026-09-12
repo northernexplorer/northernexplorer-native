@@ -22,7 +22,6 @@ export function Photos({data, refetch}: PhotosProps) {
 	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
 
 	const {mutate: deleteMutation} = useApiMutation('location', 'ImageController', 'deleteById');
-	const {mutate: uploadMutation} = useApiMutation('location', 'ImageController', 'upload');
 
 	const images = data.images || [];
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
@@ -75,7 +74,7 @@ export function Photos({data, refetch}: PhotosProps) {
 					</Pressable>
 				</Link>
 			) : (
-				<PhotoUploadCard pointOfInterestId={data.id} uploadMutation={uploadMutation} refetch={refetch} />
+				<PhotoUploadCard pointOfInterestId={data.id} />
 			)}
 
 			<View style={styles.headerSection}>

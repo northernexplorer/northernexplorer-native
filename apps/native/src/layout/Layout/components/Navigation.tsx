@@ -64,7 +64,7 @@ export function Navigation() {
 						</Pressable>
 						<MenuBranding setIsMenuOpen={setIsMenuOpen} isDrawer={false} />
 						<View style={styles.drawerLinks}>
-							<MenuItemUser isMobileDrawer={false} setIsMenuOpen={setIsMenuOpen} />
+							<MenuItemUser />
 						</View>
 					</>
 				) : (
@@ -74,7 +74,7 @@ export function Navigation() {
 						<View style={styles.desktopNavGroup}>
 							{renderLinks(false)}
 							<View style={styles.desktopLinks}>
-								<MenuItemUser isMobileDrawer={false} setIsMenuOpen={setIsMenuOpen} />
+								<MenuItemUser />
 							</View>
 						</View>
 					</>

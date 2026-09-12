@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Pressable, ScrollView, Text} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
-import {DateField, DropdownField, FormField, Spinner} from '@northernexplorer/tools';
+import {DateField, DropdownField, FormField, Spinner} from '@northernexplorer/tools-web';
 import {GenderEnum} from '@northernexplorer/types';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';

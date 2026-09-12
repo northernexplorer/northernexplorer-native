@@ -94,6 +94,12 @@ export type UserType = {
 	// Note: We intentionally exclude passwordHash here for API security
 };
 
+export type AvatarDetails = {
+	subscriptionLevelName: string;
+	firstName: string;
+	username: string;
+};
+
 export type UserSummary = {
 	id: string;
 	username: string;
@@ -157,5 +163,9 @@ export const UserController = {
 	getAll: {
 		params: {} as Record<string, undefined>,
 		response: {} as UserType[],
+	},
+	getAvatarDetails: {
+		params: {} as {username: string},
+		response: {} as AvatarDetails,
 	},
 };

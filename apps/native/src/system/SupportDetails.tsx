@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
-import {formatDate, Spinner} from '@northernexplorer/tools';
+import {formatDate, Spinner} from '@northernexplorer/tools-web';
 import {Markdown} from '~/layout/Layout';
 import {useApiFetch} from '~/core/useApiFetch';
 import {styles} from '~/location/PointOfInterestDetails/styles';

@@ -41,6 +41,17 @@ export type PointOfInterestType = {
 	images?: ImageType[];
 };
 
+export type PointOfInterestSummary = {
+	id: string;
+	name: string;
+	description: string;
+	image: string;
+	lat: number;
+	lon: number;
+	country: CountryType;
+	region: RegionType;
+};
+
 export type PointOfInterestEditType = {
 	id: string;
 	name: string;

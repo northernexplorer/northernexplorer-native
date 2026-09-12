@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {Spinner} from '@northernexplorer/tools';
+import {Spinner} from '@northernexplorer/tools-web';
 import {useFieldNote} from '~/environment/state/fieldNote/useFieldNote';
 
 export function FieldNote() {

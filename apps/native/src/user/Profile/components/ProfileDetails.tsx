@@ -1,7 +1,7 @@
 import {View, Text, Pressable} from 'react-native';
 import {Link} from 'expo-router';
 import React from 'react';
-import {formatDate, Spinner} from '@northernexplorer/tools';
+import {formatDate, Spinner} from '@northernexplorer/tools-web';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 

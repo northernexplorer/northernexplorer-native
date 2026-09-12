@@ -1,9 +1,15 @@
 import {UserSummary} from '../user';
-import {PointOfInterestType} from './PointOfInterestController';
+import {PointOfInterestSummary} from './PointOfInterestController';
 
 export enum ImageStatusEnum {
 	Pending = 'Pending',
 	Approved = 'Approved',
+}
+
+export enum ImageUploadStatus {
+	Success = 'Success',
+	Duplicate = 'Duplicate',
+	Error = 'Error',
 }
 
 export interface ImageType {
@@ -17,10 +23,29 @@ export interface ImageType {
 	likes: number;
 	altText?: string;
 	processed: boolean;
-	pointOfInterest?: PointOfInterestType | string;
+	pointOfInterest?: PointOfInterestSummary;
 	user: UserSummary;
 	createdAt: string | Date;
 	status: ImageStatusEnum;
+}
+
+export interface PendingImageType {
+	id: string;
+	version: number;
+	url: string;
+	fileExtension: string;
+	filename: string;
+	mimeType: string;
+	size: number;
+	altText?: string;
+	processed: boolean;
+	createdAt: string | Date;
+	status: ImageStatusEnum;
+	pointOfInterest: {
+		id: string;
+		name: string;
+	};
+	user: UserSummary;
 }
 
 export interface UploadImageFileInput {
@@ -47,14 +72,27 @@ export const ImageController = {
 			files: FileUpload[];
 		},
 		response: null as unknown as {
-			success: boolean;
-		},
+			file: string;
+			status: ImageUploadStatus;
+		}[],
 	},
 	deleteById: {
 		params: {} as {id: string},
 		response: null as unknown as {
 			success: boolean;
 		},
+	},
+	getPendingImages: {
+		params: {} as Record<string, never>,
+		response: null as unknown as PendingImageType[],
+	},
+	approveImage: {
+		params: {} as {id: string},
+		response: null as unknown as PendingImageType,
+	},
+	rejectImage: {
+		params: {} as {id: string},
+		response: null as unknown as {success: boolean},
 	},
 	getById: {
 		params: {} as {id: string},
@@ -79,17 +117,15 @@ export const ImageController = {
 			likeCount: number;
 		},
 	},
-	updateStatus: {
-		params: {} as {id: string; status: ImageStatusEnum},
-		response: null as unknown as {
-			success: boolean;
-		},
-	},
 	getPending: {
 		params: {},
 		response: null as unknown as {
 			images: ImageType[];
 			total: number;
 		},
+	},
+	topImages: {
+		params: {},
+		response: null as unknown as ImageType[],
 	},
 };

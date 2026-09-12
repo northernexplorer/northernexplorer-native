@@ -4,7 +4,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import useSupercluster from 'use-supercluster';
 import {Link, useLocalSearchParams} from 'expo-router';
-import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
 import {PointOfInterestType} from '@northernexplorer/types';
 import {BBox} from 'geojson';
 import {MapRef} from 'react-map-gl/mapbox-legacy';
@@ -166,7 +166,17 @@ export function Map() {
 								)}
 
 								<h3 style={styles.popupTitle}>{selectedSite.name}</h3>
-								<p style={styles.popupDescription}>{selectedSite.description}</p>
+								<p
+									style={{
+										...styles.popupDescription,
+										display: '-webkit-box',
+										WebkitLineClamp: 6,
+										WebkitBoxOrient: 'vertical',
+										overflow: 'hidden',
+									}}
+								>
+									{selectedSite.description}
+								</p>
 							</Link>
 
 							<div style={styles.popupArrow} />
@@ -184,14 +194,17 @@ export function Map() {
 							}}
 							latitude={coords.lat}
 							longitude={coords.lon}
+							anchor="bottom"
+							color="#0088cc"
 						/>
 
 						{userMarker && (
-							<Marker latitude={coords.lat} longitude={coords.lon} anchor="bottom" offset={[0, -60]}>
+							<Marker latitude={coords.lat} longitude={coords.lon} anchor="bottom" offset={[0, -65]}>
 								<div style={styles.popupContainer}>
-									<h3 style={styles.popupTitle}>Your Current Location</h3>
+									<h3 style={styles.popupTitle}>Your Location</h3>
 									<p style={styles.popupDescription}>{coords.lat}</p>
 									<p style={styles.popupDescription}>{coords.lon}</p>
+									<div style={styles.popupArrow} />
 								</div>
 							</Marker>
 						)}

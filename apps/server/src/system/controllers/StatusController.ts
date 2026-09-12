@@ -1,4 +1,4 @@
-import {Params, PublishStatusEnum, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {ImageStatusEnum, Params, PublishStatusEnum, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {config} from '../../config';
@@ -39,11 +39,13 @@ export class StatusController extends BaseController {
 		const pointOfInterestsPublished = await this.repos.pointOfInterest.count({status: PublishStatusEnum.Published});
 		const pointOfInterestsDraft = await this.repos.pointOfInterest.count({status: PublishStatusEnum.Draft});
 		const pendingReviews = await this.repos.review.count({status: ReviewStatusEnum.Pending});
+		const pendingImages = await this.repos.image.count({status: ImageStatusEnum.Pending});
 		return {
 			users,
 			pointOfInterestsPublished,
 			pointOfInterestsDraft,
 			pendingReviews,
+			pendingImages,
 		};
 	}
 }

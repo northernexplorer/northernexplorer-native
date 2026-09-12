@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, Image, NativeSyntheticEvent} from 'react-native'
 import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
 import useSupercluster from 'use-supercluster';
 import {useRouter, useLocalSearchParams} from 'expo-router';
-import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
 import {PointOfInterestType} from '@northernexplorer/types';
 import {BBox} from 'geojson';
 import {config} from '~/config';
@@ -174,7 +174,9 @@ export function Map() {
 
 							<View style={styles.popupContent}>
 								<Text style={styles.popupTitle}>{selectedSite.name}</Text>
-								<Text style={styles.popupDescription}>{selectedSite.description}</Text>
+								<Text style={styles.popupDescription} numberOfLines={6} ellipsizeMode="tail">
+									{selectedSite.description}
+								</Text>
 							</View>
 
 							<View style={styles.popupArrow} />
@@ -191,6 +193,7 @@ export function Map() {
 								setSelectedSite(null);
 							}}
 							lngLat={[coords.lon, coords.lat]}
+							anchor="bottom"
 						>
 							<View style={styles.locationPin}>
 								<View style={styles.locationPinCenter} />
@@ -198,11 +201,12 @@ export function Map() {
 						</Marker>
 
 						{userMarker && (
-							<Marker lngLat={[coords.lon, coords.lat]} anchor="bottom" offset={[0, -60]}>
+							<Marker lngLat={[coords.lon, coords.lat]} anchor="bottom" offset={[0, -45]}>
 								<View style={styles.popupContainer}>
-									<Text style={styles.popupTitle}>Your Current Location</Text>
+									<Text style={styles.popupTitle}>Your Location</Text>
 									<Text style={styles.popupDescription}>{coords.lat}</Text>
 									<Text style={styles.popupDescription}>{coords.lon}</Text>
+									<View style={styles.popupArrow} />
 								</View>
 							</Marker>
 						)}
@@ -293,7 +297,7 @@ const styles = StyleSheet.create({
 	locationPin: {
 		width: 32,
 		height: 32,
-		backgroundColor: '#279bc9',
+		backgroundColor: '#0088cc',
 		borderRadius: 18,
 		borderBottomLeftRadius: 4,
 		transform: [{rotate: '-45deg'}],

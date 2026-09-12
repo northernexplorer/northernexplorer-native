@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import {View, Text, Image, Pressable} from 'react-native';
 import {Link} from 'expo-router';
-import {calculateHaversineDistance, getImageUrl, getUrlSafeString} from '@northernexplorer/tools';
+import {calculateHaversineDistance, getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
 import {styles} from '~/layout/Home/styles';
 import {config} from '~/config';
 import {useLocation} from '~/location/state/location/useLocation';
