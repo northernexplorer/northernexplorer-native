@@ -1,18 +1,30 @@
-import {View, Text, Image, FlatList, StyleSheet} from 'react-native';
+import {View, Text, FlatList, Pressable, StyleSheet} from 'react-native';
 import {Link} from 'expo-router';
-import React from 'react';
-import {formatDate, getImageUrl, Spinner} from '@northernexplorer/tools-web';
+import React, {useMemo, useState} from 'react';
+import {formatDate, getDynamicImageUrl, ImageView, Spinner} from '@northernexplorer/tools-web';
 import {Ionicons} from '@expo/vector-icons';
 import {useApiFetch} from '~/core/useApiFetch';
+import {config} from '~/config';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {PhotoPreviewModal} from '~/location/PointOfInterestDetails/components/PhotoPreviewModal';
 
 type Props = {
 	username: string;
 };
 
 export function ProfileTimeline({username}: Props) {
+	const auth = useAuthentication();
 	const {data: events, loading} = useApiFetch('user', 'UserController', 'getTimeline', {
 		username,
 	});
+
+	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+
+	// Extract images into a list for modal index/navigation tracking
+	const imageEvents = useMemo(() => {
+		if (!events) return [];
+		return events.filter(e => Boolean(e.image));
+	}, [events]);
 
 	if (loading || !events) return <Spinner />;
 
@@ -24,51 +36,83 @@ export function ProfileTimeline({username}: Props) {
 		);
 	}
 
+	const selectedImageId = selectedImageIndex !== null ? imageEvents[selectedImageIndex]?.image?.id : null;
+
 	return (
-		<FlatList
-			data={events}
-			keyExtractor={(item, index) => `${item.date}-${index}`}
-			contentContainerStyle={styles.timelineList}
-			renderItem={({item}) => {
-				const eventDate = formatDate(item.date);
+		<View style={{flex: 1}}>
+			<FlatList
+				data={events}
+				keyExtractor={(item, index) => `${item.date}-${index}`}
+				contentContainerStyle={styles.timelineList}
+				renderItem={({item}) => {
+					const eventDate = formatDate(item.date);
 
-				if (item.pointOfInterest) {
-					const poi = item.pointOfInterest;
-					return (
-						<View style={styles.timelineCard}>
-							<View style={styles.timelineHeader}>
-								<Ionicons name="location-outline" size={20} color="#0284c7" />
-								<Text style={styles.timelineDate}>{eventDate}</Text>
+					if (item.pointOfInterest) {
+						const poi = item.pointOfInterest;
+						return (
+							<View style={styles.timelineCard}>
+								<View style={styles.timelineHeader}>
+									<Ionicons name="location-outline" size={20} color="#0284c7" />
+									<Text style={styles.timelineDate}>{eventDate}</Text>
+								</View>
+								<Text style={styles.timelineAction}>Visited a Point of Interest</Text>
+								<Link href={`/poi/${poi.id}`} style={styles.poiTitle}>
+									{poi.name}
+								</Link>
 							</View>
-							<Text style={styles.timelineAction}>Visited a Point of Interest</Text>
-							<Link href={`/poi/${poi.id}`} style={styles.poiTitle}>
-								{poi.name}
-							</Link>
-						</View>
-					);
-				}
+						);
+					}
 
-				if (item.image) {
-					const img = item.image;
-					return (
-						<View style={styles.timelineCard}>
-							<View style={styles.timelineHeader}>
-								<Ionicons name="image-outline" size={20} color="#0284c7" />
-								<Text style={styles.timelineDate}>{eventDate}</Text>
-							</View>
-							<Text style={styles.timelineAction}>Uploaded a new photo</Text>
-							<Image source={{uri: getImageUrl({path: img.url, size: 'thumbnail'})}} style={styles.timelineImage} resizeMode="cover" />
-							<View style={styles.likesRow}>
-								<Ionicons name="heart" size={16} color="#ef4444" />
-								<Text style={styles.likesCount}>{img.likes}</Text>
-							</View>
-						</View>
-					);
-				}
+					if (item.image) {
+						const imageIndex = imageEvents.findIndex(imgEvent => imgEvent.image?.id === item.image?.id);
 
-				return null;
-			}}
-		/>
+						return (
+							<View style={styles.timelineCard}>
+								<View style={styles.timelineHeader}>
+									<Ionicons name="image-outline" size={20} color="#0284c7" />
+									<Text style={styles.timelineDate}>{eventDate}</Text>
+								</View>
+								<Text style={styles.timelineAction}>Uploaded a new photo</Text>
+
+								<Pressable onPress={() => setSelectedImageIndex(imageIndex)}>
+									<ImageView
+										source={{
+											uri: getDynamicImageUrl({
+												path: item.image.url,
+												size: 'thumbnail',
+												processed: item.image.processed,
+												cdn: config.CONTENT_DELIVERY_NETWORK,
+											}),
+										}}
+										style={styles.timelineImage}
+										resizeMode="cover"
+									/>
+								</Pressable>
+
+								<View style={styles.likesRow}>
+									<Ionicons name="heart" size={16} color="#ef4444" />
+									<Text style={styles.likesCount}>{item.image.likes}</Text>
+								</View>
+							</View>
+						);
+					}
+
+					return null;
+				}}
+			/>
+
+			{selectedImageId && selectedImageIndex !== null && (
+				<PhotoPreviewModal
+					selectedImageId={selectedImageId}
+					selectedIndex={selectedImageIndex}
+					totalImages={imageEvents.length}
+					currentUserId={auth?.userId}
+					onClose={() => setSelectedImageIndex(null)}
+					onPrevious={() => setSelectedImageIndex(prev => (prev !== null && prev > 0 ? prev - 1 : prev))}
+					onNext={() => setSelectedImageIndex(prev => (prev !== null && prev < imageEvents.length - 1 ? prev + 1 : prev))}
+				/>
+			)}
+		</View>
 	);
 }
 
