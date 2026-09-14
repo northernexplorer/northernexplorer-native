@@ -13,8 +13,8 @@ export function MenuItemUser() {
 	const authentication = useAuthentication();
 
 	const isLoggedIn = !!(authentication?.username && authentication.accessToken);
-	const profileHref = isLoggedIn ? `/profile/${authentication.username}` : '/profile/login';
-	const logoutHref = isLoggedIn ? `/profile/${authentication.username}/logout` : '/profile/logout';
+	const profileHref = isLoggedIn ? `/user/${authentication.username}` : '/user/login';
+	const logoutHref = isLoggedIn ? `/user/${authentication.username}/logout` : '/user/logout';
 
 	return (
 		<View
