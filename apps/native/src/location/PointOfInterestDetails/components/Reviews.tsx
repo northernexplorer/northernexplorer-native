@@ -7,7 +7,7 @@ import {useRouter} from 'expo-router';
 import {ReviewForm} from './ReviewForm';
 import {RenderStars} from './RenderStars';
 import {ReviewMetadataBadges} from './ReviewMetadataBadges';
-import {UserLikes} from './UserLikes';
+import {ReviewLikes} from './ReviewLikes';
 import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -154,7 +154,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 								/>
 
 								<Text style={globalStyles.description}>{review.description}</Text>
-								<UserLikes reviewId={review.id} currentUserId={review.user.id} />
+								<ReviewLikes reviewId={review.id} currentUserId={review.user.id} />
 							</View>
 						);
 					})}
@@ -222,7 +222,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 								/>
 
 								<Text style={globalStyles.description}>{review.description}</Text>
-								<UserLikes reviewId={review.id} currentUserId={review.user.id} />
+								<ReviewLikes reviewId={review.id} currentUserId={review.user.id} />
 							</View>
 						);
 					})}
