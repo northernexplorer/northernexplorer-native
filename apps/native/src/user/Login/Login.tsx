@@ -58,7 +58,7 @@ export function Login() {
 		const response = await mutate({login: {password: formData.password, identifier}, device: deviceInfo});
 		if (response) {
 			dispatch(setAuthentication(response));
-			router.replace(`/profile/${response.username}`);
+			router.replace(`/user/${response.username}`);
 		}
 	};
 
@@ -100,13 +100,13 @@ export function Login() {
 				<Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
 			</Pressable>
 
-			<Link href="/profile/forgot-password" asChild>
+			<Link href="/user/forgot-password" asChild>
 				<Pressable disabled={loading}>
 					<Text style={styles.link}>Forgot Password?</Text>
 				</Pressable>
 			</Link>
 
-			<Link href="/profile/register" asChild>
+			<Link href="/user/register" asChild>
 				<Pressable disabled={loading}>
 					<Text style={styles.link}>Create Account</Text>
 				</Pressable>

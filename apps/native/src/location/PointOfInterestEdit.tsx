@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
+import {ScrollView, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
-import {getImageUrl, getUrlSafeString, Spinner, FormField, TextAreaField, DropdownField} from '@northernexplorer/tools-web';
+import {getImageUrl, getUrlSafeString, Spinner, FormField, TextAreaField, DropdownField, ImageView} from '@northernexplorer/tools-web';
 import {PointOfInterestEditType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
@@ -77,7 +77,7 @@ export function PointOfInterestEdit() {
 		}
 	}, [data]);
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading || !data) return <Spinner />;
 
@@ -156,7 +156,7 @@ export function PointOfInterestEdit() {
 	return (
 		<ScrollView style={formStyles.container} contentContainerStyle={formStyles.contentContainer}>
 			<View style={styles.bannerContainer}>
-				<Image source={{uri: getImageUrl({path: data.image, cdn: config.CONTENT_DELIVERY_NETWORK})}} style={styles.banner} />
+				<ImageView source={{uri: getImageUrl({path: data.image, cdn: config.CONTENT_DELIVERY_NETWORK})}} style={styles.banner} />
 				<View style={styles.mapCard}>
 					<Map
 						site={{

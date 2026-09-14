@@ -33,7 +33,7 @@ export function Other({username}: Props) {
 							await logout({refreshToken: auth.refreshToken});
 						}
 						dispatch(clearAuthentication());
-						router.replace('/profile/login');
+						router.replace('/user/login');
 						alertStore.showAlert({
 							type: 'success',
 							message: `Account for ${username} has been successfully deleted.`,

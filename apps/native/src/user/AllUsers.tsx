@@ -12,7 +12,7 @@ export function AllUsers() {
 	const authentication = useAuthentication();
 	const {data: users, loading} = useApiFetch('user', 'UserController', 'getAll', {});
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 
@@ -75,7 +75,7 @@ export function AllUsers() {
 			keyExtractor={user => user.id}
 			emptyText="No users found."
 			emptyIcon="people-outline"
-			onRowPress={user => router.push(`/profile/${user.username}`)}
+			onRowPress={user => router.push(`/user/${user.username}`)}
 		/>
 	);
 }

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, Image, Pressable, LayoutChangeEvent, useWindowDimensions} from 'react-native';
+import {View, Text, StyleSheet, Pressable, LayoutChangeEvent, useWindowDimensions} from 'react-native';
 import {ImageType} from '@northernexplorer/types';
-import {formatName, getDynamicImageUrl} from '@northernexplorer/tools-web';
+import {formatName, getDynamicImageUrl, ImageView} from '@northernexplorer/tools-web';
 import {config} from '~/config';
 import {PhotoPreviewModal} from '~/location/PointOfInterestDetails/components/PhotoPreviewModal';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -69,7 +69,7 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 							]}
 							onPress={() => setSelectedIndex(index)}
 						>
-							<Image source={{uri: imageUri}} style={styles.thumbnail} resizeMode="cover" />
+							<ImageView source={{uri: imageUri}} style={styles.thumbnail} resizeMode="cover" />
 
 							{locationName && (
 								<View style={styles.gridLocationBadge}>
