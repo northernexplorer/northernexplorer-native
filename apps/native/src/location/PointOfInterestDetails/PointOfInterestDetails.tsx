@@ -1,8 +1,8 @@
 import React, {useMemo} from 'react';
-import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {Link, useLocalSearchParams} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {calculateHaversineDistance, getImageUrl, getUrlSafeString, Spinner} from '@northernexplorer/tools-web';
+import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, Spinner} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
@@ -50,7 +50,7 @@ export function PointOfInterestDetails() {
 	return (
 		<View>
 			<View style={styles.bannerContainer}>
-				<Image source={{uri: getImageUrl({path: data.image, cdn: config.CONTENT_DELIVERY_NETWORK})}} style={styles.banner} />
+				<ImageView source={{uri: getImageUrl({path: data.image, cdn: config.CONTENT_DELIVERY_NETWORK})}} style={styles.banner} />
 				<View style={styles.mapCard}>
 					<Map site={data} />
 				</View>
