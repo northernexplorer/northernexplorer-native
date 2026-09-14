@@ -53,7 +53,16 @@
 					"locationWhenInUsePermission": "Allow Northern Explorer to access your location."
 				}
 			],
-			"@maplibre/maplibre-react-native"
+			"@maplibre/maplibre-react-native",
+			[
+				"expo-build-properties",
+				{
+					"android": {
+						"enableMinifyInReleaseBuilds": true,
+						"enableShrinkResourcesInReleaseBuilds": true
+					}
+				}
+			]
 		]
 	}
 }

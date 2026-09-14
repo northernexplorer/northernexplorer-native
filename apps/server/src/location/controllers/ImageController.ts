@@ -16,8 +16,8 @@ export class ImageController extends BaseController {
 	private spacesManagementService = new SpacesManagementService({
 		region: config.SPACES_REGION,
 		defaultBucket: config.SPACES_BUCKET,
-		secretAccessKey: config.SPACES_SECRET_KEY,
-		accessKeyId: config.SPACES_ACCESS_KEY,
+		spacesSecretKey: config.SPACES_ACCESS_KEY,
+		spacesAccessKey: config.SPACES_SECRET_KEY,
 	});
 
 	constructor(repos: Repositories) {
@@ -112,7 +112,6 @@ export class ImageController extends BaseController {
 					key: url,
 					body: fileBuffer,
 					contentType: file.mimeType,
-					isPublic: true,
 				});
 
 				let status = ImageStatusEnum.Pending;

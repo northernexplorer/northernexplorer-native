@@ -137,7 +137,7 @@ export function ReviewForm({refetch, initialData, onCancel}: CreateReviewProps) 
 
 	if (!authentication) {
 		return (
-			<Link href="profile/login" asChild>
+			<Link href="user/login" asChild>
 				<View style={cardStyles.loggedOutCard}>
 					<Ionicons name="chatbox-ellipses-outline" size={24} color="#64748b" />
 					<Text style={cardStyles.loggedOutText}>Log in to leave a review</Text>

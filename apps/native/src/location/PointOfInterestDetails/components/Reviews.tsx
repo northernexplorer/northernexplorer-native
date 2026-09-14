@@ -3,6 +3,7 @@ import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native
 import {Ionicons} from '@expo/vector-icons';
 import {formatName} from '@northernexplorer/tools-web';
 import {PointOfInterestType, ReviewStatusEnum, RolesEnum} from '@northernexplorer/types';
+import {useRouter} from 'expo-router';
 import {ReviewForm} from './ReviewForm';
 import {RenderStars} from './RenderStars';
 import {ReviewMetadataBadges} from './ReviewMetadataBadges';
@@ -18,6 +19,7 @@ type ReviewsProps = {
 };
 
 export function Reviews({data, refetch}: ReviewsProps) {
+	const router = useRouter();
 	const authentication = useAuthentication();
 	const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
 	const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
@@ -33,6 +35,12 @@ export function Reviews({data, refetch}: ReviewsProps) {
 	const handleSuccess = () => {
 		setEditingReviewId(null);
 		refetch();
+	};
+
+	const navigateToProfile = (username: string) => {
+		if (username) {
+			router.push(`/user/${username}`);
+		}
 	};
 
 	const handleDelete = (reviewId: string) => {
@@ -90,10 +98,12 @@ export function Reviews({data, refetch}: ReviewsProps) {
 							<View key={review.id} style={[globalStyles.reviewCard, reviewStyles.myReviewCard]}>
 								<View style={globalStyles.headerRow}>
 									<View style={reviewStyles.userInfo}>
-										<UserAvatar username={review.user.username} />
+										<UserAvatar username={review.user.username} onPress={() => navigateToProfile(review.user.username)} />
 										<View>
 											<View style={reviewStyles.nameBadgeRow}>
-												<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
+												<Pressable onPress={() => navigateToProfile(review.user.username)}>
+													<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
+												</Pressable>
 												<View style={reviewStyles.youBadge}>
 													<Text style={reviewStyles.youBadgeText}>Your Review</Text>
 												</View>
@@ -166,9 +176,11 @@ export function Reviews({data, refetch}: ReviewsProps) {
 							<View key={review.id} style={globalStyles.reviewCard}>
 								<View style={globalStyles.headerRow}>
 									<View style={reviewStyles.userInfo}>
-										<UserAvatar username={review.user.username} />
+										<UserAvatar username={review.user.username} onPress={() => navigateToProfile(review.user.username)} />
 										<View>
-											<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
+											<Pressable onPress={() => navigateToProfile(review.user.username)}>
+												<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
+											</Pressable>
 											<RenderStars rating={review.rating} />
 										</View>
 									</View>

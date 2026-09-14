@@ -69,7 +69,7 @@ export function EditProfile() {
 		}
 	}, [data]);
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (loading || !data) return <Spinner />;
 
 	const updateField = (key: FormKeys, value: unknown) => {
@@ -105,7 +105,7 @@ export function EditProfile() {
 		const response = await mutate(formData);
 
 		if (response?.success) {
-			router.replace(`/profile/${formData.username}`);
+			router.replace(`/user/${formData.username}`);
 		}
 	};
 
@@ -176,7 +176,7 @@ export function EditProfile() {
 				<Text style={styles.buttonText}>{mutationLoading ? 'Saving Changes...' : 'Save Changes'}</Text>
 			</Pressable>
 
-			<Link href={`/profile/${username}`} asChild>
+			<Link href={`/user/${username}`} asChild>
 				<Pressable style={styles.secondaryButton} disabled={mutationLoading}>
 					<Text style={styles.secondaryButtonText}>Cancel</Text>
 				</Pressable>

@@ -11,6 +11,10 @@ export class ImageRepository extends BaseRepository<Image> {
 		return this.findOneOrFail({id}, {populate: ['user', 'likes']});
 	}
 
+	async getByUsername(user: User) {
+		return this.find({user}, {populate: ['likes']});
+	}
+
 	generateNewUrl({fileExtension}: {fileExtension: string}): string {
 		const ext = fileExtension.startsWith('.') ? fileExtension : `.${fileExtension}`;
 

@@ -28,7 +28,7 @@ export function ChangePassword() {
 
 	const {mutate, loading} = useApiMutation('user', 'UserController', 'changePassword');
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication) return <Redirect href="/user/login" />;
 
 	const updateField = (key: FormKeys, value: string) => {
 		setFormData(prev => ({...prev, [key]: value}));
@@ -64,7 +64,7 @@ export function ChangePassword() {
 	const handleSubmit = async () => {
 		const response = await mutate({...formData, username});
 		if (response?.success) {
-			router.replace(`/profile/${username}`);
+			router.replace(`/user/${username}`);
 		}
 	};
 
@@ -107,7 +107,7 @@ export function ChangePassword() {
 				<Text style={styles.buttonText}>{loading ? 'Updating Password...' : 'Change Password'}</Text>
 			</Pressable>
 
-			<Link href={`/profile/${username}`} asChild>
+			<Link href={`/user/${username}`} asChild>
 				<Pressable style={styles.secondaryButton} disabled={loading}>
 					<Text style={styles.secondaryButtonText}>Cancel</Text>
 				</Pressable>

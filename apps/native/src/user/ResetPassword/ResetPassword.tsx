@@ -58,7 +58,7 @@ export function ResetPassword() {
 	const handleSubmit = async () => {
 		const response = await mutate({...formData, token: token || ''});
 		if (response?.success) {
-			router.replace(`/profile/reset-password-complete`);
+			router.replace(`/user/reset-password-complete`);
 		}
 	};
 
@@ -90,7 +90,7 @@ export function ResetPassword() {
 				<Text style={styles.buttonText}>{loading ? 'Updating Password...' : 'Change Password'}</Text>
 			</Pressable>
 
-			<Link href={`/profile/${username}`} asChild>
+			<Link href={`/user/${username}`} asChild>
 				<Pressable style={styles.secondaryButton} disabled={loading}>
 					<Text style={styles.secondaryButtonText}>Cancel</Text>
 				</Pressable>

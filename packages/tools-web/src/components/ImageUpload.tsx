@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ActivityIndicator, Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Alert, FlatList, Image, Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {launchImageLibraryAsync, MediaTypeOptions, requestMediaLibraryPermissionsAsync} from 'expo-image-picker';
 import {UploadImageFileInput} from '@northernexplorer/types';
@@ -28,6 +28,7 @@ export function ImageUpload<T extends string>({
 	renderOverlay,
 }: Props<T>) {
 	const [isPicking, setIsPicking] = useState(false);
+	const [isDragOver, setIsDragOver] = useState(false);
 
 	const requestPermission = async (): Promise<boolean> => {
 		const {status} = await requestMediaLibraryPermissionsAsync();
@@ -60,7 +61,6 @@ export function ImageUpload<T extends string>({
 		});
 
 		if (!result.canceled && result.assets.length > 0) {
-			// Track existing identifiers to check against
 			const existingUris = new Set(value.map(item => item.uri));
 			const existingFilenames = new Set(value.map(item => item.filename));
 
@@ -71,13 +71,11 @@ export function ImageUpload<T extends string>({
 				const filename = asset.fileName || asset.uri.split('/').pop() || 'image.jpg';
 				const fileExtension = filename.split('.').pop()?.toLowerCase() || 'jpg';
 
-				// Check if this image has already been added
 				if (existingUris.has(asset.uri) || existingFilenames.has(filename)) {
 					duplicateCount++;
 					continue;
 				}
 
-				// Keep track within the current selection batch as well
 				existingUris.add(asset.uri);
 				existingFilenames.add(filename);
 
@@ -112,6 +110,41 @@ export function ImageUpload<T extends string>({
 		if (loading) return;
 		const updated = value.filter((_, index) => index !== indexToRemove);
 		updateField(fieldName, updated);
+	};
+
+	const handleWebFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setIsDragOver(false);
+		const files = Array.from(e.target.files || []).filter(file => file.type.startsWith('image/'));
+		if (files.length === 0) return;
+
+		const remainingSlots = maxImages - value.length;
+		if (multiple && remainingSlots <= 0) return;
+
+		const filesToProcess = multiple ? files.slice(0, remainingSlots) : [files[0]];
+		const existingUris = new Set(value.map(item => item.uri));
+		const existingFilenames = new Set(value.map(item => item.filename));
+
+		const newFormattedImages: UploadImageFileInput[] = [];
+
+		for (const file of filesToProcess) {
+			const uri = URL.createObjectURL(file);
+			const filename = file.name || 'image.jpg';
+			if (existingUris.has(uri) || existingFilenames.has(filename)) continue;
+
+			newFormattedImages.push({
+				uri,
+				filename,
+				mimeType: file.type || 'image/jpeg',
+				size: file.size || 0,
+				fileExtension: filename.split('.').pop()?.toLowerCase() || 'jpg',
+			});
+		}
+
+		if (newFormattedImages.length > 0) {
+			updateField(fieldName, multiple ? [...value, ...newFormattedImages] : [newFormattedImages[0]]);
+		}
+
+		e.target.value = '';
 	};
 
 	const showPickButton = multiple ? value.length < maxImages : value.length === 0;
@@ -149,17 +182,38 @@ export function ImageUpload<T extends string>({
 
 				{showPickButton && (
 					<TouchableOpacity
-						style={[styles.uploadButton, value.length > 0 && styles.uploadButtonCompact]}
-						onPress={handlePickImages}
+						style={[styles.uploadButton, value.length > 0 && styles.uploadButtonCompact, isDragOver && styles.uploadButtonActive]}
+						onPress={Platform.OS === 'web' ? undefined : handlePickImages}
 						disabled={loading || isPicking}
 						activeOpacity={0.7}
 					>
+						{Platform.OS === 'web' && (
+							<input
+								type="file"
+								accept="image/*"
+								multiple={multiple}
+								onChange={handleWebFileInput}
+								onDragEnter={() => setIsDragOver(true)}
+								onDragOver={e => e.preventDefault()}
+								onDragLeave={() => setIsDragOver(false)}
+								onDrop={() => setIsDragOver(false)}
+								style={webInputStyle}
+								disabled={loading || isPicking}
+							/>
+						)}
+
 						{isPicking ? (
 							<ActivityIndicator color="#0284c7" />
 						) : (
 							<>
-								<Ionicons name="cloud-upload-outline" size={24} color="#64748b" />
-								<Text style={styles.uploadText}>{multiple ? (value.length > 0 ? 'Add More' : 'Select Images') : 'Select Image'}</Text>
+								<Ionicons
+									name={isDragOver ? 'arrow-down-circle-outline' : 'cloud-upload-outline'}
+									size={24}
+									color={isDragOver ? '#0284c7' : '#64748b'}
+								/>
+								<Text style={[styles.uploadText, isDragOver && styles.uploadTextActive]}>
+									{isDragOver ? 'Drop images here' : multiple ? (value.length > 0 ? 'Add More' : 'Select Images') : 'Select Image'}
+								</Text>
 							</>
 						)}
 					</TouchableOpacity>
@@ -170,6 +224,19 @@ export function ImageUpload<T extends string>({
 		</View>
 	);
 }
+
+const webInputStyle: React.CSSProperties = {
+	position: 'absolute',
+	top: 0,
+	left: 0,
+	right: 0,
+	bottom: 0,
+	width: '100%',
+	height: '100%',
+	opacity: 0,
+	cursor: 'pointer',
+	zIndex: 5,
+};
 
 const styles = StyleSheet.create({
 	field: {
@@ -215,6 +282,7 @@ const styles = StyleSheet.create({
 		elevation: 1,
 	},
 	uploadButton: {
+		position: 'relative',
 		borderWidth: 1,
 		borderStyle: 'dashed',
 		borderColor: '#cbd5e1',
@@ -228,10 +296,17 @@ const styles = StyleSheet.create({
 	uploadButtonCompact: {
 		height: 76,
 	},
+	uploadButtonActive: {
+		borderColor: '#0284c7',
+		backgroundColor: '#e0f2fe',
+	},
 	uploadText: {
 		fontSize: 13,
 		color: '#64748b',
 		fontWeight: '600',
+	},
+	uploadTextActive: {
+		color: '#0284c7',
 	},
 	errorText: {
 		color: '#ef4444',

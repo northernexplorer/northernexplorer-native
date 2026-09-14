@@ -99,7 +99,7 @@ export function Security({username}: Props) {
 					)}
 				</View>
 			))}
-			<Link href={`/profile/${username}/change-password`} asChild>
+			<Link href={`/user/${username}/change-password`} asChild>
 				<Pressable style={styles.button}>
 					<Text style={styles.buttonText}>Change Password</Text>
 				</Pressable>
