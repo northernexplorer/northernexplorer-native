@@ -9,7 +9,7 @@ type UserLikesProps = {
 	reviewId: string;
 };
 
-export default function UserLikes({currentUserId, reviewId}: UserLikesProps) {
+export function UserLikes({currentUserId, reviewId}: UserLikesProps) {
 	const [isLiked, setIsLiked] = useState<boolean>(false);
 
 	const {mutate: likeMutation} = useApiMutation('location', 'ReviewController', 'like');

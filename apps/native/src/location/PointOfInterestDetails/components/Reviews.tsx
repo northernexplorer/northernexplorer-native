@@ -7,7 +7,7 @@ import {useRouter} from 'expo-router';
 import {ReviewForm} from './ReviewForm';
 import {RenderStars} from './RenderStars';
 import {ReviewMetadataBadges} from './ReviewMetadataBadges';
-import UserLikes from './UserLikes';
+import {UserLikes} from './UserLikes';
 import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';

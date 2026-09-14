@@ -16,8 +16,8 @@ export class ImageController extends BaseController {
 	private spacesManagementService = new SpacesManagementService({
 		region: config.SPACES_REGION,
 		defaultBucket: config.SPACES_BUCKET,
-		spacesSecretKey: config.SPACES_ACCESS_KEY,
-		spacesAccessKey: config.SPACES_SECRET_KEY,
+		spacesSecretKey: config.SPACES_SECRET_KEY,
+		spacesAccessKey: config.SPACES_ACCESS_KEY,
 	});
 
 	constructor(repos: Repositories) {
