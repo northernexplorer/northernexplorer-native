@@ -6,12 +6,12 @@ import {PointOfInterestType, ReviewStatusEnum, RolesEnum} from '@northernexplore
 import {ReviewForm} from './ReviewForm';
 import {RenderStars} from './RenderStars';
 import {ReviewMetadataBadges} from './ReviewMetadataBadges';
+import UserLikes from './UserLikes';
 import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {alertStore} from '~/core/alertStore';
 import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
-import UserLikes from './UserLikes';
 type ReviewsProps = {
 	data: PointOfInterestType;
 	refetch: () => void;
@@ -54,7 +54,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 			],
 		});
 	};
- 
+
 	return (
 		<View style={reviewStyles.container}>
 			{/* Show Review Creation Form at the top if User Hasn't Posted Yet */}
@@ -144,7 +144,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 								/>
 
 								<Text style={globalStyles.description}>{review.description}</Text>
-								<UserLikes reviewId={review.id} currentUserId={review.user.id}/>
+								<UserLikes reviewId={review.id} currentUserId={review.user.id} />
 							</View>
 						);
 					})}
@@ -210,7 +210,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 								/>
 
 								<Text style={globalStyles.description}>{review.description}</Text>
-								<UserLikes reviewId={review.id} currentUserId={review.user.id}/>
+								<UserLikes reviewId={review.id} currentUserId={review.user.id} />
 							</View>
 						);
 					})}

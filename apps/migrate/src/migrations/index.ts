@@ -8,5 +8,4 @@ export const migrationsRegistry: Record<string, string[]> = {
 	...m202607,
 	...m202608,
 	...m202609,
-
 };

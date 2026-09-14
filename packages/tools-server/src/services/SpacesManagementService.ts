@@ -38,7 +38,6 @@ export class SpacesManagementService {
 			},
 		});
 	}
-	
 
 	/**
 	 * Get an object from DigitalOcean Spaces.

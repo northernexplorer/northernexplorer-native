@@ -48,7 +48,7 @@ export function repositories(em: EntityManager) {
 		pointOfInterest: new PointOfInterestRepository(em, PointOfInterest),
 		region: new RegionRepository(em, Region),
 		review: new ReviewRepository(em, Review),
-		reviewLike: new ReviewLikeRepository(em,ReviewLike),
+		reviewLike: new ReviewLikeRepository(em, ReviewLike),
 		session: new SessionRepository(em, Session),
 		subscription: new SubscriptionRepository(em, Subscription),
 		subscriptionFeature: new SubscriptionFeatureRepository(em, SubscriptionFeature),

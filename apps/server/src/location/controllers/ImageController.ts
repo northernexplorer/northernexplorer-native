@@ -95,7 +95,7 @@ export class ImageController extends BaseController {
 		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
 		const results: {file: string; status: ImageUploadStatus}[] = [];
-             
+
 		await Promise.all(
 			params.files.map(async file => {
 				const fileBuffer = Buffer.from(file.base64, 'base64');
