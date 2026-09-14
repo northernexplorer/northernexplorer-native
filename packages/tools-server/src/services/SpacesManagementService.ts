@@ -14,29 +14,28 @@ export interface UploadOptions {
 export class SpacesManagementService {
 	private readonly s3Client: S3Client;
 	private readonly defaultBucket: string;
-	private readonly region: string;
 
 	constructor({
-		accessKeyId,
-		secretAccessKey,
+		spacesSecretKey,
+		spacesAccessKey,
 		region,
 		defaultBucket,
 	}: {
-		accessKeyId: string;
-		secretAccessKey: string;
+		spacesAccessKey: string;
+		spacesSecretKey: string;
 		region: string;
 		defaultBucket: string;
 	}) {
-		this.region = region;
 		this.defaultBucket = defaultBucket;
 
 		this.s3Client = new S3Client({
-			endpoint: `https://${this.region}.digitaloceanspaces.com`,
-			region: this.region,
+			endpoint: `https://${region}.digitaloceanspaces.com`,
+			region: region,
 			credentials: {
-				accessKeyId,
-				secretAccessKey,
+				accessKeyId: spacesAccessKey,
+				secretAccessKey: spacesSecretKey,
 			},
+			forcePathStyle: false,
 		});
 	}
 
@@ -60,13 +59,12 @@ export class SpacesManagementService {
 		};
 	}
 
-	async upload({key, body, contentType, bucket = this.defaultBucket, isPublic = true, metadata}: UploadOptions) {
+	async upload({key, body, contentType, bucket = this.defaultBucket, metadata}: UploadOptions) {
 		const input: PutObjectCommandInput = {
 			Bucket: bucket,
 			Key: key,
 			Body: body,
 			ContentType: contentType,
-			ACL: isPublic ? 'public-read' : 'private',
 			Metadata: metadata,
 		};
 
