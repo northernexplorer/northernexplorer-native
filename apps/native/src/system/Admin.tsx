@@ -12,7 +12,7 @@ export function Admin() {
 	const authentication = useAuthentication();
 	const {data, loading} = useApiFetch('system', 'StatusController', 'getOverview', {});
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 

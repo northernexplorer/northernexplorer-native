@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, getDynamicImageUrl, ImageView} from '@northernexplorer/tools-web';
+import {useRouter} from 'expo-router';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -39,6 +40,7 @@ export function PhotoPreviewModal({
 	onApprove,
 	onReject,
 }: PhotoPreviewModalProps) {
+	const router = useRouter();
 	const [isLiked, setIsLiked] = useState<boolean>(false);
 
 	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
@@ -64,6 +66,11 @@ export function PhotoPreviewModal({
 	const canManage = Boolean(onDelete) && (isAdmin || imageData.user.id === currentUserId);
 	const isDeleting = deletingImageId === imageData.id;
 	const isApproving = approvingImageId === imageData.id;
+
+	const handleUserProfileNavigation = () => {
+		onClose();
+		router.push(`/user/${imageData.user.username}`);
+	};
 
 	const handleLikeToggle = async (e: GestureResponderEvent) => {
 		e.stopPropagation();
@@ -204,11 +211,11 @@ export function PhotoPreviewModal({
 				{/* Footer Bar */}
 				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
 					<View style={styles.userInfo}>
-						<UserAvatar username={imageData.user.username} />
-						<View style={styles.userDetails}>
+						<UserAvatar username={imageData.user.username} onPress={handleUserProfileNavigation} />
+						<Pressable style={styles.userDetails} onPress={handleUserProfileNavigation}>
 							<Text style={styles.userName}>{formatName(imageData.user)}</Text>
 							{imageData.altText && <Text style={styles.altText}>{imageData.altText}</Text>}
-						</View>
+						</Pressable>
 					</View>
 
 					<View style={styles.modalActions}>

@@ -49,7 +49,7 @@ export function MapSidebar() {
 
 	const canChangeMapStyle = !!permissionData?.navigation.changeMapStyle;
 
-	const bannerHref = isLoggedIn ? `/profile/${authentication.username}/change-subscription` : '/profile/login';
+	const bannerHref = isLoggedIn ? `/user/${authentication.username}/change-subscription` : '/user/login';
 	const bannerTitle = 'Upgrade Required to Access All Map Styles';
 	const bannerSubtitle = isLoggedIn ? 'Click to find out more' : 'Start by signing in';
 

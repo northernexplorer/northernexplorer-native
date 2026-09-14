@@ -34,7 +34,7 @@ export function ProfileDetails({username}: Props) {
 			<ProfileField label="Status" value={data.isActive ? 'Active' : 'Inactive'} />
 
 			<ProfileField label="Registered On" value={formatDate(data.createdAt)} />
-			<Link href={`/profile/${username}/edit-profile`} asChild>
+			<Link href={`/user/${username}/edit-profile`} asChild>
 				<Pressable style={styles.button}>
 					<Text style={styles.buttonText}>Edit Profile</Text>
 				</Pressable>

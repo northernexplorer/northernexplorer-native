@@ -30,7 +30,7 @@ export function ChangeSubscription() {
 		}
 	}, [subscriptionData]);
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (loading || !data || subscriptionLoading || !subscriptionData) return <Spinner />;
 
 	const currentPlanId = subscriptionData.subscriptionLevel.id;
@@ -99,7 +99,7 @@ export function ChangeSubscription() {
 				await Purchases.purchaseStoreProduct(productToPurchase);
 
 				alertStore.showAlert({message: 'Subscription processed! Access will update shortly.', title: 'Success', type: 'success'});
-				router.replace(`/profile/${username}`);
+				router.replace(`/user/${username}`);
 				return;
 			}
 			alertStore.showAlert({message: 'Could not find product ID.', title: 'Purchase Error', type: 'error'});
@@ -186,7 +186,7 @@ export function ChangeSubscription() {
 				</Text>
 			</Pressable>
 
-			<Link href={`/profile/${username}`} asChild>
+			<Link href={`/user/${username}`} asChild>
 				<Pressable style={{...styles.secondaryButton, ...cardStyles.cancelButton}} disabled={isPurchasing}>
 					<Text style={styles.secondaryButtonText}>Cancel</Text>
 				</Pressable>

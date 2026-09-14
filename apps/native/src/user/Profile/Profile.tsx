@@ -1,3 +1,5 @@
+import {Spinner} from '@northernexplorer/tools-web';
+
 export type AvatarDetails = {
 	subscriptionLevelName: string;
 	firstName: string;
@@ -33,6 +35,8 @@ export function Profile() {
 	const switchTab = (newTab: 'timeline' | 'details' | 'subscription' | 'security' | 'other') => {
 		router.setParams({username, tab: newTab});
 	};
+
+	if (loading) return <Spinner />;
 
 	return (
 		<View style={styles.container}>
