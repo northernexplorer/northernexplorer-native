@@ -1,4 +1,4 @@
-import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Params, Response, RouteDefinition, ROUTES, UserEvents} from '@northernexplorer/types';
 import {wrap} from '@mikro-orm/core';
 import {Repositories} from '../../core/repositories';
 import {TokenService} from '../services/TokenService';
@@ -332,5 +332,30 @@ export class UserController extends BaseController {
 	getAll(params: Params<Route<'getAll'>>, auth?: AuthContext): Promise<Response<Route<'getAll'>>> {
 		this.permissionService.canAccessAdmin(auth);
 		return this.repos.user.getAll();
+	}
+
+	async getTimeline(params: Params<Route<'getTimeline'>>): Promise<Response<Route<'getTimeline'>>> {
+		const user = await this.repos.user.getByUsername(params.username);
+		const images = await this.repos.image.getByUsername(user);
+		const pointsOfInterest = await this.repos.pointOfInterest.getVisitedByUser(user);
+
+		const imageEvents: UserEvents[] = images.map(image => {
+			const {likes, ...imageWithoutLikes} = image;
+
+			return {
+				date: new Date(image.createdAt),
+				image: {
+					...imageWithoutLikes,
+					likes: likes.length,
+				},
+			};
+		});
+
+		const poiEvents: UserEvents[] = pointsOfInterest.map(poi => ({
+			date: new Date(poi.reviews[0].createdAt),
+			pointOfInterest: poi,
+		}));
+
+		return [...imageEvents, ...poiEvents].sort((a, b) => b.date.getTime() - a.date.getTime());
 	}
 }

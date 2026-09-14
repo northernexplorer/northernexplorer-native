@@ -49,7 +49,7 @@ export function ForgotPassword() {
 	const handleSubmit = async () => {
 		const response = await mutate(formData);
 		if (response?.success) {
-			router.replace('/profile/email-reset-confirmation');
+			router.replace('/user/email-reset-confirmation');
 		}
 	};
 
@@ -76,7 +76,7 @@ export function ForgotPassword() {
 			</Pressable>
 
 			{/* Navigation Link */}
-			<Link href="/profile/login" asChild>
+			<Link href="/user/login" asChild>
 				<Pressable disabled={loading}>
 					<Text style={styles.link}>Back to Sign In</Text>
 				</Pressable>

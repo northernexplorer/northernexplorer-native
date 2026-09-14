@@ -20,7 +20,7 @@ export function PendingImages() {
 	const {mutate: approveMutation} = useApiMutation('location', 'ImageController', 'approveImage');
 	const {mutate: rejectMutation} = useApiMutation('location', 'ImageController', 'rejectImage');
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 

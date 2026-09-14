@@ -12,7 +12,7 @@ export function PublishedPointOfInterests() {
 	const authentication = useAuthentication();
 	const {data: sites, loading} = useApiFetch('location', 'PointOfInterestController', 'getPublished', {});
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 
