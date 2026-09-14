@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {getUrlSafeString, Spinner, Column, Table} from '@northernexplorer/tools-web';
+import {getUrlSafeString, Spinner, Column, Table, ImageView} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -24,7 +24,7 @@ export function PublishedPointOfInterests() {
 			width: 50,
 			render: site =>
 				site.image ? (
-					<Image source={{uri: site.image}} style={styles.thumbnail} />
+					<ImageView source={{uri: site.image}} style={styles.thumbnail} />
 				) : (
 					<View style={[styles.thumbnail, styles.placeholderThumbnail]}>
 						<Ionicons name="image-outline" size={18} color="#9e9e9e" />
