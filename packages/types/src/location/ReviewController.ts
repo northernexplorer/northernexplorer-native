@@ -5,6 +5,9 @@ export enum ReviewStatusEnum {
 	Approved = 'Approved',
 }
 
+
+
+
 export type ReviewType = {
 	id: string;
 	user: {
@@ -16,6 +19,7 @@ export type ReviewType = {
 	};
 	pointOfInterest: {id: string; name: string};
 	rating: ReviewRatingEnum;
+	likes:number;
 	difficulty: SiteDifficultyEnum;
 	entranceCost: EntranceCostEnum;
 	conditions: SiteConditionEnum[];
@@ -99,6 +103,24 @@ export const ReviewController = {
 		params: {} as Record<string, never>,
 		response: null as unknown as ReviewType[],
 	},
+		like: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			success: boolean;
+		},
+	},
+	unLike: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			success: boolean;
+		},
+	},
+	hasLiked: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			liked: boolean;
+			likeCount: number;
+		}},
 	approveReview: {
 		params: {} as {id: string},
 		response: null as unknown as ReviewType,
@@ -119,6 +141,7 @@ export const ReviewController = {
 			entranceCost: EntranceCostEnum;
 			conditions: SiteConditionEnum[];
 			description: string;
+			likes:number;
 		},
 		response: null as unknown as ReviewType,
 	},

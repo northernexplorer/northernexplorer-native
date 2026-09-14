@@ -16,8 +16,8 @@ export class ImageController extends BaseController {
 	private spacesManagementService = new SpacesManagementService({
 		region: config.SPACES_REGION,
 		defaultBucket: config.SPACES_BUCKET,
-		secretAccessKey: config.SPACES_ACCESS_KEY,
-		accessKeyId: config.SPACES_SECRET_KEY,
+		secretAccessKey: config.SPACES_SECRET_KEY,
+		accessKeyId: config.SPACES_ACCESS_KEY,
 	});
 
 	constructor(repos: Repositories) {
@@ -95,7 +95,7 @@ export class ImageController extends BaseController {
 		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
 		const results: {file: string; status: ImageUploadStatus}[] = [];
-
+             
 		await Promise.all(
 			params.files.map(async file => {
 				const fileBuffer = Buffer.from(file.base64, 'base64');

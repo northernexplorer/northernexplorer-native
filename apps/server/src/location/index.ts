@@ -14,6 +14,7 @@ export {Organization} from './entities/Organization';
 export {PointOfInterest} from './entities/PointOfInterest';
 export {Region} from './entities/Region';
 export {Review} from './entities/Review';
+export {ReviewLike} from './entities/ReviewLike'
 
 export {CityRepository} from './repositories/CityRepository';
 export {CountryRepository} from './repositories/CountryRepository';
@@ -23,3 +24,4 @@ export {OrganizationRepository} from './repositories/OrganizationRepository';
 export {PointOfInterestRepository} from './repositories/PointOfInterestRepository';
 export {RegionRepository} from './repositories/RegionRepository';
 export {ReviewRepository} from './repositories/ReviewRepository';
+export {ReviewLikeRepository} from './repositories/ReviewLikeRepository'

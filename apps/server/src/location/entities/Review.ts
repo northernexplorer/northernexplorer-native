@@ -1,8 +1,10 @@
-import {Entity, Enum, ManyToOne, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
+import {Entity, Enum, ManyToOne, OneToMany, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
 import {EntranceCostEnum, ReviewRatingEnum, ReviewStatusEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {User} from '../../user';
 import {PointOfInterest} from '../index';
+import { Collection } from '@mikro-orm/core';
+import { ReviewLike } from './ReviewLike';
 
 type ReviewInput = {
 	user: User;
@@ -38,6 +40,9 @@ export class Review {
 	@ManyToOne(() => PointOfInterest)
 	pointOfInterest: PointOfInterest;
 
+     @OneToMany(() => ReviewLike, like => like.review)
+    likes = new Collection<ReviewLike>(this)
+	
 	@Enum(() => ReviewRatingEnum)
 	rating: ReviewRatingEnum;
 

@@ -3,10 +3,22 @@ import {BaseController} from '../../core/BaseController';
 import {Repositories} from '../../core/repositories';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
+import { ReviewLike } from '../entities/ReviewLike';
+import { Review } from '../entities/Review';
+import { ReviewType } from '@northernexplorer/types';
 
 type Route<M extends keyof ROUTES['location']['ReviewController']> = RouteDefinition<'location', 'ReviewController'>[M];
 
 export class ReviewController extends BaseController {
+
+
+private reviewResponse(review: Review): ReviewType {
+    return {
+        ...review,
+        likes: review.likes.length,
+    };
+}
+
 	private permissionService = new PermissionService();
 
 	constructor(repos: Repositories) {
@@ -17,14 +29,81 @@ export class ReviewController extends BaseController {
 		const {id} = params;
 		const review = await this.repos.review.getById(id);
 
-		return review;
+		return this.reviewResponse(review)
 	}
+
+  async like(params: Params<Route<'like'>>, auth?: AuthContext): Promise<Response<Route<'like'>>> {
+		const {userId} = this.permissionService.isLoggedIn(auth);
+		const user = await this.repos.user.getById(userId);
+  
+		const review = await this.repos.review.getById(params.id);
+  
+		const existingLike = await this.repos.reviewLike.findOne({
+			review: review.id,
+			user: userId,
+		});
+  
+		if (existingLike) {
+			return {success: true};
+		}
+  
+		const newLike = new ReviewLike({
+			review,
+			user,
+		});
+  
+		review.user.score = review.user.score + 1;
+  
+		this.persist(newLike);
+		await this.flush();
+  
+		return {success: true};
+	}
+  
+	async unLike(params: Params<Route<'unLike'>>, auth?: AuthContext): Promise<Response<Route<'unLike'>>> {
+		const {userId} = this.permissionService.isLoggedIn(auth);
+  
+		const existingLike = await this.repos.reviewLike.findOne({
+			review: params.id,
+			user: userId,
+		});
+  
+		if (!existingLike) {
+			return {success: true};
+		}
+  
+		const review = await this.repos.review.getById(params.id);
+  
+		review.user.score = Math.max(0, review.user.score - 1);
+  
+		this.repos.reviewLike.remove(existingLike);
+		await this.flush();
+  
+		return {success: true};
+	}
+  
+	async hasLiked(params: Params<Route<'hasLiked'>>, auth?: AuthContext): Promise<Response<Route<'hasLiked'>>> {
+		if (!auth?.userId) return {liked: false, likeCount: 0};
+  
+		const like = await this.repos.reviewLike.findLike(params.id, auth.userId);
+		const review = await this.repos.review.getById(params.id);
+		return {liked: Boolean(like), likeCount: review.likes.length};
+	}
+
 
 	public async getPendingReviews(_params: Params<Route<'getPendingReviews'>>, auth?: AuthContext): Promise<Response<Route<'getPendingReviews'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
-		return this.repos.review.find({status: ReviewStatusEnum.Pending}, {populate: ['user', 'pointOfInterest']});
+		const reviews = await this.repos.review.find(
+    {status: ReviewStatusEnum.Pending},
+    {populate: ['user', 'pointOfInterest', 'likes']}
+);
+
+     return reviews.map(review => ({
+    ...review,
+    likes: review.likes.length,
+    }));
 	}
 
 	public async approveReview(params: Params<Route<'approveReview'>>, auth?: AuthContext): Promise<Response<Route<'approveReview'>>> {
@@ -39,7 +118,7 @@ export class ReviewController extends BaseController {
 
 		await this.flush();
 
-		return review;
+		return this.reviewResponse(review);
 	}
 
 	public async rejectReview(params: Params<Route<'rejectReview'>>, auth?: AuthContext): Promise<Response<Route<'rejectReview'>>> {
@@ -99,7 +178,7 @@ export class ReviewController extends BaseController {
 
 		await this.flush();
 
-		return {...review, user: {id: user.id, score: user.score, username: user.username, firstName: user.firstName, lastName: user.lastName}};
+		return {...review,likes:0, user: {id: user.id, score: user.score, username: user.username, firstName: user.firstName, lastName: user.lastName}};
 	}
 
 	public async editReview(params: Params<Route<'editReview'>>, auth?: AuthContext): Promise<Response<Route<'editReview'>>> {
@@ -119,12 +198,14 @@ export class ReviewController extends BaseController {
 
 		return {
 			...review,
+			likes:review.likes.length,
 			user: {
 				id: user.id,
 				score: user.score,
 				username: user.username,
 				firstName: user.firstName,
 				lastName: user.lastName,
+			    
 			},
 		};
 	}

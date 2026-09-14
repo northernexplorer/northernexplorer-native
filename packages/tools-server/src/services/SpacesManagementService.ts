@@ -29,7 +29,6 @@ export class SpacesManagementService {
 	}) {
 		this.region = region;
 		this.defaultBucket = defaultBucket;
-
 		this.s3Client = new S3Client({
 			endpoint: `https://${this.region}.digitaloceanspaces.com`,
 			region: this.region,
@@ -39,6 +38,7 @@ export class SpacesManagementService {
 			},
 		});
 	}
+	
 
 	/**
 	 * Get an object from DigitalOcean Spaces.

@@ -2,7 +2,8 @@
 	"extends": ["expo/tsconfig.base", "../../tsconfig.base.json"],
 	"compilerOptions": {
 		"paths": {
-			"~/*": ["./src/*"]
+			"~/*": ["./src/*"],
+			"jsx": ["./react-jsx"]
 		}
 	},
 	"include": ["src/**/*", "index.ts", "global.d.ts"]
