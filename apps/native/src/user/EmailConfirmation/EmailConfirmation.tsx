@@ -8,7 +8,7 @@ export function EmailConfirmation() {
 	const authentication = useAuthentication();
 	useEffect(() => {
 		if (authentication?.username) {
-			router.replace(`/profile/${authentication.username}`);
+			router.replace(`/user/${authentication.username}`);
 		}
 	}, [authentication?.username]);
 

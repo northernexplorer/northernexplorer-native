@@ -47,7 +47,7 @@ export function AlertHandler({children}: {children: React.ReactNode}) {
 		return authEvents.subscribe(event => {
 			if (event === 'FORCE_LOGOUT') {
 				dispatch(clearAuthentication());
-				router.replace('/profile/login');
+				router.replace('/user/login');
 			}
 		});
 	}, [dispatch]);

@@ -12,6 +12,7 @@ import {
 } from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
+import {User} from '../../user';
 
 interface PointOfInterestRawRow {
 	id: string;
@@ -204,5 +205,9 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 	getPublished() {
 		return this.find({status: PublishStatusEnum.Published}, {orderBy: {name: 'asc'}, populate: ['region', 'country']});
+	}
+
+	getVisitedByUser(user: User) {
+		return this.find({reviews: {user}}, {populate: ['reviews', 'region', 'country']});
 	}
 }

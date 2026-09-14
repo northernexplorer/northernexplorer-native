@@ -67,7 +67,7 @@ export function Photos({data, refetch}: PhotosProps) {
 	return (
 		<View style={styles.container}>
 			{!authentication ? (
-				<Link href="profile/login" asChild>
+				<Link href="user/login" asChild>
 					<Pressable style={styles.loggedOutCard}>
 						<Ionicons name="images-outline" size={24} color="#64748b" />
 						<Text style={styles.loggedOutText}>Log in to share photos</Text>

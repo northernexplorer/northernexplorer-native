@@ -1,11 +1,11 @@
 import React from 'react';
-import {Image, ImageProps, StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
+import {Image, ImageProps, ImageStyle, StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
 
-export interface ImageViewProps extends ImageProps {
+export interface ImageViewProps extends Omit<ImageProps, 'style'> {
 	/** Style applied to the container (controls size, aspect ratio, borders, etc.) */
 	style?: StyleProp<ViewStyle>;
 	/** Optional inner Image component style overrides */
-	imageStyle?: StyleProp<ViewStyle>;
+	imageStyle?: StyleProp<ImageStyle>;
 }
 
 /**
