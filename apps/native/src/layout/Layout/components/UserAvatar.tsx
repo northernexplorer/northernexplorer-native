@@ -91,7 +91,6 @@ export function UserAvatar(props: Props) {
 	const backgroundColor = generateBackgroundColor(data?.username || username);
 	const initial = (data?.firstName ? data.firstName.charAt(0) : username.charAt(0)).toUpperCase();
 
-	// Scale icon size relative to avatar size
 	const iconSize = Math.max(12, Math.round(size * 0.42));
 	const badgeWrapperSize = iconSize + 2;
 
