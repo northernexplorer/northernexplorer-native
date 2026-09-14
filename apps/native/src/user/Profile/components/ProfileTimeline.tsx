@@ -1,4 +1,4 @@
-import {View, Text, FlatList, Pressable, StyleSheet} from 'react-native';
+import {View, Text, Pressable, StyleSheet} from 'react-native';
 import {Link} from 'expo-router';
 import React, {useMemo, useState} from 'react';
 import {formatDate, getDynamicImageUrl, ImageView, Spinner} from '@northernexplorer/tools-web';
@@ -40,16 +40,13 @@ export function ProfileTimeline({username}: Props) {
 
 	return (
 		<View style={styles.container}>
-			<FlatList
-				data={events}
-				keyExtractor={(item, index) => `${item.date}-${index}`}
-				contentContainerStyle={styles.timelineList}
-				renderItem={({item, index}) => {
+			<View style={styles.timelineList}>
+				{events.map((item, index) => {
 					const eventDate = formatDate(item.date);
 					const isLast = index === events.length - 1;
 
 					return (
-						<View style={styles.timelineRow}>
+						<View key={`${item.date}-${index}`} style={styles.timelineRow}>
 							{/* Left: Prominent Date Axis */}
 							<View style={styles.dateColumn}>
 								<Text style={styles.dateText}>{eventDate}</Text>
@@ -113,8 +110,8 @@ export function ProfileTimeline({username}: Props) {
 							</View>
 						</View>
 					);
-				}}
-			/>
+				})}
+			</View>
 
 			{selectedImageId && selectedImageIndex !== null && (
 				<PhotoPreviewModal

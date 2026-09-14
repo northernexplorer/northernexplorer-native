@@ -1,11 +1,4 @@
 import {Spinner} from '@northernexplorer/tools-web';
-
-export type AvatarDetails = {
-	subscriptionLevelName: string;
-	firstName: string;
-	username: string;
-};
-
 import {View, Text, TouchableOpacity, ScrollView, StyleSheet} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import React from 'react';
@@ -30,8 +23,6 @@ export function Profile() {
 	const {username, tab = 'timeline'} = useLocalSearchParams<RouteParams>();
 	const {data, loading} = useApiFetch('user', 'UserController', 'getAvatarDetails', {username});
 
-	const avatarData = data as AvatarDetails | undefined;
-
 	const switchTab = (newTab: 'timeline' | 'details' | 'subscription' | 'security' | 'other') => {
 		router.setParams({username, tab: newTab});
 	};
@@ -48,10 +39,10 @@ export function Profile() {
 
 				<View style={headerStyles.infoContainer}>
 					<View style={headerStyles.nameRow}>
-						<Text style={headerStyles.displayName}>{avatarData?.firstName || username}</Text>
-						{avatarData?.subscriptionLevelName && (
+						<Text style={headerStyles.displayName}>{data?.firstName || username}</Text>
+						{data?.subscriptionLevelName && (
 							<View style={headerStyles.badge}>
-								<Text style={headerStyles.badgeText}>{avatarData.subscriptionLevelName}</Text>
+								<Text style={headerStyles.badgeText}>{data.subscriptionLevelName}</Text>
 							</View>
 						)}
 					</View>
