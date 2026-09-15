@@ -7,7 +7,6 @@ export interface UploadOptions {
 	key: string;
 	body: Buffer | Readable | Uint8Array | string;
 	contentType: string;
-	isPublic?: boolean;
 	metadata?: Record<string, string>;
 }
 
@@ -38,10 +37,6 @@ export class SpacesManagementService {
 		});
 	}
 
-	/**
-	 * Get an object from DigitalOcean Spaces.
-	 * Returns the stream/buffer along with ContentType and Metadata.
-	 */
 	async getObject(key: string, bucket = this.defaultBucket) {
 		const command = new GetObjectCommand({
 			Bucket: bucket,
@@ -65,6 +60,7 @@ export class SpacesManagementService {
 			Body: body,
 			ContentType: contentType,
 			Metadata: metadata,
+			ACL: 'public-read',
 		};
 
 		await this.s3Client.send(new PutObjectCommand(input));

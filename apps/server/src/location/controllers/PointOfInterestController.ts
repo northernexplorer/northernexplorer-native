@@ -28,8 +28,7 @@ export class PointOfInterestController extends BaseController {
 		if (pointOfInterest.status === PublishStatusEnum.Draft) {
 			this.permissionService.canAccessAdmin(auth);
 		}
-		const averageRating = await this.repos.review.getAverageRatingByPointOfInterestId(pointOfInterest.id);
-		return {...pointOfInterest, averageRating};
+		return pointOfInterest;
 	}
 
 	async getPublished(params: Params<Route<'getPublished'>>, auth?: AuthContext): Promise<Response<Route<'getPublished'>>> {

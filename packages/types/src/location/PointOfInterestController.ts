@@ -1,9 +1,10 @@
 import {GenericResponseType} from '../GenericResponseType';
 import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
-import {ReviewSummary} from './ReviewController';
+import {EntranceCostEnum, ReviewRatingEnum, ReviewSummary, SiteConditionEnum, SiteDifficultyEnum} from './ReviewController';
 import {OrganizationType} from './OrganizationController';
 import {ImageType} from './ImageController';
+import {Enum} from '@mikro-orm/decorators/legacy';
 
 export enum PublishStatusEnum {
 	Published = 'Published',
@@ -37,7 +38,10 @@ export type PointOfInterestType = {
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 	organization: OrganizationType;
-	averageRating?: number;
+	entranceCost?: EntranceCostEnum;
+	conditions?: SiteConditionEnum[];
+	rating?: ReviewRatingEnum;
+	difficulty?: SiteDifficultyEnum;
 	images?: ImageType[];
 };
 
@@ -50,6 +54,10 @@ export type PointOfInterestSummary = {
 	lon: number;
 	country: CountryType;
 	region: RegionType;
+	entranceCost?: EntranceCostEnum;
+	conditions?: SiteConditionEnum[];
+	rating?: ReviewRatingEnum;
+	difficulty?: SiteDifficultyEnum;
 };
 
 export type PointOfInterestEditType = {

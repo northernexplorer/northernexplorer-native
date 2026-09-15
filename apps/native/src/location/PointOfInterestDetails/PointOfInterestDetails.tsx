@@ -44,7 +44,7 @@ export function PointOfInterestDetails() {
 
 	const reviewCount = data.reviews?.length ?? 0;
 	const photoCount = data.images?.length ?? 0;
-	const rawRating = typeof data.averageRating === 'number' ? data.averageRating : parseFloat(String(data.averageRating));
+	const rawRating = typeof data.rating === 'number' ? data.rating : parseFloat(String(data.rating));
 	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
 
 	return (

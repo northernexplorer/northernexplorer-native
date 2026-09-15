@@ -20,32 +20,32 @@ export const RATING_MAPPING = [
 ];
 
 export const DIFFICULTY_CONFIG: Record<SiteDifficultyEnum, {label: string; color: string; bgColor: string; borderColor: string}> = {
-	[SiteDifficultyEnum.EASY]: {
-		label: 'Easy',
+	[SiteDifficultyEnum.DEVELOPED]: {
+		label: 'Developed',
 		color: '#ffffff',
 		bgColor: '#22c55e',
 		borderColor: '#16a34a',
 	},
-	[SiteDifficultyEnum.MODERATE]: {
-		label: 'Moderate',
+	[SiteDifficultyEnum.LIGHT_HIKE]: {
+		label: 'Light Hike',
 		color: '#ffffff',
 		bgColor: '#0ea5e9',
 		borderColor: '#0284c7',
 	},
-	[SiteDifficultyEnum.HARD]: {
-		label: 'Hard',
+	[SiteDifficultyEnum.MODERATE_TRAIL]: {
+		label: 'Moderate Trail',
 		color: '#ffffff',
 		bgColor: '#eab308',
 		borderColor: '#ca8a04',
 	},
-	[SiteDifficultyEnum.EXTREME]: {
-		label: 'Extreme',
+	[SiteDifficultyEnum.OFF_TRAIL_REMOTE]: {
+		label: 'Off-Trail & Remote',
 		color: '#ffffff',
 		bgColor: '#f97316',
 		borderColor: '#ea580c',
 	},
-	[SiteDifficultyEnum.IMPOSSIBLE]: {
-		label: 'Impossible',
+	[SiteDifficultyEnum.EXPEDITION_ONLY]: {
+		label: 'Expedition Only',
 		color: '#ffffff',
 		bgColor: '#ef4444',
 		borderColor: '#dc2626',

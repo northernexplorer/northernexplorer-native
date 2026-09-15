@@ -8,11 +8,13 @@ import {
 	RegionType,
 	ReviewStatusEnum,
 	ReviewType,
+	SiteConditionEnum,
 	VisitedFilterEnum,
 } from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
 import {User} from '../../user';
+import {Review} from '../entities/Review';
 
 interface PointOfInterestRawRow {
 	id: string;
@@ -209,5 +211,62 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 	getVisitedByUser(user: User) {
 		return this.find({reviews: {user}}, {populate: ['reviews', 'region', 'country']});
+	}
+
+	async updateSystemGeneratedDetails(pointOfInterestRef: PointOfInterest | string) {
+		const pointOfInterest =
+			typeof pointOfInterestRef === 'string'
+				? await this.findOneOrFail(pointOfInterestRef, {populate: ['reviews']})
+				: await this.populate(pointOfInterestRef, ['reviews']);
+
+		const reviews = pointOfInterest.reviews.getItems();
+		// Calculate average rating (rounded to nearest enum/integer value)
+		const totalRating = reviews.reduce((sum, r) => sum + Number(r.rating), 0);
+		pointOfInterest.rating = Math.round(totalRating / reviews.length);
+
+		// Find most frequent (mode) difficulty
+		pointOfInterest.difficulty = this.getMode(reviews.map(r => r.difficulty));
+
+		// Find most frequent (mode) entrance cost
+		pointOfInterest.entranceCost = this.getMode(reviews.map(r => r.entranceCost));
+
+		// Aggregate conditions while filtering out outliers
+		const conditionCounts = new Map<SiteConditionEnum, number>();
+		for (const review of reviews) {
+			const uniqueReviewConditions = new Set(review.conditions);
+			for (const condition of uniqueReviewConditions) {
+				conditionCounts.set(condition, (conditionCounts.get(condition) || 0) + 1);
+			}
+		}
+
+		// Define threshold: must appear in at least 20% of reviews (minimum of 1 if few reviews)
+		const minOccurrences = reviews.length < 5 ? 1 : Math.ceil(reviews.length * 0.2);
+
+		const validConditions = Array.from(conditionCounts.entries())
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			.filter(([_, count]) => count >= minOccurrences)
+			.map(([condition]) => condition);
+
+		pointOfInterest.conditions = validConditions.length > 0 ? validConditions : undefined;
+
+		pointOfInterest.updatedAt = new Date();
+	}
+
+	private getMode<T>(arr: T[]): T | undefined {
+		if (arr.length === 0) return undefined;
+		const frequency: Record<string, number> = {};
+		let maxFreq = 0;
+		let mode: T = arr[0];
+
+		for (const item of arr) {
+			if (item === undefined || item === null) continue;
+			const key = String(item);
+			frequency[key] = (frequency[key] || 0) + 1;
+			if (frequency[key] > maxFreq) {
+				maxFreq = frequency[key];
+				mode = item;
+			}
+		}
+		return maxFreq > 0 ? mode : undefined;
 	}
 }
