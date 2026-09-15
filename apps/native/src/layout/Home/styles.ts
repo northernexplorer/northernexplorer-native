@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
 	// Point of Interest Card
 	siteCard: {
 		width: 200,
-		height: 220,
+		height: 230,
 	},
 	siteImage: {
 		width: '100%',

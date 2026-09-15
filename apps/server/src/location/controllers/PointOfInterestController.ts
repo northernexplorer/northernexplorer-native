@@ -16,8 +16,43 @@ export class PointOfInterestController extends BaseController {
 		params: Params<Route<'getNearbyPointOfInterests'>>,
 		auth?: AuthContext,
 	): Promise<Response<Route<'getNearbyPointOfInterests'>>> {
-		const {lat, lon, limit, selectedPoiTypes, visitedFilter} = params;
-		return this.repos.pointOfInterest.getClosestPointOfInterests(lat, lon, limit, auth?.userId, selectedPoiTypes, visitedFilter);
+		const {lat, lon, limit, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex} = params;
+
+		let parsedDifficultyIndex = maxDifficultyIndex !== undefined ? Number(maxDifficultyIndex) : undefined;
+		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
+
+		const MAX_FREE_DIFFICULTY_INDEX = 2;
+
+		let hasAdvancedAccess = false;
+
+		if (auth?.userId) {
+			const user = await this.repos.user.getById(auth.userId);
+			const subscription = await this.repos.subscription.getById(user.subscription.id);
+			const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
+
+			if (['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name)) {
+				hasAdvancedAccess = true;
+			}
+		}
+
+		// Apply the restriction if the user lacks advanced access or is unauthenticated
+		if (!hasAdvancedAccess) {
+			if (parsedDifficultyIndex === undefined || parsedDifficultyIndex > MAX_FREE_DIFFICULTY_INDEX) {
+				parsedDifficultyIndex = MAX_FREE_DIFFICULTY_INDEX;
+			}
+		}
+
+		return this.repos.pointOfInterest.getClosestPointOfInterests(
+			lat,
+			lon,
+			limit,
+			auth?.userId,
+			selectedPoiTypes,
+			visitedFilter,
+			minRating,
+			parsedDifficultyIndex,
+			parsedCostIndex,
+		);
 	}
 
 	public async getPointOfInterestById(
@@ -28,8 +63,7 @@ export class PointOfInterestController extends BaseController {
 		if (pointOfInterest.status === PublishStatusEnum.Draft) {
 			this.permissionService.canAccessAdmin(auth);
 		}
-		const averageRating = await this.repos.review.getAverageRatingByPointOfInterestId(pointOfInterest.id);
-		return {...pointOfInterest, averageRating};
+		return pointOfInterest;
 	}
 
 	async getPublished(params: Params<Route<'getPublished'>>, auth?: AuthContext): Promise<Response<Route<'getPublished'>>> {

@@ -6,6 +6,7 @@ import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, Sp
 import {RolesEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
+import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
 import {styles} from '~/location/PointOfInterestDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -44,7 +45,7 @@ export function PointOfInterestDetails() {
 
 	const reviewCount = data.reviews?.length ?? 0;
 	const photoCount = data.images?.length ?? 0;
-	const rawRating = typeof data.averageRating === 'number' ? data.averageRating : parseFloat(String(data.averageRating));
+	const rawRating = typeof data.rating === 'number' ? data.rating : parseFloat(String(data.rating));
 	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
 
 	return (
@@ -111,6 +112,9 @@ export function PointOfInterestDetails() {
 						<Text style={ratingStyles.noReviewsText}>No reviews yet</Text>
 					)}
 				</View>
+
+				{/* Shared System-Generated Metadata Badges & Conditions */}
+				<ReviewMetadataBadges difficulty={data.difficulty} entranceCost={data.entranceCost} conditions={data.conditions} />
 
 				<View style={styles.metaContainer}>
 					<Text style={styles.metaLabel}>

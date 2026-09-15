@@ -109,6 +109,7 @@ export class ReviewController extends BaseController {
 		review.status = ReviewStatusEnum.Approved;
 		review.user.score = review.user.score + 20;
 
+		await this.repos.pointOfInterest.updateSystemGeneratedDetails(review.pointOfInterest);
 		await this.flush();
 
 		return this.reviewResponse(review);
@@ -138,6 +139,8 @@ export class ReviewController extends BaseController {
 		}
 
 		this.repos.review.remove(review);
+
+		await this.repos.pointOfInterest.updateSystemGeneratedDetails(review.pointOfInterest);
 		await this.flush();
 
 		return {success: true};
@@ -169,6 +172,7 @@ export class ReviewController extends BaseController {
 			status,
 		});
 
+		await this.repos.pointOfInterest.updateSystemGeneratedDetails(review.pointOfInterest);
 		await this.flush();
 
 		return {
@@ -191,6 +195,7 @@ export class ReviewController extends BaseController {
 
 		const user = review.user;
 
+		await this.repos.pointOfInterest.updateSystemGeneratedDetails(review.pointOfInterest);
 		await this.flush();
 
 		return {

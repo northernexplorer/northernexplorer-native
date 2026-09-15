@@ -13,9 +13,10 @@ import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
 import {MapMarkerWeb} from '~/location/Map/components/MapMarkerWeb';
+import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
 
 export function Map() {
-	const {baseLayer, selectedPoiTypes, visitedFilter} = useMap();
+	const {baseLayer, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex} = useMap();
 	const mapRef = useRef<MapRef>(null);
 	const coords = useLocation();
 
@@ -41,6 +42,9 @@ export function Map() {
 		limit: 500,
 		selectedPoiTypes,
 		visitedFilter,
+		minRating,
+		maxDifficultyIndex,
+		maxCostIndex,
 	});
 
 	const points = useMemo(() => {
@@ -75,6 +79,15 @@ export function Map() {
 			});
 		}
 	}, []);
+
+	const rawRating = selectedSite?.rating
+		? typeof selectedSite.rating === 'number'
+			? selectedSite.rating
+			: parseFloat(String(selectedSite.rating))
+		: 0;
+	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
+	const reviewCount = selectedSite?.reviews?.length ?? 0;
+	const difficultyInfo = selectedSite?.difficulty ? DIFFICULTY_CONFIG[selectedSite.difficulty] : null;
 
 	return (
 		<div style={{width: '100%', height: '100%', minHeight: '400px'}}>
@@ -158,19 +171,44 @@ export function Map() {
 										})}
 										style={{
 											width: '100%',
-											height: 120,
+											height: 110,
 											objectFit: 'cover',
-											marginBottom: 8,
+											marginBottom: 6,
 										}}
 									/>
 								)}
 
 								<h3 style={styles.popupTitle}>{selectedSite.name}</h3>
+
+								<div style={styles.metaRow}>
+									{averageRating > 0 ? (
+										<div style={styles.ratingRow}>
+											<span style={{color: '#f59e0b', fontSize: 12}}>★</span>
+											<span style={styles.ratingText}>{averageRating.toFixed(1)}</span>
+											<span style={styles.countText}>({reviewCount})</span>
+										</div>
+									) : (
+										<span style={styles.noReviewsText}>No reviews</span>
+									)}
+
+									{difficultyInfo && (
+										<span
+											style={{
+												...styles.difficultyBadge,
+												backgroundColor: difficultyInfo.bgColor,
+												color: difficultyInfo.color,
+											}}
+										>
+											{difficultyInfo.label.split(' ')[0]}
+										</span>
+									)}
+								</div>
+
 								<p
 									style={{
 										...styles.popupDescription,
 										display: '-webkit-box',
-										WebkitLineClamp: 6,
+										WebkitLineClamp: 3,
 										WebkitBoxOrient: 'vertical',
 										overflow: 'hidden',
 									}}
@@ -218,23 +256,55 @@ export function Map() {
 const styles = {
 	popupContainer: {
 		background: '#fff',
-		padding: 12,
+		padding: 10,
 		boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
-		maxWidth: 220,
-		textAlign: 'center' as const,
+		width: 210,
+		textAlign: 'left' as const,
 		position: 'relative' as const,
 		cursor: 'pointer',
 	},
 	popupTitle: {
 		margin: '0 0 4px',
-		fontSize: 14,
+		fontSize: 13,
 		fontWeight: 700,
 		color: '#333',
 	},
 	popupDescription: {
 		margin: 0,
-		fontSize: 12,
+		fontSize: 11,
 		color: '#666',
+	},
+	metaRow: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		marginBottom: 6,
+		gap: 4,
+	},
+	ratingRow: {
+		display: 'flex',
+		alignItems: 'center',
+		gap: 3,
+	},
+	ratingText: {
+		fontSize: 11,
+		fontWeight: 700,
+		color: '#0f172a',
+	},
+	countText: {
+		fontSize: 10,
+		color: '#64748b',
+	},
+	noReviewsText: {
+		fontSize: 10,
+		color: '#94a3b8',
+		fontStyle: 'italic' as const,
+	},
+	difficultyBadge: {
+		padding: '2px 6px',
+		borderRadius: 4,
+		fontSize: 9,
+		fontWeight: 700,
 	},
 	popupArrow: {
 		position: 'absolute' as const,

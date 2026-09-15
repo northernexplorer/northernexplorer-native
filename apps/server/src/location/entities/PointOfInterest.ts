@@ -1,7 +1,14 @@
 import {Entity, ManyToOne, OneToMany, PrimaryKey, Property, Enum} from '@mikro-orm/decorators/legacy';
 import {Collection} from '@mikro-orm/core';
 import {v4} from 'uuid';
-import {PublishStatusEnum, PointOfInterestTypeEnum} from '@northernexplorer/types';
+import {
+	PublishStatusEnum,
+	PointOfInterestTypeEnum,
+	EntranceCostEnum,
+	SiteConditionEnum,
+	ReviewRatingEnum,
+	SiteDifficultyEnum,
+} from '@northernexplorer/types';
 import {Region} from './Region';
 import {Country} from './Country';
 import {Review} from './Review';
@@ -79,6 +86,18 @@ export class PointOfInterest {
 	@ManyToOne(() => Organization)
 	organization: Organization;
 
+	@Enum({items: () => EntranceCostEnum, nullable: true})
+	entranceCost?: EntranceCostEnum;
+
+	@Enum({type: () => SiteConditionEnum, items: () => SiteConditionEnum, array: true, nullable: true})
+	conditions?: SiteConditionEnum[];
+
+	@Enum({items: () => ReviewRatingEnum, nullable: true})
+	rating?: ReviewRatingEnum;
+
+	@Enum({items: () => SiteDifficultyEnum, nullable: true})
+	difficulty?: SiteDifficultyEnum;
+
 	constructor(data: PointOfInterestInput) {
 		this.name = data.name;
 		this.description = data.description;
@@ -109,5 +128,21 @@ export class PointOfInterest {
 		if (data.organization !== undefined) this.organization = data.organization;
 
 		this.updatedAt = new Date();
+	}
+
+	updateEntranceCost(entranceCost?: EntranceCostEnum) {
+		this.entranceCost = entranceCost;
+	}
+
+	updateConditions(conditions?: SiteConditionEnum[]) {
+		this.conditions = conditions;
+	}
+
+	updateRating(rating?: ReviewRatingEnum) {
+		this.rating = rating;
+	}
+
+	updateDifficulty(difficulty?: SiteDifficultyEnum) {
+		this.difficulty = difficulty;
 	}
 }

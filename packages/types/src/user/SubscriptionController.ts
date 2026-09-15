@@ -7,6 +7,8 @@ type PermissionResponse = {
 		useFlashlight: boolean;
 		useSignal: boolean;
 		changeMapStyle: boolean;
+		useOffTrailDifficulty: boolean;
+		useExpeditionDifficulty: boolean;
 	};
 };
 
