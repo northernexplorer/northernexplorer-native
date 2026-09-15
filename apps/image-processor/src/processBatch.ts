@@ -52,16 +52,14 @@ export async function processBatch(orm: MikroORM<PostgreSqlDriver>, spacesServic
 				await spacesService.upload({
 					key: largeKey,
 					body: large,
-					contentType: 'image/jpeg',
-					isPublic: true,
+					contentType: 'image/jpeg'
 				});
 
 				// 6. Upload _thumbnail.jpg to Spaces
 				await spacesService.upload({
 					key: thumbnailKey,
 					body: thumbnail,
-					contentType: 'image/jpeg',
-					isPublic: true,
+					contentType: 'image/jpeg'
 				});
 
 				console.log(`[Image ID: ${image.id}] Uploaded variants:`);
