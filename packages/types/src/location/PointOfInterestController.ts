@@ -4,7 +4,6 @@ import {CountryType} from './CountryController';
 import {EntranceCostEnum, ReviewRatingEnum, ReviewSummary, SiteConditionEnum, SiteDifficultyEnum} from './ReviewController';
 import {OrganizationType} from './OrganizationController';
 import {ImageType} from './ImageController';
-import {Enum} from '@mikro-orm/decorators/legacy';
 
 export enum PublishStatusEnum {
 	Published = 'Published',

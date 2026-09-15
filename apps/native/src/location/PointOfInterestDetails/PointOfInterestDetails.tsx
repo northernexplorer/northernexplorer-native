@@ -6,13 +6,13 @@ import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, Sp
 import {RolesEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
+import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
 import {styles} from '~/location/PointOfInterestDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {Map} from '~/location/PointOfInterestDetails/components/Map';
 import {useLocation} from '~/location/state/location/useLocation';
-import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
 
 export function PointOfInterestDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
