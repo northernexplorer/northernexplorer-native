@@ -78,7 +78,7 @@ export class ImageController extends BaseController {
 		const MAX_FILES = 10;
 		if (params.files.length > MAX_FILES) throw new Error(`You can upload a maximum of ${MAX_FILES} photos at a time.`);
 
-		const MAX_SINGLE_FILE_BYTES = 10 * 1024 * 1024; // 10 MB per image
+		const MAX_SINGLE_FILE_BYTES = 15 * 1024 * 1024; // 15 MB per image
 		const MAX_TOTAL_BATCH_BYTES = 50 * 1024 * 1024; // 50 MB total per payload
 
 		let totalBatchSizeBytes = 0;
