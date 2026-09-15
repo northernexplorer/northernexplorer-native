@@ -2510,6 +2510,7 @@ __metadata:
   resolution: "@northernexplorer/tools-web@workspace:packages/tools-web"
   dependencies:
     "@northernexplorer/types": "npm:*"
+    "@react-native-community/slider": "npm:^5.2.1"
     expo-image-picker: "npm:^57.0.16"
   peerDependencies:
     "@expo/vector-icons": "*"
@@ -2929,6 +2930,13 @@ __metadata:
     react: "*"
     react-native: ">=0.59"
   checksum: 10c0/66c5fab04ef3ffe9b1f2e3578e7d3052a8c3ae327d94fa41f7d95ec4db3de4dd4017bf486013f031cb1aa12909002492474f259ea6212471f730cca39239dd35
+  languageName: node
+  linkType: hard
+
+"@react-native-community/slider@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "@react-native-community/slider@npm:5.2.1"
+  checksum: 10c0/10be48249573540d90a2b6f0bba2bdadd58043767236492211eb836dc96b6fe875e430b870f331e65473c36c92aed812cd31a6627e01c97ddd5b2bd5bfee570f
   languageName: node
   linkType: hard
 

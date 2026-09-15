@@ -4,6 +4,7 @@ export {FormField} from './FormField';
 export {ImageView} from './ImageView';
 export {ImageUpload} from './ImageUpload';
 export {ProFeatureOnly} from './ProFeatureOnly';
+export {SliderField} from './SliderField';
 export {Spinner} from './Spinner';
 export {Table, Column} from './Table';
 export {TextAreaField} from './TextAreaField';
