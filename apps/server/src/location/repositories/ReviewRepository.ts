@@ -16,7 +16,7 @@ export type CreateReviewParams = {
 
 export class ReviewRepository extends BaseRepository<Review> {
 	async getById(id: string) {
-		return this.findOneOrFail({id}, {populate: ['user', 'pointOfInterest']});
+		return this.findOneOrFail({id}, {populate: ['user', 'pointOfInterest', 'likes']});
 	}
 
 	async getAverageRatingByPointOfInterestId(pointOfInterestId: string): Promise<number> {

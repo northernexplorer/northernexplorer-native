@@ -261,13 +261,11 @@ export function PhotoPreviewModal({
 							</Pressable>
 						)}
 
-						{/* Like Button */}
-						{currentUserId && (
-							<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
-								<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
-								<Text style={styles.likeCount}>{imageData.likes}</Text>
-							</Pressable>
-						)}
+						{/* Like Button (Visible to everyone) */}
+						<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
+							<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
+							<Text style={styles.likeCount}>{imageData.likes}</Text>
+						</Pressable>
 
 						{/* Standard Delete Button (When not using dedicated reject) */}
 						{canManage && !onReject && (
