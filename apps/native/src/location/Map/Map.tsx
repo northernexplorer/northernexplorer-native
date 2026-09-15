@@ -5,12 +5,14 @@ import useSupercluster from 'use-supercluster';
 import {useRouter, useLocalSearchParams} from 'expo-router';
 import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
 import {PointOfInterestType} from '@northernexplorer/types';
+import {Ionicons} from '@expo/vector-icons';
 import {BBox} from 'geojson';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
 import {MapMarkerNative} from '~/location/Map/components/MapMarkerNative';
+import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
 
 export function Map() {
 	const router = useRouter();
@@ -95,6 +97,15 @@ export function Map() {
 		[router],
 	);
 
+	const rawRating = selectedSite?.rating
+		? typeof selectedSite.rating === 'number'
+			? selectedSite.rating
+			: parseFloat(String(selectedSite.rating))
+		: 0;
+	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
+	const reviewCount = selectedSite?.reviews?.length ?? 0;
+	const difficultyInfo = selectedSite?.difficulty ? DIFFICULTY_CONFIG[selectedSite.difficulty] : null;
+
 	return (
 		<View style={{flex: 1}}>
 			<NativeMap
@@ -174,7 +185,28 @@ export function Map() {
 
 							<View style={styles.popupContent}>
 								<Text style={styles.popupTitle}>{selectedSite.name}</Text>
-								<Text style={styles.popupDescription} numberOfLines={6} ellipsizeMode="tail">
+
+								<View style={popupMetaStyles.metaRow}>
+									{averageRating > 0 ? (
+										<View style={popupMetaStyles.ratingRow}>
+											<Ionicons name="star" size={12} color="#f59e0b" />
+											<Text style={popupMetaStyles.ratingText}>{averageRating.toFixed(1)}</Text>
+											<Text style={popupMetaStyles.countText}>({reviewCount})</Text>
+										</View>
+									) : (
+										<Text style={popupMetaStyles.noReviewsText}>No reviews</Text>
+									)}
+
+									{difficultyInfo && (
+										<View style={[popupMetaStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
+											<Text style={[popupMetaStyles.difficultyText, {color: difficultyInfo.color}]}>
+												{difficultyInfo.label.split(' ')[0]}
+											</Text>
+										</View>
+									)}
+								</View>
+
+								<Text style={styles.popupDescription} numberOfLines={4} ellipsizeMode="tail">
 									{selectedSite.description}
 								</Text>
 							</View>
@@ -217,10 +249,49 @@ export function Map() {
 	);
 }
 
+const popupMetaStyles = StyleSheet.create({
+	metaRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		width: '100%',
+		marginVertical: 4,
+		gap: 4,
+	},
+	ratingRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 3,
+	},
+	ratingText: {
+		fontSize: 11,
+		fontWeight: '700',
+		color: '#0f172a',
+	},
+	countText: {
+		fontSize: 10,
+		color: '#64748b',
+	},
+	noReviewsText: {
+		fontSize: 10,
+		color: '#94a3b8',
+		fontStyle: 'italic',
+	},
+	difficultyBadge: {
+		paddingHorizontal: 6,
+		paddingVertical: 2,
+		borderRadius: 4,
+	},
+	difficultyText: {
+		fontSize: 9,
+		fontWeight: '700',
+	},
+});
+
 const styles = StyleSheet.create({
 	popupContainer: {
 		backgroundColor: '#fff',
-		padding: 12,
+		padding: 10,
 		width: 220,
 		position: 'relative',
 		alignItems: 'flex-start',
@@ -231,15 +302,14 @@ const styles = StyleSheet.create({
 		elevation: 5,
 	},
 	popupTitle: {
-		fontSize: 14,
+		fontSize: 13,
 		fontWeight: '700',
 		color: '#333',
 		textAlign: 'left',
-		marginTop: 8,
 	},
 	popupDescription: {
 		margin: 0,
-		fontSize: 12,
+		fontSize: 11,
 		color: '#666',
 	},
 	popupArrow: {
@@ -257,24 +327,12 @@ const styles = StyleSheet.create({
 	},
 	popupImage: {
 		width: '100%',
-		height: 120,
-		marginBottom: 8,
+		height: 100,
+		marginBottom: 6,
 	},
 	popupContent: {
 		flexDirection: 'column',
-	},
-	iconCircle: {
-		width: 52,
-		height: 52,
-		borderRadius: 26,
-		backgroundColor: '#fff',
-		justifyContent: 'center',
-		alignItems: 'center',
-		shadowColor: '#000',
-		shadowOffset: {width: 0, height: 2},
-		shadowOpacity: 0.2,
-		shadowRadius: 4,
-		elevation: 4,
+		width: '100%',
 	},
 	clusterMarker: {
 		width: 44,

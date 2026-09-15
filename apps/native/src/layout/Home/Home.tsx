@@ -103,6 +103,9 @@ export function Home() {
 								id={site.id}
 								latitude={site.lat}
 								longitude={site.lon}
+								difficulty={site.difficulty}
+								rating={site.rating}
+								reviews={site.reviews}
 							/>
 						))}
 					</ScrollView>

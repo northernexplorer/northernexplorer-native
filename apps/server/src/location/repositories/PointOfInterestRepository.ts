@@ -7,14 +7,12 @@ import {
 	PublishStatusEnum,
 	RegionType,
 	ReviewStatusEnum,
-	ReviewType,
 	SiteConditionEnum,
 	VisitedFilterEnum,
 } from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
 import {User} from '../../user';
-import {Review} from '../entities/Review';
 
 interface PointOfInterestRawRow {
 	id: string;
@@ -27,11 +25,13 @@ interface PointOfInterestRawRow {
 	endDate: string | number;
 	country: CountryType;
 	region: RegionType;
-	reviews: ReviewType;
 	distanceMeters: number;
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 	organization: OrganizationType;
+	difficulty?: string;
+	rating?: number | string;
+	reviews?: {id: string; rating: number}[];
 }
 
 export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
@@ -111,7 +111,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		userId?: string,
 		selectedPoiTypes: PointOfInterestTypeEnum[] = [],
 		visitedFilter: VisitedFilterEnum = VisitedFilterEnum.All,
-	) {
+	): Promise<PointOfInterestType[]> {
 		const params: unknown[] = [];
 
 		const applyVisitedFilter = Boolean(userId) && visitedFilter !== VisitedFilterEnum.All;
@@ -121,15 +121,15 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 		if (applyVisitedFilter) {
 			userJoinSql = `
-           LEFT JOIN review rev 
-             ON rev.point_of_interest_id = h.id 
-            AND rev.user_id = ?
-       `;
+          LEFT JOIN review rev_filter 
+            ON rev_filter.point_of_interest_id = h.id 
+           AND rev_filter.user_id = ?
+      `;
 
 			if (visitedFilter === VisitedFilterEnum.Visited) {
-				visitedFilterSql = `AND rev.id IS NOT NULL`;
+				visitedFilterSql = `AND rev_filter.id IS NOT NULL`;
 			} else {
-				visitedFilterSql = `AND rev.id IS NULL`;
+				visitedFilterSql = `AND rev_filter.id IS NULL`;
 			}
 		}
 
@@ -149,35 +149,46 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 		const query = `
 			SELECT id, name, description, image, lat, lon, country, region, status, type,
-			       start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
+				   difficulty, rating, reviews,
+				   start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
 			FROM (
 					 SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, h.status, h.type,
-				            json_build_object(
+							h.difficulty,
+							COALESCE(AVG(rev.rating), 0) as rating,
+							COALESCE(
+								json_agg(
+									json_build_object('id', rev.id, 'rating', rev.rating)
+								) FILTER (WHERE rev.id IS NOT NULL),
+								'[]'
+							) as reviews,
+							json_build_object(
 								'id', c.id,
-					            'name', c.name
-				            ) as country,
-				            json_build_object(
+								'name', c.name
+							) as country,
+							json_build_object(
 								'id', r.id,
-					            'name', r.name,
-					            'country', json_build_object(
+								'name', r.name,
+								'country', json_build_object(
 									'id', c.id,
-						            'name', c.name
-					                       )
-				            ) AS region,
-				            h.start_date, h.end_date,
-				            (6371000 * acos(
+									'name', c.name
+										   )
+							) AS region,
+							h.start_date, h.end_date,
+							(6371000 * acos(
 								LEAST(1.0, GREATEST(-1.0,
-					                                cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
-					                                sin(radians(?)) * sin(radians(h.lat))
-					                       ))
-				                       )) AS distance_meters
-				     FROM point_of_interest h
+													cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
+													sin(radians(?)) * sin(radians(h.lat))
+										   ))
+									   )) AS distance_meters
+					 FROM point_of_interest h
 							  JOIN country c ON h.country_id = c.id
-					          JOIN region r ON h.region_id = r.id
+							  JOIN region r ON h.region_id = r.id
+							  LEFT JOIN review rev ON rev.point_of_interest_id = h.id
 						 ${userJoinSql}
-				     WHERE h.status = 'Published'
+					 WHERE h.status = 'Published'
 						 ${typeFilterSql}
-					     ${visitedFilterSql}
+						 ${visitedFilterSql}
+					 GROUP BY h.id, c.id, r.id
 				 ) AS spatial_search
 			ORDER BY distanceMeters ASC
 				LIMIT ?;
@@ -192,7 +203,9 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			image: site.image,
 			country: site.country,
 			region: site.region,
-			review: site.reviews,
+			rating: site.rating,
+			difficulty: site.difficulty,
+			reviews: site.reviews ?? [],
 			lat: Number(site.lat),
 			lon: Number(site.lon),
 			startDate: site.startDate ? Number(site.startDate) : undefined,
@@ -200,7 +213,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			status: site.status,
 			type: site.type,
 			organization: site.organization,
-		}));
+		})) as PointOfInterestType[];
 	}
 
 	async getById(id: string) {

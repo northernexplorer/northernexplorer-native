@@ -1,10 +1,12 @@
 import React, {useMemo} from 'react';
-import {View, Text, Image, Pressable} from 'react-native';
+import {View, Text, Image, Pressable, StyleSheet} from 'react-native';
 import {Link} from 'expo-router';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
+import {Ionicons} from '@expo/vector-icons';
 import {styles} from '~/layout/Home/styles';
 import {config} from '~/config';
 import {useLocation} from '~/location/state/location/useLocation';
+import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
 
 type Props = {
 	id: string;
@@ -15,9 +17,24 @@ type Props = {
 	region?: string | null;
 	latitude: number | string;
 	longitude: number | string;
+	rating?: number | string;
+	difficulty?: keyof typeof DIFFICULTY_CONFIG;
+	reviews?: {id: string; rating: number}[];
 };
 
-export function PointOfInterestPreviewWidget({id, name, description, image, country, region, latitude, longitude}: Props) {
+export function PointOfInterestPreviewWidget({
+	id,
+	name,
+	description,
+	image,
+	country,
+	region,
+	latitude,
+	longitude,
+	rating,
+	difficulty,
+	reviews,
+}: Props) {
 	const coords = useLocation();
 
 	const distance = useMemo(() => {
@@ -28,7 +45,6 @@ export function PointOfInterestPreviewWidget({id, name, description, image, coun
 		const siteLat = Number(latitude);
 		const siteLon = Number(longitude);
 
-		// Guard against non-numeric values
 		if (isNaN(userLat) || isNaN(userLon) || isNaN(siteLat) || isNaN(siteLon)) {
 			return null;
 		}
@@ -44,6 +60,11 @@ export function PointOfInterestPreviewWidget({id, name, description, image, coun
 		}
 		return `${distInKm.toFixed(1)} km away`;
 	}, [coords, latitude, longitude]);
+
+	const rawRating = rating ? (typeof rating === 'number' ? rating : parseFloat(String(rating))) : 0;
+	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
+	const reviewCount = reviews?.length ?? 0;
+	const difficultyInfo = difficulty ? DIFFICULTY_CONFIG[difficulty] : null;
 
 	return (
 		<Link
@@ -70,6 +91,28 @@ export function PointOfInterestPreviewWidget({id, name, description, image, coun
 							<Text style={styles.siteTitle} numberOfLines={1}>
 								{name}
 							</Text>
+
+							{/* Rating and Difficulty Row */}
+							<View style={widgetStyles.metaRow}>
+								{averageRating > 0 ? (
+									<View style={widgetStyles.ratingRow}>
+										<Ionicons name="star" size={12} color="#f59e0b" />
+										<Text style={widgetStyles.ratingText}>{averageRating.toFixed(1)}</Text>
+										<Text style={widgetStyles.countText}>({reviewCount})</Text>
+									</View>
+								) : (
+									<Text style={widgetStyles.noReviewsText}>No reviews</Text>
+								)}
+
+								{difficultyInfo && (
+									<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
+										<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>
+											{difficultyInfo.label.split(' ')[0]}
+										</Text>
+									</View>
+								)}
+							</View>
+
 							<Text style={styles.siteDesc} numberOfLines={2}>
 								{description}
 							</Text>
@@ -92,3 +135,40 @@ export function PointOfInterestPreviewWidget({id, name, description, image, coun
 		</Link>
 	);
 }
+
+const widgetStyles = StyleSheet.create({
+	metaRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		marginVertical: 4,
+	},
+	ratingRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 3,
+	},
+	ratingText: {
+		fontSize: 11,
+		fontWeight: '700',
+		color: '#ffffff',
+	},
+	countText: {
+		fontSize: 10,
+		color: 'rgba(255,255,255,0.6)',
+	},
+	noReviewsText: {
+		fontSize: 10,
+		color: 'rgba(255,255,255,0.4)',
+		fontStyle: 'italic',
+	},
+	difficultyBadge: {
+		paddingHorizontal: 5,
+		paddingVertical: 1,
+		borderRadius: 4,
+	},
+	difficultyText: {
+		fontSize: 9,
+		fontWeight: '700',
+	},
+});
