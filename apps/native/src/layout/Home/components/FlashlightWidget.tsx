@@ -33,32 +33,31 @@ export function FlashlightWidget() {
 				disabled
 				style={{
 					...styles.tile,
-					padding: 16,
+					padding: 6,
 					alignItems: 'center',
 					justifyContent: 'center',
-					flex: 1,
-					marginRight: 0,
+					width: '100%',
+					height: '100%',
 					opacity: 0.5,
 				}}
 			>
 				<View
 					style={{
-						width: 56,
-						height: 56,
-						borderRadius: 28,
-						borderWidth: 1.5,
+						width: 36,
+						height: 36,
+						borderRadius: 18,
+						borderWidth: 1,
 						borderColor: 'rgba(255,255,255,0.08)',
-						backgroundColor: 'transparent',
 						alignItems: 'center',
 						justifyContent: 'center',
 					}}
 				>
-					<MaterialCommunityIcons name="flashlight-off" size={28} color="rgba(255,255,255,0.3)" />
+					<MaterialCommunityIcons name="flashlight-off" size={18} color="rgba(255,255,255,0.3)" />
 				</View>
 
-				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>Flashlight</Text>
-
-				<Text style={{color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>Unavailable</Text>
+				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: '700', marginTop: 4, textAlign: 'center'}} numberOfLines={1}>
+					N/A
+				</Text>
 			</Pressable>
 		);
 	}
@@ -68,11 +67,11 @@ export function FlashlightWidget() {
 			onPress={handleToggle}
 			style={{
 				...styles.tile,
-				padding: 16,
+				padding: 6,
 				alignItems: 'center',
 				justifyContent: 'center',
-				flex: 1,
-				marginRight: 0,
+				width: '100%',
+				height: '100%',
 				backgroundColor: torchOn ? 'rgba(250, 204, 21, 0.08)' : styles.tile.backgroundColor,
 				borderColor: torchOn ? 'rgba(250, 204, 21, 0.25)' : styles.tile.borderColor,
 			}}
@@ -85,23 +84,24 @@ export function FlashlightWidget() {
 
 			<View
 				style={{
-					width: 56,
-					height: 56,
-					borderRadius: 28,
-					borderWidth: 1.5,
+					width: 36,
+					height: 36,
+					borderRadius: 18,
+					borderWidth: 1,
 					borderColor: torchOn ? '#facc15' : 'rgba(255,255,255,0.15)',
 					backgroundColor: torchOn ? 'rgba(250, 204, 21, 0.22)' : 'transparent',
 					alignItems: 'center',
 					justifyContent: 'center',
 				}}
 			>
-				<MaterialCommunityIcons name={torchOn ? 'flashlight' : 'flashlight-off'} size={28} color={torchOn ? '#facc15' : '#ffffff'} />
+				<MaterialCommunityIcons name={torchOn ? 'flashlight' : 'flashlight-off'} size={18} color={torchOn ? '#facc15' : '#ffffff'} />
 			</View>
 
-			<Text style={{color: '#ffffff', fontSize: 12, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>Flashlight</Text>
-
-			<Text style={{color: torchOn ? '#facc15' : 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '600'}}>
-				{torchOn ? 'On' : 'Off'}
+			<Text
+				style={{color: torchOn ? '#facc15' : '#ffffff', fontSize: 10, fontWeight: '800', marginTop: 4, textAlign: 'center'}}
+				numberOfLines={1}
+			>
+				{torchOn ? 'ON' : 'OFF'}
 			</Text>
 		</Pressable>
 	);

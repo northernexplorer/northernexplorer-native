@@ -1,26 +1,153 @@
 import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
-	hero: {
-		width: '100%',
-		backgroundColor: 'rgba(255, 255, 255, 0.1)',
-		borderRadius: 24,
-		padding: 20,
-		borderWidth: 1,
-		borderColor: 'rgba(255, 255, 255, 0.1)',
-	},
-	heroRow: {
+	// Base Screen Wrapper
+	container: {
+		flex: 1,
 		flexDirection: 'row',
-		alignItems: 'stretch',
+		backgroundColor: '#1a1a1a',
+	},
+	loadingContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#1a1a1a',
+	},
+
+	// Left Sidebar / Tool Panel
+	leftSidebar: {
+		width: 80,
+		backgroundColor: '#1a1a1a',
+		borderRightWidth: 1,
+		borderRightColor: '#333333',
+		paddingVertical: 20,
+		paddingHorizontal: 8,
+		alignItems: 'center',
+	},
+	sidebarLabel: {
+		color: 'rgba(255,255,255,0.45)',
+		fontSize: 10,
+		fontWeight: '800',
+		letterSpacing: 1.5,
+		marginBottom: 16,
+	},
+	sidebarTools: {
+		width: '100%',
+		gap: 12,
+		alignItems: 'center',
+	},
+	sidebarTile: {
+		width: '100%',
+		aspectRatio: 1,
+		backgroundColor: 'rgba(255, 255, 255, 0.04)',
+		borderRadius: 16,
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.08)',
+		justifyContent: 'center',
+		alignItems: 'center',
+		overflow: 'hidden',
+	},
+
+	// Main Content Area
+	mainContent: {
+		flex: 1,
+	},
+	scrollContent: {
+		padding: 20,
+		gap: 24,
+	},
+
+	// Header Components
+	headerRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'flex-end',
+		marginBottom: 4,
+	},
+	headerSubtitle: {
+		color: 'rgba(255, 255, 255, 0.6)',
+		fontSize: 11,
+		fontWeight: '800',
+		letterSpacing: 1.5,
+		marginBottom: 2,
+	},
+	headerTitle: {
+		color: '#ffffff',
+		fontSize: 28,
+		fontWeight: '700',
+		letterSpacing: -0.5,
+	},
+	locationBadge: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		backgroundColor: 'rgba(255, 255, 255, 0.08)',
+		paddingHorizontal: 12,
+		paddingVertical: 6,
+		borderRadius: 20,
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.12)',
+	},
+	dotIndicator: {
+		width: 6,
+		height: 6,
+		borderRadius: 3,
+		backgroundColor: '#34D399',
+	},
+	locationText: {
+		color: 'rgba(255, 255, 255, 0.85)',
+		fontSize: 12,
+		fontWeight: '600',
+	},
+
+	// Section Titles and Controls
+	sectionContainer: {
+		width: '100%',
+	},
+	sectionHeaderRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		marginBottom: 12,
+	},
+	sectionTitle: {
+		color: '#ffffff',
+		fontSize: 18,
+		fontWeight: '600',
+		marginBottom: 12,
+	},
+	sectionAction: {
+		color: 'rgba(255, 255, 255, 0.72)',
+		fontSize: 13,
+		fontWeight: '600',
+		marginBottom: 12,
+	},
+
+	// Point of Interest Sections
+	pointOfInterestsSection: {
+		width: '100%',
+	},
+	loadingCard: {
+		height: 180,
+		width: '100%',
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'rgba(255, 255, 255, 0.04)',
+		borderRadius: 16,
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.08)',
+	},
+
+	// Dashboard Grid Layouts
+	environmentGrid: {
+		gap: 12,
+	},
+	gridRow: {
+		flexDirection: 'row',
 		gap: 12,
 		width: '100%',
 	},
-	// Row 1 & Row 2 proportional flex columns (2:1 ratio)
 	weatherSection: {
-		flex: 2,
-		minWidth: 0,
-	},
-	fieldNote: {
 		flex: 2,
 		minWidth: 0,
 	},
@@ -28,89 +155,42 @@ export const styles = StyleSheet.create({
 		flex: 1,
 		minWidth: 0,
 	},
-	compassSection: {
+	fieldNoteSection: {
 		flex: 1,
 		minWidth: 0,
 	},
 
-	// Base Glassmorphism Tile
+	// Translucent Card / Tile Base
 	tile: {
-		backgroundColor: 'rgba(255, 255, 255, 0.1)',
+		backgroundColor: 'rgba(255, 255, 255, 0.04)',
 		borderRadius: 16,
 		borderWidth: 1,
-		borderColor: 'rgba(255, 255, 255, 0.1)',
+		borderColor: 'rgba(255, 255, 255, 0.08)',
 		overflow: 'hidden',
 	},
 
+	// Weather & Metric Utility Styles
 	hourDay: {
-		color: 'rgba(255, 255, 255, 0.6)',
-		fontSize: 13,
-		fontWeight: '600',
+		color: 'rgba(255, 255, 255, 0.5)',
+		fontSize: 12,
+		fontWeight: '700',
 		textTransform: 'uppercase',
 		letterSpacing: 0.5,
-	},
-	hourTemp: {
-		color: '#ffffff',
-		fontSize: 16,
-		fontWeight: '700',
-	},
-
-	// Point of Interest Card
-	siteCard: {
-		width: 200,
-		height: 230,
-	},
-	siteImage: {
-		width: '100%',
-		height: 120,
-	},
-	siteContent: {
-		padding: 12,
-		flex: 1,
-		justifyContent: 'space-between',
-	},
-	siteTitle: {
-		color: '#ffffff',
-		fontSize: 14,
-		fontWeight: '600',
-		letterSpacing: -0.2,
-	},
-	siteDesc: {
-		color: 'rgba(255, 255, 255, 0.55)',
-		fontSize: 12,
-		marginTop: 4,
-		lineHeight: 16,
-	},
-
-	// Section Headers & Layout Wrappers
-	exploreHeader: {
-		color: '#ffffff',
-		fontSize: 18,
-		fontWeight: '700',
-		letterSpacing: -0.3,
-		marginTop: 24,
-		marginBottom: 12,
-	},
-	pointOfInterestsSection: {
-		width: '100%',
-	},
-	loadingContainer: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
 	},
 	metricPill: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
-		backgroundColor: 'rgba(255, 255, 255, 0.08)',
-		paddingHorizontal: 10,
+		gap: 4,
+		backgroundColor: 'rgba(255, 255, 255, 0.05)',
+		paddingHorizontal: 8,
 		paddingVertical: 4,
-		borderRadius: 20,
+		borderRadius: 12,
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.08)',
 	},
 	metricText: {
-		color: 'rgba(255, 255, 255, 0.75)',
-		fontSize: 12,
-		fontWeight: '500',
+		color: 'rgba(255, 255, 255, 0.85)',
+		fontSize: 11,
+		fontWeight: '600',
 	},
 });

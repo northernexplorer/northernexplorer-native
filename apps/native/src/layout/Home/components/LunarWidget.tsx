@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Pressable} from 'react-native';
+import {Text, Pressable, View} from 'react-native';
 import {Link} from 'expo-router';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {LunarCycleType} from '@northernexplorer/types';
@@ -16,18 +16,26 @@ export function LunarWidget({data}: {data: LunarCycleType}) {
 					...styles.tile,
 					padding: 16,
 					alignItems: 'center',
-					justifyContent: 'center',
+					justifyContent: 'space-between',
 					flex: 1,
-					marginRight: 0,
 				}}
 			>
-				<MaterialCommunityIcons name={icon} size={56} color="#ffffff" style={{marginBottom: 8}} />
-				<Text style={{color: '#ffffff', fontSize: 13, fontWeight: '600', textAlign: 'center'}} numberOfLines={1}>
-					{data.phase_name}
+				<Text style={styles.hourDay} numberOfLines={1}>
+					Moon
 				</Text>
-				<Text style={{color: 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>
-					{Math.round(data.illumination_percentage)}% Illum.
-				</Text>
+
+				<View style={{alignItems: 'center', marginVertical: 6}}>
+					<MaterialCommunityIcons name={icon} size={44} color="#38BDF8" />
+				</View>
+
+				<View style={{alignItems: 'center'}}>
+					<Text style={{color: '#FFFFFF', fontSize: 13, fontWeight: '700', textAlign: 'center'}} numberOfLines={1}>
+						{data.phase_name}
+					</Text>
+					<Text style={{color: '#94A3B8', fontSize: 11, marginTop: 2, fontWeight: '600'}}>
+						{Math.round(data.illumination_percentage)}% Illum
+					</Text>
+				</View>
 			</Pressable>
 		</Link>
 	);

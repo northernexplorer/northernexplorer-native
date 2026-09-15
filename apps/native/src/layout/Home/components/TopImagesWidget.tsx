@@ -5,6 +5,7 @@ import {formatName, getDynamicImageUrl, ImageView} from '@northernexplorer/tools
 import {config} from '~/config';
 import {PhotoPreviewModal} from '~/location/PointOfInterestDetails/components/PhotoPreviewModal';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {styles as globalStyles} from '~/layout/Home/styles';
 
 interface TopImagesWidgetProps {
 	data: ImageType[];
@@ -17,7 +18,7 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 	const {width: windowWidth} = useWindowDimensions();
 	const authentication = useAuthentication();
 
-	// 6 columns on tablets/desktop (width >= 600px), 3 columns on mobile
+	// 6 columns on larger screens (width >= 600px), 3 columns on mobile
 	const columns = windowWidth >= 600 ? 6 : 3;
 
 	const selectedImage = selectedIndex !== null ? data[selectedIndex] : null;
@@ -47,7 +48,7 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 	};
 
 	return (
-		<View style={styles.container} onLayout={handleLayout}>
+		<View style={[globalStyles.tile, styles.container]} onLayout={handleLayout}>
 			<View style={styles.galleryGrid}>
 				{data.slice(0, 6).map((item, index) => {
 					const imageUri = getDynamicImageUrl({
@@ -109,12 +110,8 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 
 const styles = StyleSheet.create({
 	container: {
-		width: '100%',
 		padding: 12,
-		backgroundColor: 'rgba(255, 255, 255, 0.08)',
-		borderColor: 'rgba(255, 255, 255, 0.12)',
-		borderWidth: 1,
-		borderRadius: 16,
+		width: '100%',
 	},
 	galleryGrid: {
 		flexDirection: 'row',

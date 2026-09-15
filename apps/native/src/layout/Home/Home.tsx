@@ -36,7 +36,7 @@ export function Home() {
 	if (!isCoreReady) {
 		return (
 			<View style={styles.loadingContainer}>
-				<ActivityIndicator size="large" color="#ffffff" />
+				<ActivityIndicator size="large" color="#38BDF8" />
 			</View>
 		);
 	}
@@ -44,73 +44,106 @@ export function Home() {
 	const canUseCompass = !!permissionData?.navigation.useCompass;
 	const canUseFlashlight = !!permissionData?.navigation.useFlashlight;
 	const canUseSignal = !!permissionData?.navigation.useSignal;
+	const hasTools = canUseSignal || canUseCompass || canUseFlashlight;
 
 	return (
-		<View style={{width: '100%', padding: 10, paddingBottom: 32}}>
-			<View style={{gap: 12}}>
-				<View style={styles.heroRow}>
-					<View style={styles.weatherSection}>
-						<WeatherWidget data={weather} />
+		<View style={styles.container}>
+			{/* Left Vertical Action Bar */}
+			{hasTools && (
+				<View style={styles.leftSidebar}>
+					<Text style={styles.sidebarLabel}>TOOLS</Text>
+					<View style={styles.sidebarTools}>
+						{canUseSignal && (
+							<View style={styles.sidebarTile}>
+								<SignalWidget />
+							</View>
+						)}
+						{canUseCompass && (
+							<View style={styles.sidebarTile}>
+								<CompassWidget />
+							</View>
+						)}
+						{canUseFlashlight && (
+							<View style={styles.sidebarTile}>
+								<FlashlightWidget />
+							</View>
+						)}
 					</View>
-					<View style={styles.lunarSection}>
-						<LunarWidget data={lunar} />
+				</View>
+			)}
+
+			{/* Main Dashboard Content */}
+			<ScrollView style={styles.mainContent} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+				{/* Header Section */}
+				<View style={styles.headerRow}>
+					<View>
+						<Text style={styles.headerSubtitle}>FIELD DASHBOARD</Text>
+						<Text style={styles.headerTitle}>Explore Nearby</Text>
 					</View>
 				</View>
 
-				<View style={styles.heroRow}>
-					{canUseSignal && (
-						<View style={styles.compassSection}>
-							<SignalWidget />
-						</View>
-					)}
-					{canUseCompass && (
-						<View style={styles.compassSection}>
-							<CompassWidget />
-						</View>
-					)}
-					{canUseFlashlight && (
-						<View style={styles.compassSection}>
-							<FlashlightWidget />
-						</View>
-					)}
-				</View>
-
-				<View style={styles.heroRow}>
-					<View style={styles.fieldNote}>
-						<FieldNoteWidget data={fieldNote} />
+				{/* Top Feature Block: Points of Interest */}
+				<View style={styles.sectionContainer}>
+					<View style={styles.sectionHeaderRow}>
+						<Text style={styles.sectionTitle}>Featured Destinations</Text>
+					</View>
+					<View style={styles.pointOfInterestsSection}>
+						{!pointOfInterestData ? (
+							<View style={styles.loadingCard}>
+								<ActivityIndicator size="small" color="#38BDF8" />
+							</View>
+						) : (
+							<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12}}>
+								{pointOfInterestData.map(site => (
+									<PointOfInterestPreviewWidget
+										key={site.id}
+										name={site.name}
+										description={site.description}
+										image={site.image}
+										country={site.country.name}
+										region={site.region.name}
+										id={site.id}
+										latitude={site.lat}
+										longitude={site.lon}
+										difficulty={site.difficulty}
+										rating={site.rating}
+										reviews={site.reviews}
+									/>
+								))}
+							</ScrollView>
+						)}
 					</View>
 				</View>
 
-				{/* Top Images Gallery Widget */}
-				{topImagesData && topImagesData.length > 0 && <TopImagesWidget data={topImagesData} />}
-			</View>
-
-			{/* Points of Interest Section */}
-			<Text style={styles.exploreHeader}>Start Exploring...</Text>
-			<View style={styles.pointOfInterestsSection}>
-				{!pointOfInterestData ? (
-					<ActivityIndicator size="small" color="#ffffff" style={{marginVertical: 20}} />
-				) : (
-					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12}}>
-						{pointOfInterestData.map(site => (
-							<PointOfInterestPreviewWidget
-								key={site.id}
-								name={site.name}
-								description={site.description}
-								image={site.image}
-								country={site.country.name}
-								region={site.region.name}
-								id={site.id}
-								latitude={site.lat}
-								longitude={site.lon}
-								difficulty={site.difficulty}
-								rating={site.rating}
-								reviews={site.reviews}
-							/>
-						))}
-					</ScrollView>
+				{/* Community Top Images Section */}
+				{topImagesData && topImagesData.length > 0 && (
+					<View style={styles.sectionContainer}>
+						<Text style={styles.sectionTitle}>Top Captures</Text>
+						<TopImagesWidget data={topImagesData} />
+					</View>
 				)}
-			</View>
+
+				{/* Environment Highlights Grid */}
+				<View style={styles.sectionContainer}>
+					<Text style={styles.sectionTitle}>Environmental Conditions</Text>
+					<View style={styles.environmentGrid}>
+						<View style={styles.gridRow}>
+							<View style={styles.weatherSection}>
+								<WeatherWidget data={weather} />
+							</View>
+							<View style={styles.lunarSection}>
+								<LunarWidget data={lunar} />
+							</View>
+						</View>
+
+						<View style={styles.gridRow}>
+							<View style={styles.fieldNoteSection}>
+								<FieldNoteWidget data={fieldNote} />
+							</View>
+						</View>
+					</View>
+				</View>
+			</ScrollView>
 		</View>
 	);
 }
