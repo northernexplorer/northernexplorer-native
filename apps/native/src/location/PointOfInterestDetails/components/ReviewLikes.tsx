@@ -5,7 +5,7 @@ import {useApiFetch} from '~/core/useApiFetch';
 import {useApiMutation} from '~/core/useApiMutation';
 
 type UserLikesProps = {
-	currentUserId: string;
+	currentUserId?: string;
 	reviewId: string;
 };
 
@@ -13,7 +13,6 @@ export function ReviewLikes({currentUserId, reviewId}: UserLikesProps) {
 	const [isLiked, setIsLiked] = useState<boolean>(false);
 
 	const {mutate: likeMutation} = useApiMutation('location', 'ReviewController', 'like');
-
 	const {mutate: unlikeMutation} = useApiMutation('location', 'ReviewController', 'unLike');
 
 	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ReviewController', 'hasLiked', {id: reviewId});
@@ -39,14 +38,10 @@ export function ReviewLikes({currentUserId, reviewId}: UserLikesProps) {
 	};
 
 	return (
-		<>
-			{currentUserId && (
-				<Pressable onPress={handleLikeToggle} style={[styles.likeButton, isLiked && styles.likeButtonActive]}>
-					<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#0088cc'} />
-					<Text style={styles.likeCount}>{reviewData?.likes}</Text>
-				</Pressable>
-			)}
-		</>
+		<Pressable onPress={handleLikeToggle} style={[styles.likeButton, isLiked && styles.likeButtonActive]}>
+			<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#0088cc'} />
+			<Text style={styles.likeCount}>{reviewData?.likes ?? 0}</Text>
+		</Pressable>
 	);
 }
 

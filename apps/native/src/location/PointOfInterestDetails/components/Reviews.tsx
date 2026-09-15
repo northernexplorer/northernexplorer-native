@@ -222,7 +222,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 								/>
 
 								<Text style={globalStyles.description}>{review.description}</Text>
-								<ReviewLikes reviewId={review.id} currentUserId={review.user.id} />
+								<ReviewLikes reviewId={review.id} currentUserId={authentication?.userId} />
 							</View>
 						);
 					})}
