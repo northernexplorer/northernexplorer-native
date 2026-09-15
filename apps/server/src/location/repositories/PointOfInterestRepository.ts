@@ -127,10 +127,10 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 		if (applyVisitedFilter) {
 			userJoinSql = `
-				LEFT JOIN review rev_filter 
-					ON rev_filter.point_of_interest_id = h.id 
-				   AND rev_filter.user_id = ?
-			`;
+             LEFT JOIN review rev_filter 
+                ON rev_filter.point_of_interest_id = h.id 
+                AND rev_filter.user_id = ?
+          `;
 
 			if (visitedFilter === VisitedFilterEnum.Visited) {
 				visitedFilterSql = `AND rev_filter.id IS NOT NULL`;
@@ -139,44 +139,63 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			}
 		}
 
+		// 1. Haversine coordinates parameters
 		params.push(lat, lon, lat);
 
+		// 2. Visited filter user ID parameter (must match userJoinSql position)
 		if (applyVisitedFilter) {
 			params.push(userId);
 		}
 
+		// 3. Type filter parameter
 		const hasTypeFilter = selectedPoiTypes.length > 0;
 		const typeFilterSql = hasTypeFilter ? `AND h.type && ?::text[]` : '';
 		if (hasTypeFilter) {
 			params.push(`{${selectedPoiTypes.join(',')}}`);
 		}
 
+		// 4. Difficulty filter parameter
 		let difficultyFilterSql = '';
 		if (maxDifficultyIndex !== undefined) {
-			const difficultyValues = Object.values(SiteDifficultyEnum);
-			const allowedDifficulties = difficultyValues.slice(0, maxDifficultyIndex + 1);
+			const orderedDifficulties = [
+				SiteDifficultyEnum.DEVELOPED,
+				SiteDifficultyEnum.LIGHT_HIKE,
+				SiteDifficultyEnum.MODERATE_TRAIL,
+				SiteDifficultyEnum.OFF_TRAIL_REMOTE,
+				SiteDifficultyEnum.EXPEDITION_ONLY,
+			];
+			const allowedDifficulties = orderedDifficulties.slice(0, maxDifficultyIndex + 1);
 			if (allowedDifficulties.length > 0) {
 				difficultyFilterSql = `AND h.difficulty = ANY(?::text[])`;
 				params.push(`{${allowedDifficulties.join(',')}}`);
 			}
 		}
 
+		// 5. Cost filter parameter
 		let costFilterSql = '';
 		if (maxCostIndex !== undefined) {
-			const costValues = Object.values(EntranceCostEnum);
-			const allowedCosts = costValues.slice(0, maxCostIndex + 1);
+			const orderedCosts = [
+				EntranceCostEnum.FREE,
+				EntranceCostEnum.TIER_1_10,
+				EntranceCostEnum.TIER_11_25,
+				EntranceCostEnum.TIER_26_50,
+				EntranceCostEnum.TIER_50_PLUS,
+			];
+			const allowedCosts = orderedCosts.slice(0, maxCostIndex + 1);
 			if (allowedCosts.length > 0) {
 				costFilterSql = `AND h.entrance_cost = ANY(?::text[])`;
 				params.push(`{${allowedCosts.join(',')}}`);
 			}
 		}
 
+		// 6. Min rating parameter (in HAVING clause)
 		let minRatingSql = '';
 		if (minRating !== null && minRating !== undefined) {
 			minRatingSql = `HAVING COALESCE(AVG(rev.rating), 0) >= ?`;
 			params.push(minRating);
 		}
 
+		// 7. Final LIMIT parameter
 		params.push(limit);
 
 		const query = `

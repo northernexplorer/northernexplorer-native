@@ -17,6 +17,31 @@ export class PointOfInterestController extends BaseController {
 		auth?: AuthContext,
 	): Promise<Response<Route<'getNearbyPointOfInterests'>>> {
 		const {lat, lon, limit, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex} = params;
+
+		let parsedDifficultyIndex = maxDifficultyIndex !== undefined ? Number(maxDifficultyIndex) : undefined;
+		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
+
+		const MAX_FREE_DIFFICULTY_INDEX = 2;
+
+		let hasAdvancedAccess = false;
+
+		if (auth?.userId) {
+			const user = await this.repos.user.getById(auth.userId);
+			const subscription = await this.repos.subscription.getById(user.subscription.id);
+			const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
+
+			if (['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name)) {
+				hasAdvancedAccess = true;
+			}
+		}
+
+		// Apply the restriction if the user lacks advanced access or is unauthenticated
+		if (!hasAdvancedAccess) {
+			if (parsedDifficultyIndex === undefined || parsedDifficultyIndex > MAX_FREE_DIFFICULTY_INDEX) {
+				parsedDifficultyIndex = MAX_FREE_DIFFICULTY_INDEX;
+			}
+		}
+
 		return this.repos.pointOfInterest.getClosestPointOfInterests(
 			lat,
 			lon,
@@ -25,8 +50,8 @@ export class PointOfInterestController extends BaseController {
 			selectedPoiTypes,
 			visitedFilter,
 			minRating,
-			maxDifficultyIndex,
-			maxCostIndex,
+			parsedDifficultyIndex,
+			parsedCostIndex,
 		);
 	}
 
