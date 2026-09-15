@@ -78,7 +78,16 @@ export type PointOfInterestEditType = {
 
 export const PointOfInterestController = {
 	getNearbyPointOfInterests: {
-		params: {} as {lat: number; lon: number; limit: number; selectedPoiTypes?: PointOfInterestTypeEnum[]; visitedFilter?: VisitedFilterEnum},
+		params: {} as {
+			lat: number;
+			lon: number;
+			limit: number;
+			selectedPoiTypes?: PointOfInterestTypeEnum[];
+			visitedFilter?: VisitedFilterEnum;
+			minRating?: number | null;
+			maxDifficultyIndex?: number;
+			maxCostIndex?: number;
+		},
 		response: null as unknown as PointOfInterestType[],
 	},
 	getPointOfInterestById: {

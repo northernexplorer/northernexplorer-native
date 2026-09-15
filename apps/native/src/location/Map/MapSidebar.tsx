@@ -4,6 +4,7 @@ import {useDispatch} from 'react-redux';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Link} from 'expo-router';
 import {PointOfInterestTypeEnum, VisitedFilterEnum, SiteDifficultyEnum, EntranceCostEnum} from '@northernexplorer/types';
+import {SliderField} from '@northernexplorer/tools-web';
 import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
 import {baseLayers} from '~/location/Map/baseLayers';
 import {setBaseLayer, setPoiTypes, setVisitedFilter, setMinRating, setDifficultyLevel, setCostLevel} from '~/location/state/map/mapSlice';
@@ -11,7 +12,6 @@ import {useMap} from '~/location/state/map/useMap';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {DIFFICULTY_CONFIG, COST_OPTIONS} from '~/location/PointOfInterestDetails/components/reviewOptions';
-import {SliderField} from '@northernexplorer/tools-web';
 
 const LAYER_TILES = [
 	{key: 'standard', label: 'Standard', layer: baseLayers.standard, icon: 'map-outline'},
@@ -50,6 +50,23 @@ export function MapSidebar() {
 	const isLoggedIn = !!authentication?.username;
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 	const canChangeMapStyle = !!permissionData?.navigation.changeMapStyle;
+	const canAccessExpeditionDifficulty = !!permissionData?.navigation.useExpeditionDifficulty;
+	const canAccessOffTrailDifficulty = !!permissionData?.navigation.useOffTrailDifficulty;
+
+	// Determine the max allowed difficulty index based on permissions
+	let maxAllowedDifficultyIndex = DIFFICULTY_KEYS.length - 1;
+	if (!canAccessOffTrailDifficulty) {
+		const offTrailIndex = DIFFICULTY_KEYS.findIndex(k => DIFFICULTY_CONFIG[k].label.toLowerCase().includes('off-trail'));
+		if (offTrailIndex !== -1) {
+			maxAllowedDifficultyIndex = offTrailIndex - 1;
+		}
+	}
+	if (!canAccessExpeditionDifficulty) {
+		const expeditionIndex = DIFFICULTY_KEYS.findIndex(k => DIFFICULTY_CONFIG[k].label.toLowerCase().includes('expedition'));
+		if (expeditionIndex !== -1 && expeditionIndex - 1 < maxAllowedDifficultyIndex) {
+			maxAllowedDifficultyIndex = expeditionIndex - 1;
+		}
+	}
 
 	const bannerHref = isLoggedIn ? `/user/${authentication.username}/change-subscription` : '/user/login';
 	const bannerTitle = 'Upgrade Required to Access All Map Styles';
@@ -58,8 +75,6 @@ export function MapSidebar() {
 	const handlePoiTypeChange = (_fieldName: string, newTypes: PointOfInterestTypeEnum[]) => {
 		dispatch(setPoiTypes(newTypes));
 	};
-
-	if (!permissionData) return null;
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
@@ -133,6 +148,8 @@ export function MapSidebar() {
 					maximumValue={DIFFICULTY_KEYS.length - 1}
 					step={1}
 					value={maxDifficultyIndex}
+					maxInteractiveValue={maxAllowedDifficultyIndex}
+					warningLabel="Upgrade subscription to include harder difficulty tiers."
 					onValueChange={val => {
 						dispatch(setDifficultyLevel(val));
 					}}

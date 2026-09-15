@@ -1,5 +1,6 @@
 import {
 	CountryType,
+	EntranceCostEnum,
 	ImageStatusEnum,
 	OrganizationType,
 	PointOfInterestType,
@@ -8,6 +9,7 @@ import {
 	RegionType,
 	ReviewStatusEnum,
 	SiteConditionEnum,
+	SiteDifficultyEnum,
 	VisitedFilterEnum,
 } from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
@@ -29,6 +31,7 @@ interface PointOfInterestRawRow {
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 	organization: OrganizationType;
+	entranceCost?: EntranceCostEnum;
 	difficulty?: string;
 	rating?: number | string;
 	reviews?: {id: string; rating: number}[];
@@ -111,6 +114,9 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		userId?: string,
 		selectedPoiTypes: PointOfInterestTypeEnum[] = [],
 		visitedFilter: VisitedFilterEnum = VisitedFilterEnum.All,
+		minRating?: number | null,
+		maxDifficultyIndex?: number,
+		maxCostIndex?: number,
 	): Promise<PointOfInterestType[]> {
 		const params: unknown[] = [];
 
@@ -121,10 +127,10 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 		if (applyVisitedFilter) {
 			userJoinSql = `
-          LEFT JOIN review rev_filter 
-            ON rev_filter.point_of_interest_id = h.id 
-           AND rev_filter.user_id = ?
-      `;
+				LEFT JOIN review rev_filter 
+					ON rev_filter.point_of_interest_id = h.id 
+				   AND rev_filter.user_id = ?
+			`;
 
 			if (visitedFilter === VisitedFilterEnum.Visited) {
 				visitedFilterSql = `AND rev_filter.id IS NOT NULL`;
@@ -145,15 +151,41 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			params.push(`{${selectedPoiTypes.join(',')}}`);
 		}
 
+		let difficultyFilterSql = '';
+		if (maxDifficultyIndex !== undefined) {
+			const difficultyValues = Object.values(SiteDifficultyEnum);
+			const allowedDifficulties = difficultyValues.slice(0, maxDifficultyIndex + 1);
+			if (allowedDifficulties.length > 0) {
+				difficultyFilterSql = `AND h.difficulty = ANY(?::text[])`;
+				params.push(`{${allowedDifficulties.join(',')}}`);
+			}
+		}
+
+		let costFilterSql = '';
+		if (maxCostIndex !== undefined) {
+			const costValues = Object.values(EntranceCostEnum);
+			const allowedCosts = costValues.slice(0, maxCostIndex + 1);
+			if (allowedCosts.length > 0) {
+				costFilterSql = `AND h.entrance_cost = ANY(?::text[])`;
+				params.push(`{${allowedCosts.join(',')}}`);
+			}
+		}
+
+		let minRatingSql = '';
+		if (minRating !== null && minRating !== undefined) {
+			minRatingSql = `HAVING COALESCE(AVG(rev.rating), 0) >= ?`;
+			params.push(minRating);
+		}
+
 		params.push(limit);
 
 		const query = `
 			SELECT id, name, description, image, lat, lon, country, region, status, type,
-				   difficulty, rating, reviews,
+				   difficulty, entrance_cost as "entranceCost", rating, reviews,
 				   start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
 			FROM (
 					 SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, h.status, h.type,
-							h.difficulty,
+							h.difficulty, h.entrance_cost,
 							COALESCE(AVG(rev.rating), 0) as rating,
 							COALESCE(
 								json_agg(
@@ -188,7 +220,10 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 					 WHERE h.status = 'Published'
 						 ${typeFilterSql}
 						 ${visitedFilterSql}
+						 ${difficultyFilterSql}
+						 ${costFilterSql}
 					 GROUP BY h.id, c.id, r.id
+						 ${minRatingSql}
 				 ) AS spatial_search
 			ORDER BY distanceMeters ASC
 				LIMIT ?;
@@ -205,6 +240,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			region: site.region,
 			rating: site.rating,
 			difficulty: site.difficulty,
+			entranceCost: site.entranceCost,
 			reviews: site.reviews ?? [],
 			lat: Number(site.lat),
 			lon: Number(site.lon),

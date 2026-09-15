@@ -16,7 +16,7 @@ import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/re
 
 export function Map() {
 	const router = useRouter();
-	const {baseLayer, selectedPoiTypes, visitedFilter} = useMap();
+	const {baseLayer, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex} = useMap();
 	const cameraRef = useRef<CameraRef>(null);
 
 	const params = useLocalSearchParams<{lat?: string; lon?: string; zoom?: string; selectedId?: string}>();
@@ -43,6 +43,9 @@ export function Map() {
 		limit: 500,
 		selectedPoiTypes,
 		visitedFilter,
+		minRating,
+		maxDifficultyIndex,
+		maxCostIndex,
 	});
 
 	const points = useMemo(() => {
