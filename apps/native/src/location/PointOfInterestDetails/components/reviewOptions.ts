@@ -21,31 +21,31 @@ export const RATING_MAPPING = [
 
 export const DIFFICULTY_CONFIG: Record<SiteDifficultyEnum, {label: string; color: string; bgColor: string; borderColor: string}> = {
 	[SiteDifficultyEnum.DEVELOPED]: {
-		label: 'Developed',
+		label: 'Easy (Developed)',
 		color: '#ffffff',
 		bgColor: '#22c55e',
 		borderColor: '#16a34a',
 	},
 	[SiteDifficultyEnum.LIGHT_HIKE]: {
-		label: 'Light Hike',
+		label: 'Mild (Light Hike)',
 		color: '#ffffff',
 		bgColor: '#0ea5e9',
 		borderColor: '#0284c7',
 	},
 	[SiteDifficultyEnum.MODERATE_TRAIL]: {
-		label: 'Moderate Trail',
+		label: 'Moderate (Long Trail)',
 		color: '#ffffff',
 		bgColor: '#eab308',
 		borderColor: '#ca8a04',
 	},
 	[SiteDifficultyEnum.OFF_TRAIL_REMOTE]: {
-		label: 'Off-Trail & Remote',
+		label: 'Hard (Off-Trail & Remote)',
 		color: '#ffffff',
 		bgColor: '#f97316',
 		borderColor: '#ea580c',
 	},
 	[SiteDifficultyEnum.EXPEDITION_ONLY]: {
-		label: 'Expedition Only',
+		label: 'Extreme (Expedition Only)',
 		color: '#ffffff',
 		bgColor: '#ef4444',
 		borderColor: '#dc2626',

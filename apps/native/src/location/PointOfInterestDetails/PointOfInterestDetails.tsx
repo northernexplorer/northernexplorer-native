@@ -12,6 +12,7 @@ import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {Map} from '~/location/PointOfInterestDetails/components/Map';
 import {useLocation} from '~/location/state/location/useLocation';
+import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
 
 export function PointOfInterestDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
@@ -111,6 +112,9 @@ export function PointOfInterestDetails() {
 						<Text style={ratingStyles.noReviewsText}>No reviews yet</Text>
 					)}
 				</View>
+
+				{/* Shared System-Generated Metadata Badges & Conditions */}
+				<ReviewMetadataBadges difficulty={data.difficulty} entranceCost={data.entranceCost} conditions={data.conditions} />
 
 				<View style={styles.metaContainer}>
 					<Text style={styles.metaLabel}>
