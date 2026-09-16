@@ -1,11 +1,10 @@
 import path from 'node:path';
-import {ImageStatusEnum, Params, Response} from '@northernexplorer/types';
+import {ImageStatusEnum} from '@northernexplorer/types';
 import {sql} from '@mikro-orm/core';
 import {BaseRepository} from '../../core/BaseRepository';
 import {Image} from '../../location';
 import {config} from '../../config';
 import {User} from '../../user';
-import {AuthContext} from '../../core/types';
 
 export class ImageRepository extends BaseRepository<Image> {
 	async getById(id: string) {

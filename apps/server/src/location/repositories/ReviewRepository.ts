@@ -1,17 +1,7 @@
-import {
-	EntranceCostEnum,
-	ImageStatusEnum,
-	Params,
-	Response,
-	ReviewRatingEnum,
-	ReviewStatusEnum,
-	SiteConditionEnum,
-	SiteDifficultyEnum,
-} from '@northernexplorer/types';
+import {EntranceCostEnum, ReviewRatingEnum, ReviewStatusEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {User} from '../../user';
-import {Image, PointOfInterest, Review} from '../../location';
-import {AuthContext} from '../../core/types';
+import {PointOfInterest, Review} from '../../location';
 
 export type CreateReviewParams = {
 	user: User;
