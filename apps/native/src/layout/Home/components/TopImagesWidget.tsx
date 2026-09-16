@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import {View, Text, StyleSheet, Pressable, LayoutChangeEvent, useWindowDimensions} from 'react-native';
 import {ImageType} from '@northernexplorer/types';
 import {formatName, getDynamicImageUrl, ImageView} from '@northernexplorer/tools-web';
@@ -14,12 +14,22 @@ interface TopImagesWidgetProps {
 
 export function TopImagesWidget({data}: TopImagesWidgetProps) {
 	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-	const [tileSize, setTileSize] = useState<number>(0);
+	const [gridWidth, setGridWidth] = useState<number>(0);
 	const {width: windowWidth} = useWindowDimensions();
 	const authentication = useAuthentication();
 
-	// 6 columns on larger screens (width >= 600px), 3 columns on mobile
 	const columns = windowWidth >= 600 ? 6 : 3;
+
+	const tileSize = useMemo(() => {
+		if (gridWidth <= 0) return 0;
+
+		const gapSize = 6;
+		const totalGaps = gapSize * (columns - 1);
+		// Subtract 1 extra pixel safety buffer for sub-pixel Flexbox rounding
+		const availableWidth = gridWidth - totalGaps - 1;
+
+		return Math.floor(availableWidth / columns);
+	}, [gridWidth, columns]);
 
 	const selectedImage = selectedIndex !== null ? data[selectedIndex] : null;
 
@@ -35,22 +45,17 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 		}
 	};
 
-	const handleLayout = (event: LayoutChangeEvent) => {
+	const handleGridLayout = (event: LayoutChangeEvent) => {
 		const {width} = event.nativeEvent.layout;
-		if (width > 0) {
-			const gapSize = 6;
-			const containerPadding = 24; // 12px padding on each side
-			const totalGaps = gapSize * (columns - 1);
-			const availableWidth = width - containerPadding - totalGaps;
-
-			setTileSize(Math.floor(availableWidth / columns));
+		if (width > 0 && Math.abs(width - gridWidth) > 1) {
+			setGridWidth(width);
 		}
 	};
 
 	return (
-		<View style={[globalStyles.tile, styles.container]} onLayout={handleLayout}>
-			<View style={styles.galleryGrid}>
-				{data.slice(0, 6).map((item, index) => {
+		<View style={[globalStyles.tile, styles.container]}>
+			<View style={styles.galleryGrid} onLayout={handleGridLayout}>
+				{data.slice(0, columns).map((item, index) => {
 					const imageUri = getDynamicImageUrl({
 						processed: item.processed,
 						size: 'thumbnail',
@@ -66,7 +71,7 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 							key={item.id}
 							style={[
 								styles.gridItem,
-								tileSize > 0 ? {width: tileSize, height: tileSize} : {width: `${100 / columns - 1.5}%`, aspectRatio: 1},
+								tileSize > 0 ? {width: tileSize, height: tileSize} : {width: `${Math.floor(100 / columns) - 2}%`, aspectRatio: 1},
 							]}
 							onPress={() => setSelectedIndex(index)}
 						>
@@ -117,6 +122,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		gap: 6,
+		width: '100%',
 	},
 	gridItem: {
 		borderRadius: 8,
