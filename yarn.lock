@@ -2379,9 +2379,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@maplibre/maplibre-react-native@npm:^11.3.9":
-  version: 11.3.9
-  resolution: "@maplibre/maplibre-react-native@npm:11.3.9"
+"@maplibre/maplibre-react-native@npm:^11.3.10":
+  version: 11.3.10
+  resolution: "@maplibre/maplibre-react-native@npm:11.3.10"
   dependencies:
     "@maplibre/maplibre-gl-style-spec": "npm:26.2.1"
     "@turf/distance": "npm:^7.4.0"
@@ -2401,7 +2401,7 @@ __metadata:
       optional: true
     expo:
       optional: true
-  checksum: 10c0/53f378c3eef0466b0e4af0da9b1d04f1747e09ac0fd229b0138fb0a8dd363d9b5f13cf35d1aa1780cef3b1eabab5315937d917a0abaa204b40cb5340912cec4d
+  checksum: 10c0/d790243eed7ad1c80015837dc3d51ce1b72fc2383210f99923c838864ffc7e32272dc24d363ac376682079a04acd1a36ee78210a86bbb65c8585716f876e4bc2
   languageName: node
   linkType: hard
 
@@ -9027,7 +9027,7 @@ __metadata:
   resolution: "northernexplorer-native@workspace:apps/native"
   dependencies:
     "@expo/vector-icons": "npm:^15.0.2"
-    "@maplibre/maplibre-react-native": "npm:^11.3.9"
+    "@maplibre/maplibre-react-native": "npm:^11.3.10"
     "@northernexplorer/tools-web": "npm:*"
     "@northernexplorer/types": "npm:*"
     "@react-native-async-storage/async-storage": "npm:2.2.0"
