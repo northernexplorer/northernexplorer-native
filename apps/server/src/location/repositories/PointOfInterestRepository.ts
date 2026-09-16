@@ -326,10 +326,10 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		const totalRating = approvedReviews.reduce((sum, r) => sum + Number(r.rating || 0), 0);
 		pointOfInterest.rating = Math.round(totalRating / approvedReviews.length);
 
-		// Find mode for difficulty & entrance cost (filtering out nullish values)
-		pointOfInterest.difficulty = this.getMode(approvedReviews.map(r => r.difficulty).filter((d): d is NonNullable<typeof d> => d != null));
+		// Find mode for difficulty & entrance cost
+		pointOfInterest.difficulty = this.getMode(approvedReviews.map(r => r.difficulty));
 
-		pointOfInterest.entranceCost = this.getMode(approvedReviews.map(r => r.entranceCost).filter((c): c is NonNullable<typeof c> => c != null));
+		pointOfInterest.entranceCost = this.getMode(approvedReviews.map(r => r.entranceCost));
 
 		// Aggregate conditions while filtering out outliers
 		const conditionCounts = new Map<SiteConditionEnum, number>();
