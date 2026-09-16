@@ -231,7 +231,7 @@ export class ImageController extends BaseController {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
-		const images = await this.repos.image.find({status: ImageStatusEnum.Pending}, {populate: ['user', 'pointOfInterest']});
+		const images = await this.repos.image.getPendingImages({limit: params.limit, offset: params.offset});
 		return images.map(image => ({...image}));
 	}
 

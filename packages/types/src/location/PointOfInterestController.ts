@@ -94,11 +94,11 @@ export const PointOfInterestController = {
 		response: null as unknown as PointOfInterestType,
 	},
 	getDrafts: {
-		params: {} as Record<string, undefined>,
+		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},
 	getPublished: {
-		params: {} as Record<string, undefined>,
+		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},
 	edit: {

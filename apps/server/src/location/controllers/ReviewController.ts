@@ -87,11 +87,11 @@ export class ReviewController extends BaseController {
 		return {liked: Boolean(like), likeCount: review.likes.length};
 	}
 
-	public async getPendingReviews(_params: Params<Route<'getPendingReviews'>>, auth?: AuthContext): Promise<Response<Route<'getPendingReviews'>>> {
+	public async getPendingReviews(params: Params<Route<'getPendingReviews'>>, auth?: AuthContext): Promise<Response<Route<'getPendingReviews'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
-		const reviews = await this.repos.review.find({status: ReviewStatusEnum.Pending}, {populate: ['user', 'pointOfInterest', 'likes']});
+		const reviews = await this.repos.review.getPendingReviews({offset: params.offset, limit: params.limit});
 
 		return reviews.map(review => ({
 			...review,

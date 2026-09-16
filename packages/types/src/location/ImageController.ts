@@ -83,7 +83,7 @@ export const ImageController = {
 		},
 	},
 	getPendingImages: {
-		params: {} as Record<string, never>,
+		params: {} as {limit?: number; offset?: number},
 		response: null as unknown as PendingImageType[],
 	},
 	approveImage: {
