@@ -1,7 +1,17 @@
-import {EntranceCostEnum, ReviewRatingEnum, ReviewStatusEnum, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
+import {
+	EntranceCostEnum,
+	ImageStatusEnum,
+	Params,
+	Response,
+	ReviewRatingEnum,
+	ReviewStatusEnum,
+	SiteConditionEnum,
+	SiteDifficultyEnum,
+} from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {User} from '../../user';
-import {PointOfInterest, Review} from '../../location';
+import {Image, PointOfInterest, Review} from '../../location';
+import {AuthContext} from '../../core/types';
 
 export type CreateReviewParams = {
 	user: User;
@@ -34,5 +44,17 @@ export class ReviewRepository extends BaseRepository<Review> {
 		this.persist(review);
 
 		return review;
+	}
+
+	async getPendingReviews({limit, offset}: {limit?: number; offset?: number}): Promise<Review[]> {
+		const reviews = await this.find(
+			{status: ReviewStatusEnum.Pending},
+			{
+				limit,
+				offset,
+				populate: ['user', 'pointOfInterest'],
+			},
+		);
+		return reviews;
 	}
 }

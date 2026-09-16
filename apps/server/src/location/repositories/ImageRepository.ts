@@ -1,10 +1,11 @@
 import path from 'node:path';
-import {ImageStatusEnum} from '@northernexplorer/types';
+import {ImageStatusEnum, Params, Response} from '@northernexplorer/types';
 import {sql} from '@mikro-orm/core';
 import {BaseRepository} from '../../core/BaseRepository';
 import {Image} from '../../location';
 import {config} from '../../config';
 import {User} from '../../user';
+import {AuthContext} from '../../core/types';
 
 export class ImageRepository extends BaseRepository<Image> {
 	async getById(id: string) {
@@ -61,5 +62,17 @@ export class ImageRepository extends BaseRepository<Image> {
 		await this.getEntityManager().populate(entities, ['user', 'pointOfInterest', 'likes']);
 
 		return ids.map(id => entities.find(e => e.id === id)).filter((e): e is Image => e !== undefined);
+	}
+
+	async getPendingImages({limit, offset}: {limit?: number; offset?: number}): Promise<Image[]> {
+		const images = await this.find(
+			{status: ImageStatusEnum.Pending},
+			{
+				limit,
+				offset,
+				populate: ['user', 'pointOfInterest'],
+			},
+		);
+		return images;
 	}
 }

@@ -97,7 +97,7 @@ export const ReviewController = {
 		response: null as unknown as ReviewType,
 	},
 	getPendingReviews: {
-		params: {} as Record<string, never>,
+		params: {} as {limit?: number; offset?: number},
 		response: null as unknown as ReviewType[],
 	},
 	like: {

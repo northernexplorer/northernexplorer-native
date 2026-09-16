@@ -168,7 +168,7 @@ export const UserController = {
 		response: {} as GenericResponseType,
 	},
 	getAll: {
-		params: {} as Record<string, undefined>,
+		params: {} as {limit?: number; offset?: number},
 		response: {} as UserType[],
 	},
 	getAvatarDetails: {
