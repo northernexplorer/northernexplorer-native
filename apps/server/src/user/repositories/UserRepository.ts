@@ -76,4 +76,8 @@ export class UserRepository extends BaseRepository<User> {
 			return plain as UserType;
 		});
 	}
+
+	isPostApproved(user: User) {
+		return user.score >= 500;
+	}
 }

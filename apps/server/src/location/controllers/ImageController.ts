@@ -92,7 +92,6 @@ export class ImageController extends BaseController {
 
 		const pointOfInterest = await this.repos.pointOfInterest.findOneOrFail({id: params.pointOfInterestId});
 		const user = await this.repos.user.getById(userId);
-		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
 		const results: {file: string; status: ImageUploadStatus}[] = [];
 
@@ -115,7 +114,7 @@ export class ImageController extends BaseController {
 				});
 
 				let status = ImageStatusEnum.Pending;
-				if (userReviewCount >= 10 || user.score >= 500) {
+				if (this.repos.user.isPostApproved(user)) {
 					status = ImageStatusEnum.Approved;
 				}
 
@@ -138,7 +137,7 @@ export class ImageController extends BaseController {
 		);
 
 		const successCount = results.filter(r => r.status === ImageUploadStatus.Success).length;
-		if ((userReviewCount >= 10 || user.score >= 500) && successCount > 0) {
+		if (this.repos.user.isPostApproved(user) && successCount > 0) {
 			user.score += successCount * 10;
 		}
 
