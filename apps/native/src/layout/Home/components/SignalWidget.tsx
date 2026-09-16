@@ -1,7 +1,6 @@
 import React, {ComponentProps, useEffect, useState} from 'react';
 import {View, Text, Pressable, Platform} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import NetInfo, {NetInfoStateType, NetInfoState} from '@react-native-community/netinfo';
 import * as Location from 'expo-location';
 import {Link} from 'expo-router';
 import {styles} from '~/layout/Home/styles';
@@ -17,15 +16,10 @@ interface SignalStatus {
 export function SignalWidget() {
 	const isWeb = Platform.OS === 'web';
 
-	const [networkState, setNetworkState] = useState<NetInfoState | null>(null);
 	const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
 
 	useEffect(() => {
 		if (isWeb) return;
-
-		const unsubscribeNet = NetInfo.addEventListener(state => {
-			setNetworkState(state);
-		});
 
 		let locationSubscription: Location.LocationSubscription | null = null;
 
@@ -46,7 +40,6 @@ export function SignalWidget() {
 		})();
 
 		return () => {
-			unsubscribeNet();
 			locationSubscription?.remove();
 		};
 	}, [isWeb]);
@@ -99,26 +92,7 @@ export function SignalWidget() {
 		return {label: `±${Math.round(accuracy)}m`, icon: 'signal-off', color: '#ff4d4d'};
 	};
 
-	const getCellSignalIcon = (): SignalStatus => {
-		if (networkState?.type === NetInfoStateType.cellular) {
-			const details = networkState.details as {cellularGeneration?: string; carrier?: string} | null;
-			const gen = details?.cellularGeneration;
-			return {
-				label: gen ? gen.toUpperCase() : 'CELL',
-				icon: 'signal-cellular-3',
-				color: '#22c55e',
-			};
-		}
-
-		return {
-			label: 'OFF',
-			icon: 'signal-cellular-outline',
-			color: '#ff4d4d',
-		};
-	};
-
 	const gpsInfo = getGpsSignalInfo(gpsAccuracy);
-	const cellInfo = getCellSignalIcon();
 
 	return (
 		<Link href="/location/signal" asChild>

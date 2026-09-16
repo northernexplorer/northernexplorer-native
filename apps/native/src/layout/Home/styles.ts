@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
 
 	// Left Sidebar / Tool Panel
 	leftSidebar: {
-		width: 80,
+		width: 60,
 		backgroundColor: '#1a1a1a',
 		borderRightWidth: 1,
 		borderRightColor: '#333333',
@@ -40,9 +40,6 @@ export const styles = StyleSheet.create({
 		width: 56,
 		height: 56,
 		backgroundColor: '#1a1a1a',
-		borderRadius: 16,
-		borderWidth: 1,
-		borderColor: '#333333',
 		justifyContent: 'center',
 		alignItems: 'center',
 		overflow: 'hidden',
@@ -69,7 +66,6 @@ export const styles = StyleSheet.create({
 		fontSize: 11,
 		fontWeight: '800',
 		letterSpacing: 1.5,
-		marginBottom: 2,
 	},
 	headerTitle: {
 		color: '#ffffff',

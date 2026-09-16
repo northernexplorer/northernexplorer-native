@@ -78,7 +78,6 @@ export function Home() {
 				<View style={styles.headerRow}>
 					<View>
 						<Text style={styles.headerSubtitle}>FIELD DASHBOARD</Text>
-						<Text style={styles.headerTitle}>Explore Nearby</Text>
 					</View>
 				</View>
 
