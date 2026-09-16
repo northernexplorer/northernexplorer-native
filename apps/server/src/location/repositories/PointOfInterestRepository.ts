@@ -275,12 +275,28 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		return this.findOneOrFail({id});
 	}
 
-	getDrafts() {
-		return this.find({status: PublishStatusEnum.Draft}, {orderBy: {createdAt: 'asc', name: 'asc'}, populate: ['region', 'country']});
+	getDrafts({limit, offset}: {limit?: number; offset?: number}) {
+		return this.find(
+			{status: PublishStatusEnum.Draft},
+			{
+				limit,
+				offset,
+				orderBy: {createdAt: 'asc', name: 'asc'},
+				populate: ['region', 'country'],
+			},
+		);
 	}
 
-	getPublished() {
-		return this.find({status: PublishStatusEnum.Published}, {orderBy: {name: 'asc'}, populate: ['region', 'country']});
+	getPublished({limit, offset}: {limit?: number; offset?: number}) {
+		return this.find(
+			{status: PublishStatusEnum.Published},
+			{
+				limit,
+				offset,
+				orderBy: {name: 'asc'},
+				populate: ['region', 'country'],
+			},
+		);
 	}
 
 	getVisitedByUser(user: User) {

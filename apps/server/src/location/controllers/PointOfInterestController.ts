@@ -68,7 +68,7 @@ export class PointOfInterestController extends BaseController {
 
 	async getPublished(params: Params<Route<'getPublished'>>, auth?: AuthContext): Promise<Response<Route<'getPublished'>>> {
 		this.permissionService.canAccessAdmin(auth);
-		const sites = await this.repos.pointOfInterest.getPublished();
+		const sites = await this.repos.pointOfInterest.getPublished({limit: params.limit, offset: params.offset});
 
 		return sites.map(site => ({
 			id: site.id,
@@ -89,7 +89,7 @@ export class PointOfInterestController extends BaseController {
 
 	async getDrafts(params: Params<Route<'getDrafts'>>, auth?: AuthContext): Promise<Response<Route<'getDrafts'>>> {
 		this.permissionService.canAccessAdmin(auth);
-		const sites = await this.repos.pointOfInterest.getDrafts();
+		const sites = await this.repos.pointOfInterest.getDrafts({limit: params.limit, offset: params.offset});
 
 		return sites.map(site => ({
 			id: site.id,
