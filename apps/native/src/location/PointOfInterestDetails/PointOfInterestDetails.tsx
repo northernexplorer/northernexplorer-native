@@ -3,7 +3,7 @@ import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {Link, useLocalSearchParams} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, Spinner} from '@northernexplorer/tools-web';
-import {RolesEnum} from '@northernexplorer/types';
+import {SiteDifficultyEnum, RolesEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
 import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
@@ -20,6 +20,9 @@ export function PointOfInterestDetails() {
 	const coords = useLocation();
 
 	const {data, loading, refetch} = useApiFetch('location', 'PointOfInterestController', 'getPointOfInterestById', {id});
+	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
+	const canAccessExpeditionDifficulty = !!permissionData?.navigation.useExpeditionDifficulty;
+	const canAccessOffTrailDifficulty = !!permissionData?.navigation.useOffTrailDifficulty;
 
 	const distance = useMemo(() => {
 		if (!coords?.lat || !data?.lon) return null;
@@ -42,6 +45,12 @@ export function PointOfInterestDetails() {
 	}, [coords?.lat, coords?.lon, data?.lat, data?.lon]);
 
 	if (loading || !data) return <Spinner />;
+
+	// Gate access based on POI difficulty and user permissions
+	const isOffTrail = data.difficulty === SiteDifficultyEnum.OFF_TRAIL_REMOTE;
+	const isExpedition = data.difficulty === SiteDifficultyEnum.EXPEDITION_ONLY;
+
+	const hasPermission = (!isOffTrail || canAccessOffTrailDifficulty) && (!isExpedition || canAccessExpeditionDifficulty);
 
 	const reviewCount = data.reviews?.length ?? 0;
 	const photoCount = data.images?.length ?? 0;
@@ -116,38 +125,60 @@ export function PointOfInterestDetails() {
 				{/* Shared System-Generated Metadata Badges & Conditions */}
 				<ReviewMetadataBadges difficulty={data.difficulty} entranceCost={data.entranceCost} conditions={data.conditions} />
 
-				<View style={styles.metaContainer}>
-					<Text style={styles.metaLabel}>
-						Coordinates: {data.lat}°, {data.lon}°
-					</Text>
-					{distance ? <Text style={styles.metaLabel}>Distance: {distance}</Text> : null}
-					<Text style={styles.metaLabel}>
-						Dates: {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
-					</Text>
-					<Text style={styles.metaLabel}>Organization: {data.organization.name}</Text>
-				</View>
+				{/* Restricted Metadata (Coordinates, Distance, Dates, Organization) */}
+				{hasPermission && (
+					<View style={styles.metaContainer}>
+						<Text style={styles.metaLabel}>
+							Coordinates: {data.lat}°, {data.lon}°
+						</Text>
+						{distance ? <Text style={styles.metaLabel}>Distance: {distance}</Text> : null}
+						<Text style={styles.metaLabel}>
+							Dates: {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
+						</Text>
+						<Text style={styles.metaLabel}>Organization: {data.organization.name}</Text>
+					</View>
+				)}
 
 				<View style={styles.divider} />
 
-				<Text style={styles.body}>{data.description}</Text>
+				<Text style={styles.body} numberOfLines={hasPermission ? undefined : 3} ellipsizeMode="tail">
+					{data.description}
+				</Text>
 
 				<View style={styles.divider} />
 
-				{/* Photos Section */}
-				<View style={sectionStyles.header}>
-					<Ionicons name="images-outline" size={20} color="#0f172a" />
-					<Text style={sectionStyles.title}>Photos ({photoCount})</Text>
-				</View>
-				<Photos data={data} refetch={refetch} />
+				{/* Restricted Media & Reviews Sections */}
+				{hasPermission ? (
+					<>
+						{/* Photos Section */}
+						<View style={sectionStyles.header}>
+							<Ionicons name="images-outline" size={20} color="#0f172a" />
+							<Text style={sectionStyles.title}>Photos ({photoCount})</Text>
+						</View>
+						<Photos data={data} refetch={refetch} />
 
-				<View style={styles.divider} />
+						<View style={styles.divider} />
 
-				{/* Reviews Section */}
-				<View style={sectionStyles.header}>
-					<Ionicons name="chatbox-ellipses-outline" size={20} color="#0f172a" />
-					<Text style={sectionStyles.title}>Reviews ({reviewCount})</Text>
-				</View>
-				<Reviews data={data} refetch={refetch} />
+						{/* Reviews Section */}
+						<View style={sectionStyles.header}>
+							<Ionicons name="chatbox-ellipses-outline" size={20} color="#0f172a" />
+							<Text style={sectionStyles.title}>Reviews ({reviewCount})</Text>
+						</View>
+						<Reviews data={data} refetch={refetch} />
+					</>
+				) : (
+					<Link href={auth?.username ? `/user/${auth.username}/change-subscription` : '/user/login'} asChild>
+						<TouchableOpacity style={restrictedStyles.container}>
+							<Ionicons name="lock-closed-outline" size={24} color="#64748b" />
+							<Text style={restrictedStyles.title}>Subscriber Access Required</Text>
+							<Text style={restrictedStyles.text}>
+								You must be an active subscriber to unlock coordinates, community photos, reviews, and detailed expedition info for
+								this site.
+							</Text>
+							<Text style={restrictedStyles.linkText}>Tap to view subscription options</Text>
+						</TouchableOpacity>
+					</Link>
+				)}
 			</View>
 		</View>
 	);
@@ -194,5 +225,34 @@ const sectionStyles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: '700',
 		color: '#0f172a',
+	},
+});
+
+const restrictedStyles = StyleSheet.create({
+	container: {
+		padding: 16,
+		backgroundColor: '#f8fafc',
+		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: '#e2e8f0',
+		alignItems: 'center',
+		gap: 8,
+		marginVertical: 12,
+	},
+	title: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#334155',
+	},
+	text: {
+		fontSize: 14,
+		color: '#64748b',
+		textAlign: 'center',
+	},
+	linkText: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: '#0284c7',
+		marginTop: 4,
 	},
 });
