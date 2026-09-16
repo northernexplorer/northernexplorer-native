@@ -3,7 +3,7 @@ import {View, Text, Image, Pressable, StyleSheet} from 'react-native';
 import {Link} from 'expo-router';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
 import {Ionicons} from '@expo/vector-icons';
-import {styles} from '~/layout/Home/styles';
+import {styles as globalStyles} from '~/layout/Home/styles';
 import {config} from '~/config';
 import {useLocation} from '~/location/state/location/useLocation';
 import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
@@ -80,15 +80,15 @@ export function PointOfInterestPreviewWidget({
 			asChild
 		>
 			<Pressable style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
-				<View style={[styles.tile, styles.siteCard]}>
+				<View style={[globalStyles.tile, widgetStyles.card]}>
 					<Image
 						source={{uri: getImageUrl({path: image, cdn: config.CONTENT_DELIVERY_NETWORK})}}
-						style={styles.siteImage}
+						style={widgetStyles.image}
 						resizeMode="cover"
 					/>
-					<View style={styles.siteContent}>
+					<View style={widgetStyles.content}>
 						<View>
-							<Text style={styles.siteTitle} numberOfLines={1}>
+							<Text style={widgetStyles.title} numberOfLines={1}>
 								{name}
 							</Text>
 
@@ -113,21 +113,21 @@ export function PointOfInterestPreviewWidget({
 								)}
 							</View>
 
-							<Text style={styles.siteDesc} numberOfLines={2}>
+							<Text style={widgetStyles.description} numberOfLines={2}>
 								{description}
 							</Text>
 						</View>
 
-						<View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4}}>
+						<View style={widgetStyles.footer}>
 							{region ? (
-								<Text style={{color: 'rgba(255,255,255,0.35)', fontSize: 10, fontWeight: '600', textTransform: 'uppercase'}}>
+								<Text style={widgetStyles.regionText} numberOfLines={1}>
 									{region}
 								</Text>
 							) : (
 								<View />
 							)}
 
-							{distance ? <Text style={{color: '#E0E0E0', fontSize: 10, fontWeight: '500'}}>{distance}</Text> : null}
+							{distance ? <Text style={widgetStyles.distanceText}>{distance}</Text> : null}
 						</View>
 					</View>
 				</View>
@@ -137,6 +137,26 @@ export function PointOfInterestPreviewWidget({
 }
 
 const widgetStyles = StyleSheet.create({
+	card: {
+		padding: 0,
+		overflow: 'hidden',
+		flexDirection: 'column',
+		width: 240,
+	},
+	image: {
+		width: '100%',
+		height: 120,
+	},
+	content: {
+		padding: 12,
+		justifyContent: 'space-between',
+		flex: 1,
+	},
+	title: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '700',
+	},
 	metaRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -155,20 +175,45 @@ const widgetStyles = StyleSheet.create({
 	},
 	countText: {
 		fontSize: 10,
-		color: 'rgba(255,255,255,0.6)',
+		color: '#94a3b8',
 	},
 	noReviewsText: {
 		fontSize: 10,
-		color: 'rgba(255,255,255,0.4)',
+		color: '#64748b',
 		fontStyle: 'italic',
 	},
 	difficultyBadge: {
-		paddingHorizontal: 5,
-		paddingVertical: 1,
+		paddingHorizontal: 6,
+		paddingVertical: 2,
 		borderRadius: 4,
 	},
 	difficultyText: {
 		fontSize: 9,
 		fontWeight: '700',
+		textTransform: 'uppercase',
+	},
+	description: {
+		color: '#94a3b8',
+		fontSize: 12,
+		lineHeight: 16,
+		marginTop: 2,
+	},
+	footer: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		marginTop: 8,
+	},
+	regionText: {
+		color: '#38bdf8',
+		fontSize: 10,
+		fontWeight: '700',
+		textTransform: 'uppercase',
+		letterSpacing: 0.5,
+	},
+	distanceText: {
+		color: '#cbd5e1',
+		fontSize: 10,
+		fontWeight: '600',
 	},
 });

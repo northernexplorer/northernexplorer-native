@@ -3,8 +3,6 @@ import {ImageBackground, Pressable, ScrollView, Text, useWindowDimensions, View}
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {styles} from './styles';
-import {getWeatherTheme} from '~/layout/Layout/getWeatherTheme';
-import {useWeather} from '~/environment/state/weather/useWeather';
 import {Sidebar} from '~/layout/Layout/components/Sidebar';
 import {Navigation} from '~/layout/Layout/components/Navigation';
 import {Footer} from '~/layout/Layout/components/Footer';
@@ -29,9 +27,6 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 	const {isOffline, isRequiredAppUpdate} = useIsOffline();
 	const isMobileView = width < 1000;
 	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-
-	const weather = useWeather();
-	const theme = weather ? getWeatherTheme(weather.current.condition.code) : null;
 
 	const online = !isOffline || !!showOffline;
 	const isMobileFullPage = fullPage && isMobileView;
@@ -70,7 +65,6 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 							{online && (
 								<ImageBackground
 									style={[styles.background, {flex: 1, width: '100%'}]}
-									source={home ? theme?.image : undefined}
 									imageStyle={{
 										width: '100%',
 										height: '100%',

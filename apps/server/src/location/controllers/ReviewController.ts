@@ -87,11 +87,11 @@ export class ReviewController extends BaseController {
 		return {liked: Boolean(like), likeCount: review.likes.length};
 	}
 
-	public async getPendingReviews(_params: Params<Route<'getPendingReviews'>>, auth?: AuthContext): Promise<Response<Route<'getPendingReviews'>>> {
+	public async getPendingReviews(params: Params<Route<'getPendingReviews'>>, auth?: AuthContext): Promise<Response<Route<'getPendingReviews'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
-		const reviews = await this.repos.review.find({status: ReviewStatusEnum.Pending}, {populate: ['user', 'pointOfInterest', 'likes']});
+		const reviews = await this.repos.review.getPendingReviews({offset: params.offset, limit: params.limit});
 
 		return reviews.map(review => ({
 			...review,
@@ -153,11 +153,9 @@ export class ReviewController extends BaseController {
 
 		const user = await this.repos.user.getById(userId);
 		const pointOfInterest = await this.repos.pointOfInterest.getById(pointOfInterestId);
-		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
 		let status = ReviewStatusEnum.Pending;
-		if (userReviewCount >= 20 || user.score >= 500) {
-			status = ReviewStatusEnum.Approved;
+		if (this.repos.user.isPostApproved(user)) {
 			user.score = user.score + 20;
 		}
 

@@ -331,7 +331,7 @@ export class UserController extends BaseController {
 
 	getAll(params: Params<Route<'getAll'>>, auth?: AuthContext): Promise<Response<Route<'getAll'>>> {
 		this.permissionService.canAccessAdmin(auth);
-		return this.repos.user.getAll();
+		return this.repos.user.getAll({limit: params.limit, offset: params.offset});
 	}
 
 	async getTimeline(params: Params<Route<'getTimeline'>>): Promise<Response<Route<'getTimeline'>>> {

@@ -275,55 +275,81 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		return this.findOneOrFail({id});
 	}
 
-	getDrafts() {
-		return this.find({status: PublishStatusEnum.Draft}, {orderBy: {createdAt: 'asc', name: 'asc'}, populate: ['region', 'country']});
+	getDrafts({limit, offset}: {limit?: number; offset?: number}) {
+		return this.find(
+			{status: PublishStatusEnum.Draft},
+			{
+				limit,
+				offset,
+				orderBy: {createdAt: 'asc', name: 'asc'},
+				populate: ['region', 'country'],
+			},
+		);
 	}
 
-	getPublished() {
-		return this.find({status: PublishStatusEnum.Published}, {orderBy: {name: 'asc'}, populate: ['region', 'country']});
+	getPublished({limit, offset}: {limit?: number; offset?: number}) {
+		return this.find(
+			{status: PublishStatusEnum.Published},
+			{
+				limit,
+				offset,
+				orderBy: {name: 'asc'},
+				populate: ['region', 'country'],
+			},
+		);
 	}
 
 	getVisitedByUser(user: User) {
 		return this.find({reviews: {user}}, {populate: ['reviews', 'region', 'country']});
 	}
 
-	async updateSystemGeneratedDetails(pointOfInterestRef: PointOfInterest | string) {
-		const pointOfInterest =
-			typeof pointOfInterestRef === 'string'
-				? await this.findOneOrFail(pointOfInterestRef, {populate: ['reviews']})
-				: await this.populate(pointOfInterestRef, ['reviews']);
+	async updateSystemGeneratedDetails(pointOfInterestRef: PointOfInterest | string): Promise<PointOfInterest> {
+		// Fetch entity without pre-loading the entire reviews collection
+		const pointOfInterest = typeof pointOfInterestRef === 'string' ? await this.findOneOrFail(pointOfInterestRef) : pointOfInterestRef;
 
-		const reviews = pointOfInterest.reviews.getItems();
-		// Calculate average rating (rounded to nearest enum/integer value)
-		const totalRating = reviews.reduce((sum, r) => sum + Number(r.rating), 0);
-		pointOfInterest.rating = Math.round(totalRating / reviews.length);
+		// Query only approved reviews directly from the database
+		const approvedReviews = await pointOfInterest.reviews.matching({
+			where: {status: ReviewStatusEnum.Approved},
+		});
 
-		// Find most frequent (mode) difficulty
-		pointOfInterest.difficulty = this.getMode(reviews.map(r => r.difficulty));
+		// Handle zero-review reset edge case
+		if (approvedReviews.length === 0) {
+			pointOfInterest.rating = undefined;
+			pointOfInterest.difficulty = undefined;
+			pointOfInterest.entranceCost = undefined;
+			pointOfInterest.conditions = undefined;
+			pointOfInterest.updatedAt = new Date();
+			return pointOfInterest;
+		}
 
-		// Find most frequent (mode) entrance cost
-		pointOfInterest.entranceCost = this.getMode(reviews.map(r => r.entranceCost));
+		// Calculate average rating
+		const totalRating = approvedReviews.reduce((sum, r) => sum + Number(r.rating || 0), 0);
+		pointOfInterest.rating = Math.round(totalRating / approvedReviews.length);
+
+		// Find mode for difficulty & entrance cost
+		pointOfInterest.difficulty = this.getMode(approvedReviews.map(r => r.difficulty));
+
+		pointOfInterest.entranceCost = this.getMode(approvedReviews.map(r => r.entranceCost));
 
 		// Aggregate conditions while filtering out outliers
 		const conditionCounts = new Map<SiteConditionEnum, number>();
-		for (const review of reviews) {
-			const uniqueReviewConditions = new Set(review.conditions);
-			for (const condition of uniqueReviewConditions) {
+
+		for (const review of approvedReviews) {
+			for (const condition of new Set(review.conditions)) {
 				conditionCounts.set(condition, (conditionCounts.get(condition) || 0) + 1);
 			}
 		}
 
-		// Define threshold: must appear in at least 20% of reviews (minimum of 1 if few reviews)
-		const minOccurrences = reviews.length < 5 ? 1 : Math.ceil(reviews.length * 0.2);
+		const minOccurrences = approvedReviews.length < 5 ? 1 : Math.ceil(approvedReviews.length * 0.2);
 
 		const validConditions = Array.from(conditionCounts.entries())
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			.filter(([_, count]) => count >= minOccurrences)
+			.filter(([, count]) => count >= minOccurrences)
 			.map(([condition]) => condition);
 
 		pointOfInterest.conditions = validConditions.length > 0 ? validConditions : undefined;
-
 		pointOfInterest.updatedAt = new Date();
+
+		return pointOfInterest;
 	}
 
 	private getMode<T>(arr: T[]): T | undefined {

@@ -62,4 +62,16 @@ export class ImageRepository extends BaseRepository<Image> {
 
 		return ids.map(id => entities.find(e => e.id === id)).filter((e): e is Image => e !== undefined);
 	}
+
+	async getPendingImages({limit, offset}: {limit?: number; offset?: number}): Promise<Image[]> {
+		const images = await this.find(
+			{status: ImageStatusEnum.Pending},
+			{
+				limit,
+				offset,
+				populate: ['user', 'pointOfInterest'],
+			},
+		);
+		return images;
+	}
 }

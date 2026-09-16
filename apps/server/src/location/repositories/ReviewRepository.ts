@@ -35,4 +35,16 @@ export class ReviewRepository extends BaseRepository<Review> {
 
 		return review;
 	}
+
+	async getPendingReviews({limit, offset}: {limit?: number; offset?: number}): Promise<Review[]> {
+		const reviews = await this.find(
+			{status: ReviewStatusEnum.Pending},
+			{
+				limit,
+				offset,
+				populate: ['user', 'pointOfInterest'],
+			},
+		);
+		return reviews;
+	}
 }

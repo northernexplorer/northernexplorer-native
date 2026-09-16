@@ -160,17 +160,17 @@ export function Signal() {
 		};
 	};
 
-	const getWifiMetrics = (): StatusItem => {
+	const getWifiMetrics = () => {
 		if (networkState?.type === NetInfoStateType.wifi) {
-			const details = networkState.details as {ssid?: string; ipAddress?: string} | null;
-			const ssidLabel = details?.ssid ? `SSID: ${details.ssid}` : 'Connected to Wi-Fi Network';
+			const ssidLabel = networkState.details.ssid ? `SSID: ${networkState.details.ssid}` : 'Connected to Wi-Fi Network';
 
 			return {
 				title: 'Wi-Fi Network',
 				subtitle: ssidLabel,
 				value: 'Connected',
-				icon: 'wifi',
+				icon: 'wifi' as const,
 				color: '#16a34a',
+				ipAddress: networkState.details.ipAddress ?? 'N/A',
 			};
 		}
 
@@ -178,8 +178,9 @@ export function Signal() {
 			title: 'Wi-Fi Network',
 			subtitle: 'Wi-Fi interface disconnected or inactive',
 			value: 'Disabled',
-			icon: 'wifi-off',
+			icon: 'wifi-off' as const,
 			color: '#64748b',
+			ipAddress: 'N/A',
 		};
 	};
 
@@ -240,7 +241,7 @@ export function Signal() {
 
 					<View style={styles.row}>
 						<Text style={styles.rowLabel}>IP Address</Text>
-						<Text style={styles.rowValue}>{(networkState?.details as {ipAddress?: string}).ipAddress ?? 'N/A'}</Text>
+						<Text style={styles.rowValue}>{wifiMetrics.ipAddress}</Text>
 					</View>
 
 					<View style={styles.row}>

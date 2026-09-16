@@ -1,16 +1,25 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {getUrlSafeString, Spinner, Column, Table, ImageView} from '@northernexplorer/tools-web';
+import {getUrlSafeString, Spinner, Column, Table, ImageView, Pagination} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 
+const limit = 20;
+
 export function PublishedPointOfInterests() {
 	const router = useRouter();
 	const authentication = useAuthentication();
-	const {data: sites, loading} = useApiFetch('location', 'PointOfInterestController', 'getPublished', {});
+	const [page, setPage] = useState(1);
+
+	const offset = (page - 1) * limit;
+
+	const {data: sites, loading} = useApiFetch('location', 'PointOfInterestController', 'getPublished', {
+		limit,
+		offset,
+	});
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
@@ -76,20 +85,26 @@ export function PublishedPointOfInterests() {
 	];
 
 	return (
-		<Table
-			data={sites}
-			columns={columns}
-			keyExtractor={site => site.id}
-			emptyText="No published historic sites found."
-			emptyIcon="map-outline"
-			onRowPress={site =>
-				router.push(`/${getUrlSafeString(site.country.name)}/${getUrlSafeString(site.region.name)}/${getUrlSafeString(site.name)}/${site.id}`)
-			}
-		/>
+		<View style={styles.container}>
+			<Table
+				data={sites}
+				columns={columns}
+				keyExtractor={site => site.id}
+				emptyText="No published historic sites found."
+				emptyIcon="map-outline"
+				onRowPress={site =>
+					router.push(
+						`/${getUrlSafeString(site.country.name)}/${getUrlSafeString(site.region.name)}/${getUrlSafeString(site.name)}/${site.id}`,
+					)
+				}
+			/>
+			<Pagination currentPage={page} limit={limit} itemCount={sites?.length || 0} onPageChange={setPage} />
+		</View>
 	);
 }
 
 const styles = StyleSheet.create({
+	container: {flex: 1},
 	thumbnail: {width: 38, height: 38, borderRadius: 8},
 	placeholderThumbnail: {backgroundColor: '#e9ecef', alignItems: 'center', justifyContent: 'center'},
 	siteName: {fontSize: 14, fontWeight: '600', color: '#212529'},
