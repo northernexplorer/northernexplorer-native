@@ -1424,7 +1424,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/config-plugins@npm:~57.0.9":
+"@expo/config-plugins@npm:~57.0.2, @expo/config-plugins@npm:~57.0.9":
   version: 57.0.9
   resolution: "@expo/config-plugins@npm:57.0.9"
   dependencies:
@@ -6006,7 +6006,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-constants@npm:~57.0.18":
+"expo-constants@npm:~57.0.18, expo-constants@npm:~57.0.3":
   version: 57.0.18
   resolution: "expo-constants@npm:57.0.18"
   dependencies:
@@ -6102,7 +6102,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-linking@npm:~57.0.10":
+"expo-linking@npm:~57.0.1, expo-linking@npm:~57.0.10":
   version: 57.0.10
   resolution: "expo-linking@npm:57.0.10"
   dependencies:
@@ -6235,6 +6235,23 @@ __metadata:
   version: 57.0.3
   resolution: "expo-server@npm:57.0.3"
   checksum: 10c0/541d9b319ba513df718868c87a8d57e30161c3879b7d5b43f308923290ce5ee349a1b3469901c2f382984b6595f4cf6beaee9d870f5eb874c45ddc0a42a13e56
+  languageName: node
+  linkType: hard
+
+"expo-share-intent@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "expo-share-intent@npm:8.0.1"
+  dependencies:
+    "@expo/config-plugins": "npm:~57.0.2"
+    expo-constants: "npm:~57.0.3"
+    expo-linking: "npm:~57.0.1"
+  peerDependencies:
+    expo: ^57
+    expo-constants: ">=57.0.3"
+    expo-linking: ">=57.0.1"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/f4be20d05d5be7b9b7f998a57e90e1bf6059e58de44ed16c4f8bca4d7a60a1f53080afe6524b60900b54a6c34bfda56ea8c90cf3a3a6e9f94b306961214de1d7
   languageName: node
   linkType: hard
 
@@ -9032,6 +9049,7 @@ __metadata:
     expo-linking: "npm:~57.0.10"
     expo-location: "npm:~57.0.18"
     expo-router: "npm:~57.0.21"
+    expo-share-intent: "npm:^8.0.1"
     expo-splash-screen: "npm:~57.0.9"
     geojson: "npm:^0.5.0"
     maplibre-gl: "npm:^5.24.0"
