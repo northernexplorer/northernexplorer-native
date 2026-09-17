@@ -27,20 +27,22 @@ export class ImageController extends BaseController {
 	/**
 	 * Helper to remove the original file as well as _large.jpg and _thumbnail.jpg variants from DigitalOcean Spaces.
 	 */
-	private async removeWithVariants(url: string): Promise<void> {
-		const originalKey = url.replace(/^\/+/, '');
+	private async removeWithVariants(image: Image) {
+		const originalKey = image.url.replace(/^\/+/, '');
 		const dotIndex = originalKey.lastIndexOf('.');
 		const basePath = dotIndex !== -1 ? originalKey.substring(0, dotIndex) : originalKey;
 
 		const largeKey = `${basePath}_large.jpg`;
 		const thumbnailKey = `${basePath}_thumbnail.jpg`;
+		const coverKey = `${basePath}_cover.jpg`;
 
-		// Deletes original file and variant keys in parallel.
-		// Ignores missing file errors (e.g. if variants haven't been processed yet).
+		// Deletes original file and variant keys concurrently.
+		// Ignores missing file errors if variants haven't been processed yet.
 		await Promise.all([
 			this.spacesManagementService.remove(originalKey).catch(() => null),
-			this.spacesManagementService.remove(largeKey).catch(() => null),
-			this.spacesManagementService.remove(thumbnailKey).catch(() => null),
+			image.processed ? this.spacesManagementService.remove(largeKey).catch(() => null) : Promise.resolve(),
+			image.processed ? this.spacesManagementService.remove(thumbnailKey).catch(() => null) : Promise.resolve(),
+			image.canBeCover ? this.spacesManagementService.remove(coverKey).catch(() => null) : Promise.resolve(),
 		]);
 	}
 
@@ -155,7 +157,7 @@ export class ImageController extends BaseController {
 		const image = await this.repos.image.getById(params.id);
 		this.permissionService.canEditImage({targetId: image.user.id}, auth);
 
-		await this.removeWithVariants(image.url);
+		await this.removeWithVariants(image);
 
 		if (image.status === ImageStatusEnum.Approved) {
 			image.user.score = image.user.score - 10;
@@ -257,7 +259,7 @@ export class ImageController extends BaseController {
 		const {id} = params;
 		const image = await this.repos.image.getById(id);
 
-		await this.removeWithVariants(image.url);
+		await this.removeWithVariants(image);
 
 		this.repos.image.remove(image);
 		await this.flush();

@@ -5,5 +5,6 @@ export function getVariantKeys(originalKey: string) {
 	return {
 		largeKey: `${basePath}_large.jpg`,
 		thumbnailKey: `${basePath}_thumbnail.jpg`,
+		coverKey: `${basePath}_cover.jpg`,
 	};
 }

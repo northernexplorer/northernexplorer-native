@@ -66,6 +66,9 @@ export class Image {
 	@Property({type: 'string', index: true})
 	hash: string;
 
+	@Property({type: 'bool'})
+	canBeCover = false;
+
 	constructor(data: ImageInput) {
 		this.url = data.url;
 		this.fileExtension = data.fileExtension;
