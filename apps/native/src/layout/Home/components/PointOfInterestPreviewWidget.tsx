@@ -141,7 +141,7 @@ const widgetStyles = StyleSheet.create({
 		padding: 0,
 		overflow: 'hidden',
 		flexDirection: 'column',
-		width: 240,
+		width: 200,
 	},
 	image: {
 		width: '100%',

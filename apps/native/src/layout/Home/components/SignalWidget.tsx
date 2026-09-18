@@ -1,5 +1,5 @@
 import React, {ComponentProps, useEffect, useState} from 'react';
-import {View, Text, Pressable, Platform} from 'react-native';
+import {Text, Pressable, Platform} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import {Link} from 'expo-router';
@@ -58,21 +58,9 @@ export function SignalWidget() {
 					opacity: 0.5,
 				}}
 			>
-				<View
-					style={{
-						width: 36,
-						height: 36,
-						borderRadius: 18,
-						borderWidth: 1,
-						borderColor: 'rgba(255,255,255,0.08)',
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-				>
-					<MaterialCommunityIcons name="signal-off" size={18} color="rgba(255,255,255,0.3)" />
-				</View>
+				<MaterialCommunityIcons name="signal-off" size={22} color="rgba(255,255,255,0.3)" />
 
-				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: '700', marginTop: 4, textAlign: 'center'}} numberOfLines={1}>
+				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: '700', marginTop: 2, textAlign: 'center'}} numberOfLines={1}>
 					N/A
 				</Text>
 			</Pressable>
@@ -106,27 +94,14 @@ export function SignalWidget() {
 					height: '100%',
 				}}
 			>
-				<View
-					style={{
-						width: 36,
-						height: 36,
-						borderRadius: 18,
-						borderWidth: 1,
-						borderColor: 'rgba(255,255,255,0.15)',
-						backgroundColor: 'transparent',
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-				>
-					<MaterialCommunityIcons name={gpsInfo.icon} size={18} color={gpsInfo.color} />
-				</View>
+				<MaterialCommunityIcons name={gpsInfo.icon} size={22} color={gpsInfo.color} />
 
 				<Text
 					style={{
 						color: '#ffffff',
 						fontSize: 10,
 						fontWeight: '800',
-						marginTop: 4,
+						marginTop: 2,
 						textAlign: 'center',
 					}}
 					numberOfLines={1}

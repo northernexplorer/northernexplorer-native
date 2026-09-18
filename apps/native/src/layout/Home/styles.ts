@@ -14,14 +14,14 @@ export const styles = StyleSheet.create({
 		backgroundColor: '#1a1a1a',
 	},
 
-	// Left Sidebar / Tool Panel
+	// Left Sidebar / Tool Panel (Restored)
 	leftSidebar: {
-		width: 60,
+		width: 64,
 		backgroundColor: '#1a1a1a',
 		borderRightWidth: 1,
 		borderRightColor: '#333333',
-		paddingVertical: 20,
-		paddingHorizontal: 8,
+		paddingVertical: 16,
+		paddingHorizontal: 6,
 		alignItems: 'center',
 	},
 	sidebarLabel: {
@@ -37,21 +37,22 @@ export const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	sidebarTile: {
-		width: 56,
-		height: 56,
+		width: 52,
+		height: 52,
 		backgroundColor: '#1a1a1a',
 		justifyContent: 'center',
 		alignItems: 'center',
 		overflow: 'hidden',
 	},
 
-	// Main Content Area
+	// Main Content Area (Compact Mobile Padding)
 	mainContent: {
 		flex: 1,
 	},
 	scrollContent: {
-		padding: 20,
-		gap: 24,
+		paddingHorizontal: 12,
+		paddingVertical: 12,
+		gap: 16,
 	},
 
 	// Header Components
@@ -59,27 +60,27 @@ export const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'flex-end',
-		marginBottom: 4,
+		marginBottom: 0,
 	},
 	headerSubtitle: {
 		color: 'rgba(255, 255, 255, 0.6)',
-		fontSize: 11,
+		fontSize: 10,
 		fontWeight: '800',
-		letterSpacing: 1.5,
+		letterSpacing: 1.2,
 	},
 	headerTitle: {
 		color: '#ffffff',
-		fontSize: 28,
+		fontSize: 24,
 		fontWeight: '700',
 		letterSpacing: -0.5,
 	},
 	locationBadge: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
+		gap: 4,
 		backgroundColor: 'rgba(255, 255, 255, 0.08)',
-		paddingHorizontal: 12,
-		paddingVertical: 6,
+		paddingHorizontal: 10,
+		paddingVertical: 4,
 		borderRadius: 20,
 		borderWidth: 1,
 		borderColor: 'rgba(255, 255, 255, 0.12)',
@@ -92,7 +93,7 @@ export const styles = StyleSheet.create({
 	},
 	locationText: {
 		color: 'rgba(255, 255, 255, 0.85)',
-		fontSize: 12,
+		fontSize: 11,
 		fontWeight: '600',
 	},
 
@@ -104,19 +105,19 @@ export const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		marginBottom: 12,
+		marginBottom: 8,
 	},
 	sectionTitle: {
 		color: '#ffffff',
-		fontSize: 18,
+		fontSize: 16,
 		fontWeight: '600',
-		marginBottom: 12,
+		marginBottom: 8,
 	},
 	sectionAction: {
 		color: 'rgba(255, 255, 255, 0.72)',
-		fontSize: 13,
+		fontSize: 12,
 		fontWeight: '600',
-		marginBottom: 12,
+		marginBottom: 8,
 	},
 
 	// Point of Interest Sections
@@ -124,12 +125,12 @@ export const styles = StyleSheet.create({
 		width: '100%',
 	},
 	loadingCard: {
-		height: 180,
+		height: 160,
 		width: '100%',
 		justifyContent: 'center',
 		alignItems: 'center',
 		backgroundColor: 'rgba(255, 255, 255, 0.04)',
-		borderRadius: 16,
+		borderRadius: 12,
 		borderWidth: 1,
 		borderColor: 'rgba(255, 255, 255, 0.08)',
 	},
@@ -159,16 +160,21 @@ export const styles = StyleSheet.create({
 	// Translucent Card / Tile Base
 	tile: {
 		backgroundColor: 'rgba(255, 255, 255, 0.04)',
-		borderRadius: 16,
+		borderRadius: 12,
 		borderWidth: 1,
 		borderColor: 'rgba(255, 255, 255, 0.08)',
 		overflow: 'hidden',
 	},
 
+	// Tile inner content padding helper
+	tilePadding: {
+		padding: 12,
+	},
+
 	// Weather & Metric Utility Styles
 	hourDay: {
 		color: 'rgba(255, 255, 255, 0.5)',
-		fontSize: 12,
+		fontSize: 11,
 		fontWeight: '700',
 		textTransform: 'uppercase',
 		letterSpacing: 0.5,
@@ -178,15 +184,15 @@ export const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 4,
 		backgroundColor: 'rgba(255, 255, 255, 0.05)',
-		paddingHorizontal: 8,
-		paddingVertical: 4,
-		borderRadius: 12,
+		paddingHorizontal: 6,
+		paddingVertical: 3,
+		borderRadius: 10,
 		borderWidth: 1,
 		borderColor: 'rgba(255, 255, 255, 0.08)',
 	},
 	metricText: {
 		color: 'rgba(255, 255, 255, 0.85)',
-		fontSize: 11,
+		fontSize: 10,
 		fontWeight: '600',
 	},
 });
