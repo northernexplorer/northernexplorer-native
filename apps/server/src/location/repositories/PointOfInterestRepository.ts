@@ -37,6 +37,19 @@ interface PointOfInterestRawRow {
 	reviews?: {id: string; rating: number}[];
 }
 
+export interface GetClosestPoisOptions {
+	lat: number;
+	lon: number;
+	limit: number;
+	showDrafts?: boolean;
+	userId?: string;
+	selectedPoiTypes?: PointOfInterestTypeEnum[];
+	visitedFilter?: VisitedFilterEnum;
+	minRating?: number | null;
+	maxDifficultyIndex?: number;
+	maxCostIndex?: number;
+}
+
 export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 	async getPointOfInterestById(id: string, currentUserId?: string): Promise<PointOfInterestType> {
 		const site = await this.findOneOrFail(
@@ -107,30 +120,35 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		};
 	}
 
-	async getClosestPointOfInterests(
-		lat: number,
-		lon: number,
-		limit: number,
-		userId?: string,
-		selectedPoiTypes: PointOfInterestTypeEnum[] = [],
-		visitedFilter: VisitedFilterEnum = VisitedFilterEnum.All,
-		minRating?: number | null,
-		maxDifficultyIndex?: number,
-		maxCostIndex?: number,
-	): Promise<PointOfInterestType[]> {
+	async getClosestPointOfInterests({
+		lat,
+		lon,
+		limit,
+		showDrafts = false,
+		userId,
+		selectedPoiTypes = [],
+		visitedFilter = VisitedFilterEnum.All,
+		minRating,
+		maxDifficultyIndex,
+		maxCostIndex,
+	}: GetClosestPoisOptions): Promise<PointOfInterestType[]> {
 		const params: unknown[] = [];
 
-		const applyVisitedFilter = Boolean(userId) && visitedFilter !== VisitedFilterEnum.All;
+		// 1. Haversine SELECT parameters
+		params.push(lat, lon, lat);
 
+		// 2. JOIN parameters
+		const applyVisitedFilter = Boolean(userId) && visitedFilter !== VisitedFilterEnum.All;
 		let userJoinSql = '';
 		let visitedFilterSql = '';
 
 		if (applyVisitedFilter) {
 			userJoinSql = `
-             LEFT JOIN review rev_filter 
-                ON rev_filter.point_of_interest_id = h.id 
-                AND rev_filter.user_id = ?
-          `;
+        LEFT JOIN review rev_filter 
+           ON rev_filter.point_of_interest_id = h.id 
+           AND rev_filter.user_id = ?
+     `;
+			params.push(userId);
 
 			if (visitedFilter === VisitedFilterEnum.Visited) {
 				visitedFilterSql = `AND rev_filter.id IS NOT NULL`;
@@ -139,22 +157,27 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			}
 		}
 
-		// 1. Haversine coordinates parameters
-		params.push(lat, lon, lat);
+		// 3. WHERE clause parameters
 
-		// 2. Visited filter user ID parameter (must match userJoinSql position)
-		if (applyVisitedFilter) {
-			params.push(userId);
-		}
+		// Ensure strict boolean evaluation
+		const isDraftsEnabled = showDrafts === true || (showDrafts as unknown) === 'true';
 
-		// 3. Type filter parameter
+		// Status filter
+		const allowedStatuses = isDraftsEnabled ? ['Published', 'Draft'] : ['Published'];
+		const statusPlaceholders = allowedStatuses.map(() => '?').join(', ');
+		const statusFilterSql = `AND h.status IN (${statusPlaceholders})`;
+		params.push(...allowedStatuses);
+
+		// Type filter
 		const hasTypeFilter = selectedPoiTypes.length > 0;
-		const typeFilterSql = hasTypeFilter ? `AND h.type && ?::text[]` : '';
+		let typeFilterSql = '';
 		if (hasTypeFilter) {
-			params.push(`{${selectedPoiTypes.join(',')}}`);
+			const typePlaceholders = selectedPoiTypes.map(() => '?').join(', ');
+			typeFilterSql = `AND h.type && ARRAY[${typePlaceholders}]::text[]`;
+			params.push(...selectedPoiTypes);
 		}
 
-		// 4. Difficulty filter parameter
+		// Difficulty filter
 		let difficultyFilterSql = '';
 		if (maxDifficultyIndex !== undefined) {
 			const orderedDifficulties = [
@@ -166,12 +189,14 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			];
 			const allowedDifficulties = orderedDifficulties.slice(0, maxDifficultyIndex + 1);
 			if (allowedDifficulties.length > 0) {
-				difficultyFilterSql = `AND h.difficulty = ANY(?::text[])`;
-				params.push(`{${allowedDifficulties.join(',')}}`);
+				const diffPlaceholders = allowedDifficulties.map(() => '?').join(', ');
+				// Allow NULL difficulty so published POIs missing metadata aren't hidden
+				difficultyFilterSql = `AND (h.difficulty IN (${diffPlaceholders}) OR h.difficulty IS NULL)`;
+				params.push(...allowedDifficulties);
 			}
 		}
 
-		// 5. Cost filter parameter
+		// Cost filter
 		let costFilterSql = '';
 		if (maxCostIndex !== undefined) {
 			const orderedCosts = [
@@ -183,70 +208,73 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			];
 			const allowedCosts = orderedCosts.slice(0, maxCostIndex + 1);
 			if (allowedCosts.length > 0) {
-				costFilterSql = `AND h.entrance_cost = ANY(?::text[])`;
-				params.push(`{${allowedCosts.join(',')}}`);
+				const costPlaceholders = allowedCosts.map(() => '?').join(', ');
+				// Allow NULL entrance_cost so published POIs missing metadata aren't hidden
+				costFilterSql = `AND (h.entrance_cost IN (${costPlaceholders}) OR h.entrance_cost IS NULL)`;
+				params.push(...allowedCosts);
 			}
 		}
 
-		// 6. Min rating parameter (in HAVING clause)
+		// 4. HAVING clause parameter
 		let minRatingSql = '';
 		if (minRating !== null && minRating !== undefined) {
 			minRatingSql = `HAVING COALESCE(AVG(rev.rating), 0) >= ?`;
 			params.push(minRating);
 		}
 
-		// 7. Final LIMIT parameter
+		// 5. Outer LIMIT parameter
 		params.push(limit);
 
 		const query = `
-			SELECT id, name, description, image, lat, lon, country, region, status, type,
-				   difficulty, entrance_cost as "entranceCost", rating, reviews,
-				   start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
-			FROM (
-					 SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, h.status, h.type,
-							h.difficulty, h.entrance_cost,
-							COALESCE(AVG(rev.rating), 0) as rating,
-							COALESCE(
-								json_agg(
-									json_build_object('id', rev.id, 'rating', rev.rating)
-								) FILTER (WHERE rev.id IS NOT NULL),
-								'[]'
-							) as reviews,
-							json_build_object(
-								'id', c.id,
-								'name', c.name
-							) as country,
-							json_build_object(
-								'id', r.id,
-								'name', r.name,
-								'country', json_build_object(
-									'id', c.id,
-									'name', c.name
-										   )
-							) AS region,
-							h.start_date, h.end_date,
-							(6371000 * acos(
-								LEAST(1.0, GREATEST(-1.0,
-													cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
-													sin(radians(?)) * sin(radians(h.lat))
-										   ))
-									   )) AS distance_meters
-					 FROM point_of_interest h
-							  JOIN country c ON h.country_id = c.id
-							  JOIN region r ON h.region_id = r.id
-							  LEFT JOIN review rev ON rev.point_of_interest_id = h.id
-						 ${userJoinSql}
-					 WHERE h.status = 'Published'
-						 ${typeFilterSql}
-						 ${visitedFilterSql}
-						 ${difficultyFilterSql}
-						 ${costFilterSql}
-					 GROUP BY h.id, c.id, r.id
-						 ${minRatingSql}
-				 ) AS spatial_search
-			ORDER BY distanceMeters ASC
-				LIMIT ?;
-		`;
+      SELECT id, name, description, image, lat, lon, country, region, status, type,
+            difficulty, entrance_cost as "entranceCost", rating, reviews,
+            start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
+      FROM (
+             SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, h.status, h.type,
+                  h.difficulty, h.entrance_cost,
+                  COALESCE(AVG(rev.rating), 0) as rating,
+                  COALESCE(
+                     json_agg(
+                        json_build_object('id', rev.id, 'rating', rev.rating)
+                     ) FILTER (WHERE rev.id IS NOT NULL),
+                     '[]'
+                  ) as reviews,
+                  json_build_object(
+                     'id', c.id,
+                     'name', c.name
+                  ) as country,
+                  json_build_object(
+                     'id', r.id,
+                     'name', r.name,
+                     'country', json_build_object(
+                        'id', c.id,
+                        'name', c.name
+                             )
+                  ) AS region,
+                  h.start_date, h.end_date,
+                  (6371000 * acos(
+                     LEAST(1.0, GREATEST(-1.0,
+                                    cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
+                                    sin(radians(?)) * sin(radians(h.lat))
+                              ))
+                           )) AS distance_meters
+             FROM point_of_interest h
+                    JOIN country c ON h.country_id = c.id
+                    JOIN region r ON h.region_id = r.id
+                    LEFT JOIN review rev ON rev.point_of_interest_id = h.id
+                ${userJoinSql}
+             WHERE 1=1
+                ${statusFilterSql}
+                ${typeFilterSql}
+                ${visitedFilterSql}
+                ${difficultyFilterSql}
+                ${costFilterSql}
+             GROUP BY h.id, h.status, c.id, r.id
+                ${minRatingSql}
+          ) AS spatial_search
+      ORDER BY distanceMeters ASC
+         LIMIT ?;
+   `;
 
 		const rawResults = (await this.execute(query, params)) as unknown as PointOfInterestRawRow[];
 

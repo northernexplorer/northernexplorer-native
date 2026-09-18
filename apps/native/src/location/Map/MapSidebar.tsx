@@ -3,11 +3,19 @@ import {StyleSheet, Text, TouchableOpacity, View, ScrollView} from 'react-native
 import {useDispatch} from 'react-redux';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Link} from 'expo-router';
-import {PointOfInterestTypeEnum, VisitedFilterEnum, SiteDifficultyEnum, EntranceCostEnum} from '@northernexplorer/types';
-import {SliderField} from '@northernexplorer/tools-web';
+import {PointOfInterestTypeEnum, VisitedFilterEnum, SiteDifficultyEnum, EntranceCostEnum, RolesEnum} from '@northernexplorer/types';
+import {SliderField, SwitchField} from '@northernexplorer/tools-web';
 import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
 import {baseLayers} from '~/location/Map/baseLayers';
-import {setBaseLayer, setPoiTypes, setVisitedFilter, setMinRating, setDifficultyLevel, setCostLevel} from '~/location/state/map/mapSlice';
+import {
+	setBaseLayer,
+	setPoiTypes,
+	setVisitedFilter,
+	setMinRating,
+	setDifficultyLevel,
+	setCostLevel,
+	setShowDrafts,
+} from '~/location/state/map/mapSlice';
 import {useMap} from '~/location/state/map/useMap';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -45,6 +53,7 @@ export function MapSidebar() {
 		minRating = null,
 		maxDifficultyIndex = DIFFICULTY_KEYS.length - 1,
 		maxCostIndex = COST_KEYS.length - 1,
+		showDrafts = false,
 	} = useMap();
 
 	const isLoggedIn = !!authentication?.username;
@@ -52,6 +61,7 @@ export function MapSidebar() {
 	const canChangeMapStyle = !!permissionData?.navigation.changeMapStyle;
 	const canAccessExpeditionDifficulty = !!permissionData?.navigation.useExpeditionDifficulty;
 	const canAccessOffTrailDifficulty = !!permissionData?.navigation.useOffTrailDifficulty;
+	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
 
 	// Determine the max allowed difficulty index based on permissions
 	let maxAllowedDifficultyIndex = DIFFICULTY_KEYS.length - 1;
@@ -184,6 +194,23 @@ export function MapSidebar() {
 					</TouchableOpacity>
 				</Link>
 			)}
+
+			{/* Admin Controls Section */}
+			{isAdmin && (
+				<View style={styles.adminSection}>
+					<View style={styles.adminHeader}>
+						<MaterialCommunityIcons name="shield-outline" size={16} color="#f59e0b" />
+						<Text style={styles.adminTitle}>Admin Options</Text>
+					</View>
+					<SwitchField
+						fieldName="showDrafts"
+						label="Show Draft Sites"
+						description="Include unpublished sites on the map"
+						value={showDrafts}
+						updateField={(_name, val) => dispatch(setShowDrafts(val))}
+					/>
+				</View>
+			)}
 		</ScrollView>
 	);
 }
@@ -195,6 +222,28 @@ const styles = StyleSheet.create({
 	},
 	section: {
 		marginTop: 4,
+	},
+	adminSection: {
+		marginTop: 8,
+		padding: 12,
+		borderRadius: 12,
+		backgroundColor: 'rgba(245, 158, 11, 0.06)',
+		borderWidth: 1,
+		borderColor: 'rgba(245, 158, 11, 0.2)',
+		gap: 8,
+	},
+	adminHeader: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		marginBottom: 2,
+	},
+	adminTitle: {
+		fontSize: 12,
+		fontWeight: '700',
+		color: '#f59e0b',
+		textTransform: 'uppercase',
+		letterSpacing: 0.5,
 	},
 	segmentedControl: {
 		flexDirection: 'row',

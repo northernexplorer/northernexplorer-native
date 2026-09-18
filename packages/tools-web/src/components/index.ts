@@ -7,5 +7,6 @@ export {Pagination} from './Pagination';
 export {ProFeatureOnly} from './ProFeatureOnly';
 export {SliderField} from './SliderField';
 export {Spinner} from './Spinner';
+export {SwitchField} from './SwitchField';
 export {Table, Column} from './Table';
 export {TextAreaField} from './TextAreaField';

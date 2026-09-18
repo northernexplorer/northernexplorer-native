@@ -1,4 +1,4 @@
-import {Params, PublishStatusEnum, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Params, PublishStatusEnum, Response, RolesEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
@@ -16,7 +16,7 @@ export class PointOfInterestController extends BaseController {
 		params: Params<Route<'getNearbyPointOfInterests'>>,
 		auth?: AuthContext,
 	): Promise<Response<Route<'getNearbyPointOfInterests'>>> {
-		const {lat, lon, limit, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex} = params;
+		const {lat, lon, limit, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = params;
 
 		let parsedDifficultyIndex = maxDifficultyIndex !== undefined ? Number(maxDifficultyIndex) : undefined;
 		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
@@ -24,6 +24,7 @@ export class PointOfInterestController extends BaseController {
 		const MAX_FREE_DIFFICULTY_INDEX = 2;
 
 		let hasAdvancedAccess = false;
+		let showDraftsParsed = showDrafts === true || (showDrafts as unknown) === 'true';
 
 		if (auth?.userId) {
 			const user = await this.repos.user.getById(auth.userId);
@@ -32,6 +33,10 @@ export class PointOfInterestController extends BaseController {
 
 			if (['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name)) {
 				hasAdvancedAccess = true;
+			}
+
+			if (!user.roles?.includes(RolesEnum.Admin)) {
+				showDraftsParsed = false;
 			}
 		}
 
@@ -42,17 +47,18 @@ export class PointOfInterestController extends BaseController {
 			}
 		}
 
-		return this.repos.pointOfInterest.getClosestPointOfInterests(
+		return this.repos.pointOfInterest.getClosestPointOfInterests({
 			lat,
 			lon,
 			limit,
-			auth?.userId,
+			showDrafts: showDraftsParsed,
+			userId: auth?.userId,
 			selectedPoiTypes,
 			visitedFilter,
 			minRating,
-			parsedDifficultyIndex,
-			parsedCostIndex,
-		);
+			maxDifficultyIndex: parsedDifficultyIndex,
+			maxCostIndex: parsedCostIndex,
+		});
 	}
 
 	public async getPointOfInterestById(

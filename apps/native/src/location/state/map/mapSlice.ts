@@ -33,6 +33,7 @@ export interface MapState {
 	minRating: number | null;
 	maxDifficultyIndex: number;
 	maxCostIndex: number;
+	showDrafts: boolean;
 }
 
 const initialState: MapState = {
@@ -42,6 +43,7 @@ const initialState: MapState = {
 	minRating: null,
 	maxDifficultyIndex: 2,
 	maxCostIndex: COST_OPTIONS.length - 1,
+	showDrafts: false,
 };
 
 export const mapSlice = createSlice({
@@ -66,9 +68,12 @@ export const mapSlice = createSlice({
 		setCostLevel: (state, action: PayloadAction<number>) => {
 			state.maxCostIndex = action.payload;
 		},
+		setShowDrafts: (state, action: PayloadAction<boolean>) => {
+			state.showDrafts = action.payload;
+		},
 	},
 });
 
-export const {setBaseLayer, setPoiTypes, setVisitedFilter, setMinRating, setDifficultyLevel, setCostLevel} = mapSlice.actions;
+export const {setBaseLayer, setPoiTypes, setVisitedFilter, setMinRating, setDifficultyLevel, setCostLevel, setShowDrafts} = mapSlice.actions;
 
 export default mapSlice.reducer;
