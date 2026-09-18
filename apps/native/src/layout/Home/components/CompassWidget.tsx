@@ -22,21 +22,9 @@ export function CompassWidget() {
 					opacity: 0.5,
 				}}
 			>
-				<View
-					style={{
-						width: 36,
-						height: 36,
-						borderRadius: 18,
-						borderWidth: 1,
-						borderColor: 'rgba(255,255,255,0.08)',
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-				>
-					<MaterialCommunityIcons name="compass-off-outline" size={18} color="rgba(255,255,255,0.3)" />
-				</View>
+				<MaterialCommunityIcons name="compass-off-outline" size={22} color="rgba(255,255,255,0.3)" />
 
-				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: '700', marginTop: 4, textAlign: 'center'}} numberOfLines={1}>
+				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: '700', marginTop: 2, textAlign: 'center'}} numberOfLines={1}>
 					N/A
 				</Text>
 			</Pressable>
@@ -55,91 +43,59 @@ export function CompassWidget() {
 					height: '100%',
 				}}
 			>
-				<View style={{width: 38, height: 38, alignItems: 'center', justifyContent: 'center'}}>
-					{/* Fixed Top North Indicator Marker */}
+				{/* Rotating Needle Container */}
+				<Animated.View
+					style={{
+						width: 24,
+						height: 24,
+						alignItems: 'center',
+						justifyContent: 'center',
+						transform: [{rotate}],
+					}}
+				>
+					{/* North Needle Point */}
 					<View
 						style={{
 							position: 'absolute',
-							top: -1,
+							top: 0,
 							width: 0,
 							height: 0,
-							borderLeftWidth: 3,
-							borderRightWidth: 3,
-							borderBottomWidth: 4,
+							borderLeftWidth: 4,
+							borderRightWidth: 4,
+							borderBottomWidth: 10,
 							borderLeftColor: 'transparent',
 							borderRightColor: 'transparent',
-							borderBottomColor: '#38BDF8',
-							zIndex: 10,
+							borderBottomColor: '#ef4444',
 						}}
 					/>
 
-					{/* Outer Dial Circle */}
+					{/* South Needle Point */}
 					<View
 						style={{
-							width: 36,
-							height: 36,
-							borderRadius: 18,
-							borderWidth: 1,
-							borderColor: 'rgba(255,255,255,0.15)',
-							alignItems: 'center',
-							justifyContent: 'center',
+							position: 'absolute',
+							bottom: 0,
+							width: 0,
+							height: 0,
+							borderLeftWidth: 4,
+							borderRightWidth: 4,
+							borderTopWidth: 10,
+							borderLeftColor: 'transparent',
+							borderRightColor: 'transparent',
+							borderTopColor: 'rgba(255, 255, 255, 0.4)',
 						}}
-					>
-						{/* Rotating Needle Container */}
-						<Animated.View
-							style={{
-								width: 30,
-								height: 30,
-								alignItems: 'center',
-								justifyContent: 'center',
-								transform: [{rotate}],
-							}}
-						>
-							{/* North Needle Point */}
-							<View
-								style={{
-									position: 'absolute',
-									top: 2,
-									width: 0,
-									height: 0,
-									borderLeftWidth: 4,
-									borderRightWidth: 4,
-									borderBottomWidth: 11,
-									borderLeftColor: 'transparent',
-									borderRightColor: 'transparent',
-									borderBottomColor: '#ef4444',
-								}}
-							/>
+					/>
 
-							{/* South Needle Point */}
-							<View
-								style={{
-									position: 'absolute',
-									bottom: 2,
-									width: 0,
-									height: 0,
-									borderLeftWidth: 4,
-									borderRightWidth: 4,
-									borderTopWidth: 11,
-									borderLeftColor: 'transparent',
-									borderRightColor: 'transparent',
-									borderTopColor: 'rgba(255, 255, 255, 0.3)',
-								}}
-							/>
-
-							{/* Center Pin */}
-							<View
-								style={{
-									width: 4,
-									height: 4,
-									borderRadius: 2,
-									backgroundColor: '#ffffff',
-									zIndex: 5,
-								}}
-							/>
-						</Animated.View>
-					</View>
-				</View>
+					{/* Center Pin */}
+					<View
+						style={{
+							width: 4,
+							height: 4,
+							borderRadius: 2,
+							backgroundColor: '#ffffff',
+							zIndex: 5,
+						}}
+					/>
+				</Animated.View>
 
 				{/* Heading & Cardinal Text */}
 				<Text
@@ -147,7 +103,7 @@ export function CompassWidget() {
 						color: '#ffffff',
 						fontSize: 10,
 						fontWeight: '800',
-						marginTop: 4,
+						marginTop: 2,
 						textAlign: 'center',
 						letterSpacing: -0.2,
 					}}

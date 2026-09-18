@@ -86,6 +86,7 @@ export const PointOfInterestController = {
 			minRating?: number | null;
 			maxDifficultyIndex?: number;
 			maxCostIndex?: number;
+			showDrafts?: boolean;
 		},
 		response: null as unknown as PointOfInterestType[],
 	},

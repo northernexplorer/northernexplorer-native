@@ -36,7 +36,7 @@ export function Home() {
 	if (!isCoreReady) {
 		return (
 			<View style={styles.loadingContainer}>
-				<ActivityIndicator size="large" color="#38BDF8" />
+				<ActivityIndicator size="large" color="#ffffff" />
 			</View>
 		);
 	}
@@ -74,57 +74,61 @@ export function Home() {
 
 			{/* Main Dashboard Content */}
 			<ScrollView style={styles.mainContent} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-				{/* Header Section */}
-				<View style={styles.headerRow}>
-					<View>
-						<Text style={styles.headerSubtitle}>FIELD DASHBOARD</Text>
-					</View>
-				</View>
-
-				{/* Top Feature Block: Points of Interest */}
+				{/* Featured Destinations Container Card */}
 				<View style={styles.sectionContainer}>
-					<View style={styles.sectionHeaderRow}>
-						<Text style={styles.sectionTitle}>Featured Destinations</Text>
-					</View>
-					<View style={styles.pointOfInterestsSection}>
-						{!pointOfInterestData ? (
-							<View style={styles.loadingCard}>
-								<ActivityIndicator size="small" color="#38BDF8" />
+					<View style={styles.tile}>
+						<View style={{padding: 16}}>
+							<View style={{marginBottom: 8}}>
+								<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>FEATURED</Text>
+								<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Destinations</Text>
 							</View>
-						) : (
-							<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12}}>
-								{pointOfInterestData.map(site => (
-									<PointOfInterestPreviewWidget
-										key={site.id}
-										name={site.name}
-										description={site.description}
-										image={site.image}
-										country={site.country.name}
-										region={site.region.name}
-										id={site.id}
-										latitude={site.lat}
-										longitude={site.lon}
-										difficulty={site.difficulty}
-										rating={site.rating}
-										reviews={site.reviews}
-									/>
-								))}
-							</ScrollView>
-						)}
+							<View style={styles.pointOfInterestsSection}>
+								{!pointOfInterestData ? (
+									<View style={styles.loadingCard}>
+										<ActivityIndicator size="small" color="#ffffff" />
+									</View>
+								) : (
+									<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12}}>
+										{pointOfInterestData.map(site => (
+											<PointOfInterestPreviewWidget
+												key={site.id}
+												name={site.name}
+												description={site.description}
+												image={site.image}
+												country={site.country.name}
+												region={site.region.name}
+												id={site.id}
+												latitude={site.lat}
+												longitude={site.lon}
+												difficulty={site.difficulty}
+												rating={site.rating}
+												reviews={site.reviews}
+											/>
+										))}
+									</ScrollView>
+								)}
+							</View>
+						</View>
 					</View>
 				</View>
 
-				{/* Community Top Images Section */}
+				{/* Top Captures Container Card */}
 				{topImagesData && topImagesData.length > 0 && (
 					<View style={styles.sectionContainer}>
-						<Text style={styles.sectionTitle}>Top Captures</Text>
-						<TopImagesWidget data={topImagesData} />
+						<View style={styles.tile}>
+							<View style={{padding: 16}}>
+								<View style={{marginBottom: 8}}>
+									<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>COMMUNITY</Text>
+									<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Top Captures</Text>
+								</View>
+								<TopImagesWidget data={topImagesData} />
+							</View>
+						</View>
 					</View>
 				)}
 
 				{/* Environment Highlights Grid */}
 				<View style={styles.sectionContainer}>
-					<Text style={styles.sectionTitle}>Environmental Conditions</Text>
 					<View style={styles.environmentGrid}>
 						<View style={styles.gridRow}>
 							<View style={styles.weatherSection}>

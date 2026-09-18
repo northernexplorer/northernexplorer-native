@@ -16,7 +16,7 @@ import {MapMarkerWeb} from '~/location/Map/components/MapMarkerWeb';
 import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
 
 export function Map() {
-	const {baseLayer, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex} = useMap();
+	const {baseLayer, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = useMap();
 	const mapRef = useRef<MapRef>(null);
 	const coords = useLocation();
 
@@ -45,6 +45,7 @@ export function Map() {
 		minRating,
 		maxDifficultyIndex,
 		maxCostIndex,
+		showDrafts,
 	});
 
 	const points = useMemo(() => {
