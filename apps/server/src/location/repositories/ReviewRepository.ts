@@ -42,7 +42,7 @@ export class ReviewRepository extends BaseRepository<Review> {
 			{
 				limit,
 				offset,
-				populate: ['user', 'pointOfInterest'],
+				populate: ['user', 'pointOfInterest', 'likes'],
 			},
 		);
 		return reviews;

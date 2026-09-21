@@ -3,6 +3,7 @@ import {View, Text, Image, Pressable, StyleSheet} from 'react-native';
 import {Link} from 'expo-router';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
 import {Ionicons} from '@expo/vector-icons';
+import {ImageHeaderType} from '@northernexplorer/types';
 import {styles as globalStyles} from '~/layout/Home/styles';
 import {config} from '~/config';
 import {useLocation} from '~/location/state/location/useLocation';
@@ -12,7 +13,7 @@ type Props = {
 	id: string;
 	name: string;
 	description: string;
-	image: string;
+	image: ImageHeaderType;
 	country?: string | null;
 	region?: string | null;
 	latitude: number | string;
@@ -82,7 +83,14 @@ export function PointOfInterestPreviewWidget({
 			<Pressable style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
 				<View style={[globalStyles.tile, widgetStyles.card]}>
 					<Image
-						source={{uri: getImageUrl({path: image, cdn: config.CONTENT_DELIVERY_NETWORK})}}
+						source={{
+							uri: getImageUrl({
+								path: image.url,
+								cdn: config.CONTENT_DELIVERY_NETWORK,
+								processed: image.processed,
+								size: 'thumbnail',
+							}),
+						}}
 						style={widgetStyles.image}
 						resizeMode="cover"
 					/>

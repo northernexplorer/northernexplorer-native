@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, ScrollView, Pressable} from 'react-native';
 import {ImageType} from '@northernexplorer/types';
-import {getDynamicImageUrl, ImageView} from '@northernexplorer/tools-web';
+import {getImageUrl, ImageView} from '@northernexplorer/tools-web';
 import {config} from '~/config';
 import {PhotoPreviewModal} from '~/location/PointOfInterestDetails/components/PhotoPreviewModal';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -33,7 +33,7 @@ export function TopImagesWidget({data}: TopImagesWidgetProps) {
 		<>
 			<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 				{displayData.map((item, index) => {
-					const imageUri = getDynamicImageUrl({
+					const imageUri = getImageUrl({
 						processed: item.processed,
 						size: 'thumbnail',
 						path: item.url,

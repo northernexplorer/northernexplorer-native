@@ -29,6 +29,17 @@ export interface ImageType {
 	status: ImageStatusEnum;
 }
 
+export interface ImageHeaderType {
+	id: string;
+	version: number;
+	url: string;
+	fileExtension: string;
+	filename: string;
+	mimeType: string;
+	processed: boolean;
+	status: ImageStatusEnum;
+}
+
 export interface PendingImageType {
 	id: string;
 	version: number;

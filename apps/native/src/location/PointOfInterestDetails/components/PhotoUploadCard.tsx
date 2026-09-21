@@ -13,9 +13,9 @@ type PhotoUploadCardProps = {
 	maxImageSizeBytes?: number; // New prop for individual file size limit
 };
 
-const DEFAULT_MAX_IMAGES = 15;
+const DEFAULT_MAX_IMAGES = 10;
 const DEFAULT_MAX_TOTAL_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB total batch limit
-const DEFAULT_MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB per image limit
+const DEFAULT_MAX_IMAGE_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB per image limit
 
 const uriToBase64 = async (uri: string): Promise<string> => {
 	const response = await fetch(uri);

@@ -163,21 +163,21 @@ export function Map() {
 									},
 								}}
 							>
-								{selectedSite.image && (
-									<img
-										alt={selectedSite.name}
-										src={getImageUrl({
-											path: selectedSite.image,
-											cdn: config.CONTENT_DELIVERY_NETWORK,
-										})}
-										style={{
-											width: '100%',
-											height: 110,
-											objectFit: 'cover',
-											marginBottom: 6,
-										}}
-									/>
-								)}
+								<img
+									alt={selectedSite.name}
+									src={getImageUrl({
+										path: selectedSite.image.url,
+										cdn: config.CONTENT_DELIVERY_NETWORK,
+										processed: selectedSite.image.processed,
+										size: 'thumbnail',
+									})}
+									style={{
+										width: '100%',
+										height: 110,
+										objectFit: 'cover',
+										marginBottom: 6,
+									}}
+								/>
 
 								<h3 style={styles.popupTitle}>{selectedSite.name}</h3>
 

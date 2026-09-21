@@ -1,6 +1,6 @@
 import React from 'react';
 import {Pressable, StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
-import {getDynamicImageUrl, ImageView} from '@northernexplorer/tools-web';
+import {getImageUrl, ImageView} from '@northernexplorer/tools-web';
 import {ImageStatusEnum, ImageType, PendingImageType} from '@northernexplorer/types';
 import {config} from '~/config';
 
@@ -18,7 +18,7 @@ export function PhotoGridItem({image, isMine, onSelect, style}: PhotoGridItemPro
 		<Pressable style={[styles.gridItem, style]} onPress={onSelect}>
 			<ImageView
 				source={{
-					uri: getDynamicImageUrl({
+					uri: getImageUrl({
 						path: image.url,
 						cdn: config.CONTENT_DELIVERY_NETWORK,
 						size: 'thumbnail',

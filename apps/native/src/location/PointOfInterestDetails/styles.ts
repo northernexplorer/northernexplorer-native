@@ -3,7 +3,7 @@ import {StyleSheet, Platform} from 'react-native';
 export const styles = StyleSheet.create({
 	bannerContainer: {
 		position: 'relative',
-		height: 240,
+		height: 300,
 		width: '100%',
 	},
 	banner: {

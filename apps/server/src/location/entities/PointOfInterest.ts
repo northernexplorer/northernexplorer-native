@@ -18,7 +18,7 @@ import {Image} from './Image';
 type PointOfInterestInput = {
 	name: string;
 	description: string;
-	image: string;
+	image: Image;
 	lat: number;
 	lon: number;
 	country: Country;
@@ -44,8 +44,8 @@ export class PointOfInterest {
 	@Property({type: 'text'})
 	description: string;
 
-	@Property({type: 'text'})
-	image: string;
+	@ManyToOne(() => Image)
+	image: Image;
 
 	@Property({type: 'double'})
 	lat: number;

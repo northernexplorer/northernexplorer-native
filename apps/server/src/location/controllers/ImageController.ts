@@ -190,10 +190,11 @@ export class ImageController extends BaseController {
 			image,
 			user,
 		});
+		this.persist(newLike);
 
 		image.user.score = image.user.score + 1;
+		await this.repos.pointOfInterest.setCoverImage(image);
 
-		this.persist(newLike);
 		await this.flush();
 
 		return {success: true};

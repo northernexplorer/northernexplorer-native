@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons';
-import {formatName, getDynamicImageUrl, ImageView} from '@northernexplorer/tools-web';
+import {formatName, getImageUrl, ImageView} from '@northernexplorer/tools-web';
 import {useRouter} from 'expo-router';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
@@ -193,7 +193,7 @@ export function PhotoPreviewModal({
 					<View style={styles.modalImageWrapper} pointerEvents="box-none">
 						<ImageView
 							source={{
-								uri: getDynamicImageUrl({
+								uri: getImageUrl({
 									processed: imageData.processed,
 									size: 'large',
 									path: imageData.url,

@@ -1,9 +1,19 @@
-export function getImageUrl({path, cdn}: {path: string; cdn: string}) {
-	// If it's already a full network URL, leave it alone
-	if (path.startsWith('http')) return path;
+export function getImageUrl({path, cdn, size, processed}: {path: string; cdn: string; size: 'large' | 'thumbnail'; processed: boolean}): string {
+	// If it's already a full network URL, return as-is
+	if (path.startsWith('http://') || path.startsWith('https://')) {
+		return path;
+	}
 
-	// Clean leading slash formatting
-	const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+	// Clean leading and trailing slash formatting
+	const cleanCdn = cdn.replace(/\/+$/, '');
+	let cleanPath = path.replace(/^\/+/, '');
 
-	return `${cdn}/${cleanPath}`;
+	// If image is processed and a size variant is requested, convert path to variant key
+	if (processed) {
+		// Strip existing extension (e.g., "uploads/images/file.png" -> "uploads/images/file")
+		const basePath = cleanPath.replace(/\.[^/.]+$/, '');
+		cleanPath = `${basePath}_${size}.jpg`;
+	}
+
+	return `${cleanCdn}/${cleanPath}`;
 }
