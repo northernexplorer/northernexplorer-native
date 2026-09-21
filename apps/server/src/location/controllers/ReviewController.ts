@@ -1,4 +1,4 @@
-import {Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES, ReviewType} from '@northernexplorer/types';
+import {Params, Response, ReviewStatusEnum, ReviewType, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {BaseController} from '../../core/BaseController';
 import {Repositories} from '../../core/repositories';
 import {AuthContext} from '../../core/types';
@@ -157,6 +157,7 @@ export class ReviewController extends BaseController {
 		let status = ReviewStatusEnum.Pending;
 		if (this.repos.user.isPostApproved(user)) {
 			user.score = user.score + 20;
+			status = ReviewStatusEnum.Approved;
 		}
 
 		const review = this.repos.review.createReview({
