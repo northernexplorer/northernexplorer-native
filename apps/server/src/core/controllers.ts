@@ -1,4 +1,4 @@
-import {FieldNoteController, LunarController, WeatherController} from '../environment';
+import {LunarController, WeatherController} from '../environment';
 import {
 	CityController,
 	PointOfInterestController,
@@ -12,7 +12,6 @@ import {StatusController, MigrationController, SupportController} from '../syste
 import {SessionController, SubscriptionController, SubscriptionLevelController, UserController} from '../user';
 
 export const controllers = [
-	FieldNoteController,
 	LunarController,
 	ImageController,
 	CityController,
