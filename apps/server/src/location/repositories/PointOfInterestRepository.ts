@@ -15,6 +15,7 @@ import {
 import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
 import {User} from '../../user';
+import {Image} from '../entities/Image';
 
 interface PointOfInterestRawRow {
 	id: string;
@@ -386,6 +387,25 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		pointOfInterest.updatedAt = new Date();
 
 		return pointOfInterest;
+	}
+
+	async setCoverImage(image: Image) {
+		if (!image.likes.isInitialized()) {
+			await image.likes.init();
+		}
+
+		const pointOfInterest = await this.findOneOrFail(image.pointOfInterest.id, {populate: ['image', 'image.likes']});
+
+		const currentLikesCount = pointOfInterest.image.likes.length;
+		const candidateLikesCount = image.likes.length;
+
+		console.log(image.pointOfInterest.id);
+		console.log(currentLikesCount);
+		console.log(candidateLikesCount);
+		if (candidateLikesCount > currentLikesCount) {
+			// @ts-expect-error errors due to a mikro-orm type definition
+			pointOfInterest.image = image;
+		}
 	}
 
 	private getMode<T>(arr: T[]): T | undefined {
