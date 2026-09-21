@@ -3,7 +3,7 @@ import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
 import {EntranceCostEnum, ReviewRatingEnum, ReviewSummary, SiteConditionEnum, SiteDifficultyEnum} from './ReviewController';
 import {OrganizationType} from './OrganizationController';
-import {ImageType} from './ImageController';
+import {ImageHeaderType, ImageType} from './ImageController';
 
 export enum PublishStatusEnum {
 	Published = 'Published',
@@ -26,7 +26,7 @@ export type PointOfInterestType = {
 	id: string;
 	name: string;
 	description: string;
-	image: ImageType;
+	image: ImageHeaderType;
 	lat: number;
 	lon: number;
 	country: CountryType;
@@ -48,7 +48,7 @@ export type PointOfInterestSummary = {
 	id: string;
 	name: string;
 	description: string;
-	image: ImageType;
+	image: ImageHeaderType;
 	lat: number;
 	lon: number;
 	country: CountryType;

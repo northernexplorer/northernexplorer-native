@@ -20,7 +20,7 @@ interface PointOfInterestRawRow {
 	id: string;
 	name: string;
 	description: string;
-	image: string;
+	image: PointOfInterestType['image'];
 	lat: string | number;
 	lon: string | number;
 	startDate: string | number;
@@ -54,7 +54,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 	async getPointOfInterestById(id: string, currentUserId?: string): Promise<PointOfInterestType> {
 		const site = await this.findOneOrFail(
 			{id},
-			{populate: ['country', 'region', 'reviews', 'reviews.user', 'organization', 'images', 'images.user', 'images.likes']},
+			{populate: ['country', 'region', 'reviews', 'reviews.user', 'organization', 'images', 'images.user', 'images.likes', 'image']},
 		);
 
 		// Filter reviews: show published reviews OR reviews belonging to the current user
@@ -144,10 +144,10 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 		if (applyVisitedFilter) {
 			userJoinSql = `
-        LEFT JOIN review rev_filter 
-           ON rev_filter.point_of_interest_id = h.id 
-           AND rev_filter.user_id = ?
-     `;
+    LEFT JOIN review rev_filter 
+       ON rev_filter.point_of_interest_id = h.id 
+       AND rev_filter.user_id = ?
+ `;
 			params.push(userId);
 
 			if (visitedFilter === VisitedFilterEnum.Visited) {
@@ -158,17 +158,13 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		}
 
 		// 3. WHERE clause parameters
-
-		// Ensure strict boolean evaluation
 		const isDraftsEnabled = showDrafts === true || (showDrafts as unknown) === 'true';
 
-		// Status filter
 		const allowedStatuses = isDraftsEnabled ? ['Published', 'Draft'] : ['Published'];
 		const statusPlaceholders = allowedStatuses.map(() => '?').join(', ');
 		const statusFilterSql = `AND h.status IN (${statusPlaceholders})`;
 		params.push(...allowedStatuses);
 
-		// Type filter
 		const hasTypeFilter = selectedPoiTypes.length > 0;
 		let typeFilterSql = '';
 		if (hasTypeFilter) {
@@ -177,7 +173,6 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			params.push(...selectedPoiTypes);
 		}
 
-		// Difficulty filter
 		let difficultyFilterSql = '';
 		if (maxDifficultyIndex !== undefined) {
 			const orderedDifficulties = [
@@ -190,13 +185,11 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			const allowedDifficulties = orderedDifficulties.slice(0, maxDifficultyIndex + 1);
 			if (allowedDifficulties.length > 0) {
 				const diffPlaceholders = allowedDifficulties.map(() => '?').join(', ');
-				// Allow NULL difficulty so published POIs missing metadata aren't hidden
 				difficultyFilterSql = `AND (h.difficulty IN (${diffPlaceholders}) OR h.difficulty IS NULL)`;
 				params.push(...allowedDifficulties);
 			}
 		}
 
-		// Cost filter
 		let costFilterSql = '';
 		if (maxCostIndex !== undefined) {
 			const orderedCosts = [
@@ -209,7 +202,6 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			const allowedCosts = orderedCosts.slice(0, maxCostIndex + 1);
 			if (allowedCosts.length > 0) {
 				const costPlaceholders = allowedCosts.map(() => '?').join(', ');
-				// Allow NULL entrance_cost so published POIs missing metadata aren't hidden
 				costFilterSql = `AND (h.entrance_cost IN (${costPlaceholders}) OR h.entrance_cost IS NULL)`;
 				params.push(...allowedCosts);
 			}
@@ -226,55 +218,71 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		params.push(limit);
 
 		const query = `
-      SELECT id, name, description, image, lat, lon, country, region, status, type,
-            difficulty, entrance_cost as "entranceCost", rating, reviews,
-            start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
-      FROM (
-             SELECT h.id, h.name, h.description, h.image, h.lat, h.lon, h.status, h.type,
-                  h.difficulty, h.entrance_cost,
-                  COALESCE(AVG(rev.rating), 0) as rating,
-                  COALESCE(
-                     json_agg(
-                        json_build_object('id', rev.id, 'rating', rev.rating)
-                     ) FILTER (WHERE rev.id IS NOT NULL),
-                     '[]'
-                  ) as reviews,
-                  json_build_object(
-                     'id', c.id,
-                     'name', c.name
-                  ) as country,
-                  json_build_object(
-                     'id', r.id,
-                     'name', r.name,
-                     'country', json_build_object(
-                        'id', c.id,
-                        'name', c.name
-                             )
-                  ) AS region,
-                  h.start_date, h.end_date,
-                  (6371000 * acos(
-                     LEAST(1.0, GREATEST(-1.0,
-                                    cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
-                                    sin(radians(?)) * sin(radians(h.lat))
-                              ))
-                           )) AS distance_meters
-             FROM point_of_interest h
-                    JOIN country c ON h.country_id = c.id
-                    JOIN region r ON h.region_id = r.id
-                    LEFT JOIN review rev ON rev.point_of_interest_id = h.id
-                ${userJoinSql}
-             WHERE 1=1
-                ${statusFilterSql}
-                ${typeFilterSql}
-                ${visitedFilterSql}
-                ${difficultyFilterSql}
-                ${costFilterSql}
-             GROUP BY h.id, h.status, c.id, r.id
-                ${minRatingSql}
-          ) AS spatial_search
-      ORDER BY distanceMeters ASC
-         LIMIT ?;
-   `;
+			SELECT id, name, description, image, lat, lon, country, region, status, type,
+				   difficulty, entrance_cost as "entranceCost", rating, reviews,
+				   start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
+			FROM (
+					 SELECT h.id, h.name, h.description, h.lat, h.lon, h.status, h.type,
+							h.difficulty, h.entrance_cost,
+							CASE WHEN img.id IS NOT NULL THEN
+									 json_build_object(
+										 'id', img.id,
+										 'version', img.version,
+										 'url', img.url,
+										 'fileExtension', img.file_extension,
+										 'filename', img.filename,
+										 'mimeType', img.mime_type,
+										 'size', img.size,
+										 'altText', img.alt_text,
+										 'processed', img.processed,
+										 'createdAt', img.created_at,
+										 'status', img.status
+									 )
+								 ELSE NULL END AS image,
+							COALESCE(AVG(rev.rating), 0) as rating,
+							COALESCE(
+								json_agg(
+									json_build_object('id', rev.id, 'rating', rev.rating)
+								) FILTER (WHERE rev.id IS NOT NULL),
+								'[]'
+							) as reviews,
+							json_build_object(
+								'id', c.id,
+								'name', c.name
+							) as country,
+							json_build_object(
+								'id', r.id,
+								'name', r.name,
+								'country', json_build_object(
+									'id', c.id,
+									'name', c.name
+										   )
+							) AS region,
+							h.start_date, h.end_date,
+							(6371000 * acos(
+								LEAST(1.0, GREATEST(-1.0,
+													cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
+													sin(radians(?)) * sin(radians(h.lat))
+										   ))
+									   )) AS distance_meters
+					 FROM point_of_interest h
+							  JOIN country c ON h.country_id = c.id
+							  JOIN region r ON h.region_id = r.id
+							  LEFT JOIN image img ON h.image_id = img.id
+							  LEFT JOIN review rev ON rev.point_of_interest_id = h.id
+						 ${userJoinSql}
+					 WHERE 1=1
+						 ${statusFilterSql}
+						 ${typeFilterSql}
+						 ${visitedFilterSql}
+						 ${difficultyFilterSql}
+						 ${costFilterSql}
+					 GROUP BY h.id, h.status, c.id, r.id, img.id
+						 ${minRatingSql}
+				 ) AS spatial_search
+			ORDER BY distanceMeters ASC
+				LIMIT ?;
+		`;
 
 		const rawResults = (await this.execute(query, params)) as unknown as PointOfInterestRawRow[];
 
@@ -310,7 +318,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 				limit,
 				offset,
 				orderBy: {createdAt: 'asc', name: 'asc'},
-				populate: ['region', 'country'],
+				populate: ['region', 'country', 'image'],
 			},
 		);
 	}
@@ -322,7 +330,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 				limit,
 				offset,
 				orderBy: {name: 'asc'},
-				populate: ['region', 'country'],
+				populate: ['region', 'country', 'image'],
 			},
 		);
 	}
