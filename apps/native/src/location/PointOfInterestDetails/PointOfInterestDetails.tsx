@@ -60,7 +60,17 @@ export function PointOfInterestDetails() {
 	return (
 		<View>
 			<View style={styles.bannerContainer}>
-				<ImageView source={{uri: getImageUrl({path: data.image, cdn: config.CONTENT_DELIVERY_NETWORK})}} style={styles.banner} />
+				<ImageView
+					source={{
+						uri: getImageUrl({
+							path: data.image.url,
+							size: 'large',
+							cdn: config.CONTENT_DELIVERY_NETWORK,
+							processed: data.image.processed,
+						}),
+					}}
+					style={styles.banner}
+				/>
 				<View style={styles.mapCard}>
 					<Map site={data} />
 				</View>

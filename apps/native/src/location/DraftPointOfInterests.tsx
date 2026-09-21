@@ -2,10 +2,11 @@ import React, {useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {getUrlSafeString, Spinner, Column, Table, ImageView, Pagination} from '@northernexplorer/tools-web';
+import {getUrlSafeString, Spinner, Column, Table, ImageView, Pagination, getImageUrl} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
+import {config} from '~/config';
 
 const limit = 20;
 
@@ -31,14 +32,19 @@ export function DraftPointOfInterests() {
 			key: 'image',
 			title: '',
 			width: 50,
-			render: site =>
-				site.image ? (
-					<ImageView source={{uri: site.image}} style={styles.thumbnail} />
-				) : (
-					<View style={[styles.thumbnail, styles.placeholderThumbnail]}>
-						<Ionicons name="image-outline" size={18} color="#9e9e9e" />
-					</View>
-				),
+			render: site => (
+				<ImageView
+					source={{
+						uri: getImageUrl({
+							path: site.image.url,
+							size: 'thumbnail',
+							cdn: config.CONTENT_DELIVERY_NETWORK,
+							processed: site.image.processed,
+						}),
+					}}
+					style={styles.thumbnail}
+				/>
+			),
 		},
 		{
 			key: 'name',

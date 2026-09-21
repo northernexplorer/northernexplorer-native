@@ -51,8 +51,8 @@ export class Image {
 	@Property({type: 'boolean', default: false})
 	processed: boolean = false;
 
-	@ManyToOne(() => PointOfInterest, {deleteRule: 'cascade'})
-	pointOfInterest: PointOfInterest;
+	@ManyToOne(() => PointOfInterest, {deleteRule: 'cascade', nullable: true})
+	pointOfInterest?: PointOfInterest;
 
 	@ManyToOne(() => User)
 	user: User;

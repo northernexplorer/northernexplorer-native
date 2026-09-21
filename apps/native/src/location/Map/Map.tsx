@@ -175,17 +175,17 @@ export function Map() {
 						style={{cursor: 'pointer'}}
 					>
 						<View style={styles.popupContainer}>
-							{selectedSite.image && (
-								<Image
-									source={{
-										uri: getImageUrl({
-											path: selectedSite.image,
-											cdn: config.CONTENT_DELIVERY_NETWORK,
-										}),
-									}}
-									style={styles.popupImage}
-								/>
-							)}
+							<Image
+								source={{
+									uri: getImageUrl({
+										path: selectedSite.image.url,
+										cdn: config.CONTENT_DELIVERY_NETWORK,
+										processed: selectedSite.image.processed,
+										size: 'thumbnail',
+									}),
+								}}
+								style={styles.popupImage}
+							/>
 
 							<View style={styles.popupContent}>
 								<Text style={styles.popupTitle}>{selectedSite.name}</Text>

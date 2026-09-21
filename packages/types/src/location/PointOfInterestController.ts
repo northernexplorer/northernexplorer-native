@@ -26,7 +26,7 @@ export type PointOfInterestType = {
 	id: string;
 	name: string;
 	description: string;
-	image: string;
+	image: ImageType;
 	lat: number;
 	lon: number;
 	country: CountryType;
@@ -48,7 +48,7 @@ export type PointOfInterestSummary = {
 	id: string;
 	name: string;
 	description: string;
-	image: string;
+	image: ImageType;
 	lat: number;
 	lon: number;
 	country: CountryType;
@@ -63,7 +63,7 @@ export type PointOfInterestEditType = {
 	id: string;
 	name: string;
 	description: string;
-	image: string;
+	imageId: string;
 	lat: number;
 	lon: number;
 	countryId: string;

@@ -1,7 +1,7 @@
 import {View, Text, Pressable, StyleSheet} from 'react-native';
 import {Link} from 'expo-router';
 import React, {useMemo, useState} from 'react';
-import {formatDate, getDynamicImageUrl, ImageView, Spinner} from '@northernexplorer/tools-web';
+import {formatDate, getImageUrl, ImageView, Spinner} from '@northernexplorer/tools-web';
 import {Ionicons} from '@expo/vector-icons';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
@@ -88,7 +88,7 @@ export function ProfileTimeline({username}: Props) {
 											>
 												<ImageView
 													source={{
-														uri: getDynamicImageUrl({
+														uri: getImageUrl({
 															path: item.image.url,
 															size: 'thumbnail',
 															processed: item.image.processed,
