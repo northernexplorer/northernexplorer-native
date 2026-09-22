@@ -68,6 +68,17 @@ export type PointOfInterestEditType = {
 	type: PointOfInterestTypeEnum[];
 };
 
+export type PointOfInterestFavoriteType = {
+	id: string;
+	pointOfInterest: {
+		id: string;
+		description: string;
+		country: string;
+		region: string;
+	};
+	user: string;
+};
+
 export const PointOfInterestController = {
 	getNearbyPointOfInterests: {
 		params: {} as {lat: number; lon: number; limit: number; selectedPoiTypes?: PointOfInterestTypeEnum[]; visitedFilter?: VisitedFilterEnum},
@@ -76,6 +87,28 @@ export const PointOfInterestController = {
 	getPointOfInterestById: {
 		params: {} as {id: string},
 		response: null as unknown as PointOfInterestType,
+	},
+	getPointOfInterestFavorites: {
+		params: {},
+		response: null as unknown as PointOfInterestFavoriteType[],
+	},
+	createPointOfInterestFavorite: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			success: boolean;
+		},
+	},
+	unmarkPointOfInterestFavorite: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			success: boolean;
+		},
+	},
+	isPointOfInterestFavorite: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			Favorited: boolean;
+		},
 	},
 	getDrafts: {
 		params: {} as Record<string, undefined>,

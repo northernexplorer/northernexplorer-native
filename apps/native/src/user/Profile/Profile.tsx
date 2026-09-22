@@ -1,16 +1,16 @@
 import {View, Text, TouchableOpacity} from 'react-native';
 import {Redirect, useLocalSearchParams, useRouter} from 'expo-router';
 import React from 'react';
+import {FavoritePointsOfInterest} from './components/Favorites';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {ProfileDetails} from '~/user/Profile/components/ProfileDetails';
 import {Subscription} from '~/user/Profile/components/Subscription';
 import {Security} from '~/user/Profile/components/Security';
 import {Other} from '~/user/Profile/components/Other';
-
 type RouteParams = {
 	username: string;
-	tab?: 'details' | 'subscription' | 'security' | 'other';
+	tab?: 'details' | 'favorites' | 'subscription' | 'security' | 'other';
 };
 
 export function Profile() {
@@ -20,7 +20,7 @@ export function Profile() {
 
 	if (!authentication) return <Redirect href="/profile/login" />;
 
-	const switchTab = (newTab: 'details' | 'subscription' | 'security' | 'other') => {
+	const switchTab = (newTab: 'details' | 'favorites' | 'subscription' | 'security' | 'other') => {
 		router.setParams({username, tab: newTab});
 	};
 
@@ -29,6 +29,9 @@ export function Profile() {
 			<View style={{flexDirection: 'row', marginBottom: 20}}>
 				<TouchableOpacity style={[styles.tabButton, tab === 'details' && styles.activeTabButton]} onPress={() => switchTab('details')}>
 					<Text style={tab === 'details' ? styles.activeTabText : styles.tabText}>Details</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={[styles.tabButton, tab === 'favorites' && styles.activeTabButton]} onPress={() => switchTab('favorites')}>
+					<Text style={tab === 'favorites' ? styles.activeTabText : styles.tabText}>Favorites</Text>
 				</TouchableOpacity>
 
 				<TouchableOpacity
@@ -48,6 +51,7 @@ export function Profile() {
 			</View>
 
 			{tab === 'details' && <ProfileDetails username={username} />}
+			{tab === 'favorites' && <FavoritePointsOfInterest />}
 			{tab === 'subscription' && <Subscription username={username} />}
 			{tab === 'security' && <Security username={username} />}
 			{tab === 'other' && <Other username={username} />}

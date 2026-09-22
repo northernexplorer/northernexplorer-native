@@ -8,6 +8,14 @@ const styles = StyleSheet.create({
 		padding: 24,
 		gap: 20,
 	},
+	favoritesContainer: {
+		width: '100%',
+		maxWidth: 420,
+		alignSelf: 'center',
+		padding: 24,
+		gap: 10,
+	},
+
 	noticeBackground: {
 		backgroundColor: '#fffaf3',
 		borderWidth: 1,
@@ -130,6 +138,13 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: '#e5e7eb',
 		paddingBottom: 6,
+	},
+	underline: {
+		height: 2,
+		width: '60%',
+		marginTop: 3,
+		borderRadius: 2,
+		backgroundColor: '#a1c4e6',
 	},
 });
 export default styles;

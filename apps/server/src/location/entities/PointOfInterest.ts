@@ -7,7 +7,7 @@ import {Country} from './Country';
 import {Review} from './Review';
 import {Organization} from './Organization';
 import {Image} from './Image';
-
+import {PointOfInterestFavorite} from './PointofInterestFavorite';
 type PointOfInterestInput = {
 	name: string;
 	description: string;
@@ -63,6 +63,9 @@ export class PointOfInterest {
 
 	@OneToMany(() => Image, image => image.pointOfInterest)
 	images = new Collection<Image>(this);
+
+	@OneToMany(() => PointOfInterestFavorite, pointofinterestfavorite => pointofinterestfavorite.pointOfInterest)
+	pointOfInterestFavorite = new Collection<PointOfInterestFavorite>(this);
 
 	@Property({type: 'datetime'})
 	createdAt = new Date();

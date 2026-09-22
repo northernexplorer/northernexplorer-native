@@ -6,6 +6,7 @@ import {calculateHaversineDistance, getImageUrl, getUrlSafeString, Spinner} from
 import {RolesEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
+import AddNewPointOfInterestFavorite from './components/AddPointOfInterestFavorite';
 import {styles} from '~/location/PointOfInterestDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -78,6 +79,7 @@ export function PointOfInterestDetails() {
 							</TouchableOpacity>
 						</Link>
 					)}
+					<AddNewPointOfInterestFavorite pointOfInterestId={data.id} />
 				</View>
 
 				<Text style={styles.title}>{data.name}</Text>
