@@ -109,6 +109,17 @@ export function MapSidebar() {
 				})}
 			</View>
 
+			{!canChangeMapStyle && (
+				<Link href={bannerHref} asChild>
+					<TouchableOpacity activeOpacity={0.8}>
+						<View style={styles.banner}>
+							<Text style={styles.bannerTitle}>{bannerTitle}</Text>
+							<Text style={styles.bannerSubtitle}>{bannerSubtitle}</Text>
+						</View>
+					</TouchableOpacity>
+				</Link>
+			)}
+
 			{isLoggedIn && (
 				<View style={styles.section}>
 					<Text style={[styles.label, styles.labelDark]}>Visits</Text>
@@ -183,17 +194,6 @@ export function MapSidebar() {
 			</View>
 
 			<PointOfInterestTypeDropdown fieldName="poiTypes" label="Types" value={selectedPoiTypes} updateField={handlePoiTypeChange} darkMode />
-
-			{!canChangeMapStyle && (
-				<Link href={bannerHref} asChild>
-					<TouchableOpacity activeOpacity={0.8}>
-						<View style={styles.banner}>
-							<Text style={styles.bannerTitle}>{bannerTitle}</Text>
-							<Text style={styles.bannerSubtitle}>{bannerSubtitle}</Text>
-						</View>
-					</TouchableOpacity>
-				</Link>
-			)}
 
 			{/* Admin Controls Section */}
 			{isAdmin && (
