@@ -1,18 +1,28 @@
-import React from 'react';
-import {View, Text, Image, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {getUrlSafeString, Spinner, Column, Table} from '@northernexplorer/tools-web';
+import {getUrlSafeString, Spinner, Column, Table, ImageView, Pagination, getImageUrl} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
+import {config} from '~/config';
+
+const limit = 20;
 
 export function PublishedPointOfInterests() {
 	const router = useRouter();
 	const authentication = useAuthentication();
-	const {data: sites, loading} = useApiFetch('location', 'PointOfInterestController', 'getPublished', {});
+	const [page, setPage] = useState(1);
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	const offset = (page - 1) * limit;
+
+	const {data: sites, loading} = useApiFetch('location', 'PointOfInterestController', 'getPublished', {
+		limit,
+		offset,
+	});
+
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 
@@ -22,14 +32,19 @@ export function PublishedPointOfInterests() {
 			key: 'image',
 			title: '',
 			width: 50,
-			render: site =>
-				site.image ? (
-					<Image source={{uri: site.image}} style={styles.thumbnail} />
-				) : (
-					<View style={[styles.thumbnail, styles.placeholderThumbnail]}>
-						<Ionicons name="image-outline" size={18} color="#9e9e9e" />
-					</View>
-				),
+			render: site => (
+				<ImageView
+					source={{
+						uri: getImageUrl({
+							path: site.image.url,
+							size: 'thumbnail',
+							cdn: config.CONTENT_DELIVERY_NETWORK,
+							processed: site.image.processed,
+						}),
+					}}
+					style={styles.thumbnail}
+				/>
+			),
 		},
 		{
 			key: 'name',
@@ -76,20 +91,26 @@ export function PublishedPointOfInterests() {
 	];
 
 	return (
-		<Table
-			data={sites}
-			columns={columns}
-			keyExtractor={site => site.id}
-			emptyText="No published historic sites found."
-			emptyIcon="map-outline"
-			onRowPress={site =>
-				router.push(`/${getUrlSafeString(site.country.name)}/${getUrlSafeString(site.region.name)}/${getUrlSafeString(site.name)}/${site.id}`)
-			}
-		/>
+		<View style={styles.container}>
+			<Table
+				data={sites}
+				columns={columns}
+				keyExtractor={site => site.id}
+				emptyText="No published historic sites found."
+				emptyIcon="map-outline"
+				onRowPress={site =>
+					router.push(
+						`/${getUrlSafeString(site.country.name)}/${getUrlSafeString(site.region.name)}/${getUrlSafeString(site.name)}/${site.id}`,
+					)
+				}
+			/>
+			<Pagination currentPage={page} limit={limit} itemCount={sites?.length || 0} onPageChange={setPage} />
+		</View>
 	);
 }
 
 const styles = StyleSheet.create({
+	container: {flex: 1},
 	thumbnail: {width: 38, height: 38, borderRadius: 8},
 	placeholderThumbnail: {backgroundColor: '#e9ecef', alignItems: 'center', justifyContent: 'center'},
 	siteName: {fontSize: 14, fontWeight: '600', color: '#212529'},

@@ -1,6 +1,7 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {useRouter} from 'expo-router';
 import {useApiFetch} from '~/core/useApiFetch';
 
 const AVATAR_COLORS = [
@@ -74,10 +75,13 @@ function generateBackgroundColor(username: string): string {
 interface Props {
 	username: string;
 	size?: number;
+	onPress?: () => void;
+	disabled?: boolean;
 }
 
 export function UserAvatar(props: Props) {
-	const {size = 36, username} = props;
+	const {size = 36, username, onPress, disabled = false} = props;
+	const router = useRouter();
 
 	const {data} = useApiFetch('user', 'UserController', 'getAvatarDetails', {username});
 
@@ -91,12 +95,18 @@ export function UserAvatar(props: Props) {
 	const backgroundColor = generateBackgroundColor(data?.username || username);
 	const initial = (data?.firstName ? data.firstName.charAt(0) : username.charAt(0)).toUpperCase();
 
-	// Scale icon size relative to avatar size
 	const iconSize = Math.max(12, Math.round(size * 0.42));
 	const badgeWrapperSize = iconSize + 2;
 
+	const handlePress = () => {
+		if (onPress) {
+			onPress();
+		}
+		router.push(`/user/${username}`);
+	};
+
 	return (
-		<View style={[styles.container, {width: size, height: size}]}>
+		<TouchableOpacity onPress={handlePress} disabled={disabled} activeOpacity={0.8} style={[styles.container, {width: size, height: size}]}>
 			<View
 				style={[
 					styles.avatarCircle,
@@ -126,7 +136,7 @@ export function UserAvatar(props: Props) {
 					<MaterialCommunityIcons name="star" size={iconSize} color={tierColor} />
 				</View>
 			)}
-		</View>
+		</TouchableOpacity>
 	);
 }
 

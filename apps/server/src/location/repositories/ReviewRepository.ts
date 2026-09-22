@@ -19,21 +19,6 @@ export class ReviewRepository extends BaseRepository<Review> {
 		return this.findOneOrFail({id}, {populate: ['user', 'pointOfInterest', 'likes']});
 	}
 
-	async getAverageRatingByPointOfInterestId(pointOfInterestId: string): Promise<number> {
-		const result = await this.execute<{avg_rating: string | number | null}[]>(
-			`SELECT AVG(rating) as avg_rating FROM review WHERE point_of_interest_id = ? AND status = ?`,
-			[pointOfInterestId, ReviewStatusEnum.Approved],
-		);
-
-		const rawAvg = result.at(0)?.avg_rating;
-		if (!rawAvg) {
-			return 0;
-		}
-
-		const numericAvg = typeof rawAvg === 'number' ? rawAvg : parseFloat(rawAvg);
-		return isNaN(numericAvg) ? 0 : Math.round(numericAvg * 10) / 10;
-	}
-
 	createReview({user, pointOfInterest, rating, description, difficulty, entranceCost, conditions, status}: CreateReviewParams) {
 		const review = new Review({
 			user,
@@ -46,25 +31,20 @@ export class ReviewRepository extends BaseRepository<Review> {
 			status,
 		});
 
-		this.persist([review]);
+		this.persist(review);
 
-		return {
-			id: review.id,
-			rating: review.rating,
-			description: review.description,
-			difficulty: review.difficulty,
-			entranceCost: review.entranceCost,
-			conditions: review.conditions,
-			status: review.status,
-			user: {
-				id: user.id,
-				username: user.username,
-				score: user.score,
+		return review;
+	}
+
+	async getPendingReviews({limit, offset}: {limit?: number; offset?: number}): Promise<Review[]> {
+		const reviews = await this.find(
+			{status: ReviewStatusEnum.Pending},
+			{
+				limit,
+				offset,
+				populate: ['user', 'pointOfInterest', 'likes'],
 			},
-			pointOfInterest: {
-				id: pointOfInterest.id,
-				name: pointOfInterest.name,
-			},
-		};
+		);
+		return reviews;
 	}
 }

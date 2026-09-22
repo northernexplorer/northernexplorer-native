@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
+import {ScrollView, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
-import {getImageUrl, getUrlSafeString, Spinner, FormField, TextAreaField, DropdownField} from '@northernexplorer/tools-web';
+import {getUrlSafeString, Spinner, FormField, TextAreaField, DropdownField, ImageView, getImageUrl} from '@northernexplorer/tools-web';
 import {PointOfInterestEditType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
@@ -63,7 +63,7 @@ export function PointOfInterestEdit() {
 			setForm({
 				name: data.name,
 				description: data.description,
-				image: data.image,
+				image: data.image.id,
 				lat: String(data.lat),
 				lon: String(data.lon),
 				countryId: data.country.id,
@@ -77,7 +77,7 @@ export function PointOfInterestEdit() {
 		}
 	}, [data]);
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading || !data) return <Spinner />;
 
@@ -127,7 +127,7 @@ export function PointOfInterestEdit() {
 			id: data.id,
 			name: form.name,
 			description: form.description,
-			image: form.image,
+			imageId: form.image,
 			lat: parsedLat,
 			lon: parsedLon,
 			countryId: form.countryId,
@@ -156,7 +156,17 @@ export function PointOfInterestEdit() {
 	return (
 		<ScrollView style={formStyles.container} contentContainerStyle={formStyles.contentContainer}>
 			<View style={styles.bannerContainer}>
-				<Image source={{uri: getImageUrl({path: data.image, cdn: config.CONTENT_DELIVERY_NETWORK})}} style={styles.banner} />
+				<ImageView
+					source={{
+						uri: getImageUrl({
+							path: data.image.url,
+							size: 'large',
+							cdn: config.CONTENT_DELIVERY_NETWORK,
+							processed: data.image.processed,
+						}),
+					}}
+					style={styles.banner}
+				/>
 				<View style={styles.mapCard}>
 					<Map
 						site={{

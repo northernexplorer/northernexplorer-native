@@ -9,11 +9,13 @@ import {useApiMutation} from '~/core/useApiMutation';
 type PhotoUploadCardProps = {
 	pointOfInterestId: string;
 	maxImages?: number;
-	maxSizeBytes?: number;
+	maxTotalSizeBytes?: number;
+	maxImageSizeBytes?: number; // New prop for individual file size limit
 };
 
 const DEFAULT_MAX_IMAGES = 10;
-const DEFAULT_MAX_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
+const DEFAULT_MAX_TOTAL_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB total batch limit
+const DEFAULT_MAX_IMAGE_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB per image limit
 
 const uriToBase64 = async (uri: string): Promise<string> => {
 	const response = await fetch(uri);
@@ -31,7 +33,12 @@ const uriToBase64 = async (uri: string): Promise<string> => {
 	});
 };
 
-export function PhotoUploadCard({pointOfInterestId, maxImages = DEFAULT_MAX_IMAGES, maxSizeBytes = DEFAULT_MAX_SIZE_BYTES}: PhotoUploadCardProps) {
+export function PhotoUploadCard({
+	pointOfInterestId,
+	maxImages = DEFAULT_MAX_IMAGES,
+	maxTotalSizeBytes = DEFAULT_MAX_TOTAL_SIZE_BYTES,
+	maxImageSizeBytes = DEFAULT_MAX_IMAGE_SIZE_BYTES,
+}: PhotoUploadCardProps) {
 	const [stagedUploads, setStagedUploads] = useState<UploadImageFileInput[]>([]);
 	const [isUploading, setIsUploading] = useState(false);
 
@@ -42,6 +49,7 @@ export function PhotoUploadCard({pointOfInterestId, maxImages = DEFAULT_MAX_IMAG
 
 	// Filter to get only files that have not been uploaded yet or previously failed
 	const pendingUploads = stagedUploads.filter(file => statusMap[file.uri] !== ImageUploadStatus.Success);
+
 	const handleConfirmUpload = async () => {
 		if (pendingUploads.length === 0) return;
 
@@ -57,11 +65,24 @@ export function PhotoUploadCard({pointOfInterestId, maxImages = DEFAULT_MAX_IMAG
 			return;
 		}
 
+		// Check individual image size limit
+		const maxMbPerImage = Math.round(maxImageSizeBytes / (1024 * 1024));
+		const oversizedFile = pendingUploads.find(file => file.size > maxImageSizeBytes);
+		if (oversizedFile) {
+			alertStore.showAlert({
+				title: 'File Too Large',
+				message: `One or more selected photos exceed the ${maxMbPerImage} MB limit per image. Please remove the large photo(s) and try again.`,
+				type: 'warning',
+			});
+			return;
+		}
+
 		const rawTotalBytes = pendingUploads.reduce((acc, file) => acc + file.size, 0);
-		if (rawTotalBytes > maxSizeBytes) {
+		const maxMbTotal = Math.round(maxTotalSizeBytes / (1024 * 1024));
+		if (rawTotalBytes > maxTotalSizeBytes) {
 			alertStore.showAlert({
 				title: 'Payload Too Large',
-				message: 'The total size of the selected new photos exceeds the 50 MB limit. Please remove some photos and try again.',
+				message: `The total size of the selected new photos exceeds the ${maxMbTotal} MB limit. Please remove some photos and try again.`,
 				type: 'warning',
 			});
 			return;
@@ -87,7 +108,6 @@ export function PhotoUploadCard({pointOfInterestId, maxImages = DEFAULT_MAX_IMAG
 			setStatusMap(prev => {
 				const nextMap = {...prev};
 				response.forEach((result, idx) => {
-					// Match status back to file URI by response payload or fallback to pending batch index
 					const targetUri = pendingUploads.find(p => p.uri === result.file || p.filename === result.file)?.uri || pendingUploads[idx]?.uri;
 					if (targetUri) {
 						nextMap[targetUri] = result.status;

@@ -1,4 +1,4 @@
-import {Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES, ReviewType} from '@northernexplorer/types';
+import {Params, Response, ReviewStatusEnum, ReviewType, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {BaseController} from '../../core/BaseController';
 import {Repositories} from '../../core/repositories';
 import {AuthContext} from '../../core/types';
@@ -87,11 +87,11 @@ export class ReviewController extends BaseController {
 		return {liked: Boolean(like), likeCount: review.likes.length};
 	}
 
-	public async getPendingReviews(_params: Params<Route<'getPendingReviews'>>, auth?: AuthContext): Promise<Response<Route<'getPendingReviews'>>> {
+	public async getPendingReviews(params: Params<Route<'getPendingReviews'>>, auth?: AuthContext): Promise<Response<Route<'getPendingReviews'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
-		const reviews = await this.repos.review.find({status: ReviewStatusEnum.Pending}, {populate: ['user', 'pointOfInterest', 'likes']});
+		const reviews = await this.repos.review.getPendingReviews({offset: params.offset, limit: params.limit});
 
 		return reviews.map(review => ({
 			...review,
@@ -109,6 +109,7 @@ export class ReviewController extends BaseController {
 		review.status = ReviewStatusEnum.Approved;
 		review.user.score = review.user.score + 20;
 
+		await this.repos.pointOfInterest.updateSystemGeneratedDetails(review.pointOfInterest);
 		await this.flush();
 
 		return this.reviewResponse(review);
@@ -138,6 +139,8 @@ export class ReviewController extends BaseController {
 		}
 
 		this.repos.review.remove(review);
+
+		await this.repos.pointOfInterest.updateSystemGeneratedDetails(review.pointOfInterest);
 		await this.flush();
 
 		return {success: true};
@@ -150,12 +153,11 @@ export class ReviewController extends BaseController {
 
 		const user = await this.repos.user.getById(userId);
 		const pointOfInterest = await this.repos.pointOfInterest.getById(pointOfInterestId);
-		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
 		let status = ReviewStatusEnum.Pending;
-		if (userReviewCount >= 20 || user.score >= 500) {
-			status = ReviewStatusEnum.Approved;
+		if (this.repos.user.isPostApproved(user)) {
 			user.score = user.score + 20;
+			status = ReviewStatusEnum.Approved;
 		}
 
 		const review = this.repos.review.createReview({
@@ -169,6 +171,7 @@ export class ReviewController extends BaseController {
 			status,
 		});
 
+		await this.repos.pointOfInterest.updateSystemGeneratedDetails(review.pointOfInterest);
 		await this.flush();
 
 		return {
@@ -191,6 +194,7 @@ export class ReviewController extends BaseController {
 
 		const user = review.user;
 
+		await this.repos.pointOfInterest.updateSystemGeneratedDetails(review.pointOfInterest);
 		await this.flush();
 
 		return {

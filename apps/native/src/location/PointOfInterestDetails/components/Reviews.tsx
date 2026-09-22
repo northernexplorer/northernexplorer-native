@@ -3,21 +3,24 @@ import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native
 import {Ionicons} from '@expo/vector-icons';
 import {formatName} from '@northernexplorer/tools-web';
 import {PointOfInterestType, ReviewStatusEnum, RolesEnum} from '@northernexplorer/types';
+import {useRouter} from 'expo-router';
 import {ReviewForm} from './ReviewForm';
 import {RenderStars} from './RenderStars';
 import {ReviewMetadataBadges} from './ReviewMetadataBadges';
-import UserLikes from './UserLikes';
+import {ReviewLikes} from './ReviewLikes';
 import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {alertStore} from '~/core/alertStore';
 import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
+
 type ReviewsProps = {
 	data: PointOfInterestType;
 	refetch: () => void;
 };
 
 export function Reviews({data, refetch}: ReviewsProps) {
+	const router = useRouter();
 	const authentication = useAuthentication();
 	const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
 	const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
@@ -33,6 +36,12 @@ export function Reviews({data, refetch}: ReviewsProps) {
 	const handleSuccess = () => {
 		setEditingReviewId(null);
 		refetch();
+	};
+
+	const navigateToProfile = (username: string) => {
+		if (username) {
+			router.push(`/user/${username}`);
+		}
 	};
 
 	const handleDelete = (reviewId: string) => {
@@ -55,9 +64,86 @@ export function Reviews({data, refetch}: ReviewsProps) {
 		});
 	};
 
+	const renderReviewCard = (review: NonNullable<PointOfInterestType['reviews']>[number], isMine = false) => {
+		const isPending = review.status === ReviewStatusEnum.Pending;
+		const canManageReview = isAdmin || review.user.id === authentication?.userId;
+		const isDeleting = deletingReviewId === review.id;
+
+		if (editingReviewId === review.id) {
+			return (
+				<View key={review.id} style={globalStyles.reviewCard}>
+					<ReviewForm initialData={review} refetch={handleSuccess} onCancel={() => setEditingReviewId(null)} />
+				</View>
+			);
+		}
+
+		return (
+			<View key={review.id} style={[globalStyles.reviewCard, isMine && reviewStyles.myReviewCard]}>
+				<View style={globalStyles.headerRow}>
+					<View style={reviewStyles.userInfo}>
+						<UserAvatar username={review.user.username} onPress={() => navigateToProfile(review.user.username)} />
+						<View style={reviewStyles.userDetails}>
+							<View style={reviewStyles.nameBadgeRow}>
+								<Pressable onPress={() => navigateToProfile(review.user.username)} style={reviewStyles.namePressable}>
+									<Text style={globalStyles.userName} numberOfLines={1} ellipsizeMode="tail">
+										{formatName(review.user)}
+									</Text>
+								</Pressable>
+								{isMine && (
+									<View style={reviewStyles.youBadge}>
+										<Text style={reviewStyles.youBadgeText}>Your Review</Text>
+									</View>
+								)}
+								{isMine && isPending && (
+									<View style={reviewStyles.pendingBadge}>
+										<Text style={reviewStyles.pendingBadgeText}>Pending</Text>
+									</View>
+								)}
+							</View>
+							<RenderStars rating={review.rating} />
+						</View>
+					</View>
+
+					<View style={reviewStyles.rightHeaderContainer}>
+						<View style={reviewStyles.scoreTag}>
+							<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
+							<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
+						</View>
+
+						{canManageReview && (
+							<>
+								<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
+									<Ionicons name="pencil" size={14} color="#0088cc" />
+									<Text style={reviewStyles.editButtonText}>Edit</Text>
+								</Pressable>
+
+								<Pressable
+									onPress={() => handleDelete(review.id)}
+									disabled={isDeleting}
+									style={reviewStyles.deleteButton}
+									hitSlop={8}
+								>
+									{isDeleting ? (
+										<ActivityIndicator size="small" color="#ef4444" />
+									) : (
+										<Ionicons name="trash-outline" size={15} color="#ef4444" />
+									)}
+								</Pressable>
+							</>
+						)}
+					</View>
+				</View>
+
+				<ReviewMetadataBadges difficulty={review.difficulty} entranceCost={review.entranceCost} conditions={review.conditions} />
+
+				<Text style={globalStyles.description}>{review.description}</Text>
+				<ReviewLikes reviewId={review.id} currentUserId={authentication?.userId} />
+			</View>
+		);
+	};
+
 	return (
 		<View style={reviewStyles.container}>
-			{/* Show Review Creation Form at the top if User Hasn't Posted Yet */}
 			{!userHasReviewed && <ReviewForm refetch={refetch} />}
 
 			<View style={reviewStyles.headerSection}>
@@ -72,148 +158,8 @@ export function Reviews({data, refetch}: ReviewsProps) {
 				</View>
 			) : (
 				<View style={reviewStyles.listContainer}>
-					{/* Authenticated User's Reviews */}
-					{myReviews.map(review => {
-						const isPending = review.status === ReviewStatusEnum.Pending;
-						const canManageReview = isAdmin || review.user.id === authentication?.userId;
-						const isDeleting = deletingReviewId === review.id;
-
-						if (editingReviewId === review.id) {
-							return (
-								<View key={review.id} style={globalStyles.reviewCard}>
-									<ReviewForm initialData={review} refetch={handleSuccess} onCancel={() => setEditingReviewId(null)} />
-								</View>
-							);
-						}
-
-						return (
-							<View key={review.id} style={[globalStyles.reviewCard, reviewStyles.myReviewCard]}>
-								<View style={globalStyles.headerRow}>
-									<View style={reviewStyles.userInfo}>
-										<UserAvatar username={review.user.username} />
-										<View>
-											<View style={reviewStyles.nameBadgeRow}>
-												<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
-												<View style={reviewStyles.youBadge}>
-													<Text style={reviewStyles.youBadgeText}>Your Review</Text>
-												</View>
-												{isPending && (
-													<View style={reviewStyles.pendingBadge}>
-														<Text style={reviewStyles.pendingBadgeText}>Pending Approval</Text>
-													</View>
-												)}
-											</View>
-											<RenderStars rating={review.rating} />
-										</View>
-									</View>
-
-									<View style={reviewStyles.rightHeaderContainer}>
-										<View style={reviewStyles.scoreTag}>
-											<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
-											<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
-										</View>
-
-										{canManageReview && (
-											<>
-												<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
-													<Ionicons name="pencil" size={14} color="#0088cc" />
-													<Text style={reviewStyles.editButtonText}>Edit</Text>
-												</Pressable>
-
-												<Pressable
-													onPress={() => handleDelete(review.id)}
-													disabled={isDeleting}
-													style={reviewStyles.deleteButton}
-													hitSlop={8}
-												>
-													{isDeleting ? (
-														<ActivityIndicator size="small" color="#ef4444" />
-													) : (
-														<Ionicons name="trash-outline" size={15} color="#ef4444" />
-													)}
-												</Pressable>
-											</>
-										)}
-									</View>
-								</View>
-
-								<ReviewMetadataBadges
-									difficulty={review.difficulty}
-									entranceCost={review.entranceCost}
-									conditions={review.conditions}
-								/>
-
-								<Text style={globalStyles.description}>{review.description}</Text>
-								<UserLikes reviewId={review.id} currentUserId={review.user.id} />
-							</View>
-						);
-					})}
-
-					{/* Other Users' Reviews */}
-					{otherReviews.map(review => {
-						const canManageReview = isAdmin || review.user.id === authentication?.userId;
-						const isDeleting = deletingReviewId === review.id;
-
-						if (editingReviewId === review.id) {
-							return (
-								<View key={review.id} style={globalStyles.reviewCard}>
-									<ReviewForm initialData={review} refetch={handleSuccess} onCancel={() => setEditingReviewId(null)} />
-								</View>
-							);
-						}
-
-						return (
-							<View key={review.id} style={globalStyles.reviewCard}>
-								<View style={globalStyles.headerRow}>
-									<View style={reviewStyles.userInfo}>
-										<UserAvatar username={review.user.username} />
-										<View>
-											<Text style={globalStyles.userName}>{formatName(review.user)}</Text>
-											<RenderStars rating={review.rating} />
-										</View>
-									</View>
-
-									<View style={reviewStyles.rightHeaderContainer}>
-										<View style={reviewStyles.scoreTag}>
-											<Ionicons name="ribbon-outline" size={12} color="#0088cc" />
-											<Text style={reviewStyles.scoreTagText}>{review.user.score}</Text>
-										</View>
-
-										{canManageReview && (
-											<>
-												<Pressable onPress={() => setEditingReviewId(review.id)} style={reviewStyles.editButton} hitSlop={8}>
-													<Ionicons name="pencil" size={14} color="#0088cc" />
-													<Text style={reviewStyles.editButtonText}>Edit</Text>
-												</Pressable>
-
-												<Pressable
-													onPress={() => handleDelete(review.id)}
-													disabled={isDeleting}
-													style={reviewStyles.deleteButton}
-													hitSlop={8}
-												>
-													{isDeleting ? (
-														<ActivityIndicator size="small" color="#ef4444" />
-													) : (
-														<Ionicons name="trash-outline" size={15} color="#ef4444" />
-													)}
-												</Pressable>
-											</>
-										)}
-									</View>
-								</View>
-
-								<ReviewMetadataBadges
-									difficulty={review.difficulty}
-									entranceCost={review.entranceCost}
-									conditions={review.conditions}
-								/>
-
-								<Text style={globalStyles.description}>{review.description}</Text>
-								<UserLikes reviewId={review.id} currentUserId={review.user.id} />
-							</View>
-						);
-					})}
+					{myReviews.map(r => renderReviewCard(r, true))}
+					{otherReviews.map(r => renderReviewCard(r, false))}
 				</View>
 			)}
 		</View>
@@ -239,11 +185,20 @@ const reviewStyles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 10,
+		flex: 1, // Takes remaining width and restricts child expanding
+		marginRight: 8,
+	},
+	userDetails: {
+		flex: 1, // Ensures name and badges drop into bounded width
 	},
 	rightHeaderContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 6,
+		flexShrink: 0, // Keeps buttons intact without squishing
+	},
+	namePressable: {
+		flexShrink: 1,
 	},
 	editButton: {
 		flexDirection: 'row',

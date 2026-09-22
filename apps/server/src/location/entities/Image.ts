@@ -51,7 +51,7 @@ export class Image {
 	@Property({type: 'boolean', default: false})
 	processed: boolean = false;
 
-	@ManyToOne(() => PointOfInterest, {deleteRule: 'cascade'})
+	@ManyToOne(() => PointOfInterest, {deleteRule: 'cascade', nullable: true})
 	pointOfInterest: PointOfInterest;
 
 	@ManyToOne(() => User)
@@ -65,6 +65,9 @@ export class Image {
 
 	@Property({type: 'string', index: true})
 	hash: string;
+
+	@Property({type: 'bool'})
+	canBeCover = false;
 
 	constructor(data: ImageInput) {
 		this.url = data.url;

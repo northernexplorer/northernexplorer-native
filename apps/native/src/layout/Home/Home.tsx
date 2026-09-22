@@ -44,70 +44,109 @@ export function Home() {
 	const canUseCompass = !!permissionData?.navigation.useCompass;
 	const canUseFlashlight = !!permissionData?.navigation.useFlashlight;
 	const canUseSignal = !!permissionData?.navigation.useSignal;
+	const hasTools = canUseSignal || canUseCompass || canUseFlashlight;
 
 	return (
-		<View style={{width: '100%', padding: 10, paddingBottom: 32}}>
-			<View style={{gap: 12}}>
-				<View style={styles.heroRow}>
-					<View style={styles.weatherSection}>
-						<WeatherWidget data={weather} />
+		<View style={styles.container}>
+			{/* Left Vertical Action Bar */}
+			{hasTools && (
+				<View style={styles.leftSidebar}>
+					<Text style={styles.sidebarLabel}>TOOLS</Text>
+					<View style={styles.sidebarTools}>
+						{canUseSignal && (
+							<View style={styles.sidebarTile}>
+								<SignalWidget />
+							</View>
+						)}
+						{canUseCompass && (
+							<View style={styles.sidebarTile}>
+								<CompassWidget />
+							</View>
+						)}
+						{canUseFlashlight && (
+							<View style={styles.sidebarTile}>
+								<FlashlightWidget />
+							</View>
+						)}
 					</View>
-					<View style={styles.lunarSection}>
-						<LunarWidget data={lunar} />
+				</View>
+			)}
+
+			{/* Main Dashboard Content */}
+			<ScrollView style={styles.mainContent} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+				{/* Featured Destinations Container Card */}
+				<View style={styles.sectionContainer}>
+					<View style={styles.tile}>
+						<View style={{padding: 16}}>
+							<View style={{marginBottom: 8}}>
+								<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>FEATURED</Text>
+								<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Destinations</Text>
+							</View>
+							<View style={styles.pointOfInterestsSection}>
+								{!pointOfInterestData ? (
+									<View style={styles.loadingCard}>
+										<ActivityIndicator size="small" color="#ffffff" />
+									</View>
+								) : (
+									<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12}}>
+										{pointOfInterestData.map(site => (
+											<PointOfInterestPreviewWidget
+												key={site.id}
+												name={site.name}
+												description={site.description}
+												image={site.image}
+												country={site.country.name}
+												region={site.region.name}
+												id={site.id}
+												latitude={site.lat}
+												longitude={site.lon}
+												difficulty={site.difficulty}
+												rating={site.rating}
+												reviews={site.reviews}
+											/>
+										))}
+									</ScrollView>
+								)}
+							</View>
+						</View>
 					</View>
 				</View>
 
-				<View style={styles.heroRow}>
-					{canUseSignal && (
-						<View style={styles.compassSection}>
-							<SignalWidget />
+				{/* Top Captures Container Card */}
+				{topImagesData && topImagesData.length > 0 && (
+					<View style={styles.sectionContainer}>
+						<View style={styles.tile}>
+							<View style={{padding: 16}}>
+								<View style={{marginBottom: 8}}>
+									<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>COMMUNITY</Text>
+									<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Top Captures</Text>
+								</View>
+								<TopImagesWidget data={topImagesData} />
+							</View>
 						</View>
-					)}
-					{canUseCompass && (
-						<View style={styles.compassSection}>
-							<CompassWidget />
-						</View>
-					)}
-					{canUseFlashlight && (
-						<View style={styles.compassSection}>
-							<FlashlightWidget />
-						</View>
-					)}
-				</View>
-
-				<View style={styles.heroRow}>
-					<View style={styles.fieldNote}>
-						<FieldNoteWidget data={fieldNote} />
 					</View>
-				</View>
-
-				{/* Top Images Gallery Widget */}
-				{topImagesData && topImagesData.length > 0 && <TopImagesWidget data={topImagesData} />}
-			</View>
-
-			{/* Points of Interest Section */}
-			<Text style={styles.exploreHeader}>Start Exploring...</Text>
-			<View style={styles.pointOfInterestsSection}>
-				{!pointOfInterestData ? (
-					<ActivityIndicator size="small" color="#ffffff" style={{marginVertical: 20}} />
-				) : (
-					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12}}>
-						{pointOfInterestData.map(site => (
-							<PointOfInterestPreviewWidget
-								key={site.id}
-								name={site.name}
-								description={site.description}
-								image={site.image}
-								country={site.country.name}
-								region={site.region.name}
-								id={site.id}
-								latitude={site.lat}
-								longitude={site.lon}
-							/>
-						))}
-					</ScrollView>
 				)}
-			</View>
+
+				{/* Environment Highlights Grid */}
+				<View style={styles.sectionContainer}>
+					<View style={styles.environmentGrid}>
+						<View style={styles.gridRow}>
+							<View style={styles.weatherSection}>
+								<WeatherWidget data={weather} />
+							</View>
+							<View style={styles.lunarSection}>
+								<LunarWidget data={lunar} />
+							</View>
+						</View>
+
+						<View style={styles.gridRow}>
+							<View style={styles.fieldNoteSection}>
+								<FieldNoteWidget data={fieldNote} />
+							</View>
+						</View>
+					</View>
+				</View>
+			</ScrollView>
 		</View>
 	);
 }

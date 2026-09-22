@@ -1,23 +1,41 @@
 import React, {useMemo} from 'react';
-import {View, Text, Image, Pressable} from 'react-native';
+import {View, Text, Image, Pressable, StyleSheet} from 'react-native';
 import {Link} from 'expo-router';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
-import {styles} from '~/layout/Home/styles';
+import {Ionicons} from '@expo/vector-icons';
+import {ImageHeaderType} from '@northernexplorer/types';
+import {styles as globalStyles} from '~/layout/Home/styles';
 import {config} from '~/config';
 import {useLocation} from '~/location/state/location/useLocation';
+import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
 
 type Props = {
 	id: string;
 	name: string;
 	description: string;
-	image: string;
+	image: ImageHeaderType;
 	country?: string | null;
 	region?: string | null;
 	latitude: number | string;
 	longitude: number | string;
+	rating?: number | string;
+	difficulty?: keyof typeof DIFFICULTY_CONFIG;
+	reviews?: {id: string; rating: number}[];
 };
 
-export function PointOfInterestPreviewWidget({id, name, description, image, country, region, latitude, longitude}: Props) {
+export function PointOfInterestPreviewWidget({
+	id,
+	name,
+	description,
+	image,
+	country,
+	region,
+	latitude,
+	longitude,
+	rating,
+	difficulty,
+	reviews,
+}: Props) {
 	const coords = useLocation();
 
 	const distance = useMemo(() => {
@@ -28,7 +46,6 @@ export function PointOfInterestPreviewWidget({id, name, description, image, coun
 		const siteLat = Number(latitude);
 		const siteLon = Number(longitude);
 
-		// Guard against non-numeric values
 		if (isNaN(userLat) || isNaN(userLon) || isNaN(siteLat) || isNaN(siteLon)) {
 			return null;
 		}
@@ -45,6 +62,11 @@ export function PointOfInterestPreviewWidget({id, name, description, image, coun
 		return `${distInKm.toFixed(1)} km away`;
 	}, [coords, latitude, longitude]);
 
+	const rawRating = rating ? (typeof rating === 'number' ? rating : parseFloat(String(rating))) : 0;
+	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
+	const reviewCount = reviews?.length ?? 0;
+	const difficultyInfo = difficulty ? DIFFICULTY_CONFIG[difficulty] : null;
+
 	return (
 		<Link
 			href={{
@@ -59,32 +81,61 @@ export function PointOfInterestPreviewWidget({id, name, description, image, coun
 			asChild
 		>
 			<Pressable style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
-				<View style={[styles.tile, styles.siteCard]}>
+				<View style={[globalStyles.tile, widgetStyles.card]}>
 					<Image
-						source={{uri: getImageUrl({path: image, cdn: config.CONTENT_DELIVERY_NETWORK})}}
-						style={styles.siteImage}
+						source={{
+							uri: getImageUrl({
+								path: image.url,
+								cdn: config.CONTENT_DELIVERY_NETWORK,
+								processed: image.processed,
+								size: 'thumbnail',
+							}),
+						}}
+						style={widgetStyles.image}
 						resizeMode="cover"
 					/>
-					<View style={styles.siteContent}>
+					<View style={widgetStyles.content}>
 						<View>
-							<Text style={styles.siteTitle} numberOfLines={1}>
+							<Text style={widgetStyles.title} numberOfLines={1}>
 								{name}
 							</Text>
-							<Text style={styles.siteDesc} numberOfLines={2}>
+
+							{/* Rating and Difficulty Row */}
+							<View style={widgetStyles.metaRow}>
+								{averageRating > 0 ? (
+									<View style={widgetStyles.ratingRow}>
+										<Ionicons name="star" size={12} color="#f59e0b" />
+										<Text style={widgetStyles.ratingText}>{averageRating.toFixed(1)}</Text>
+										<Text style={widgetStyles.countText}>({reviewCount})</Text>
+									</View>
+								) : (
+									<Text style={widgetStyles.noReviewsText}>No reviews</Text>
+								)}
+
+								{difficultyInfo && (
+									<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
+										<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>
+											{difficultyInfo.label.split(' ')[0]}
+										</Text>
+									</View>
+								)}
+							</View>
+
+							<Text style={widgetStyles.description} numberOfLines={2}>
 								{description}
 							</Text>
 						</View>
 
-						<View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4}}>
+						<View style={widgetStyles.footer}>
 							{region ? (
-								<Text style={{color: 'rgba(255,255,255,0.35)', fontSize: 10, fontWeight: '600', textTransform: 'uppercase'}}>
+								<Text style={widgetStyles.regionText} numberOfLines={1}>
 									{region}
 								</Text>
 							) : (
 								<View />
 							)}
 
-							{distance ? <Text style={{color: '#E0E0E0', fontSize: 10, fontWeight: '500'}}>{distance}</Text> : null}
+							{distance ? <Text style={widgetStyles.distanceText}>{distance}</Text> : null}
 						</View>
 					</View>
 				</View>
@@ -92,3 +143,85 @@ export function PointOfInterestPreviewWidget({id, name, description, image, coun
 		</Link>
 	);
 }
+
+const widgetStyles = StyleSheet.create({
+	card: {
+		padding: 0,
+		overflow: 'hidden',
+		flexDirection: 'column',
+		width: 200,
+	},
+	image: {
+		width: '100%',
+		height: 120,
+	},
+	content: {
+		padding: 12,
+		justifyContent: 'space-between',
+		flex: 1,
+	},
+	title: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '700',
+	},
+	metaRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		marginVertical: 4,
+	},
+	ratingRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 3,
+	},
+	ratingText: {
+		fontSize: 11,
+		fontWeight: '700',
+		color: '#ffffff',
+	},
+	countText: {
+		fontSize: 10,
+		color: '#94a3b8',
+	},
+	noReviewsText: {
+		fontSize: 10,
+		color: '#64748b',
+		fontStyle: 'italic',
+	},
+	difficultyBadge: {
+		paddingHorizontal: 6,
+		paddingVertical: 2,
+		borderRadius: 4,
+	},
+	difficultyText: {
+		fontSize: 9,
+		fontWeight: '700',
+		textTransform: 'uppercase',
+	},
+	description: {
+		color: '#94a3b8',
+		fontSize: 12,
+		lineHeight: 16,
+		marginTop: 2,
+	},
+	footer: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		marginTop: 8,
+	},
+	regionText: {
+		color: '#38bdf8',
+		fontSize: 10,
+		fontWeight: '700',
+		textTransform: 'uppercase',
+		letterSpacing: 0.5,
+	},
+	distanceText: {
+		color: '#cbd5e1',
+		fontSize: 10,
+		fontWeight: '600',
+	},
+});

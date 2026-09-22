@@ -10,8 +10,8 @@ const POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
 async function bootstrap() {
 	const spacesManagementService = new SpacesManagementService({
-		accessKeyId: config.SPACES_ACCESS_KEY,
-		secretAccessKey: config.SPACES_SECRET_KEY,
+		spacesAccessKey: config.SPACES_ACCESS_KEY,
+		spacesSecretKey: config.SPACES_SECRET_KEY,
 		defaultBucket: config.SPACES_BUCKET,
 		region: config.SPACES_REGION,
 	});

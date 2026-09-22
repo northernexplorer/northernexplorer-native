@@ -1,18 +1,27 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {Column, Spinner, Table} from '@northernexplorer/tools-web';
+import {Column, Pagination, Spinner, Table} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
+const limit = 20;
+
 export function PendingReviews() {
 	const router = useRouter();
 	const authentication = useAuthentication();
-	const {data: reviews, loading} = useApiFetch('location', 'ReviewController', 'getPendingReviews', {});
+	const [page, setPage] = useState(1);
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	const offset = (page - 1) * limit;
+
+	const {data: reviews, loading} = useApiFetch('location', 'ReviewController', 'getPendingReviews', {
+		limit,
+		offset,
+	});
+
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 
@@ -82,18 +91,22 @@ export function PendingReviews() {
 	];
 
 	return (
-		<Table
-			data={reviews}
-			columns={columns}
-			keyExtractor={review => review.id}
-			emptyText="No pending reviews awaiting moderation."
-			emptyIcon="chatbox-ellipses-outline"
-			onRowPress={review => router.push(`/admin/pending-reviews/${review.id}`)}
-		/>
+		<View style={styles.container}>
+			<Table
+				data={reviews}
+				columns={columns}
+				keyExtractor={review => review.id}
+				emptyText="No pending reviews awaiting moderation."
+				emptyIcon="chatbox-ellipses-outline"
+				onRowPress={review => router.push(`/admin/pending-reviews/${review.id}`)}
+			/>
+			<Pagination currentPage={page} limit={limit} itemCount={reviews?.length || 0} onPageChange={setPage} />
+		</View>
 	);
 }
 
 const styles = StyleSheet.create({
+	container: {flex: 1},
 	userName: {fontSize: 14, fontWeight: '600', color: '#212529'},
 	userScore: {fontSize: 11, color: '#868e96', marginTop: 1},
 	poiName: {fontSize: 14, fontWeight: '600', color: '#212529'},

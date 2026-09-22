@@ -15,6 +15,7 @@ export class ReviewLike {
 
 	@ManyToOne(() => Review, {deleteRule: 'cascade'})
 	review: Review;
+
 	@ManyToOne(() => User, {deleteRule: 'cascade'})
 	user: User;
 

@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, Platform, ScrollView} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import NetInfo, {NetInfoStateType, NetInfoState} from '@react-native-community/netinfo';
-import * as Location from 'expo-location';
+import {Accuracy, LocationObjectCoords, LocationSubscription, requestForegroundPermissionsAsync, watchPositionAsync} from 'expo-location';
 import {ProFeatureOnly, Spinner} from '@northernexplorer/tools-web';
 import {useApiFetch} from '~/core/useApiFetch';
 
@@ -21,7 +21,7 @@ export function Signal() {
 	const isWeb = Platform.OS === 'web';
 
 	const [networkState, setNetworkState] = useState<NetInfoState | null>(null);
-	const [locationCoords, setLocationCoords] = useState<Location.LocationObjectCoords | null>(null);
+	const [locationCoords, setLocationCoords] = useState<LocationObjectCoords | null>(null);
 	const [permissionGranted, setPermissionGranted] = useState<boolean>(true);
 
 	const {data: permissionData, loading} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
@@ -34,18 +34,18 @@ export function Signal() {
 			setNetworkState(state);
 		});
 
-		let locationSubscription: Location.LocationSubscription | null = null;
+		let locationSubscription: LocationSubscription | null = null;
 
 		(async () => {
-			const {status} = await Location.requestForegroundPermissionsAsync();
+			const {status} = await requestForegroundPermissionsAsync();
 			if (status !== 'granted') {
 				setPermissionGranted(false);
 				return;
 			}
 
-			locationSubscription = await Location.watchPositionAsync(
+			locationSubscription = await watchPositionAsync(
 				{
-					accuracy: Location.Accuracy.High,
+					accuracy: Accuracy.High,
 					timeInterval: 3000,
 					distanceInterval: 1,
 				},
@@ -87,7 +87,7 @@ export function Signal() {
 		);
 	}
 
-	const getGpsMetrics = (coords: Location.LocationObjectCoords | null): StatusItem => {
+	const getGpsMetrics = (coords: LocationObjectCoords | null): StatusItem => {
 		if (!permissionGranted) {
 			return {
 				title: 'GPS Status',
@@ -137,10 +137,12 @@ export function Signal() {
 	};
 
 	const getCellMetrics = (): StatusItem => {
-		if (networkState?.type === NetInfoStateType.cellular) {
-			const details = networkState.details as {cellularGeneration?: string; carrier?: string} | null;
-			const gen = details?.cellularGeneration ? details.cellularGeneration.toUpperCase() : 'Active';
-			const carrier = details?.carrier ? `Carrier: ${details.carrier}` : 'Cellular Connection Active';
+		const isCellularActive = networkState?.type === NetInfoStateType.cellular;
+
+		if (isCellularActive && networkState.isConnected) {
+			const details = networkState.details;
+			const gen = details.cellularGeneration ? details.cellularGeneration.toUpperCase() : 'Active';
+			const carrier = details.carrier ? `Carrier: ${details.carrier}` : 'Cellular Connection Active';
 
 			return {
 				title: 'Cellular Network',
@@ -151,26 +153,29 @@ export function Signal() {
 			};
 		}
 
+		const subtitle = networkState?.type === NetInfoStateType.wifi ? 'Inactive (Wi-Fi is primary connection)' : 'No cellular connection detected';
+
 		return {
 			title: 'Cellular Network',
-			subtitle: 'No cellular connection detected',
-			value: 'No Cell',
+			subtitle,
+			value: 'Inactive',
 			icon: 'signal-cellular-outline',
-			color: '#dc2626',
+			color: '#64748b',
 		};
 	};
 
-	const getWifiMetrics = (): StatusItem => {
+	const getWifiMetrics = () => {
 		if (networkState?.type === NetInfoStateType.wifi) {
-			const details = networkState.details as {ssid?: string; ipAddress?: string} | null;
-			const ssidLabel = details?.ssid ? `SSID: ${details.ssid}` : 'Connected to Wi-Fi Network';
+			const details = networkState.details;
+			const ssidLabel = details.ssid ? `SSID: ${details.ssid}` : 'Connected to Wi-Fi Network';
 
 			return {
 				title: 'Wi-Fi Network',
 				subtitle: ssidLabel,
 				value: 'Connected',
-				icon: 'wifi',
+				icon: 'wifi' as const,
 				color: '#16a34a',
+				ipAddress: details.ipAddress ?? 'N/A',
 			};
 		}
 
@@ -178,8 +183,9 @@ export function Signal() {
 			title: 'Wi-Fi Network',
 			subtitle: 'Wi-Fi interface disconnected or inactive',
 			value: 'Disabled',
-			icon: 'wifi-off',
+			icon: 'wifi-off' as const,
 			color: '#64748b',
+			ipAddress: 'N/A',
 		};
 	};
 
@@ -187,8 +193,9 @@ export function Signal() {
 	const cellMetrics = getCellMetrics();
 	const wifiMetrics = getWifiMetrics();
 
-	const isCellInternet = networkState?.type === NetInfoStateType.cellular && networkState.isInternetReachable;
-	const isWifiInternet = networkState?.type === NetInfoStateType.wifi && networkState.isInternetReachable;
+	const isCellularType = networkState?.type === NetInfoStateType.cellular;
+	const isCellInternet = isCellularType && Boolean(networkState.isInternetReachable);
+	const isWifiInternet = networkState?.type === NetInfoStateType.wifi && Boolean(networkState.isInternetReachable);
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -212,7 +219,7 @@ export function Signal() {
 
 					<View style={styles.row}>
 						<Text style={styles.rowLabel}>Active Network Type</Text>
-						<Text style={styles.rowValue}>{networkState?.type === NetInfoStateType.cellular ? 'Cellular' : 'Inactive'}</Text>
+						<Text style={styles.rowValue}>{isCellularType ? 'Cellular' : 'Inactive'}</Text>
 					</View>
 
 					<View style={styles.row}>
@@ -240,7 +247,7 @@ export function Signal() {
 
 					<View style={styles.row}>
 						<Text style={styles.rowLabel}>IP Address</Text>
-						<Text style={styles.rowValue}>{(networkState?.details as {ipAddress?: string}).ipAddress ?? 'N/A'}</Text>
+						<Text style={styles.rowValue}>{wifiMetrics.ipAddress}</Text>
 					</View>
 
 					<View style={styles.row}>

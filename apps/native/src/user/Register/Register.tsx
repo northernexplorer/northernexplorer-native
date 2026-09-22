@@ -75,7 +75,7 @@ export function Register() {
 	const handleSubmit = async () => {
 		const response = await mutate(formData);
 		if (response?.success) {
-			router.replace('/profile/email-confirmation');
+			router.replace('/user/email-confirmation');
 		}
 	};
 
@@ -209,7 +209,7 @@ export function Register() {
 				<Text style={styles.buttonText}>{loading ? 'Creating Account...' : 'Create Account'}</Text>
 			</Pressable>
 
-			<Link href="/profile/login" asChild>
+			<Link href="/user/login" asChild>
 				<Pressable disabled={loading}>
 					<Text style={styles.link}>Already have an account? Sign In</Text>
 				</Pressable>

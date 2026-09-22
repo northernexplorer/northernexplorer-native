@@ -45,11 +45,11 @@ export enum ReviewRatingEnum {
 }
 
 export enum SiteDifficultyEnum {
-	EASY = 'EASY',
-	MODERATE = 'MODERATE',
-	HARD = 'HARD',
-	EXTREME = 'EXTREME',
-	IMPOSSIBLE = 'IMPOSSIBLE',
+	DEVELOPED = 'DEVELOPED', // Level 1: Roadside, paved walkways, maintained amenities
+	LIGHT_HIKE = 'LIGHT_HIKE', // Level 2: Short footpaths under 5 km, mild terrain
+	MODERATE_TRAIL = 'MODERATE_TRAIL', // Level 3: Backcountry trails 5+ km, sustained inclines
+	OFF_TRAIL_REMOTE = 'OFF_TRAIL_REMOTE', // Level 4: Bushwhacking, GPS route-finding, watercraft required
+	EXPEDITION_ONLY = 'EXPEDITION_ONLY', // Level 5: Multi-day backcountry travel, floatplane/charter required
 }
 
 export enum EntranceCostEnum {
@@ -97,7 +97,7 @@ export const ReviewController = {
 		response: null as unknown as ReviewType,
 	},
 	getPendingReviews: {
-		params: {} as Record<string, never>,
+		params: {} as {limit?: number; offset?: number},
 		response: null as unknown as ReviewType[],
 	},
 	like: {

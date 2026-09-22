@@ -1,4 +1,5 @@
 import {GenericResponseType} from '../GenericResponseType';
+import {ImageType, PointOfInterestSummary} from '../location';
 
 export enum RolesEnum {
 	Admin = 'Admin',
@@ -115,6 +116,12 @@ type DeleteUserParams = {
 	username: string;
 };
 
+export type UserEvents = {
+	date: Date;
+	image?: ImageType;
+	pointOfInterest?: PointOfInterestSummary;
+};
+
 export const UserController = {
 	register: {
 		params: {} as RegisterParams,
@@ -161,11 +168,15 @@ export const UserController = {
 		response: {} as GenericResponseType,
 	},
 	getAll: {
-		params: {} as Record<string, undefined>,
+		params: {} as {limit?: number; offset?: number},
 		response: {} as UserType[],
 	},
 	getAvatarDetails: {
 		params: {} as {username: string},
 		response: {} as AvatarDetails,
+	},
+	getTimeline: {
+		params: {} as {username: string},
+		response: {} as UserEvents[],
 	},
 };

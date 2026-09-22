@@ -14,32 +14,19 @@ export function CompassWidget() {
 				disabled
 				style={{
 					...styles.tile,
-					padding: 16,
+					padding: 6,
 					alignItems: 'center',
 					justifyContent: 'center',
-					flex: 1,
-					marginRight: 0,
+					width: '100%',
+					height: '100%',
 					opacity: 0.5,
 				}}
 			>
-				<View
-					style={{
-						width: 56,
-						height: 56,
-						borderRadius: 28,
-						borderWidth: 1.5,
-						borderColor: 'rgba(255,255,255,0.08)',
-						backgroundColor: 'transparent',
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-				>
-					<MaterialCommunityIcons name="compass-off-outline" size={28} color="rgba(255,255,255,0.3)" />
-				</View>
+				<MaterialCommunityIcons name="compass-off-outline" size={22} color="rgba(255,255,255,0.3)" />
 
-				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>Compass</Text>
-
-				<Text style={{color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>Unavailable</Text>
+				<Text style={{color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: '700', marginTop: 2, textAlign: 'center'}} numberOfLines={1}>
+					N/A
+				</Text>
 			</Pressable>
 		);
 	}
@@ -49,99 +36,94 @@ export function CompassWidget() {
 			<Pressable
 				style={{
 					...styles.tile,
-					padding: 16,
+					padding: 6,
 					alignItems: 'center',
 					justifyContent: 'center',
-					flex: 1,
-					marginRight: 0,
+					width: '100%',
+					height: '100%',
 				}}
 			>
-				<View style={{width: 64, height: 64, alignItems: 'center', justifyContent: 'center'}}>
+				{/* Rotating Needle Container */}
+				<Animated.View
+					style={{
+						width: 24,
+						height: 24,
+						alignItems: 'center',
+						justifyContent: 'center',
+						transform: [{rotate}],
+					}}
+				>
+					{/* North Needle Point */}
 					<View
 						style={{
 							position: 'absolute',
-							top: -2,
+							top: 0,
 							width: 0,
 							height: 0,
 							borderLeftWidth: 4,
 							borderRightWidth: 4,
-							borderBottomWidth: 6,
+							borderBottomWidth: 10,
 							borderLeftColor: 'transparent',
 							borderRightColor: 'transparent',
-							borderBottomColor: '#ffffff',
-							zIndex: 10,
+							borderBottomColor: '#ef4444',
 						}}
 					/>
 
+					{/* South Needle Point */}
 					<View
 						style={{
-							width: 56,
-							height: 56,
-							borderRadius: 28,
-							borderWidth: 1.5,
-							borderColor: 'rgba(255,255,255,0.15)',
-							alignItems: 'center',
+							position: 'absolute',
+							bottom: 0,
+							width: 0,
+							height: 0,
+							borderLeftWidth: 4,
+							borderRightWidth: 4,
+							borderTopWidth: 10,
+							borderLeftColor: 'transparent',
+							borderRightColor: 'transparent',
+							borderTopColor: 'rgba(255, 255, 255, 0.4)',
 						}}
-					>
-						<Animated.View
-							style={{
-								width: 48,
-								height: 48,
-								alignItems: 'center',
-								justifyContent: 'center',
-								transform: [{rotate}],
-							}}
-						>
-							<View
-								style={{
-									position: 'absolute',
-									top: 4,
-									width: 0,
-									height: 0,
-									borderLeftWidth: 6,
-									borderRightWidth: 6,
-									borderBottomWidth: 18,
-									borderLeftColor: 'transparent',
-									borderRightColor: 'transparent',
-									borderBottomColor: '#ef4444',
-								}}
-							/>
+					/>
 
-							<View
-								style={{
-									position: 'absolute',
-									bottom: 4,
-									width: 0,
-									height: 0,
-									borderLeftWidth: 6,
-									borderRightWidth: 6,
-									borderTopWidth: 18,
-									borderLeftColor: 'transparent',
-									borderRightColor: 'transparent',
-									borderTopColor: 'rgba(255, 255, 255, 0.3)',
-								}}
-							/>
+					{/* Center Pin */}
+					<View
+						style={{
+							width: 4,
+							height: 4,
+							borderRadius: 2,
+							backgroundColor: '#ffffff',
+							zIndex: 5,
+						}}
+					/>
+				</Animated.View>
 
-							<View
-								style={{
-									width: 6,
-									height: 6,
-									borderRadius: 3,
-									backgroundColor: '#ffffff',
-									zIndex: 5,
-								}}
-							/>
-						</Animated.View>
-					</View>
-				</View>
-
-				<Text style={{color: '#ffffff', fontSize: 14, fontWeight: '700', marginTop: 8, textAlign: 'center'}}>
+				{/* Heading & Cardinal Text */}
+				<Text
+					style={{
+						color: '#ffffff',
+						fontSize: 10,
+						fontWeight: '800',
+						marginTop: 2,
+						textAlign: 'center',
+						letterSpacing: -0.2,
+					}}
+					numberOfLines={1}
+				>
 					{heading}° {cardinal}
 				</Text>
 
-				<Text style={{color: needsCalibration ? '#f59e0b' : 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2, fontWeight: '500'}}>
-					{needsCalibration ? 'Calibration Required' : 'Heading'}
-				</Text>
+				{/* Calibration Indicator */}
+				{needsCalibration && (
+					<View
+						style={{
+							width: 4,
+							height: 4,
+							borderRadius: 2,
+							backgroundColor: '#f59e0b',
+							marginTop: 2,
+						}}
+					/>
+				)}
 			</Pressable>
 		</Link>
 	);

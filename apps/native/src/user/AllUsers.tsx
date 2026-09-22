@@ -1,18 +1,27 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {RolesEnum} from '@northernexplorer/types';
-import {Spinner, Column, Table} from '@northernexplorer/tools-web';
+import {Spinner, Column, Table, Pagination} from '@northernexplorer/tools-web';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
+
+const limit = 20;
 
 export function AllUsers() {
 	const router = useRouter();
 	const authentication = useAuthentication();
-	const {data: users, loading} = useApiFetch('user', 'UserController', 'getAll', {});
+	const [page, setPage] = useState(1);
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	const offset = (page - 1) * limit;
+
+	const {data: users, loading} = useApiFetch('user', 'UserController', 'getAll', {
+		limit,
+		offset,
+	});
+
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 
@@ -69,18 +78,25 @@ export function AllUsers() {
 	];
 
 	return (
-		<Table
-			data={users}
-			columns={columns}
-			keyExtractor={user => user.id}
-			emptyText="No users found."
-			emptyIcon="people-outline"
-			onRowPress={user => router.push(`/profile/${user.username}`)}
-		/>
+		<View style={styles.container}>
+			<Table
+				data={users}
+				columns={columns}
+				keyExtractor={user => user.id}
+				emptyText="No users found."
+				emptyIcon="people-outline"
+				onRowPress={user => router.push(`/user/${user.username}`)}
+			/>
+
+			<Pagination currentPage={page} limit={limit} itemCount={users?.length || 0} onPageChange={setPage} />
+		</View>
 	);
 }
 
 const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
 	userName: {
 		fontSize: 14,
 		fontWeight: '600',

@@ -68,12 +68,20 @@ export class UserRepository extends BaseRepository<User> {
 		}
 	}
 
-	async getAll(): Promise<UserType[]> {
-		const users = await this.findAll({orderBy: {firstName: 'asc'}});
+	async getAll({limit, offset}: {limit?: number; offset?: number}): Promise<UserType[]> {
+		const users = await this.findAll({
+			orderBy: {firstName: 'asc'},
+			limit,
+			offset,
+		});
 		return users.map(user => {
 			const plain = wrap(user).toObject();
 			delete (plain as {passwordHash?: string}).passwordHash;
 			return plain as UserType;
 		});
+	}
+
+	isPostApproved(user: User) {
+		return user.score >= 500;
 	}
 }

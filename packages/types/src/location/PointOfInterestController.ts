@@ -1,9 +1,9 @@
 import {GenericResponseType} from '../GenericResponseType';
 import {RegionType} from './RegionController';
 import {CountryType} from './CountryController';
-import {ReviewSummary} from './ReviewController';
+import {EntranceCostEnum, ReviewRatingEnum, ReviewSummary, SiteConditionEnum, SiteDifficultyEnum} from './ReviewController';
 import {OrganizationType} from './OrganizationController';
-import {ImageType} from './ImageController';
+import {ImageHeaderType, ImageType} from './ImageController';
 
 export enum PublishStatusEnum {
 	Published = 'Published',
@@ -26,7 +26,7 @@ export type PointOfInterestType = {
 	id: string;
 	name: string;
 	description: string;
-	image: string;
+	image: ImageHeaderType;
 	lat: number;
 	lon: number;
 	country: CountryType;
@@ -37,7 +37,10 @@ export type PointOfInterestType = {
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 	organization: OrganizationType;
-	averageRating?: number;
+	entranceCost?: EntranceCostEnum;
+	conditions?: SiteConditionEnum[];
+	rating?: ReviewRatingEnum;
+	difficulty?: SiteDifficultyEnum;
 	images?: ImageType[];
 };
 
@@ -45,18 +48,22 @@ export type PointOfInterestSummary = {
 	id: string;
 	name: string;
 	description: string;
-	image: string;
+	image: ImageHeaderType;
 	lat: number;
 	lon: number;
 	country: CountryType;
 	region: RegionType;
+	entranceCost?: EntranceCostEnum;
+	conditions?: SiteConditionEnum[];
+	rating?: ReviewRatingEnum;
+	difficulty?: SiteDifficultyEnum;
 };
 
 export type PointOfInterestEditType = {
 	id: string;
 	name: string;
 	description: string;
-	image: string;
+	imageId: string;
 	lat: number;
 	lon: number;
 	countryId: string;
@@ -81,7 +88,17 @@ export type PointOfInterestFavoriteType = {
 
 export const PointOfInterestController = {
 	getNearbyPointOfInterests: {
-		params: {} as {lat: number; lon: number; limit: number; selectedPoiTypes?: PointOfInterestTypeEnum[]; visitedFilter?: VisitedFilterEnum},
+		params: {} as {
+			lat: number;
+			lon: number;
+			limit: number;
+			selectedPoiTypes?: PointOfInterestTypeEnum[];
+			visitedFilter?: VisitedFilterEnum;
+			minRating?: number | null;
+			maxDifficultyIndex?: number;
+			maxCostIndex?: number;
+			showDrafts?: boolean;
+		},
 		response: null as unknown as PointOfInterestType[],
 	},
 	getPointOfInterestById: {
@@ -111,11 +128,11 @@ export const PointOfInterestController = {
 		},
 	},
 	getDrafts: {
-		params: {} as Record<string, undefined>,
+		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},
 	getPublished: {
-		params: {} as Record<string, undefined>,
+		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},
 	edit: {

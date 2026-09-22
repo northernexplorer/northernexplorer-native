@@ -1,6 +1,6 @@
 import React from 'react';
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {getDynamicImageUrl} from '@northernexplorer/tools-web';
+import {Pressable, StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
+import {getImageUrl, ImageView} from '@northernexplorer/tools-web';
 import {ImageStatusEnum, ImageType, PendingImageType} from '@northernexplorer/types';
 import {config} from '~/config';
 
@@ -8,16 +8,22 @@ type PhotoGridItemProps = {
 	image: ImageType | PendingImageType;
 	isMine: boolean;
 	onSelect: () => void;
+	style?: StyleProp<ViewStyle>;
 };
 
-export function PhotoGridItem({image, isMine, onSelect}: PhotoGridItemProps) {
+export function PhotoGridItem({image, isMine, onSelect, style}: PhotoGridItemProps) {
 	const isPending = image.status === ImageStatusEnum.Pending;
 
 	return (
-		<Pressable style={styles.gridItem} onPress={onSelect}>
-			<Image
+		<Pressable style={[styles.gridItem, style]} onPress={onSelect}>
+			<ImageView
 				source={{
-					uri: getDynamicImageUrl({path: image.url, cdn: config.CONTENT_DELIVERY_NETWORK, size: 'thumbnail', processed: image.processed}),
+					uri: getImageUrl({
+						path: image.url,
+						cdn: config.CONTENT_DELIVERY_NETWORK,
+						size: 'thumbnail',
+						processed: image.processed,
+					}),
 				}}
 				style={styles.thumbnail}
 			/>
@@ -39,7 +45,6 @@ export function PhotoGridItem({image, isMine, onSelect}: PhotoGridItemProps) {
 
 const styles = StyleSheet.create({
 	gridItem: {
-		width: '31.5%',
 		aspectRatio: 1,
 		borderRadius: 8,
 		overflow: 'hidden',

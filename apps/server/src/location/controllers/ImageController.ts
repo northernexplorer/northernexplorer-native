@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto';
-import {ImageStatusEnum, ImageUploadStatus, Params, Response, ReviewStatusEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {ImageStatusEnum, ImageUploadStatus, Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {SpacesManagementService} from '@northernexplorer/tools-server';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
@@ -16,8 +16,8 @@ export class ImageController extends BaseController {
 	private spacesManagementService = new SpacesManagementService({
 		region: config.SPACES_REGION,
 		defaultBucket: config.SPACES_BUCKET,
-		secretAccessKey: config.SPACES_SECRET_KEY,
-		accessKeyId: config.SPACES_ACCESS_KEY,
+		spacesSecretKey: config.SPACES_SECRET_KEY,
+		spacesAccessKey: config.SPACES_ACCESS_KEY,
 	});
 
 	constructor(repos: Repositories) {
@@ -27,20 +27,22 @@ export class ImageController extends BaseController {
 	/**
 	 * Helper to remove the original file as well as _large.jpg and _thumbnail.jpg variants from DigitalOcean Spaces.
 	 */
-	private async removeWithVariants(url: string): Promise<void> {
-		const originalKey = url.replace(/^\/+/, '');
+	private async removeWithVariants(image: Image) {
+		const originalKey = image.url.replace(/^\/+/, '');
 		const dotIndex = originalKey.lastIndexOf('.');
 		const basePath = dotIndex !== -1 ? originalKey.substring(0, dotIndex) : originalKey;
 
 		const largeKey = `${basePath}_large.jpg`;
 		const thumbnailKey = `${basePath}_thumbnail.jpg`;
+		const coverKey = `${basePath}_cover.jpg`;
 
-		// Deletes original file and variant keys in parallel.
-		// Ignores missing file errors (e.g. if variants haven't been processed yet).
+		// Deletes original file and variant keys concurrently.
+		// Ignores missing file errors if variants haven't been processed yet.
 		await Promise.all([
 			this.spacesManagementService.remove(originalKey).catch(() => null),
-			this.spacesManagementService.remove(largeKey).catch(() => null),
-			this.spacesManagementService.remove(thumbnailKey).catch(() => null),
+			image.processed ? this.spacesManagementService.remove(largeKey).catch(() => null) : Promise.resolve(),
+			image.processed ? this.spacesManagementService.remove(thumbnailKey).catch(() => null) : Promise.resolve(),
+			image.canBeCover ? this.spacesManagementService.remove(coverKey).catch(() => null) : Promise.resolve(),
 		]);
 	}
 
@@ -78,7 +80,7 @@ export class ImageController extends BaseController {
 		const MAX_FILES = 10;
 		if (params.files.length > MAX_FILES) throw new Error(`You can upload a maximum of ${MAX_FILES} photos at a time.`);
 
-		const MAX_SINGLE_FILE_BYTES = 10 * 1024 * 1024; // 10 MB per image
+		const MAX_SINGLE_FILE_BYTES = 15 * 1024 * 1024; // 15 MB per image
 		const MAX_TOTAL_BATCH_BYTES = 50 * 1024 * 1024; // 50 MB total per payload
 
 		let totalBatchSizeBytes = 0;
@@ -92,7 +94,6 @@ export class ImageController extends BaseController {
 
 		const pointOfInterest = await this.repos.pointOfInterest.findOneOrFail({id: params.pointOfInterestId});
 		const user = await this.repos.user.getById(userId);
-		const userReviewCount = await this.repos.review.count({user, status: ReviewStatusEnum.Approved});
 
 		const results: {file: string; status: ImageUploadStatus}[] = [];
 
@@ -112,11 +113,10 @@ export class ImageController extends BaseController {
 					key: url,
 					body: fileBuffer,
 					contentType: file.mimeType,
-					isPublic: true,
 				});
 
 				let status = ImageStatusEnum.Pending;
-				if (userReviewCount >= 10 || user.score >= 500) {
+				if (this.repos.user.isPostApproved(user)) {
 					status = ImageStatusEnum.Approved;
 				}
 
@@ -139,7 +139,7 @@ export class ImageController extends BaseController {
 		);
 
 		const successCount = results.filter(r => r.status === ImageUploadStatus.Success).length;
-		if ((userReviewCount >= 10 || user.score >= 500) && successCount > 0) {
+		if (this.repos.user.isPostApproved(user) && successCount > 0) {
 			user.score += successCount * 10;
 		}
 
@@ -157,7 +157,7 @@ export class ImageController extends BaseController {
 		const image = await this.repos.image.getById(params.id);
 		this.permissionService.canEditImage({targetId: image.user.id}, auth);
 
-		await this.removeWithVariants(image.url);
+		await this.removeWithVariants(image);
 
 		if (image.status === ImageStatusEnum.Approved) {
 			image.user.score = image.user.score - 10;
@@ -190,10 +190,11 @@ export class ImageController extends BaseController {
 			image,
 			user,
 		});
+		this.persist(newLike);
 
 		image.user.score = image.user.score + 1;
+		await this.repos.pointOfInterest.setCoverImage(image);
 
-		this.persist(newLike);
 		await this.flush();
 
 		return {success: true};
@@ -233,7 +234,7 @@ export class ImageController extends BaseController {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
-		const images = await this.repos.image.find({status: ImageStatusEnum.Pending}, {populate: ['user', 'pointOfInterest']});
+		const images = await this.repos.image.getPendingImages({limit: params.limit, offset: params.offset});
 		return images.map(image => ({...image}));
 	}
 
@@ -259,7 +260,7 @@ export class ImageController extends BaseController {
 		const {id} = params;
 		const image = await this.repos.image.getById(id);
 
-		await this.removeWithVariants(image.url);
+		await this.removeWithVariants(image);
 
 		this.repos.image.remove(image);
 		await this.flush();

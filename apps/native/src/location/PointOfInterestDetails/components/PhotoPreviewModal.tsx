@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, GestureResponderEvent, Image, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons';
-import {formatName, getDynamicImageUrl} from '@northernexplorer/tools-web';
+import {formatName, getImageUrl, ImageView} from '@northernexplorer/tools-web';
+import {useRouter} from 'expo-router';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -39,6 +41,8 @@ export function PhotoPreviewModal({
 	onApprove,
 	onReject,
 }: PhotoPreviewModalProps) {
+	const router = useRouter();
+	const insets = useSafeAreaInsets();
 	const [isLiked, setIsLiked] = useState<boolean>(false);
 
 	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
@@ -64,6 +68,11 @@ export function PhotoPreviewModal({
 	const canManage = Boolean(onDelete) && (isAdmin || imageData.user.id === currentUserId);
 	const isDeleting = deletingImageId === imageData.id;
 	const isApproving = approvingImageId === imageData.id;
+
+	const handleUserProfileNavigation = () => {
+		onClose();
+		router.push(`/user/${imageData.user.username}`);
+	};
 
 	const handleLikeToggle = async (e: GestureResponderEvent) => {
 		e.stopPropagation();
@@ -138,7 +147,16 @@ export function PhotoPreviewModal({
 
 	return (
 		<Modal transparent animationType="fade" onRequestClose={onClose}>
-			<Pressable style={styles.modalContainer} onPress={onClose}>
+			<Pressable
+				style={[
+					styles.modalContainer,
+					{
+						paddingTop: Math.max(insets.top, 20),
+						paddingBottom: Math.max(insets.bottom, 16),
+					},
+				]}
+				onPress={onClose}
+			>
 				{/* Header */}
 				<Pressable style={styles.modalHeader} onPress={e => e.stopPropagation()}>
 					<Text style={styles.modalCounterText}>
@@ -173,9 +191,9 @@ export function PhotoPreviewModal({
 					)}
 
 					<View style={styles.modalImageWrapper} pointerEvents="box-none">
-						<Image
+						<ImageView
 							source={{
-								uri: getDynamicImageUrl({
+								uri: getImageUrl({
 									processed: imageData.processed,
 									size: 'large',
 									path: imageData.url,
@@ -204,11 +222,11 @@ export function PhotoPreviewModal({
 				{/* Footer Bar */}
 				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
 					<View style={styles.userInfo}>
-						<UserAvatar username={imageData.user.username} />
-						<View style={styles.userDetails}>
+						<UserAvatar username={imageData.user.username} onPress={handleUserProfileNavigation} />
+						<Pressable style={styles.userDetails} onPress={handleUserProfileNavigation}>
 							<Text style={styles.userName}>{formatName(imageData.user)}</Text>
 							{imageData.altText && <Text style={styles.altText}>{imageData.altText}</Text>}
-						</View>
+						</Pressable>
 					</View>
 
 					<View style={styles.modalActions}>
@@ -243,13 +261,11 @@ export function PhotoPreviewModal({
 							</Pressable>
 						)}
 
-						{/* Like Button */}
-						{currentUserId && (
-							<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
-								<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
-								<Text style={styles.likeCount}>{imageData.likes}</Text>
-							</Pressable>
-						)}
+						{/* Like Button (Visible to everyone) */}
+						<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
+							<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
+							<Text style={styles.likeCount}>{imageData.likes}</Text>
+						</Pressable>
 
 						{/* Standard Delete Button (When not using dedicated reject) */}
 						{canManage && !onReject && (
@@ -273,7 +289,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: 'rgba(0, 0, 0, 0.92)',
 		justifyContent: 'space-between',
-		paddingVertical: 40,
 	},
 	modalHeader: {
 		width: '100%',
@@ -331,7 +346,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		paddingHorizontal: 16,
-		paddingTop: 16,
+		paddingTop: 12,
 		gap: 8,
 	},
 	userInfo: {

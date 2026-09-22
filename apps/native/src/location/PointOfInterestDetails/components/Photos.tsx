@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {Platform, Pressable, StyleSheet, Text, View, LayoutChangeEvent, DimensionValue} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {PointOfInterestType, RolesEnum} from '@northernexplorer/types';
 import {Link} from 'expo-router';
@@ -16,8 +16,11 @@ type PhotosProps = {
 	refetch: () => void;
 };
 
+const GRID_GAP = 8;
+
 export function Photos({data, refetch}: PhotosProps) {
 	const authentication = useAuthentication();
+	const [containerWidth, setContainerWidth] = useState<number>(0);
 	const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
 
@@ -27,6 +30,31 @@ export function Photos({data, refetch}: PhotosProps) {
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
 
 	const selectedIndex = selectedImageId !== null ? images.findIndex(img => img.id === selectedImageId) : -1;
+
+	// Determine columns based on measured container width
+	const columns = containerWidth >= 1024 ? 5 : containerWidth >= 640 ? 4 : 3;
+
+	const handleLayout = (event: LayoutChangeEvent) => {
+		const {width} = event.nativeEvent.layout;
+		if (width > 0 && width !== containerWidth) {
+			setContainerWidth(width);
+		}
+	};
+
+	// Calculate item width based on exact container inner width
+	const getItemWidth = () => {
+		if (!containerWidth) return undefined;
+
+		if (Platform.OS === 'web') {
+			return `calc(${100 / columns}% - ${(GRID_GAP * (columns - 1)) / columns}px)`;
+		}
+
+		// Subtract total gap width from container, divide by column count, floor to safe integer
+		const totalGapSpace = GRID_GAP * (columns - 1);
+		return Math.floor((containerWidth - totalGapSpace) / columns);
+	};
+
+	const itemWidth = getItemWidth();
 
 	const handleDelete = (imageId: string) => {
 		alertStore.showAlert({
@@ -67,7 +95,7 @@ export function Photos({data, refetch}: PhotosProps) {
 	return (
 		<View style={styles.container}>
 			{!authentication ? (
-				<Link href="profile/login" asChild>
+				<Link href="user/login" asChild>
 					<Pressable style={styles.loggedOutCard}>
 						<Ionicons name="images-outline" size={24} color="#64748b" />
 						<Text style={styles.loggedOutText}>Log in to share photos</Text>
@@ -88,12 +116,22 @@ export function Photos({data, refetch}: PhotosProps) {
 					<Text style={styles.emptySubtitle}>Be the first to share photos of this location with the community.</Text>
 				</View>
 			) : (
-				<View style={styles.gridContainer}>
-					{images.map(image => {
-						const isMine = Boolean(authentication?.userId && image.user.id === authentication.userId);
+				<View style={styles.gridContainer} onLayout={handleLayout}>
+					{containerWidth > 0 &&
+						images.map((image, index) => {
+							const isMine = Boolean(authentication?.userId && image.user.id === authentication.userId);
+							const isLastInRow = (index + 1) % columns === 0;
 
-						return <PhotoGridItem key={image.id} image={image} isMine={isMine} onSelect={() => setSelectedImageId(image.id)} />;
-					})}
+							return (
+								<PhotoGridItem
+									key={image.id}
+									image={image}
+									isMine={isMine}
+									onSelect={() => setSelectedImageId(image.id)}
+									style={{width: itemWidth as DimensionValue, marginRight: isLastInRow ? 0 : GRID_GAP, marginBottom: GRID_GAP}}
+								/>
+							);
+						})}
 				</View>
 			)}
 
@@ -144,7 +182,7 @@ const styles = StyleSheet.create({
 	gridContainer: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: 8,
+		width: '100%',
 	},
 	emptyState: {
 		alignItems: 'center',

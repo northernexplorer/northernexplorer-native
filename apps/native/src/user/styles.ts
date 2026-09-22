@@ -3,17 +3,51 @@ import {StyleSheet} from 'react-native';
 const styles = StyleSheet.create({
 	container: {
 		width: '100%',
-		maxWidth: 420,
+		maxWidth: 800,
 		alignSelf: 'center',
-		padding: 24,
+		paddingHorizontal: 20,
+		paddingVertical: 24,
 		gap: 20,
 	},
+
 	favoritesContainer: {
 		width: '100%',
 		maxWidth: 420,
 		alignSelf: 'center',
 		padding: 24,
 		gap: 10,
+	},
+
+
+	tabBarContainer: {
+		borderBottomWidth: 1,
+		borderBottomColor: '#e2e8f0',
+		marginBottom: 16,
+	},
+	tabBarContent: {
+		flexDirection: 'row',
+		gap: 8,
+		paddingBottom: 2,
+	},
+	tabButton: {
+		paddingVertical: 12,
+		paddingHorizontal: 16,
+		alignItems: 'center',
+		justifyContent: 'center',
+		borderBottomWidth: 2,
+		borderBottomColor: 'transparent',
+	},
+	activeTabButton: {
+		borderBottomColor: '#0088cc',
+	},
+	tabText: {
+		fontSize: 15,
+		fontWeight: '500',
+		color: '#64748b',
+	},
+	activeTabText: {
+		color: '#0088cc',
+		fontWeight: '600',
 	},
 
 	noticeBackground: {
@@ -111,23 +145,6 @@ const styles = StyleSheet.create({
 		textDecorationLine: 'underline',
 		fontWeight: 'bold',
 	},
-	tabButton: {
-		flex: 1,
-		paddingVertical: 10,
-		alignItems: 'center',
-		borderBottomWidth: 2,
-		borderBottomColor: '#ccc',
-	},
-	activeTabButton: {
-		borderBottomColor: '#0088cc',
-	},
-	tabText: {
-		color: '#666',
-	},
-	activeTabText: {
-		color: '#0088cc',
-		fontWeight: 'bold',
-	},
 	categorySection: {
 		gap: 12,
 	},
@@ -147,4 +164,5 @@ const styles = StyleSheet.create({
 		backgroundColor: '#a1c4e6',
 	},
 });
+
 export default styles;

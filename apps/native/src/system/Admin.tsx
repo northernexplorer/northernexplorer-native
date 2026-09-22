@@ -12,22 +12,53 @@ export function Admin() {
 	const authentication = useAuthentication();
 	const {data, loading} = useApiFetch('system', 'StatusController', 'getOverview', {});
 
-	if (!authentication) return <Redirect href="/profile/login" />;
+	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
+
+	const draftCount = data?.pointOfInterestsDraft ?? 0;
+	const pendingReviewsCount = data?.pendingReviews ?? 0;
+	const pendingImagesCount = data?.pendingImages ?? 0;
 
 	return (
 		<View style={styles.grid}>
 			{/* Draft Sites Card */}
 			<Pressable
-				style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
+				style={({pressed}) => [styles.card, draftCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
 				onPress={() => router.push('/admin/draft-point-of-interest')}
 			>
+				{draftCount > 0 && <View style={styles.badgeDot} />}
 				<View style={[styles.iconBadge, {backgroundColor: '#fff3e0'}]}>
 					<Ionicons name="document-text-outline" size={24} color="#e65100" />
 				</View>
-				<Text style={styles.statValue}>{data?.pointOfInterestsDraft ?? 0}</Text>
+				<Text style={styles.statValue}>{draftCount}</Text>
 				<Text style={styles.statLabel}>Draft Sites</Text>
+			</Pressable>
+
+			{/* Pending Reviews Card */}
+			<Pressable
+				style={({pressed}) => [styles.card, pendingReviewsCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
+				onPress={() => router.push('/admin/pending-reviews')}
+			>
+				{pendingReviewsCount > 0 && <View style={styles.badgeDot} />}
+				<View style={[styles.iconBadge, {backgroundColor: '#fef3c7'}]}>
+					<Ionicons name="chatbox-ellipses-outline" size={24} color="#d97706" />
+				</View>
+				<Text style={styles.statValue}>{pendingReviewsCount}</Text>
+				<Text style={styles.statLabel}>Pending Reviews</Text>
+			</Pressable>
+
+			{/* Pending Images Card */}
+			<Pressable
+				style={({pressed}) => [styles.card, pendingImagesCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
+				onPress={() => router.push('/admin/pending-images')}
+			>
+				{pendingImagesCount > 0 && <View style={styles.badgeDot} />}
+				<View style={[styles.iconBadge, {backgroundColor: '#f3e5f5'}]}>
+					<Ionicons name="image-outline" size={24} color="#7b1fa2" />
+				</View>
+				<Text style={styles.statValue}>{pendingImagesCount}</Text>
+				<Text style={styles.statLabel}>Pending Images</Text>
 			</Pressable>
 
 			{/* Published Sites Card */}
@@ -40,24 +71,6 @@ export function Admin() {
 				</View>
 				<Text style={styles.statValue}>{data?.pointOfInterestsPublished ?? 0}</Text>
 				<Text style={styles.statLabel}>Published Sites</Text>
-			</Pressable>
-
-			{/* Pending Reviews Card */}
-			<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/pending-reviews')}>
-				<View style={[styles.iconBadge, {backgroundColor: '#fef3c7'}]}>
-					<Ionicons name="chatbox-ellipses-outline" size={24} color="#d97706" />
-				</View>
-				<Text style={styles.statValue}>{data?.pendingReviews ?? 0}</Text>
-				<Text style={styles.statLabel}>Pending Reviews</Text>
-			</Pressable>
-
-			{/* Pending Images Card */}
-			<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/pending-images')}>
-				<View style={[styles.iconBadge, {backgroundColor: '#f3e5f5'}]}>
-					<Ionicons name="image-outline" size={24} color="#7b1fa2" />
-				</View>
-				<Text style={styles.statValue}>{data?.pendingImages ?? 0}</Text>
-				<Text style={styles.statLabel}>Pending Images</Text>
 			</Pressable>
 
 			{/* Users Card */}
@@ -87,11 +100,26 @@ const styles = StyleSheet.create({
 		padding: 16,
 		borderWidth: 1,
 		borderColor: '#e9ecef',
+		position: 'relative',
 		shadowColor: '#000',
 		shadowOffset: {width: 0, height: 2},
 		shadowOpacity: 0.05,
 		shadowRadius: 8,
 		elevation: 2,
+	},
+	cardUrgent: {
+		borderColor: '#f59e0b',
+		borderWidth: 1.5,
+		backgroundColor: '#fffcf5',
+	},
+	badgeDot: {
+		position: 'absolute',
+		top: 12,
+		right: 12,
+		width: 10,
+		height: 10,
+		borderRadius: 5,
+		backgroundColor: '#ef4444',
 	},
 	cardPressed: {
 		opacity: 0.7,

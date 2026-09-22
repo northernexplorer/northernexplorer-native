@@ -13,25 +13,29 @@ export function WeatherWidget({data}: {data: WeatherType}) {
 
 	return (
 		<Link href="/environment/weather" asChild>
-			<Pressable style={{...styles.hero}}>
-				<Text style={{color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8}}>
-					{data.location.name}
-				</Text>
+			<Pressable style={{...styles.tile, padding: 16, justifyContent: 'space-between', flex: 1}}>
+				<View>
+					<Text style={styles.hourDay} numberOfLines={1}>
+						{data.location.name}
+					</Text>
 
-				<View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 4, gap: 12}}>
-					<MaterialCommunityIcons name={iconName} size={52} color="#ffffff" />
-					<Text style={{color: '#ffffff', fontSize: 56, fontWeight: '200', letterSpacing: -1}}>{Math.round(current.temp_c)}°</Text>
+					<View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 6, gap: 12}}>
+						<MaterialCommunityIcons name={iconName} size={44} color="#38BDF8" />
+						<Text style={{color: '#FFFFFF', fontSize: 48, fontWeight: '300', letterSpacing: -1}}>{Math.round(current.temp_c)}°</Text>
+					</View>
+
+					<Text style={{color: '#94A3B8', fontSize: 13, fontWeight: '600', marginBottom: 12}} numberOfLines={1}>
+						{condition.text}
+					</Text>
 				</View>
 
-				<Text style={{color: '#ffffff', fontSize: 15, fontWeight: '500', marginBottom: 14}}>{condition.text}</Text>
-
-				<View style={{flexDirection: 'row', gap: 8, flexWrap: 'wrap'}}>
+				<View style={{flexDirection: 'row', gap: 6, flexWrap: 'wrap'}}>
 					<View style={styles.metricPill}>
-						<MaterialCommunityIcons name="weather-windy" size={14} color="rgba(255,255,255,0.7)" />
+						<MaterialCommunityIcons name="weather-windy" size={13} color="#38BDF8" />
 						<Text style={styles.metricText}>{Math.round(current.wind_kph)} km/h</Text>
 					</View>
 					<View style={styles.metricPill}>
-						<MaterialCommunityIcons name="water-outline" size={14} color="rgba(255,255,255,0.7)" />
+						<MaterialCommunityIcons name="water-outline" size={13} color="#38BDF8" />
 						<Text style={styles.metricText}>{current.humidity}%</Text>
 					</View>
 				</View>
