@@ -45,7 +45,15 @@ export function Map({site}: Props) {
 		>
 			<Pressable style={styles.mapContainer}>
 				<MapGL {...viewState} style={{width: '100%', height: '100%', pointerEvents: 'none'}} mapStyle={baseLayer} attributionControl={false}>
-					<MapMarkerWeb key={site.id} site={site} longitude={site.lon} latitude={site.lat} selectedSite={site} size={24} />
+					<MapMarkerWeb
+						key={site.id}
+						site={site}
+						longitude={site.lon}
+						latitude={site.lat}
+						selectedSite={site}
+						size={24}
+						image={site.image}
+					/>
 				</MapGL>
 			</Pressable>
 		</Link>

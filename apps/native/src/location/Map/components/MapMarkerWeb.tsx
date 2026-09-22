@@ -1,8 +1,8 @@
 import React, {Dispatch, SetStateAction} from 'react';
 import {Marker} from 'react-map-gl/maplibre';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {PointOfInterestType} from '@northernexplorer/types';
-import {getMarkerConfig} from './getMarkerConfig';
+import {ImageHeaderType, PointOfInterestType} from '@northernexplorer/types';
+import {getImageUrl} from '@northernexplorer/tools-web';
+import {config} from '~/config';
 
 interface Props {
 	site: PointOfInterestType;
@@ -11,10 +11,10 @@ interface Props {
 	selectedSite?: PointOfInterestType | null;
 	setSelectedSite?: Dispatch<SetStateAction<PointOfInterestType | null>>;
 	size?: number;
+	image: ImageHeaderType;
 }
 
-export function MapMarkerWeb({site, longitude, latitude, selectedSite, setSelectedSite, size}: Props) {
-	const {iconName, backgroundColor} = getMarkerConfig(site.type);
+export function MapMarkerWeb({site, longitude, latitude, selectedSite, setSelectedSite, size, image}: Props) {
 	const isDraft = site.status === 'Draft';
 	const markerSize = size || 48;
 
@@ -38,14 +38,17 @@ export function MapMarkerWeb({site, longitude, latitude, selectedSite, setSelect
 			<div
 				style={{
 					...styles.iconCircle,
-					backgroundColor,
 					width: markerSize,
 					height: markerSize,
 					border: isDraft ? '2px dashed #e65100' : '2px solid #FFFFFF',
 					opacity: isDraft ? 0.85 : 1,
 				}}
 			>
-				<MaterialCommunityIcons name={iconName} size={size ? size / 2 : 28} color="#FFFFFF" />
+				<img
+					src={getImageUrl({path: image.url, size: 'thumbnail', cdn: config.CONTENT_DELIVERY_NETWORK, processed: image.processed})}
+					alt={site.name || 'Marker image'}
+					style={styles.image}
+				/>
 
 				{isDraft && <div style={styles.draftBadge}>DRAFT</div>}
 			</div>
@@ -62,6 +65,12 @@ const styles: Record<string, React.CSSProperties> = {
 		justifyContent: 'center',
 		boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
 		cursor: 'pointer',
+		overflow: 'hidden', // Ensures the image respects the circular border
+	},
+	image: {
+		width: '100%',
+		height: '100%',
+		objectFit: 'cover',
 	},
 	draftBadge: {
 		position: 'absolute',
@@ -76,5 +85,6 @@ const styles: Record<string, React.CSSProperties> = {
 		textTransform: 'uppercase',
 		lineHeight: '1',
 		whiteSpace: 'nowrap',
+		zIndex: 1,
 	},
 };
