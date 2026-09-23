@@ -11,10 +11,11 @@ import {Security} from '~/user/Profile/components/Security';
 import {Other} from '~/user/Profile/components/Other';
 import {useApiFetch} from '~/core/useApiFetch';
 import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
+import { FavoritePointsOfInterest } from './components/Favorites';
 
 type RouteParams = {
 	username: string;
-	tab?: 'timeline' | 'details' | 'subscription' | 'security' | 'other';
+	tab?: 'timeline' | 'details' | 'favorite' | 'subscription' | 'security' | 'other';
 };
 
 export function Profile() {
@@ -23,7 +24,7 @@ export function Profile() {
 	const {username, tab = 'timeline'} = useLocalSearchParams<RouteParams>();
 	const {data, loading} = useApiFetch('user', 'UserController', 'getAvatarDetails', {username});
 
-	const switchTab = (newTab: 'timeline' | 'details' | 'subscription' | 'security' | 'other') => {
+	const switchTab = (newTab: 'timeline' | 'details' | 'favorite' | 'subscription' | 'security' | 'other') => {
 		router.setParams({username, tab: newTab});
 	};
 
@@ -59,6 +60,7 @@ export function Profile() {
 							style={[styles.tabButton, tab === 'timeline' && styles.activeTabButton]}
 							onPress={() => switchTab('timeline')}
 						>
+							
 							<Text style={tab === 'timeline' ? styles.activeTabText : styles.tabText}>Timeline</Text>
 						</TouchableOpacity>
 
@@ -66,6 +68,10 @@ export function Profile() {
 							style={[styles.tabButton, tab === 'details' && styles.activeTabButton]}
 							onPress={() => switchTab('details')}
 						>
+							<TouchableOpacity
+							style={[styles.tabButton, tab === 'favorite' && styles.activeTabButton]}
+							onPress={() => switchTab('favorite')}
+						/>
 							<Text style={tab === 'details' ? styles.activeTabText : styles.tabText}>Details</Text>
 						</TouchableOpacity>
 
@@ -92,6 +98,7 @@ export function Profile() {
 
 			{tab === 'timeline' && <ProfileTimeline username={username} />}
 			{tab === 'details' && <ProfileDetails username={username} />}
+			{tab === 'favorite' && <FavoritePointsOfInterest />}
 			{tab === 'subscription' && <Subscription username={username} />}
 			{tab === 'security' && <Security username={username} />}
 			{tab === 'other' && <Other username={username} />}

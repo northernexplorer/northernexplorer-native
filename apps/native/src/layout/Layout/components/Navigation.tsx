@@ -5,7 +5,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {RolesEnum} from '@northernexplorer/types';
 import {styles} from '~/layout/Layout/styles';
 import {MenuItemDefault} from '~/layout/Layout/components/MenuItemDefault';
-import {MenuBranding} from '~/layout/Layout/components/MenuBranding';
+import { MenuBranding } from './MenuBranding';
 import {MenuItemUser} from '~/layout/Layout/components/MenuItemUser';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 

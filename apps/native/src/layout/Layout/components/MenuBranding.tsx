@@ -1,7 +1,7 @@
 import {Link} from 'expo-router';
 import {Pressable, Text} from 'react-native';
 import React from 'react';
-import {ImageView} from '@northernexplorer/tools-web';
+import { ImageView } from '@northernexplorer/tools-web';
 import logo from '../../../../assets/images/logo.png';
 import {styles} from '~/layout/Layout/styles';
 
