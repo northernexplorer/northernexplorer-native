@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {Redirect} from 'expo-router';
+import {Redirect, useLocalSearchParams} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {Pagination, Spinner} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
@@ -14,7 +14,8 @@ const limit = 20;
 
 export function PendingImages() {
 	const authentication = useAuthentication();
-	const [page, setPage] = useState(1);
+	const params = useLocalSearchParams<{page?: string}>();
+	const page = params.page ? parseInt(params.page, 10) : 1;
 	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
 	const [approvingImageId, setApprovingImageId] = useState<string | null>(null);
@@ -92,7 +93,7 @@ export function PendingImages() {
 					</View>
 				))}
 
-			<Pagination currentPage={page} limit={limit} itemCount={images?.length || 0} onPageChange={setPage} />
+			<Pagination limit={limit} itemCount={images?.length || 0} />
 
 			{selectedImage && selectedImageIndex !== null && (
 				<PhotoPreviewModal

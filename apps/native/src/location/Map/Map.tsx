@@ -161,6 +161,7 @@ export function Map() {
 							latitude={latitude}
 							selectedSite={selectedSite}
 							setSelectedSite={setSelectedSite}
+							image={site.image}
 						/>
 					);
 				})}

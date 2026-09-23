@@ -2,7 +2,6 @@ import React from 'react';
 import {View, ActivityIndicator, Text, ScrollView} from 'react-native';
 import {WeatherWidget} from './components/WeatherWidget';
 import {LunarWidget} from './components/LunarWidget';
-import {FieldNoteWidget} from './components/FieldNoteWidget';
 import {CompassWidget} from '~/layout/Home/components/CompassWidget';
 import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
 import {TopImagesWidget} from '~/layout/Home/components/TopImagesWidget';
@@ -10,7 +9,6 @@ import {FlashlightWidget} from '~/layout/Home/components/FlashlightWidget';
 import {SignalWidget} from '~/layout/Home/components/SignalWidget';
 import {useWeather} from '~/environment/state/weather/useWeather';
 import {useLunar} from '~/environment/state/lunar/useLunar';
-import {useFieldNote} from '~/environment/state/fieldNote/useFieldNote';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {styles} from '~/layout/Home/styles';
@@ -18,7 +16,6 @@ import {styles} from '~/layout/Home/styles';
 export function Home() {
 	const weather = useWeather();
 	const lunar = useLunar();
-	const fieldNote = useFieldNote();
 	const coords = useLocation();
 
 	const {data: pointOfInterestData} = useApiFetch(
@@ -31,7 +28,7 @@ export function Home() {
 	const {data: topImagesData} = useApiFetch('location', 'ImageController', 'topImages', {});
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
-	const isCoreReady = !!weather && !!lunar && !!fieldNote;
+	const isCoreReady = !!weather && !!lunar;
 
 	if (!isCoreReady) {
 		return (
@@ -136,12 +133,6 @@ export function Home() {
 							</View>
 							<View style={styles.lunarSection}>
 								<LunarWidget data={lunar} />
-							</View>
-						</View>
-
-						<View style={styles.gridRow}>
-							<View style={styles.fieldNoteSection}>
-								<FieldNoteWidget data={fieldNote} />
 							</View>
 						</View>
 					</View>

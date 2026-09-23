@@ -88,7 +88,7 @@ export function AllUsers() {
 				onRowPress={user => router.push(`/user/${user.username}`)}
 			/>
 
-			<Pagination currentPage={page} limit={limit} itemCount={users?.length || 0} onPageChange={setPage} />
+			<Pagination limit={limit} itemCount={users?.length || 0} onPageChange={setPage} />
 		</View>
 	);
 }

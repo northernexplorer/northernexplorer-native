@@ -152,10 +152,6 @@ export const styles = StyleSheet.create({
 		flex: 1,
 		minWidth: 0,
 	},
-	fieldNoteSection: {
-		flex: 1,
-		minWidth: 0,
-	},
 
 	// Translucent Card / Tile Base
 	tile: {

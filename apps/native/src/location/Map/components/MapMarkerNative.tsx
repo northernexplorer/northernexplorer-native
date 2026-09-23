@@ -1,9 +1,9 @@
 import React, {Dispatch, SetStateAction} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {Marker} from '@maplibre/maplibre-react-native';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {PointOfInterestType} from '@northernexplorer/types';
-import {getMarkerConfig} from './getMarkerConfig';
+import {ImageHeaderType, PointOfInterestType} from '@northernexplorer/types';
+import {getImageUrl} from '@northernexplorer/tools-web';
+import {config} from '~/config';
 
 interface Props {
 	site: PointOfInterestType;
@@ -12,13 +12,12 @@ interface Props {
 	selectedSite?: PointOfInterestType | null;
 	setSelectedSite?: Dispatch<SetStateAction<PointOfInterestType | null>>;
 	size?: number;
+	image: ImageHeaderType;
 }
 
-export function MapMarkerNative({site, longitude, latitude, selectedSite, setSelectedSite, size}: Props) {
-	const {iconName, backgroundColor} = getMarkerConfig(site.type);
+export function MapMarkerNative({site, longitude, latitude, selectedSite, setSelectedSite, size, image}: Props) {
 	const isDraft = site.status === 'Draft';
 	const markerSize = size || 48;
-
 	return (
 		<Marker
 			key={site.id}
@@ -39,7 +38,6 @@ export function MapMarkerNative({site, longitude, latitude, selectedSite, setSel
 				style={[
 					styles.iconCircle,
 					{
-						backgroundColor,
 						width: markerSize,
 						height: markerSize,
 						borderRadius: markerSize / 2,
@@ -49,7 +47,13 @@ export function MapMarkerNative({site, longitude, latitude, selectedSite, setSel
 					},
 				]}
 			>
-				<MaterialCommunityIcons name={iconName} size={size ? size / 2 : 28} color="#FFFFFF" />
+				<Image
+					source={{
+						uri: getImageUrl({path: image.url, size: 'thumbnail', cdn: config.CONTENT_DELIVERY_NETWORK, processed: image.processed}),
+					}}
+					style={styles.image}
+					resizeMode="cover"
+				/>
 
 				{isDraft && (
 					<View style={styles.draftBadge}>
@@ -72,6 +76,11 @@ const styles = StyleSheet.create({
 		shadowRadius: 4,
 		elevation: 4,
 		position: 'relative',
+		overflow: 'hidden',
+	},
+	image: {
+		width: '100%',
+		height: '100%',
 	},
 	draftBadge: {
 		position: 'absolute',
@@ -85,6 +94,7 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.3,
 		shadowRadius: 2,
 		elevation: 2,
+		zIndex: 1,
 	},
 	draftText: {
 		color: '#FFFFFF',

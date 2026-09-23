@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {Redirect, useRouter} from 'expo-router';
+import {Redirect, useLocalSearchParams, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {Column, Pagination, Spinner, Table} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
@@ -12,7 +12,8 @@ const limit = 20;
 export function PendingReviews() {
 	const router = useRouter();
 	const authentication = useAuthentication();
-	const [page, setPage] = useState(1);
+	const params = useLocalSearchParams<{page?: string}>();
+	const page = params.page ? parseInt(params.page, 10) : 1;
 
 	const offset = (page - 1) * limit;
 
@@ -100,7 +101,7 @@ export function PendingReviews() {
 				emptyIcon="chatbox-ellipses-outline"
 				onRowPress={review => router.push(`/admin/pending-reviews/${review.id}`)}
 			/>
-			<Pagination currentPage={page} limit={limit} itemCount={reviews?.length || 0} onPageChange={setPage} />
+			<Pagination limit={limit} itemCount={reviews?.length || 0} />
 		</View>
 	);
 }

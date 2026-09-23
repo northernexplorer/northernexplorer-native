@@ -210,8 +210,8 @@ export function PointOfInterestEdit() {
 
 					<FormField
 						fieldName="image"
-						label="Image Path"
-						placeholder="Path or URL to image"
+						label="Image Id"
+						placeholder="Id of image"
 						value={form.image}
 						updateField={updateField}
 						error={errors.image}

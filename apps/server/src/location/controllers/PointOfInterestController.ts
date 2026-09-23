@@ -209,6 +209,7 @@ export class PointOfInterestController extends BaseController {
 		const country = await this.repos.country.getById(countryId);
 		const region = await this.repos.region.getById(regionId);
 		const organization = await this.repos.organization.getById(organizationId);
+		const image = await this.repos.image.getById(params.imageId);
 
 		pointOfInterest.edit({
 			...updates,
@@ -217,6 +218,7 @@ export class PointOfInterestController extends BaseController {
 			startDate,
 			endDate,
 			organization,
+			image,
 		});
 
 		await this.flush();
