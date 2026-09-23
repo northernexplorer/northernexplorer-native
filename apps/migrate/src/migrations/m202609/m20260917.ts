@@ -1,18 +1,5 @@
 export const m20260917: string[] = [
-	`
-		INSERT INTO public.subscription (
-			id,
-			version,
-			start_date,
-			renewal_date,
-			subscription_level_id
-		) VALUES (
-					 '00000000-0000-0000-0000-000000000000',
-					 1,
-					 NOW(),
-					 NULL,
-					 '2ca68efb-b245-4d16-9f26-d8e00c47ede7'
-				 ) ON CONFLICT (id) DO NOTHING;
+	`z
 	`,
 	`
 		INSERT INTO public."user" (
