@@ -2514,6 +2514,7 @@ __metadata:
     expo-image-picker: "npm:^57.0.16"
   peerDependencies:
     "@expo/vector-icons": "*"
+    expo-router: "*"
     react: "*"
     react-native: "*"
     react-native-safe-area-context: "*"

@@ -9,6 +9,7 @@
 	"types": "./src/index.ts",
 	"peerDependencies": {
 		"@expo/vector-icons": "*",
+		"expo-router": "*",
 		"react": "*",
 		"react-native": "*",
 		"react-native-safe-area-context": "*"
