@@ -4,7 +4,7 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-ENV_FILE="./packages/server/.env"
+ENV_FILE="./apps/server/.env"
 
 if [ ! -f "$ENV_FILE" ]; then
     echo "${RED}ERROR: Environment file $ENV_FILE not found.${NC}"
