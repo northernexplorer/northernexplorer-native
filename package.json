@@ -24,6 +24,7 @@
 		"dev:organize": "dev/organize.sh",
 		"dev:setup": "dev/setup.sh",
 		"dev:start": "dev/start.sh",
+		"dev:sync": "dev/sync.sh",
 		"fix:expo": "yarn workspace northernexplorer-native expo install --check",
 		"native": "yarn workspace northernexplorer-native",
 		"schema": "yarn workspace northernexplorer-server schema",
