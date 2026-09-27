@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, ActivityIndicator, Text, ScrollView} from 'react-native';
+import {View, ActivityIndicator, Text, ScrollView, useWindowDimensions} from 'react-native';
 import {WeatherWidget} from './components/WeatherWidget';
 import {LunarWidget} from './components/LunarWidget';
 import {CompassWidget} from '~/layout/Home/components/CompassWidget';
@@ -14,6 +14,9 @@ import {useApiFetch} from '~/core/useApiFetch';
 import {styles} from '~/layout/Home/styles';
 
 export function Home() {
+	const {width} = useWindowDimensions();
+	const isMobile = width < 768;
+
 	const weather = useWeather();
 	const lunar = useLunar();
 	const coords = useLocation();
@@ -44,24 +47,23 @@ export function Home() {
 	const hasTools = canUseSignal || canUseCompass || canUseFlashlight;
 
 	return (
-		<View style={styles.container}>
-			{/* Left Vertical Action Bar */}
+		<View style={[styles.container, isMobile && styles.containerMobile]}>
+			{/* Action Bar: Top on Mobile, Left Sidebar on Desktop */}
 			{hasTools && (
-				<View style={styles.leftSidebar}>
-					<Text style={styles.sidebarLabel}>TOOLS</Text>
-					<View style={styles.sidebarTools}>
+				<View style={isMobile ? styles.topBar : styles.leftSidebar}>
+					<View style={isMobile ? styles.topBarTools : styles.sidebarTools}>
 						{canUseSignal && (
-							<View style={styles.sidebarTile}>
+							<View style={isMobile ? styles.topBarTile : styles.sidebarTile}>
 								<SignalWidget />
 							</View>
 						)}
 						{canUseCompass && (
-							<View style={styles.sidebarTile}>
+							<View style={isMobile ? styles.topBarTile : styles.sidebarTile}>
 								<CompassWidget />
 							</View>
 						)}
 						{canUseFlashlight && (
-							<View style={styles.sidebarTile}>
+							<View style={isMobile ? styles.topBarTile : styles.sidebarTile}>
 								<FlashlightWidget />
 							</View>
 						)}

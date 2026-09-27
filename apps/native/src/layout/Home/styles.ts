@@ -7,6 +7,9 @@ export const styles = StyleSheet.create({
 		flexDirection: 'row',
 		backgroundColor: '#1a1a1a',
 	},
+	containerMobile: {
+		flexDirection: 'column',
+	},
 	loadingContainer: {
 		flex: 1,
 		justifyContent: 'center',
@@ -14,7 +17,37 @@ export const styles = StyleSheet.create({
 		backgroundColor: '#1a1a1a',
 	},
 
-	// Left Sidebar / Tool Panel (Restored)
+	// Mobile Top Bar Styles
+	topBar: {
+		width: '100%',
+		backgroundColor: '#1a1a1a',
+		borderBottomWidth: 1,
+		borderBottomColor: '#333333',
+		paddingVertical: 5,
+		paddingHorizontal: 16,
+	},
+	topBarLabel: {
+		color: 'rgba(255,255,255,0.45)',
+		fontSize: 10,
+		fontWeight: '800',
+		letterSpacing: 1.5,
+		marginBottom: 8,
+	},
+	topBarTools: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
+	},
+	topBarTile: {
+		width: 52,
+		height: 52,
+		backgroundColor: '#1a1a1a',
+		justifyContent: 'center',
+		alignItems: 'center',
+		overflow: 'hidden',
+	},
+
+	// Left Sidebar / Tool Panel (Desktop Default)
 	leftSidebar: {
 		width: 64,
 		backgroundColor: '#1a1a1a',
@@ -45,7 +78,7 @@ export const styles = StyleSheet.create({
 		overflow: 'hidden',
 	},
 
-	// Main Content Area (Compact Mobile Padding)
+	// Main Content Area
 	mainContent: {
 		flex: 1,
 	},
