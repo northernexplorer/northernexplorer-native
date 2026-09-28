@@ -45,6 +45,7 @@ yarn-error.*
 
 # dev
 .idea
+tmp/
 
 # build
 .dist
