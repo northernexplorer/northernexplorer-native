@@ -89,6 +89,7 @@ export enum SiteConditionEnum {
 	// General & Site Utility
 	NO_CELL_SERVICE = 'NO_CELL_SERVICE',
 	GARBAGE = 'GARBAGE',
+	PARK_PASS_REQUIRED = 'PARK PASS_REQUIRED',
 }
 
 export const ReviewController = {

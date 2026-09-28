@@ -84,7 +84,7 @@ export const PointOfInterestController = {
 			selectedPoiTypes?: PointOfInterestTypeEnum[];
 			visitedFilter?: VisitedFilterEnum;
 			minRating?: number | null;
-			maxDifficultyIndex?: number;
+			maxDifficultyIndex?: number | null;
 			maxCostIndex?: number;
 			showDrafts?: boolean;
 		},
