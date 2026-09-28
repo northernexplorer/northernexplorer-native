@@ -90,6 +90,20 @@ export const PointOfInterestController = {
 		},
 		response: null as unknown as PointOfInterestType[],
 	},
+	getForMap: {
+		params: {} as {
+			lat: number;
+			lon: number;
+			limit: number;
+			selectedPoiTypes?: PointOfInterestTypeEnum[];
+			visitedFilter?: VisitedFilterEnum;
+			minRating?: number | null;
+			maxDifficultyIndex?: number | null;
+			maxCostIndex?: number;
+			showDrafts?: boolean;
+		},
+		response: null as unknown as PointOfInterestType[],
+	},
 	getPointOfInterestById: {
 		params: {} as {id: string},
 		response: null as unknown as PointOfInterestType,
