@@ -51,7 +51,7 @@ export function MapSidebar() {
 		selectedPoiTypes = [],
 		visitedFilter = VisitedFilterEnum.All,
 		minRating = null,
-		maxDifficultyIndex = DIFFICULTY_KEYS.length - 1,
+		maxDifficultyIndex,
 		maxCostIndex = COST_KEYS.length - 1,
 		showDrafts = false,
 	} = useMap();
@@ -63,7 +63,7 @@ export function MapSidebar() {
 	const canAccessOffTrailDifficulty = !!permissionData?.navigation.useOffTrailDifficulty;
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
 
-	// Determine the max allowed difficulty index based on permissions
+	// Determine max allowed difficulty index based on user permissions
 	let maxAllowedDifficultyIndex = DIFFICULTY_KEYS.length - 1;
 	if (!canAccessOffTrailDifficulty) {
 		const offTrailIndex = DIFFICULTY_KEYS.findIndex(k => DIFFICULTY_CONFIG[k].label.toLowerCase().includes('off-trail'));
@@ -77,6 +77,9 @@ export function MapSidebar() {
 			maxAllowedDifficultyIndex = expeditionIndex - 1;
 		}
 	}
+
+	// Default to maximum permitted index (e.g. 4 if full access) when untouched in Redux
+	const effectiveDifficultyIndex = maxDifficultyIndex ?? maxAllowedDifficultyIndex;
 
 	const bannerHref = isLoggedIn ? `/user/${authentication.username}/change-subscription` : '/user/login';
 	const bannerTitle = 'Upgrade Required to Access All Map Styles';
@@ -168,13 +171,13 @@ export function MapSidebar() {
 					minimumValue={0}
 					maximumValue={DIFFICULTY_KEYS.length - 1}
 					step={1}
-					value={maxDifficultyIndex}
+					value={effectiveDifficultyIndex}
 					maxInteractiveValue={maxAllowedDifficultyIndex}
 					warningLabel="Upgrade subscription to include harder difficulty tiers."
 					onValueChange={val => {
 						dispatch(setDifficultyLevel(val));
 					}}
-					getDisplayLabel={val => DIFFICULTY_CONFIG[DIFFICULTY_KEYS[val]].label.split(' ')[0]}
+					getDisplayLabel={val => DIFFICULTY_CONFIG[DIFFICULTY_KEYS[val]]?.label.split(' ')[0] ?? ''}
 				/>
 			</View>
 
