@@ -9,7 +9,6 @@ import {PhotoPreviewModal} from './PhotoPreviewModal';
 import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
-import {alertStore} from '~/core/alertStore';
 
 type PhotosProps = {
 	data: PointOfInterestType;
@@ -49,35 +48,23 @@ export function Photos({data, refetch}: PhotosProps) {
 			return `calc(${100 / columns}% - ${(GRID_GAP * (columns - 1)) / columns}px)`;
 		}
 
-		// Subtract total gap width from container, divide by column count, floor to safe integer
 		const totalGapSpace = GRID_GAP * (columns - 1);
 		return Math.floor((containerWidth - totalGapSpace) / columns);
 	};
 
 	const itemWidth = getItemWidth();
 
-	const handleDelete = (imageId: string) => {
-		alertStore.showAlert({
-			title: 'Delete Photo',
-			message: 'Are you sure you want to delete this photo? This action cannot be undone.',
-			type: 'warning',
-			buttons: [
-				{text: 'Cancel', style: 'cancel'},
-				{
-					text: 'Delete',
-					style: 'destructive',
-					onPress: async () => {
-						setDeletingImageId(imageId);
-						await deleteMutation({id: imageId});
-						if (selectedImageId === imageId) {
-							setSelectedImageId(null);
-						}
-						refetch();
-						setDeletingImageId(null);
-					},
-				},
-			],
-		});
+	const handleDelete = async (imageId: string) => {
+		setDeletingImageId(imageId);
+		try {
+			await deleteMutation({id: imageId});
+			if (selectedImageId === imageId) {
+				setSelectedImageId(null);
+			}
+			refetch();
+		} finally {
+			setDeletingImageId(null);
+		}
 	};
 
 	const handlePreviousImage = () => {

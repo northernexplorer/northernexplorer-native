@@ -80,8 +80,8 @@ export class ImageController extends BaseController {
 		const MAX_FILES = 10;
 		if (params.files.length > MAX_FILES) throw new Error(`You can upload a maximum of ${MAX_FILES} photos at a time.`);
 
-		const MAX_SINGLE_FILE_BYTES = 15 * 1024 * 1024; // 15 MB per image
-		const MAX_TOTAL_BATCH_BYTES = 50 * 1024 * 1024; // 50 MB total per payload
+		const MAX_SINGLE_FILE_BYTES = 10 * 1024 * 1024; // 10 MB per image limit
+		const MAX_RAW_BATCH_BYTES = 50 * 1024 * 1024; // 50 MB total batch limit
 
 		let totalBatchSizeBytes = 0;
 
@@ -90,7 +90,13 @@ export class ImageController extends BaseController {
 			totalBatchSizeBytes += file.size;
 		}
 
-		if (totalBatchSizeBytes > MAX_TOTAL_BATCH_BYTES) throw new Error('Total upload payload exceeds the 50 MB batch limit.');
+		const maxMbTotal = Math.round(MAX_RAW_BATCH_BYTES / (1024 * 1024));
+
+		if (totalBatchSizeBytes > MAX_RAW_BATCH_BYTES) {
+			throw new Error(
+				`The total size of your selected photos exceeds the ${maxMbTotal} MB limit. Please select fewer or smaller images and try again.`,
+			);
+		}
 
 		const pointOfInterest = await this.repos.pointOfInterest.findOneOrFail({id: params.pointOfInterestId});
 		const user = await this.repos.user.getById(userId);

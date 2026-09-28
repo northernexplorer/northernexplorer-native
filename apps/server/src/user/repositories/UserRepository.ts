@@ -1,8 +1,9 @@
-import {EditProfileParams, UserType} from '@northernexplorer/types';
+import {EditProfileParams, ImageType, PointOfInterestSummary, UserEvents, UserType} from '@northernexplorer/types';
 import {hash, compare} from 'bcrypt';
 import {wrap} from '@mikro-orm/core';
 import {BaseRepository} from '../../core/BaseRepository';
 import {User} from '../entities/User';
+import {Image, Review} from '../../location';
 
 export class UserRepository extends BaseRepository<User> {
 	async findByIdentifier(identifier: string): Promise<User | null> {
@@ -83,5 +84,80 @@ export class UserRepository extends BaseRepository<User> {
 
 	isPostApproved(user: User) {
 		return user.score >= 500;
+	}
+
+	async getTimeline({user, limit, offset}: {user: User; limit?: number; offset?: number}): Promise<UserEvents[]> {
+		const params: (string | number)[] = [user.id, user.id];
+		let paginationSql = '';
+
+		if (limit !== undefined) {
+			paginationSql = ` LIMIT ? OFFSET ?`;
+			params.push(Number(limit), offset !== undefined ? Number(offset) : 0);
+		}
+
+		const query = `
+			SELECT 'image' AS "type", id, created_at AS "date"
+			FROM image
+			WHERE user_id = ?
+			UNION ALL
+			SELECT 'poi' AS "type", id, created_at AS "date"
+			FROM review
+			WHERE user_id = ?
+			ORDER BY "date" DESC
+			${paginationSql}
+		`;
+
+		const rows = await this.execute<{type: 'image' | 'poi'; id: string; date: string | Date}[]>(query, params);
+
+		if (rows.length === 0) {
+			return [];
+		}
+
+		const imageIds = rows.filter(r => r.type === 'image').map(r => r.id);
+		const reviewIds = rows.filter(r => r.type === 'poi').map(r => r.id);
+
+		const [images, reviews] = await Promise.all([
+			imageIds.length > 0 ? this.getEntityManager().find(Image, {id: {$in: imageIds}}, {populate: ['likes']}) : [],
+			reviewIds.length > 0
+				? this.getEntityManager().find(
+						Review,
+						{id: {$in: reviewIds}},
+						{
+							populate: ['pointOfInterest', 'pointOfInterest.region', 'pointOfInterest.country', 'pointOfInterest.image'],
+						},
+					)
+				: [],
+		]);
+
+		const imageMap = new Map(images.map(img => [img.id, img]));
+		const reviewMap = new Map(reviews.map(rev => [rev.id, rev]));
+
+		const events: UserEvents[] = [];
+
+		for (const row of rows) {
+			if (row.type === 'image') {
+				const image = imageMap.get(row.id);
+				if (image) {
+					const {likes, ...imageWithoutLikes} = image;
+					events.push({
+						date: new Date(image.createdAt),
+						image: {
+							...imageWithoutLikes,
+							likes: likes.length,
+						} as unknown as ImageType,
+					});
+				}
+			} else {
+				const review = reviewMap.get(row.id);
+				if (review) {
+					events.push({
+						date: new Date(review.createdAt),
+						pointOfInterest: review.pointOfInterest as unknown as PointOfInterestSummary,
+					});
+				}
+			}
+		}
+
+		return events;
 	}
 }
