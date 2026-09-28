@@ -142,9 +142,11 @@ export function PointOfInterestDetails() {
 							Coordinates: {data.lat}°, {data.lon}°
 						</Text>
 						{distance ? <Text style={styles.metaLabel}>Distance: {distance}</Text> : null}
-						<Text style={styles.metaLabel}>
-							Dates: {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
-						</Text>
+						{(data.startDate || data.endDate) && (
+							<Text style={styles.metaLabel}>
+								Dates: {data.startDate || 'Unknown'} - {data.endDate || 'Unknown'}
+							</Text>
+						)}
 						<Text style={styles.metaLabel}>Organization: {data.organization.name}</Text>
 					</View>
 				)}
