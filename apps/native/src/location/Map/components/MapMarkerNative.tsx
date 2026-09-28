@@ -1,7 +1,8 @@
 import React, {Dispatch, SetStateAction} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {Marker} from '@maplibre/maplibre-react-native';
-import {ImageHeaderType, PointOfInterestType} from '@northernexplorer/types';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {ImageHeaderType, PointOfInterestType, SiteDifficultyEnum} from '@northernexplorer/types';
 import {getImageUrl} from '@northernexplorer/tools-web';
 import {config} from '~/config';
 
@@ -13,11 +14,31 @@ interface Props {
 	setSelectedSite?: Dispatch<SetStateAction<PointOfInterestType | null>>;
 	size?: number;
 	image: ImageHeaderType;
+	difficulty?: SiteDifficultyEnum;
+	canAccessOffTrailDifficulty?: boolean;
+	canAccessExpeditionDifficulty?: boolean;
 }
 
-export function MapMarkerNative({site, longitude, latitude, selectedSite, setSelectedSite, size, image}: Props) {
+export function MapMarkerNative({
+	site,
+	longitude,
+	latitude,
+	selectedSite,
+	setSelectedSite,
+	size,
+	image,
+	difficulty,
+	canAccessOffTrailDifficulty = false,
+	canAccessExpeditionDifficulty = false,
+}: Props) {
 	const isDraft = site.status === 'Draft';
 	const markerSize = size || 48;
+
+	const isOffTrail = difficulty === SiteDifficultyEnum.OFF_TRAIL_REMOTE;
+	const isExpedition = difficulty === SiteDifficultyEnum.EXPEDITION_ONLY;
+
+	const isLocked = (isOffTrail && !canAccessOffTrailDifficulty) || (isExpedition && !canAccessExpeditionDifficulty);
+
 	return (
 		<Marker
 			key={site.id}
@@ -41,19 +62,29 @@ export function MapMarkerNative({site, longitude, latitude, selectedSite, setSel
 						width: markerSize,
 						height: markerSize,
 						borderRadius: markerSize / 2,
-						borderColor: isDraft ? '#e65100' : '#FFFFFF',
+						borderColor: isDraft ? '#e65100' : isLocked ? '#e67e22' : '#FFFFFF',
 						borderStyle: isDraft ? 'dashed' : 'solid',
+						backgroundColor: isLocked ? '#fff5ec' : '#FFFFFF',
 						opacity: isDraft ? 0.85 : 1,
 					},
 				]}
 			>
-				<Image
-					source={{
-						uri: getImageUrl({path: image.url, size: 'thumbnail', cdn: config.CONTENT_DELIVERY_NETWORK, processed: image.processed}),
-					}}
-					style={styles.image}
-					resizeMode="cover"
-				/>
+				{isLocked ? (
+					<MaterialCommunityIcons name="lock" size={markerSize * 0.45} color="#e67e22" />
+				) : (
+					<Image
+						source={{
+							uri: getImageUrl({
+								path: image.url,
+								size: 'thumbnail',
+								cdn: config.CONTENT_DELIVERY_NETWORK,
+								processed: image.processed,
+							}),
+						}}
+						style={styles.image}
+						resizeMode="cover"
+					/>
+				)}
 
 				{isDraft && (
 					<View style={styles.draftBadge}>
@@ -84,21 +115,18 @@ const styles = StyleSheet.create({
 	},
 	draftBadge: {
 		position: 'absolute',
-		bottom: -6,
+		bottom: 0,
+		left: 0,
+		right: 0,
 		backgroundColor: '#e65100',
-		paddingHorizontal: 4,
 		paddingVertical: 1,
-		borderRadius: 4,
-		shadowColor: '#000',
-		shadowOffset: {width: 0, height: 1},
-		shadowOpacity: 0.3,
-		shadowRadius: 2,
-		elevation: 2,
+		alignItems: 'center',
+		justifyContent: 'center',
 		zIndex: 1,
 	},
 	draftText: {
 		color: '#FFFFFF',
-		fontSize: 9,
+		fontSize: 8,
 		fontWeight: 'bold',
 		textTransform: 'uppercase',
 		includeFontPadding: false,

@@ -1,11 +1,11 @@
 import React, {useState, useMemo, useRef, useCallback} from 'react';
-import {View, Text, StyleSheet, Image, NativeSyntheticEvent} from 'react-native';
+import {View, Text, StyleSheet, Image, NativeSyntheticEvent, Pressable} from 'react-native';
 import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
 import useSupercluster from 'use-supercluster';
 import {useRouter, useLocalSearchParams} from 'expo-router';
 import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
-import {PointOfInterestType} from '@northernexplorer/types';
-import {Ionicons} from '@expo/vector-icons';
+import {PointOfInterestType, SiteDifficultyEnum} from '@northernexplorer/types';
+import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
 import {BBox} from 'geojson';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -23,6 +23,11 @@ export function Map() {
 
 	const coords = useLocation();
 
+	// Fetch user permissions
+	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
+	const canAccessOffTrailDifficulty = permissionData?.navigation.useOffTrailDifficulty ?? false;
+	const canAccessExpeditionDifficulty = permissionData?.navigation.useExpeditionDifficulty ?? false;
+
 	const initialLat = params.lat ? parseFloat(params.lat) : (coords?.lat ?? 49.8951);
 	const initialLon = params.lon ? parseFloat(params.lon) : (coords?.lon ?? -97.1384);
 	const initialZoom = params.zoom ? parseFloat(params.zoom) : 10;
@@ -37,7 +42,7 @@ export function Map() {
 		lon: initialLon,
 	});
 
-	const {data} = useApiFetch('location', 'PointOfInterestController', 'getNearbyPointOfInterests', {
+	const {data} = useApiFetch('location', 'PointOfInterestController', 'getForMap', {
 		lat: mapCenter.lat,
 		lon: mapCenter.lon,
 		limit: 500,
@@ -110,6 +115,11 @@ export function Map() {
 	const reviewCount = selectedSite?.reviews?.length ?? 0;
 	const difficultyInfo = selectedSite?.difficulty ? DIFFICULTY_CONFIG[selectedSite.difficulty] : null;
 
+	// Evaluate lock status for selected site
+	const selectedIsOffTrail = selectedSite?.difficulty === SiteDifficultyEnum.OFF_TRAIL_REMOTE;
+	const selectedIsExpedition = selectedSite?.difficulty === SiteDifficultyEnum.EXPEDITION_ONLY;
+	const isSelectedLocked = (selectedIsOffTrail && !canAccessOffTrailDifficulty) || (selectedIsExpedition && !canAccessExpeditionDifficulty);
+
 	return (
 		<View style={{flex: 1}}>
 			<NativeMap
@@ -162,6 +172,9 @@ export function Map() {
 							selectedSite={selectedSite}
 							setSelectedSite={setSelectedSite}
 							image={site.image}
+							difficulty={site.difficulty}
+							canAccessOffTrailDifficulty={canAccessOffTrailDifficulty}
+							canAccessExpeditionDifficulty={canAccessExpeditionDifficulty}
 						/>
 					);
 				})}
@@ -172,52 +185,65 @@ export function Map() {
 						lngLat={[selectedSite.lon, selectedSite.lat]}
 						anchor="bottom"
 						offset={[0, -65]}
-						onPress={() => handleNavigateToSite(selectedSite)}
+						onPress={() => {
+							if (!isSelectedLocked) {
+								handleNavigateToSite(selectedSite);
+							}
+						}}
 						style={{cursor: 'pointer'}}
 					>
-						<View style={styles.popupContainer}>
-							<Image
-								source={{
-									uri: getImageUrl({
-										path: selectedSite.image.url,
-										cdn: config.CONTENT_DELIVERY_NETWORK,
-										processed: selectedSite.image.processed,
-										size: 'thumbnail',
-									}),
-								}}
-								style={styles.popupImage}
-							/>
+						{isSelectedLocked ? (
+							<View style={styles.lockedPopupContainer}>
+								<MaterialCommunityIcons name="lock" size={24} color="#e67e22" />
+								<Text style={styles.lockedPopupTitle}>Restricted Access</Text>
+								<Text style={styles.lockedPopupSubtext}>Sign in or upgrade your account to view details for this location.</Text>
+								<View style={styles.popupArrow} />
+							</View>
+						) : (
+							<View style={styles.popupContainer}>
+								<Image
+									source={{
+										uri: getImageUrl({
+											path: selectedSite.image.url,
+											cdn: config.CONTENT_DELIVERY_NETWORK,
+											processed: selectedSite.image.processed,
+											size: 'thumbnail',
+										}),
+									}}
+									style={styles.popupImage}
+								/>
 
-							<View style={styles.popupContent}>
-								<Text style={styles.popupTitle}>{selectedSite.name}</Text>
+								<View style={styles.popupContent}>
+									<Text style={styles.popupTitle}>{selectedSite.name}</Text>
 
-								<View style={popupMetaStyles.metaRow}>
-									{averageRating > 0 ? (
-										<View style={popupMetaStyles.ratingRow}>
-											<Ionicons name="star" size={12} color="#f59e0b" />
-											<Text style={popupMetaStyles.ratingText}>{averageRating.toFixed(1)}</Text>
-											<Text style={popupMetaStyles.countText}>({reviewCount})</Text>
-										</View>
-									) : (
-										<Text style={popupMetaStyles.noReviewsText}>No reviews</Text>
-									)}
+									<View style={popupMetaStyles.metaRow}>
+										{averageRating > 0 ? (
+											<View style={popupMetaStyles.ratingRow}>
+												<Ionicons name="star" size={12} color="#f59e0b" />
+												<Text style={popupMetaStyles.ratingText}>{averageRating.toFixed(1)}</Text>
+												<Text style={popupMetaStyles.countText}>({reviewCount})</Text>
+											</View>
+										) : (
+											<Text style={popupMetaStyles.noReviewsText}>No reviews</Text>
+										)}
 
-									{difficultyInfo && (
-										<View style={[popupMetaStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
-											<Text style={[popupMetaStyles.difficultyText, {color: difficultyInfo.color}]}>
-												{difficultyInfo.label.split(' ')[0]}
-											</Text>
-										</View>
-									)}
+										{difficultyInfo && (
+											<View style={[popupMetaStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
+												<Text style={[popupMetaStyles.difficultyText, {color: difficultyInfo.color}]}>
+													{difficultyInfo.label.split(' ')[0]}
+												</Text>
+											</View>
+										)}
+									</View>
+
+									<Text style={styles.popupDescription} numberOfLines={4} ellipsizeMode="tail">
+										{selectedSite.description}
+									</Text>
 								</View>
 
-								<Text style={styles.popupDescription} numberOfLines={4} ellipsizeMode="tail">
-									{selectedSite.description}
-								</Text>
+								<View style={styles.popupArrow} />
 							</View>
-
-							<View style={styles.popupArrow} />
-						</View>
+						)}
 					</Marker>
 				)}
 
@@ -305,6 +331,33 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.25,
 		shadowRadius: 10,
 		elevation: 5,
+	},
+	lockedPopupContainer: {
+		backgroundColor: '#fff',
+		padding: 12,
+		width: 220,
+		position: 'relative',
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: {width: 0, height: 2},
+		shadowOpacity: 0.25,
+		shadowRadius: 10,
+		elevation: 5,
+		borderRadius: 8,
+	},
+	lockedPopupTitle: {
+		fontSize: 13,
+		fontWeight: '700',
+		color: '#0f172a',
+		marginTop: 6,
+		textAlign: 'center',
+	},
+	lockedPopupSubtext: {
+		fontSize: 11,
+		color: '#64748b',
+		textAlign: 'center',
+		marginVertical: 6,
 	},
 	popupTitle: {
 		fontSize: 13,

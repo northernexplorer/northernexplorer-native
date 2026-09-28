@@ -61,6 +61,27 @@ export class PointOfInterestController extends BaseController {
 		});
 	}
 
+	public async getForMap(params: Params<Route<'getForMap'>>, auth?: AuthContext): Promise<Response<Route<'getForMap'>>> {
+		const {lat, lon, limit, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = params;
+
+		const parsedDifficultyIndex = maxDifficultyIndex !== undefined && maxDifficultyIndex !== null ? Number(maxDifficultyIndex) : 2;
+		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
+		let showDraftsParsed = showDrafts === true || (showDrafts as unknown) === 'true';
+
+		return this.repos.pointOfInterest.getClosestPointOfInterests({
+			lat,
+			lon,
+			limit,
+			showDrafts: showDraftsParsed,
+			userId: auth?.userId,
+			selectedPoiTypes,
+			visitedFilter,
+			minRating,
+			maxDifficultyIndex: parsedDifficultyIndex,
+			maxCostIndex: parsedCostIndex,
+		});
+	}
+
 	public async getPointOfInterestById(
 		params: Params<Route<'getPointOfInterestById'>>,
 		auth?: AuthContext,
