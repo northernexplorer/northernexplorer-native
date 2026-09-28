@@ -177,7 +177,7 @@ export function MapSidebar() {
 					onValueChange={val => {
 						dispatch(setDifficultyLevel(val));
 					}}
-					getDisplayLabel={val => DIFFICULTY_CONFIG[DIFFICULTY_KEYS[val]]?.label.split(' ')[0] ?? ''}
+					getDisplayLabel={val => DIFFICULTY_CONFIG[DIFFICULTY_KEYS[val]].label.split(' ')[0]}
 				/>
 			</View>
 
