@@ -1,5 +1,5 @@
 import React, {useState, useMemo, useRef, useCallback} from 'react';
-import {View, Text, StyleSheet, Image, NativeSyntheticEvent, Pressable} from 'react-native';
+import {View, Text, StyleSheet, Image, NativeSyntheticEvent} from 'react-native';
 import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
 import useSupercluster from 'use-supercluster';
 import {useRouter, useLocalSearchParams} from 'expo-router';
