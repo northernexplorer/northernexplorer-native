@@ -37,9 +37,7 @@ const STATUS_OPTIONS = [
 ];
 
 export function PointOfInterestAdd() {
-	const {id} = useLocalSearchParams<{id: string}>();
 	const authentication = useAuthentication();
-	const {data, loading} = useApiFetch('location', 'PointOfInterestController', 'getPointOfInterestById', {id});
 	const {mutate, loading: mutationLoading} = useApiMutation('location', 'PointOfInterestController', 'edit');
 
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
@@ -58,28 +56,8 @@ export function PointOfInterestAdd() {
 		organizationId: '',
 	});
 
-	useEffect(() => {
-		if (data) {
-			setForm({
-				name: data.name,
-				description: data.description,
-				image: data.image.id,
-				lat: String(data.lat),
-				lon: String(data.lon),
-				countryId: data.country.id,
-				regionId: data.region.id,
-				type: Array.isArray(data.type) ? data.type : [PointOfInterestTypeEnum.HistoricSite],
-				startDate: data.startDate != null ? String(data.startDate) : '',
-				endDate: data.endDate != null ? String(data.endDate) : '',
-				status: data.status,
-				organizationId: data.organization.id,
-			});
-		}
-	}, [data]);
-
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
-	if (loading || !data) return <Spinner />;
 
 	const updateField = <K extends FormKeys>(name: K, value: FormState[K]) => {
 		setForm(prev => {
@@ -142,13 +120,7 @@ export function PointOfInterestAdd() {
 		const response = await mutate(payload);
 		if (response?.success) {
 			router.replace({
-				pathname: '/[country]/[region]/[name]/[id]',
-				params: {
-					country: getUrlSafeString(data.country.name),
-					region: getUrlSafeString(data.region.name),
-					id: getUrlSafeString(data.id),
-					name: getUrlSafeString(form.name),
-				},
+				pathname: '/admin/draft-point-of-interest',
 			});
 		}
 	};
