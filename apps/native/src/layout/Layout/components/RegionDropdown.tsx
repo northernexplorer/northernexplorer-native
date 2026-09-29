@@ -15,7 +15,7 @@ interface ComponentProps<T extends string> {
 }
 
 export function RegionDropdown<T extends string>({fieldName, countryId, label = 'Region', value, updateField, error}: RegionDropdownProps<T>) {
-	const {data, loading} = useApiFetch('location', 'RegionController', 'getByCountryId', {id: countryId});
+	const {data, loading} = useApiFetch('location', 'RegionController', 'getByCountryId', {id: countryId}, {skip: !Boolean(countryId)});
 
 	const options = useMemo(() => {
 		if (!Array.isArray(data)) return [];

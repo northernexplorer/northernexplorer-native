@@ -1,5 +1,5 @@
 import path from 'node:path';
-import {ImageStatusEnum} from '@northernexplorer/types';
+import {ImageStatusEnum, PointOfInterestTypeEnum} from '@northernexplorer/types';
 import {sql} from '@mikro-orm/core';
 import {BaseRepository} from '../../core/BaseRepository';
 import {Image} from '../../location';
@@ -73,5 +73,19 @@ export class ImageRepository extends BaseRepository<Image> {
 			},
 		);
 		return images;
+	}
+
+	async getDefault(type: PointOfInterestTypeEnum) {
+		const filename = type
+			.toString()
+			.replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+			.replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+			.toLowerCase();
+
+		return this.findOne({
+			filename,
+			url: {$ilike: '%defaults%'},
+			fileExtension: 'png',
+		});
 	}
 }

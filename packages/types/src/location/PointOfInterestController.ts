@@ -75,6 +75,20 @@ export type PointOfInterestEditType = {
 	type: PointOfInterestTypeEnum[];
 };
 
+export type PointOfInterestCreateType = {
+	name: string;
+	description: string;
+	lat: number;
+	lon: number;
+	countryId: string;
+	regionId: string;
+	organizationId: string;
+	startDate?: number;
+	endDate?: number;
+	status: PublishStatusEnum;
+	type: PointOfInterestTypeEnum[];
+};
+
 export const PointOfInterestController = {
 	getNearbyPointOfInterests: {
 		params: {} as {
@@ -118,6 +132,10 @@ export const PointOfInterestController = {
 	},
 	edit: {
 		params: {} as PointOfInterestEditType,
+		response: {} as GenericResponseType,
+	},
+	create: {
+		params: {} as PointOfInterestCreateType,
 		response: {} as GenericResponseType,
 	},
 };
