@@ -1,9 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {ScrollView, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
-import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
-import {getUrlSafeString, Spinner, FormField, TextAreaField, DropdownField, ImageView, getImageUrl} from '@northernexplorer/tools-web';
-import {PointOfInterestEditType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
-import {useApiFetch} from '~/core/useApiFetch';
+import {Redirect, router} from 'expo-router';
+import {FormField, TextAreaField, DropdownField, ImageView, getImageUrl} from '@northernexplorer/tools-web';
+import {PointOfInterestCreateType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {config} from '~/config';
 import {styles, styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
 import {useApiMutation} from '~/core/useApiMutation';
@@ -12,7 +11,6 @@ import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
 import {RegionDropdown} from '~/layout/Layout/components/RegionDropdown';
 import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
 import {OrganizationDropdown} from '~/layout/Layout/components/OrganizationDropdown';
-import {Map} from '~/location/PointOfInterestDetails/components/Map';
 
 type FormState = {
 	name: string;
@@ -38,7 +36,7 @@ const STATUS_OPTIONS = [
 
 export function PointOfInterestAdd() {
 	const authentication = useAuthentication();
-	const {mutate, loading: mutationLoading} = useApiMutation('location', 'PointOfInterestController', 'edit');
+	const {mutate, loading: mutationLoading} = useApiMutation('location', 'PointOfInterestController', 'create');
 
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const [form, setForm] = useState<FormState>({
@@ -62,7 +60,6 @@ export function PointOfInterestAdd() {
 	const updateField = <K extends FormKeys>(name: K, value: FormState[K]) => {
 		setForm(prev => {
 			const next = {...prev, [name]: value};
-			// Reset region if country changes
 			if (name === 'countryId' && prev.countryId !== value) {
 				next.regionId = '';
 			}
@@ -101,8 +98,7 @@ export function PointOfInterestAdd() {
 	};
 
 	const handleSubmit = async (parsedLat: number, parsedLon: number) => {
-		const payload: PointOfInterestEditType = {
-			id: data.id,
+		const payload: PointOfInterestCreateType = {
 			name: form.name,
 			description: form.description,
 			imageId: form.image,
@@ -125,37 +121,31 @@ export function PointOfInterestAdd() {
 		}
 	};
 
+	const parsedLat = parseFloat(form.lat);
+	const parsedLon = parseFloat(form.lon);
+	const hasValidCoords = !isNaN(parsedLat) && !isNaN(parsedLon);
+
 	return (
 		<ScrollView style={formStyles.container} contentContainerStyle={formStyles.contentContainer}>
-			<View style={styles.bannerContainer}>
-				<ImageView
-					source={{
-						uri: getImageUrl({
-							path: data.image.url,
-							size: 'large',
-							cdn: config.CONTENT_DELIVERY_NETWORK,
-							processed: data.image.processed,
-						}),
-					}}
-					style={styles.banner}
-				/>
-				<View style={styles.mapCard}>
-					<Map
-						site={{
-							...data,
-							lat: !isNaN(parseFloat(form.lat)) ? parseFloat(form.lat) : data.lat,
-							lon: !isNaN(parseFloat(form.lon)) ? parseFloat(form.lon) : data.lon,
-						}}
-					/>
+			{(form.image.trim().length > 0 || hasValidCoords) && (
+				<View style={styles.bannerContainer}>
+					{form.image.trim().length > 0 && (
+						<ImageView
+							source={{
+								uri: getImageUrl({
+									path: form.image,
+									size: 'large',
+									cdn: config.CONTENT_DELIVERY_NETWORK,
+									processed: true,
+								}),
+							}}
+							style={styles.banner}
+						/>
+					)}
 				</View>
-			</View>
+			)}
+
 			<View style={detailStyles.content}>
-				<Text style={detailStyles.breadcrumbs}>
-					{data.country.name} › {data.region.name}
-				</Text>
-
-				<Text style={formStyles.heading}>Edit Point of Interest</Text>
-
 				<View style={formStyles.formGroup}>
 					<View style={formStyles.row}>
 						<View style={formStyles.halfWidth}>
@@ -182,8 +172,8 @@ export function PointOfInterestAdd() {
 
 					<FormField
 						fieldName="image"
-						label="Image Id"
-						placeholder="Id of image"
+						label="Image ID"
+						placeholder="ID of image"
 						value={form.image}
 						updateField={updateField}
 						error={errors.image}
@@ -292,29 +282,20 @@ export function PointOfInterestAdd() {
 				</View>
 
 				<View style={formStyles.buttonRow}>
-					<Link
-						href={{
-							pathname: '/[country]/[region]/[name]/[id]',
-							params: {
-								country: getUrlSafeString(data.country.name),
-								region: getUrlSafeString(data.region.name),
-								id: getUrlSafeString(data.id),
-								name: getUrlSafeString(data.name),
-							},
-						}}
-						asChild
-					>
-						<TouchableOpacity style={{...formStyles.button, ...formStyles.cancelButton}} disabled={mutationLoading}>
-							<Text style={formStyles.cancelButtonText}>Cancel</Text>
-						</TouchableOpacity>
-					</Link>
+					<TouchableOpacity style={[formStyles.button, formStyles.cancelButton]} onPress={() => router.back()} disabled={mutationLoading}>
+						<Text style={formStyles.cancelButtonText}>Cancel</Text>
+					</TouchableOpacity>
 
 					<TouchableOpacity
 						style={[formStyles.button, formStyles.saveButton, mutationLoading && formStyles.disabledButton]}
 						onPress={validateForm}
 						disabled={mutationLoading}
 					>
-						{mutationLoading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={formStyles.saveButtonText}>Save Changes</Text>}
+						{mutationLoading ? (
+							<ActivityIndicator color="#FFFFFF" />
+						) : (
+							<Text style={formStyles.saveButtonText}>Create Point of Interest</Text>
+						)}
 					</TouchableOpacity>
 				</View>
 			</View>
