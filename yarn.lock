@@ -1777,7 +1777,7 @@ __metadata:
   peerDependencies:
     "@expo/metro-runtime": ^57.0.16
     expo: "*"
-    expo-constants: ^57.0.20
+    expo-constants: ^57.0.19
     expo-font: ^57.0.4
     expo-router: "*"
     expo-server: ^57.0.3
@@ -5968,7 +5968,7 @@ __metadata:
   resolution: "expo-asset@npm:57.0.18"
   dependencies:
     "@expo/image-utils": "npm:^0.11.5"
-    expo-constants: "npm:~57.0.20"
+    expo-constants: "npm:~57.0.19"
   peerDependencies:
     expo: "*"
     react: "*"
@@ -6007,7 +6007,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-constants@npm:~57.0.20":
+"expo-constants@npm:~57.0.19, expo-constants@npm:~57.0.20":
   version: 57.0.20
   resolution: "expo-constants@npm:57.0.20"
   dependencies:
@@ -6107,7 +6107,7 @@ __metadata:
   version: 57.0.11
   resolution: "expo-linking@npm:57.0.11"
   dependencies:
-    expo-constants: "npm:~57.0.20"
+    expo-constants: "npm:~57.0.19"
     invariant: "npm:^2.2.4"
   peerDependencies:
     react: "*"
