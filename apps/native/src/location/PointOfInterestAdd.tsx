@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
 import {ScrollView, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
 import {Redirect, router} from 'expo-router';
-import {FormField, TextAreaField, DropdownField, ImageView, getImageUrl} from '@northernexplorer/tools-web';
+import {FormField, TextAreaField, DropdownField} from '@northernexplorer/tools-web';
 import {PointOfInterestCreateType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
-import {config} from '~/config';
-import {styles, styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
+import {styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
@@ -15,7 +14,6 @@ import {OrganizationDropdown} from '~/layout/Layout/components/OrganizationDropd
 type FormState = {
 	name: string;
 	description: string;
-	image: string;
 	lat: string;
 	lon: string;
 	countryId: string;
@@ -42,7 +40,6 @@ export function PointOfInterestAdd() {
 	const [form, setForm] = useState<FormState>({
 		name: '',
 		description: '',
-		image: '',
 		lat: '',
 		lon: '',
 		countryId: '',
@@ -101,7 +98,6 @@ export function PointOfInterestAdd() {
 		const payload: PointOfInterestCreateType = {
 			name: form.name,
 			description: form.description,
-			imageId: form.image,
 			lat: parsedLat,
 			lon: parsedLon,
 			countryId: form.countryId,
@@ -121,30 +117,8 @@ export function PointOfInterestAdd() {
 		}
 	};
 
-	const parsedLat = parseFloat(form.lat);
-	const parsedLon = parseFloat(form.lon);
-	const hasValidCoords = !isNaN(parsedLat) && !isNaN(parsedLon);
-
 	return (
 		<ScrollView style={formStyles.container} contentContainerStyle={formStyles.contentContainer}>
-			{(form.image.trim().length > 0 || hasValidCoords) && (
-				<View style={styles.bannerContainer}>
-					{form.image.trim().length > 0 && (
-						<ImageView
-							source={{
-								uri: getImageUrl({
-									path: form.image,
-									size: 'large',
-									cdn: config.CONTENT_DELIVERY_NETWORK,
-									processed: true,
-								}),
-							}}
-							style={styles.banner}
-						/>
-					)}
-				</View>
-			)}
-
 			<View style={detailStyles.content}>
 				<View style={formStyles.formGroup}>
 					<View style={formStyles.row}>
@@ -169,16 +143,6 @@ export function PointOfInterestAdd() {
 							/>
 						</View>
 					</View>
-
-					<FormField
-						fieldName="image"
-						label="Image ID"
-						placeholder="ID of image"
-						value={form.image}
-						updateField={updateField}
-						error={errors.image}
-						loading={mutationLoading}
-					/>
 
 					<View style={[formStyles.row, {zIndex: 2000}]}>
 						<View style={formStyles.halfWidth}>

@@ -78,7 +78,6 @@ export type PointOfInterestEditType = {
 export type PointOfInterestCreateType = {
 	name: string;
 	description: string;
-	imageId: string;
 	lat: number;
 	lon: number;
 	countryId: string;

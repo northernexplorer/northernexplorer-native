@@ -1,4 +1,4 @@
-import {Params, PublishStatusEnum, Response, RolesEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Params, PointOfInterestTypeEnum, PublishStatusEnum, Response, RolesEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
@@ -165,12 +165,13 @@ export class PointOfInterestController extends BaseController {
 	async create(params: Params<Route<'create'>>, auth?: AuthContext): Promise<Response<Route<'create'>>> {
 		this.permissionService.canAccessAdmin(auth);
 
-		const {countryId, regionId, startDate, endDate, organizationId, imageId, ...data} = params;
+		const {countryId, regionId, startDate, endDate, organizationId, ...data} = params;
 
 		const country = await this.repos.country.getById(countryId);
 		const region = await this.repos.region.getById(regionId);
 		const organization = await this.repos.organization.getById(organizationId);
-		const image = await this.repos.image.getById(imageId);
+		const image = await this.repos.image.getDefault(params.type.at(0) || PointOfInterestTypeEnum.HistoricSite);
+		if (!image) throw new Error('An image could not be found associated with this type.');
 
 		const pointOfInterest = new PointOfInterest({
 			...data,
