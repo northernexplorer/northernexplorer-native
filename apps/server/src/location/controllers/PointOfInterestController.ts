@@ -1,9 +1,13 @@
-import {Params, PublishStatusEnum, Response, RolesEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Params, PointOfInterestTypeEnum, PublishStatusEnum, Response, RolesEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
+
 import {PointOfInterestFavorite} from '../entities/PointofInterestFavorite';
+
+import {PointOfInterest} from '../entities/PointOfInterest';
+
 
 type Route<M extends keyof ROUTES['location']['PointOfInterestController']> = RouteDefinition<'location', 'PointOfInterestController'>[M];
 
@@ -61,6 +65,7 @@ export class PointOfInterestController extends BaseController {
 			maxCostIndex: parsedCostIndex,
 		});
 	}
+
 
 	public async createPointOfInterestFavorite(
 		params: Params<Route<'createPointOfInterestFavorite'>>,
@@ -125,6 +130,27 @@ export class PointOfInterestController extends BaseController {
 
 		const favorite = await this.repos.pointOfInterestFavorite.findPointOfInterestFavoritesById(params.id, auth.userId);
 		return {Favorited: Boolean(favorite)};
+	}
+	public async getForMap(params: Params<Route<'getForMap'>>, auth?: AuthContext): Promise<Response<Route<'getForMap'>>> {
+		const {lat, lon, limit, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = params;
+
+		const parsedDifficultyIndex = maxDifficultyIndex !== undefined && maxDifficultyIndex !== null ? Number(maxDifficultyIndex) : 2;
+		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
+		let showDraftsParsed = showDrafts === true || (showDrafts as unknown) === 'true';
+
+		return this.repos.pointOfInterest.getClosestPointOfInterests({
+			lat,
+			lon,
+			limit,
+			showDrafts: showDraftsParsed,
+			userId: auth?.userId,
+			selectedPoiTypes,
+			visitedFilter,
+			minRating,
+			maxDifficultyIndex: parsedDifficultyIndex,
+			maxCostIndex: parsedCostIndex,
+		});
+
 	}
 
 	public async getPointOfInterestById(
@@ -220,6 +246,34 @@ export class PointOfInterestController extends BaseController {
 			organization,
 			image,
 		});
+
+		await this.flush();
+
+		return {success: true};
+	}
+
+	async create(params: Params<Route<'create'>>, auth?: AuthContext): Promise<Response<Route<'create'>>> {
+		this.permissionService.canAccessAdmin(auth);
+
+		const {countryId, regionId, startDate, endDate, organizationId, ...data} = params;
+
+		const country = await this.repos.country.getById(countryId);
+		const region = await this.repos.region.getById(regionId);
+		const organization = await this.repos.organization.getById(organizationId);
+		const image = await this.repos.image.getDefault(params.type.at(0) || PointOfInterestTypeEnum.HistoricSite);
+		if (!image) throw new Error('An image could not be found associated with this type.');
+
+		const pointOfInterest = new PointOfInterest({
+			...data,
+			country,
+			region,
+			startDate,
+			endDate,
+			organization,
+			image,
+		});
+
+		this.repos.pointOfInterest.persist(pointOfInterest);
 
 		await this.flush();
 

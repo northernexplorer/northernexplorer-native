@@ -75,6 +75,7 @@ export type PointOfInterestEditType = {
 	type: PointOfInterestTypeEnum[];
 };
 
+
 export type PointOfInterestFavoriteType = {
 	id: string;
 	pointOfInterest: {
@@ -84,6 +85,19 @@ export type PointOfInterestFavoriteType = {
 		region: string;
 	};
 	user: string;
+}
+export type PointOfInterestCreateType = {
+	name: string;
+	description: string;
+	lat: number;
+	lon: number;
+	countryId: string;
+	regionId: string;
+	organizationId: string;
+	startDate?: number;
+	endDate?: number;
+	status: PublishStatusEnum;
+	type: PointOfInterestTypeEnum[];
 };
 
 export const PointOfInterestController = {
@@ -95,7 +109,21 @@ export const PointOfInterestController = {
 			selectedPoiTypes?: PointOfInterestTypeEnum[];
 			visitedFilter?: VisitedFilterEnum;
 			minRating?: number | null;
-			maxDifficultyIndex?: number;
+			maxDifficultyIndex?: number | null;
+			maxCostIndex?: number;
+			showDrafts?: boolean;
+		},
+		response: null as unknown as PointOfInterestType[],
+	},
+	getForMap: {
+		params: {} as {
+			lat: number;
+			lon: number;
+			limit: number;
+			selectedPoiTypes?: PointOfInterestTypeEnum[];
+			visitedFilter?: VisitedFilterEnum;
+			minRating?: number | null;
+			maxDifficultyIndex?: number | null;
 			maxCostIndex?: number;
 			showDrafts?: boolean;
 		},
@@ -137,6 +165,10 @@ export const PointOfInterestController = {
 	},
 	edit: {
 		params: {} as PointOfInterestEditType,
+		response: {} as GenericResponseType,
+	},
+	create: {
+		params: {} as PointOfInterestCreateType,
 		response: {} as GenericResponseType,
 	},
 };

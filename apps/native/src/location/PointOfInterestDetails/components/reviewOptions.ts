@@ -73,6 +73,7 @@ export const CONDITION_ICON_MAP: Record<SiteConditionEnum, IoniconsName> = {
 	[SiteConditionEnum.FLOODED_HIGH_WATER]: 'boat-outline',
 	[SiteConditionEnum.STEEP_CLIMB]: 'trending-up-outline',
 	[SiteConditionEnum.LOOSE_ROCK]: 'construct-outline',
+	[SiteConditionEnum.PARK_PASS_REQUIRED]: 'ticket-outline',
 	[SiteConditionEnum.LIMITED_PARKING]: 'car-outline',
 	[SiteConditionEnum.NO_CELL_SERVICE]: 'cellular-outline',
 	[SiteConditionEnum.WATER_CROSSING]: 'footsteps-outline',

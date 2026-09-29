@@ -10,7 +10,7 @@ type PhotoUploadCardProps = {
 	pointOfInterestId: string;
 	maxImages?: number;
 	maxTotalSizeBytes?: number;
-	maxImageSizeBytes?: number; // New prop for individual file size limit
+	maxImageSizeBytes?: number;
 };
 
 const DEFAULT_MAX_IMAGES = 10;

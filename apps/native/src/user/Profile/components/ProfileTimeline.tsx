@@ -1,7 +1,7 @@
 import {View, Text, Pressable, StyleSheet} from 'react-native';
-import {Link} from 'expo-router';
+import {Link, useLocalSearchParams} from 'expo-router';
 import React, {useMemo, useState} from 'react';
-import {formatDate, getImageUrl, ImageView, Spinner} from '@northernexplorer/tools-web';
+import {formatDate, getImageUrl, ImageView, Pagination, Spinner} from '@northernexplorer/tools-web';
 import {Ionicons} from '@expo/vector-icons';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
@@ -12,10 +12,18 @@ type Props = {
 	username: string;
 };
 
+const limit = 20;
+
 export function ProfileTimeline({username}: Props) {
 	const auth = useAuthentication();
+	const params = useLocalSearchParams<{page?: string}>();
+	const page = params.page ? parseInt(params.page, 10) : 1;
+	const offset = (page - 1) * limit;
+
 	const {data: events, loading} = useApiFetch('user', 'UserController', 'getTimeline', {
 		username,
+		limit,
+		offset,
 	});
 
 	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -29,9 +37,12 @@ export function ProfileTimeline({username}: Props) {
 
 	if (events.length === 0) {
 		return (
-			<View style={styles.emptyContainer}>
-				<Ionicons name="time-outline" size={48} color="#94a3b8" />
-				<Text style={styles.emptyText}>No timeline activity yet.</Text>
+			<View style={styles.container}>
+				<View style={styles.emptyContainer}>
+					<Ionicons name="time-outline" size={48} color="#94a3b8" />
+					<Text style={styles.emptyText}>No timeline activity yet.</Text>
+				</View>
+				{page > 1 && <Pagination limit={limit} itemCount={0} />}
 			</View>
 		);
 	}
@@ -112,6 +123,8 @@ export function ProfileTimeline({username}: Props) {
 					);
 				})}
 			</View>
+
+			<Pagination limit={limit} itemCount={events.length} />
 
 			{selectedImageId && selectedImageIndex !== null && (
 				<PhotoPreviewModal

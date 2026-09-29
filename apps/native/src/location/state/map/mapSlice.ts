@@ -31,7 +31,7 @@ export interface MapState {
 	selectedPoiTypes: PointOfInterestTypeEnum[];
 	visitedFilter: VisitedFilterEnum;
 	minRating: number | null;
-	maxDifficultyIndex: number;
+	maxDifficultyIndex: number | null;
 	maxCostIndex: number;
 	showDrafts: boolean;
 }
@@ -41,7 +41,7 @@ const initialState: MapState = {
 	selectedPoiTypes: [],
 	visitedFilter: VisitedFilterEnum.All,
 	minRating: null,
-	maxDifficultyIndex: 2,
+	maxDifficultyIndex: null,
 	maxCostIndex: COST_OPTIONS.length - 1,
 	showDrafts: false,
 };

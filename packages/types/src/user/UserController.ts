@@ -176,7 +176,7 @@ export const UserController = {
 		response: {} as AvatarDetails,
 	},
 	getTimeline: {
-		params: {} as {username: string},
+		params: {} as {username: string; limit?: number; offset?: number},
 		response: {} as UserEvents[],
 	},
 };
