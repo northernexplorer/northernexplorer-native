@@ -6,9 +6,9 @@ addSession () {
   echo "$id"
 }
 
-removeSession () {
+deleteById () {
   # $1=SessionId
-  qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.removeSession $1
+  qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.deleteById $1
 }
 
 removeTerminal () {
@@ -48,7 +48,7 @@ runCommand () {
   qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $1 "$2"
 }
 
-getSessions() {
+getByUsername() {
   # $1=ArrayForSessionIds
   local -n arr=$1
   local list
@@ -70,7 +70,7 @@ closeTabIfNameMatches() {
   title=$(getTitle "$1")
   regex=$2
   if [[ ${title} =~ ${regex} ]]; then
-      removeSession "$1"
+      deleteById "$1"
   fi
 }
 

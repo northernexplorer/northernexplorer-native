@@ -16,7 +16,7 @@ export function ReviewLikes({currentUserId, reviewId}: UserLikesProps) {
 	const {mutate: unlikeMutation} = useApiMutation('location', 'ReviewController', 'unLike');
 
 	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ReviewController', 'hasLiked', {id: reviewId});
-	const {data: reviewData, refetch: refetchReview} = useApiFetch('location', 'ReviewController', 'getReviewById', {id: reviewId});
+	const {data: reviewData, refetch: refetchReview} = useApiFetch('location', 'ReviewController', 'getById', {id: reviewId});
 
 	useEffect(() => {
 		setIsLiked(Boolean(hasLikedData?.liked));

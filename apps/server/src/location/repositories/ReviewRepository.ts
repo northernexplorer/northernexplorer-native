@@ -3,7 +3,7 @@ import {BaseRepository} from '../../core/BaseRepository';
 import {User} from '../../user';
 import {PointOfInterest, Review} from '../../location';
 
-export type CreateReviewParams = {
+export type CreateParams = {
 	user: User;
 	pointOfInterest: PointOfInterest;
 	rating: ReviewRatingEnum;
@@ -19,7 +19,7 @@ export class ReviewRepository extends BaseRepository<Review> {
 		return this.findOneOrFail({id}, {populate: ['user', 'pointOfInterest', 'likes']});
 	}
 
-	createReview({user, pointOfInterest, rating, description, difficulty, entranceCost, conditions, status}: CreateReviewParams) {
+	create({user, pointOfInterest, rating, description, difficulty, entranceCost, conditions, status}: CreateParams) {
 		const review = new Review({
 			user,
 			rating,
@@ -36,7 +36,7 @@ export class ReviewRepository extends BaseRepository<Review> {
 		return review;
 	}
 
-	async getPendingReviews({limit, offset}: {limit?: number; offset?: number}): Promise<Review[]> {
+	async getPending({limit, offset}: {limit?: number; offset?: number}): Promise<Review[]> {
 		const reviews = await this.find(
 			{status: ReviewStatusEnum.Pending},
 			{

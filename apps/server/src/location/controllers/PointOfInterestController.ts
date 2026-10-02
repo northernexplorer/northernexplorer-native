@@ -13,10 +13,7 @@ export class PointOfInterestController extends BaseController {
 	}
 	private permissionService = new PermissionService();
 
-	public async getNearbyPointOfInterests(
-		params: Params<Route<'getNearbyPointOfInterests'>>,
-		auth?: AuthContext,
-	): Promise<Response<Route<'getNearbyPointOfInterests'>>> {
+	public async getNearby(params: Params<Route<'getNearby'>>, auth?: AuthContext): Promise<Response<Route<'getNearby'>>> {
 		const {lat, lon, limit, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = params;
 
 		let parsedDifficultyIndex = maxDifficultyIndex !== undefined ? Number(maxDifficultyIndex) : undefined;
@@ -48,7 +45,7 @@ export class PointOfInterestController extends BaseController {
 			}
 		}
 
-		return this.repos.pointOfInterest.getClosestPointOfInterests({
+		return this.repos.pointOfInterest.getClosest({
 			lat,
 			lon,
 			limit,
@@ -69,7 +66,7 @@ export class PointOfInterestController extends BaseController {
 		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
 		let showDraftsParsed = showDrafts === true || (showDrafts as unknown) === 'true';
 
-		return this.repos.pointOfInterest.getClosestPointOfInterests({
+		return this.repos.pointOfInterest.getClosest({
 			lat,
 			lon,
 			limit,
@@ -83,11 +80,8 @@ export class PointOfInterestController extends BaseController {
 		});
 	}
 
-	public async getPointOfInterestById(
-		params: Params<Route<'getPointOfInterestById'>>,
-		auth?: AuthContext,
-	): Promise<Response<Route<'getPointOfInterestById'>>> {
-		const pointOfInterest = await this.repos.pointOfInterest.getPointOfInterestById(params.id, auth?.userId);
+	public async getById(params: Params<Route<'getById'>>, auth?: AuthContext): Promise<Response<Route<'getById'>>> {
+		const pointOfInterest = await this.repos.pointOfInterest.getByIdPopulated(params.id, auth?.userId);
 		if (pointOfInterest.status === PublishStatusEnum.Draft) {
 			this.permissionService.canAccessAdmin(auth);
 		}

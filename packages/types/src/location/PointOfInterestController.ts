@@ -90,7 +90,7 @@ export type PointOfInterestCreateType = {
 };
 
 export const PointOfInterestController = {
-	getNearbyPointOfInterests: {
+	getNearby: {
 		params: {} as {
 			lat: number;
 			lon: number;
@@ -118,7 +118,7 @@ export const PointOfInterestController = {
 		},
 		response: null as unknown as PointOfInterestType[],
 	},
-	getPointOfInterestById: {
+	getById: {
 		params: {} as {id: string},
 		response: null as unknown as PointOfInterestType,
 	},

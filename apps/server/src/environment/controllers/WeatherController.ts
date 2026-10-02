@@ -9,9 +9,9 @@ export class WeatherController extends BaseController {
 		super(repos);
 	}
 
-	public async getWeatherData(params: Params<Route<'getWeatherData'>>): Promise<Response<Route<'getWeatherData'>>> {
+	public async getData(params: Params<Route<'getData'>>): Promise<Response<Route<'getData'>>> {
 		const {lat, lon} = params;
-		const weather = this.repos.weather.getWeatherCache(Number(lat), Number(lon));
+		const weather = this.repos.weather.getCache(Number(lat), Number(lon));
 
 		await this.flush();
 		return weather;
