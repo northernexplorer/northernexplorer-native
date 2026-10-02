@@ -1,11 +1,11 @@
 import {GenericResponseType} from '../GenericResponseType';
 
-type GetSessionsParams = {
+type GetByUsernameParams = {
 	username: string;
 	refreshToken: string;
 };
 
-type GetSessionsResponse = {
+type GetByUsernameResponse = {
 	id: string;
 	version: number;
 	clientName: string;
@@ -17,17 +17,17 @@ type GetSessionsResponse = {
 	active: boolean;
 };
 
-type RemoveSessionParams = {
+type DeleteByIdParams = {
 	sessionId: string;
 };
 
 export const SessionController = {
-	getSessions: {
-		params: {} as GetSessionsParams,
-		response: {} as GetSessionsResponse[],
+	getByUsername: {
+		params: {} as GetByUsernameParams,
+		response: {} as GetByUsernameResponse[],
 	},
-	removeSession: {
-		params: {} as RemoveSessionParams,
+	deleteById: {
+		params: {} as DeleteByIdParams,
 		response: {} as GenericResponseType,
 	},
 };

@@ -17,7 +17,7 @@ export function PendingReviews() {
 
 	const offset = (page - 1) * limit;
 
-	const {data: reviews, loading} = useApiFetch('location', 'ReviewController', 'getPendingReviews', {
+	const {data: reviews, loading} = useApiFetch('location', 'ReviewController', 'getPending', {
 		limit,
 		offset,
 	});

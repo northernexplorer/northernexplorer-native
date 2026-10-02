@@ -19,7 +19,7 @@ export function PointOfInterestDetails() {
 	const auth = useAuthentication();
 	const coords = useLocation();
 
-	const {data, loading, refetch} = useApiFetch('location', 'PointOfInterestController', 'getPointOfInterestById', {id});
+	const {data, loading, refetch} = useApiFetch('location', 'PointOfInterestController', 'getById', {id});
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 	const canAccessExpeditionDifficulty = !!permissionData?.navigation.useExpeditionDifficulty;
 	const canAccessOffTrailDifficulty = !!permissionData?.navigation.useOffTrailDifficulty;

@@ -13,7 +13,7 @@ export class SessionController extends BaseController {
 
 	private permissionService = new PermissionService();
 
-	async getSessions(params: Params<Route<'getSessions'>>, auth?: AuthContext): Promise<Response<Route<'getSessions'>>> {
+	async getByUsername(params: Params<Route<'getByUsername'>>, auth?: AuthContext): Promise<Response<Route<'getByUsername'>>> {
 		const user = await this.repos.user.getByUsername(params.username);
 		this.permissionService.canAccessProfile({targetId: user.id}, auth);
 
@@ -36,7 +36,7 @@ export class SessionController extends BaseController {
 			.sort((a, b) => Number(b.active) - Number(a.active));
 	}
 
-	async removeSession(params: Params<Route<'removeSession'>>, auth?: AuthContext): Promise<Response<Route<'removeSession'>>> {
+	async deleteById(params: Params<Route<'deleteById'>>, auth?: AuthContext): Promise<Response<Route<'deleteById'>>> {
 		const session = await this.repos.session.getById(params.sessionId);
 
 		this.permissionService.canAccessProfile({targetId: session.user.id}, auth);

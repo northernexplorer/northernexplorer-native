@@ -26,7 +26,7 @@ export function PendingImages() {
 		data: images,
 		loading,
 		refetch,
-	} = useApiFetch('location', 'ImageController', 'getPendingImages', {
+	} = useApiFetch('location', 'ImageController', 'getPending', {
 		limit,
 		offset,
 	});

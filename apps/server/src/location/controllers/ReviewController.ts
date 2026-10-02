@@ -22,7 +22,7 @@ export class ReviewController extends BaseController {
 		super(repos);
 	}
 
-	public async getReviewById(params: Params<Route<'getReviewById'>>): Promise<Response<Route<'getReviewById'>>> {
+	public async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
 		const {id} = params;
 		const review = await this.repos.review.getById(id);
 
@@ -87,11 +87,11 @@ export class ReviewController extends BaseController {
 		return {liked: Boolean(like), likeCount: review.likes.length};
 	}
 
-	public async getPendingReviews(params: Params<Route<'getPendingReviews'>>, auth?: AuthContext): Promise<Response<Route<'getPendingReviews'>>> {
+	public async getPending(params: Params<Route<'getPending'>>, auth?: AuthContext): Promise<Response<Route<'getPending'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
-		const reviews = await this.repos.review.getPendingReviews({offset: params.offset, limit: params.limit});
+		const reviews = await this.repos.review.getPending({offset: params.offset, limit: params.limit});
 
 		return reviews.map(review => ({
 			...review,
@@ -99,7 +99,7 @@ export class ReviewController extends BaseController {
 		}));
 	}
 
-	public async approveReview(params: Params<Route<'approveReview'>>, auth?: AuthContext): Promise<Response<Route<'approveReview'>>> {
+	public async approve(params: Params<Route<'approve'>>, auth?: AuthContext): Promise<Response<Route<'approve'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
@@ -115,7 +115,7 @@ export class ReviewController extends BaseController {
 		return this.reviewResponse(review);
 	}
 
-	public async rejectReview(params: Params<Route<'rejectReview'>>, auth?: AuthContext): Promise<Response<Route<'rejectReview'>>> {
+	public async reject(params: Params<Route<'reject'>>, auth?: AuthContext): Promise<Response<Route<'reject'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
@@ -128,10 +128,10 @@ export class ReviewController extends BaseController {
 		return {success: true};
 	}
 
-	public async deleteReview(params: Params<Route<'deleteReview'>>, auth?: AuthContext): Promise<Response<Route<'deleteReview'>>> {
+	public async deleteById(params: Params<Route<'deleteById'>>, auth?: AuthContext): Promise<Response<Route<'deleteById'>>> {
 		const review = await this.repos.review.getById(params.id);
 		this.permissionService.isLoggedIn(auth);
-		this.permissionService.canEditReview({targetId: review.user.id}, auth);
+		this.permissionService.canEdit({targetId: review.user.id}, auth);
 
 		// Deduct points if deleting an approved review
 		if (review.status === ReviewStatusEnum.Approved) {
@@ -146,7 +146,7 @@ export class ReviewController extends BaseController {
 		return {success: true};
 	}
 
-	public async createNewReview(params: Params<Route<'createNewReview'>>, auth?: AuthContext): Promise<Response<Route<'createNewReview'>>> {
+	public async create(params: Params<Route<'create'>>, auth?: AuthContext): Promise<Response<Route<'create'>>> {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 
 		const {pointOfInterestId, rating, description, difficulty, entranceCost, conditions} = params;
@@ -160,7 +160,7 @@ export class ReviewController extends BaseController {
 			status = ReviewStatusEnum.Approved;
 		}
 
-		const review = this.repos.review.createReview({
+		const review = this.repos.review.create({
 			user,
 			pointOfInterest,
 			rating,
@@ -181,10 +181,10 @@ export class ReviewController extends BaseController {
 		};
 	}
 
-	public async editReview(params: Params<Route<'editReview'>>, auth?: AuthContext): Promise<Response<Route<'editReview'>>> {
+	public async edit(params: Params<Route<'edit'>>, auth?: AuthContext): Promise<Response<Route<'edit'>>> {
 		const review = await this.repos.review.getById(params.id);
 		this.permissionService.isLoggedIn(auth);
-		this.permissionService.canEditReview({targetId: review.user.id}, auth);
+		this.permissionService.canEdit({targetId: review.user.id}, auth);
 
 		review.rating = params.rating;
 		review.description = params.description;

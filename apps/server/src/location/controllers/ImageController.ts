@@ -236,11 +236,11 @@ export class ImageController extends BaseController {
 		return {liked: Boolean(like), likeCount: image.likes.length};
 	}
 
-	async getPendingImages(params: Params<Route<'getPendingImages'>>, auth?: AuthContext): Promise<Response<Route<'getPendingImages'>>> {
+	async getPending(params: Params<Route<'getPending'>>, auth?: AuthContext): Promise<Response<Route<'getPending'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
-		const images = await this.repos.image.getPendingImages({limit: params.limit, offset: params.offset});
+		const images = await this.repos.image.getPending({limit: params.limit, offset: params.offset});
 		return images.map(image => ({...image}));
 	}
 

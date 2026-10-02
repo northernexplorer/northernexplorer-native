@@ -93,7 +93,7 @@ export const ImageController = {
 			success: boolean;
 		},
 	},
-	getPendingImages: {
+	getPending: {
 		params: {} as {limit?: number; offset?: number},
 		response: null as unknown as PendingImageType[],
 	},
