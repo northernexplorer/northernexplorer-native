@@ -31,8 +31,7 @@ import {
 	User,
 	UserRepository,
 } from '../user';
-import {Migration, Support, SupportRepository} from '../system';
-import {MigrationRepository} from '../system/repositories/MigrationRepository';
+import {Support, SupportRepository} from '../system';
 import {SubscriptionFeature} from '../user/entities/SubscriptionFeature';
 
 export type Repositories = ReturnType<typeof repositories>;
@@ -44,7 +43,6 @@ export function repositories(em: EntityManager) {
 		image: new ImageRepository(em, Image),
 		imageLike: new ImageLikeRepository(em, ImageLike),
 		organization: new OrganizationRepository(em, Organization),
-		migration: new MigrationRepository(em, Migration),
 		pointOfInterest: new PointOfInterestRepository(em, PointOfInterest),
 		region: new RegionRepository(em, Region),
 		review: new ReviewRepository(em, Review),

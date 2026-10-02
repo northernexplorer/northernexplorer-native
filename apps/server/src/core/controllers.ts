@@ -8,7 +8,7 @@ import {
 	OrganizationController,
 	ImageController,
 } from '../location';
-import {StatusController, MigrationController, SupportController} from '../system';
+import {StatusController, SupportController} from '../system';
 import {SessionController, SubscriptionController, SubscriptionLevelController, UserController} from '../user';
 
 export const controllers = [
@@ -19,7 +19,6 @@ export const controllers = [
 	OrganizationController,
 	CountryController,
 	UserController,
-	MigrationController,
 	RegionController,
 	ReviewController,
 	StatusController,
