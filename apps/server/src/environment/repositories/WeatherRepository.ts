@@ -7,7 +7,7 @@ interface RawInternalWeatherRow {
 }
 
 export class WeatherRepository extends BaseRepository<WeatherCache> {
-	async getWeatherCache(lat: number, lon: number) {
+	async getCache(lat: number, lon: number) {
 		const query = `
       SELECT weather_data as "weatherData"
       FROM (

@@ -24,7 +24,7 @@ export function Home() {
 	const {data: pointOfInterestData} = useApiFetch(
 		'location',
 		'PointOfInterestController',
-		'getNearbyPointOfInterests',
+		'getNearby',
 		coords ? {lat: coords.lat, lon: coords.lon, limit: 5} : null,
 	);
 

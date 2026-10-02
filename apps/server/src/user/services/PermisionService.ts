@@ -12,7 +12,7 @@ export class PermissionService {
 		return {targetId};
 	}
 
-	canEditReview({targetId}: {targetId: string}, auth?: AuthContext) {
+	canEdit({targetId}: {targetId: string}, auth?: AuthContext) {
 		if (!auth?.userId || !auth.email) throw new Error('You must be logged in to access this resource');
 		if (auth.roles?.includes(RolesEnum.Admin)) {
 			return {targetId};

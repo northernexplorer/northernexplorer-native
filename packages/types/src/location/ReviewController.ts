@@ -93,11 +93,11 @@ export enum SiteConditionEnum {
 }
 
 export const ReviewController = {
-	getReviewById: {
+	getById: {
 		params: {} as {id: string},
 		response: null as unknown as ReviewType,
 	},
-	getPendingReviews: {
+	getPending: {
 		params: {} as {limit?: number; offset?: number},
 		response: null as unknown as ReviewType[],
 	},
@@ -120,19 +120,19 @@ export const ReviewController = {
 			likeCount: number;
 		},
 	},
-	approveReview: {
+	approve: {
 		params: {} as {id: string},
 		response: null as unknown as ReviewType,
 	},
-	rejectReview: {
+	reject: {
 		params: {} as {id: string},
 		response: null as unknown as {success: boolean},
 	},
-	deleteReview: {
+	deleteById: {
 		params: {} as {id: string},
 		response: null as unknown as {success: boolean},
 	},
-	createNewReview: {
+	create: {
 		params: {} as {
 			pointOfInterestId: string;
 			rating: ReviewRatingEnum;
@@ -143,7 +143,7 @@ export const ReviewController = {
 		},
 		response: null as unknown as ReviewType,
 	},
-	editReview: {
+	edit: {
 		params: {} as {
 			id: string;
 			rating: ReviewRatingEnum;
