@@ -95,11 +95,11 @@ export function MapView({
 
 				{clusters.map(cluster => {
 					const [longitude, latitude] = cluster.geometry.coordinates;
-					const isCluster = cluster.properties && 'cluster' in cluster.properties && cluster.properties.cluster;
+					const isCluster = 'cluster' in cluster.properties && cluster.properties.cluster;
 
 					if (isCluster) {
 						const clusterFeature = cluster as Supercluster.ClusterFeature<Supercluster.AnyProps>;
-						const clusterId = clusterFeature.id as number;
+						const clusterId = clusterFeature.id as number | undefined;
 						const pointCount = clusterFeature.properties.point_count;
 
 						return (
