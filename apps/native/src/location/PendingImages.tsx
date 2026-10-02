@@ -30,8 +30,8 @@ export function PendingImages() {
 		limit,
 		offset,
 	});
-	const {mutate: approveMutation} = useApiMutation('location', 'ImageController', 'approveImage');
-	const {mutate: rejectMutation} = useApiMutation('location', 'ImageController', 'rejectImage');
+	const {mutate: approveMutation} = useApiMutation('location', 'ImageController', 'approve');
+	const {mutate: rejectMutation} = useApiMutation('location', 'ImageController', 'reject');
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;

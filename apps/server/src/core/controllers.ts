@@ -10,8 +10,12 @@ import {
 } from '../location';
 import {StatusController, SupportController} from '../system';
 import {SessionController, SubscriptionController, SubscriptionLevelController, UserController} from '../user';
+import {Repositories} from './repositories';
+import {BaseController} from './BaseController';
 
-export const controllers = [
+export type ControllerConstructor = new (repos: Repositories) => BaseController;
+
+export const controllers: ControllerConstructor[] = [
 	LunarController,
 	ImageController,
 	CityController,

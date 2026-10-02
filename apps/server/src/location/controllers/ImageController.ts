@@ -244,7 +244,7 @@ export class ImageController extends BaseController {
 		return images.map(image => ({...image}));
 	}
 
-	async approveImage(params: Params<Route<'approveImage'>>, auth?: AuthContext): Promise<Response<Route<'approveImage'>>> {
+	async approve(params: Params<Route<'approve'>>, auth?: AuthContext): Promise<Response<Route<'approve'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
@@ -259,7 +259,7 @@ export class ImageController extends BaseController {
 		return {...image};
 	}
 
-	async rejectImage(params: Params<Route<'rejectImage'>>, auth?: AuthContext): Promise<Response<Route<'rejectImage'>>> {
+	async reject(params: Params<Route<'reject'>>, auth?: AuthContext): Promise<Response<Route<'reject'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);
 
