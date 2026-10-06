@@ -80,12 +80,12 @@ export const ImageController = {
 	upload: {
 		params: {} as {
 			pointOfInterestId: string;
-			files: FileUpload[];
+			file: FileUpload;
 		},
 		response: null as unknown as {
 			file: string;
 			status: ImageUploadStatus;
-		}[],
+		},
 	},
 	deleteById: {
 		params: {} as {id: string},

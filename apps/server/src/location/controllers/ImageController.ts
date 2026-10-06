@@ -75,82 +75,55 @@ export class ImageController extends BaseController {
 	async upload(params: Params<Route<'upload'>>, auth?: AuthContext): Promise<Response<Route<'upload'>>> {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 
-		if (params.files.length === 0) throw new Error('No files provided for upload.');
-
-		const MAX_FILES = 10;
-		if (params.files.length > MAX_FILES) throw new Error(`You can upload a maximum of ${MAX_FILES} photos at a time.`);
-
 		const MAX_SINGLE_FILE_BYTES = 10 * 1024 * 1024; // 10 MB per image limit
-		const MAX_RAW_BATCH_BYTES = 50 * 1024 * 1024; // 50 MB total batch limit
-
-		let totalBatchSizeBytes = 0;
-
-		for (const file of params.files) {
-			if (file.size > MAX_SINGLE_FILE_BYTES) throw new Error(`File "${file.filename}" exceeds the maximum individual limit of 10 MB.`);
-			totalBatchSizeBytes += file.size;
-		}
-
-		const maxMbTotal = Math.round(MAX_RAW_BATCH_BYTES / (1024 * 1024));
-
-		if (totalBatchSizeBytes > MAX_RAW_BATCH_BYTES) {
-			throw new Error(
-				`The total size of your selected photos exceeds the ${maxMbTotal} MB limit. Please select fewer or smaller images and try again.`,
-			);
+		if (params.file.size > MAX_SINGLE_FILE_BYTES) {
+			throw new Error(`File "${params.file.filename}" exceeds the maximum individual limit of 10 MB.`);
 		}
 
 		const pointOfInterest = await this.repos.pointOfInterest.findOneOrFail({id: params.pointOfInterestId});
 		const user = await this.repos.user.getById(userId);
 
-		const results: {file: string; status: ImageUploadStatus}[] = [];
+		const fileBuffer = Buffer.from(params.file.base64, 'base64');
+		const hash = createHash('sha256').update(fileBuffer).digest('hex');
+		const isDuplicate = await this.repos.image.getDuplicate(hash, user);
+		if (isDuplicate) {
+			return {file: params.file.uri, status: ImageUploadStatus.Duplicate};
+		}
 
-		await Promise.all(
-			params.files.map(async file => {
-				const fileBuffer = Buffer.from(file.base64, 'base64');
-				const hash = createHash('sha256').update(fileBuffer).digest('hex');
-				const isDuplicate = await this.repos.image.getDuplicate(hash, user);
-				if (isDuplicate) {
-					results.push({file: file.uri, status: ImageUploadStatus.Duplicate});
-					return;
-				}
+		const url = this.repos.image.generateNewUrl({fileExtension: params.file.fileExtension});
 
-				const url = this.repos.image.generateNewUrl({fileExtension: file.fileExtension});
+		await this.spacesManagementService.upload({
+			key: url,
+			body: fileBuffer,
+			contentType: params.file.mimeType,
+		});
 
-				await this.spacesManagementService.upload({
-					key: url,
-					body: fileBuffer,
-					contentType: file.mimeType,
-				});
+		let status = ImageStatusEnum.Pending;
+		if (this.repos.user.isPostApproved(user)) {
+			status = ImageStatusEnum.Approved;
+		}
 
-				let status = ImageStatusEnum.Pending;
-				if (this.repos.user.isPostApproved(user)) {
-					status = ImageStatusEnum.Approved;
-				}
+		const image = new Image({
+			fileExtension: params.file.fileExtension,
+			filename: params.file.filename,
+			mimeType: params.file.mimeType,
+			size: params.file.size,
+			url,
+			status,
+			altText: pointOfInterest.name,
+			pointOfInterest,
+			user,
+			hash,
+		});
 
-				const image = new Image({
-					fileExtension: file.fileExtension,
-					filename: file.filename,
-					mimeType: file.mimeType,
-					size: file.size,
-					url,
-					status,
-					altText: pointOfInterest.name,
-					pointOfInterest,
-					user,
-					hash,
-				});
+		this.repos.image.persist(image);
 
-				this.repos.image.persist(image);
-				results.push({file: file.uri, status: ImageUploadStatus.Success});
-			}),
-		);
-
-		const successCount = results.filter(r => r.status === ImageUploadStatus.Success).length;
-		if (this.repos.user.isPostApproved(user) && successCount > 0) {
-			user.score += successCount * 10;
+		if (this.repos.user.isPostApproved(user)) {
+			user.score += 10;
 		}
 
 		await this.flush();
-		return results;
+		return {file: params.file.uri, status: ImageUploadStatus.Success};
 	}
 
 	async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
