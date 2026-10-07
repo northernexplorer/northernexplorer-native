@@ -91,7 +91,8 @@ export function ReportModal({visible, type, targetId, onClose, onSuccess}: Repor
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
 			<View style={styles.overlay}>
 				<Pressable style={styles.backdrop} onPress={onClose} />
-				<View style={styles.modalContent}>
+				{/* Wrap modalContent in a Pressable to absorb touch events and prevent propagation to the backdrop */}
+				<Pressable style={styles.modalContent} onPress={e => e.stopPropagation()}>
 					<View style={styles.header}>
 						<View style={styles.headerTitleRow}>
 							<Ionicons name="flag-outline" size={20} color="#ef4444" />
@@ -102,7 +103,7 @@ export function ReportModal({visible, type, targetId, onClose, onSuccess}: Repor
 						</Pressable>
 					</View>
 
-					<ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
+					<ScrollView style={styles.body} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 						<Text style={styles.subtitle}>Why are you reporting this {type.toLowerCase()}? Please select a reason below.</Text>
 
 						<View style={styles.reasonsList}>
@@ -151,7 +152,7 @@ export function ReportModal({visible, type, targetId, onClose, onSuccess}: Repor
 							)}
 						</Pressable>
 					</View>
-				</View>
+				</Pressable>
 			</View>
 		</Modal>
 	);
