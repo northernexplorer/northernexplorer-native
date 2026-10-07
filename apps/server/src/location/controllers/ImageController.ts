@@ -75,8 +75,8 @@ export class ImageController extends BaseController {
 	async upload(params: Params<Route<'upload'>>, auth?: AuthContext): Promise<Response<Route<'upload'>>> {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 
-		const MAX_SINGLE_FILE_BYTES = 10 * 1024 * 1024; // 10 MB per image limit
-		if (params.file.size > MAX_SINGLE_FILE_BYTES) {
+		const maxImageSizeBytes = 12 * 1024 * 1024;
+		if (params.file.size > maxImageSizeBytes) {
 			throw new Error(`File "${params.file.filename}" exceeds the maximum individual limit of 10 MB.`);
 		}
 

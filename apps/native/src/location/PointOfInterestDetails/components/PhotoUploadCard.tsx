@@ -12,9 +12,6 @@ type PhotoUploadCardProps = {
 	maxImageSizeBytes?: number;
 };
 
-const DEFAULT_MAX_IMAGES = 10;
-const DEFAULT_MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB per image limit
-
 const uriToBase64 = async (uri: string): Promise<string> => {
 	const response = await fetch(uri);
 	const blob = await response.blob();
@@ -31,13 +28,12 @@ const uriToBase64 = async (uri: string): Promise<string> => {
 	});
 };
 
-export function PhotoUploadCard({
-	pointOfInterestId,
-	maxImages = DEFAULT_MAX_IMAGES,
-	maxImageSizeBytes = DEFAULT_MAX_IMAGE_SIZE_BYTES,
-}: PhotoUploadCardProps) {
+export function PhotoUploadCard({pointOfInterestId}: PhotoUploadCardProps) {
 	const [stagedUploads, setStagedUploads] = useState<UploadImageFileInput[]>([]);
 	const [isUploading, setIsUploading] = useState(false);
+
+	const maxImages = 10;
+	const maxImageSizeBytes = 12 * 1024 * 1024;
 
 	// Track upload statuses mapped by file URI
 	const [statusMap, setStatusMap] = useState<Record<string, ImageUploadStatus | undefined>>({});
