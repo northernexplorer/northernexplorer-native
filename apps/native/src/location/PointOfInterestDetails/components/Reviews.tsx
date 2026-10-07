@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName} from '@northernexplorer/tools-web';
-import {PointOfInterestType, ReviewStatusEnum, RolesEnum} from '@northernexplorer/types';
+import {PointOfInterestType, ReportTypeEnum, ReviewStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {useRouter} from 'expo-router';
 import {ReviewForm} from './ReviewForm';
 import {RenderStars} from './RenderStars';
@@ -13,6 +13,7 @@ import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {alertStore} from '~/core/alertStore';
 import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
+import {ReportModal} from '~/system/ReportModal';
 
 type ReviewsProps = {
 	data: PointOfInterestType;
@@ -24,6 +25,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 	const authentication = useAuthentication();
 	const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
 	const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
+	const [reportingReviewId, setReportingReviewId] = useState<string | null>(null);
 
 	const deleteMutation = useApiMutation('location', 'ReviewController', 'deleteById');
 	const reviews = data.reviews ?? [];
@@ -131,6 +133,17 @@ export function Reviews({data, refetch}: ReviewsProps) {
 								</Pressable>
 							</>
 						)}
+
+						{!isMine && (
+							<Pressable
+								onPress={() => setReportingReviewId(review.id)}
+								style={reviewStyles.reportButton}
+								hitSlop={8}
+								accessibilityLabel="Report review"
+							>
+								<Ionicons name="flag-outline" size={14} color="#94a3b8" />
+							</Pressable>
+						)}
 					</View>
 				</View>
 
@@ -161,6 +174,15 @@ export function Reviews({data, refetch}: ReviewsProps) {
 					{myReviews.map(r => renderReviewCard(r, true))}
 					{otherReviews.map(r => renderReviewCard(r, false))}
 				</View>
+			)}
+
+			{reportingReviewId && (
+				<ReportModal
+					visible={Boolean(reportingReviewId)}
+					type={ReportTypeEnum.Review}
+					targetId={reportingReviewId}
+					onClose={() => setReportingReviewId(null)}
+				/>
 			)}
 		</View>
 	);
@@ -221,6 +243,16 @@ const reviewStyles = StyleSheet.create({
 		paddingHorizontal: 8,
 		paddingVertical: 4,
 		borderRadius: 6,
+	},
+	reportButton: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: '#f8fafc',
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		borderRadius: 6,
+		borderWidth: 1,
+		borderColor: '#e2e8f0',
 	},
 	nameBadgeRow: {
 		flexDirection: 'row',
