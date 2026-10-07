@@ -62,9 +62,28 @@ export class PointOfInterestController extends BaseController {
 	public async getForMap(params: Params<Route<'getForMap'>>, auth?: AuthContext): Promise<Response<Route<'getForMap'>>> {
 		const {lat, lon, limit, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = params;
 
-		const parsedDifficultyIndex = maxDifficultyIndex !== undefined && maxDifficultyIndex !== null ? Number(maxDifficultyIndex) : 2;
-		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
+		let hasAdvancedAccess = false;
 		let showDraftsParsed = showDrafts === true || (showDrafts as unknown) === 'true';
+
+		if (auth?.userId) {
+			const user = await this.repos.user.getById(auth.userId);
+			const subscription = await this.repos.subscription.getById(user.subscription.id);
+			const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
+			const permissions = this.repos.subscriptionLevel.getPermissions(subscriptionLevel);
+
+			if (permissions.navigation.useExpeditionDifficulty && permissions.navigation.useOffTrailDifficulty) {
+				hasAdvancedAccess = true;
+			}
+
+			if (!user.roles?.includes(RolesEnum.Admin)) {
+				showDraftsParsed = false;
+			}
+		}
+
+		const defaultDifficultyIndex = hasAdvancedAccess ? 4 : 2;
+		const parsedDifficultyIndex =
+			maxDifficultyIndex !== undefined && maxDifficultyIndex !== null ? Number(maxDifficultyIndex) : defaultDifficultyIndex;
+		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
 
 		return this.repos.pointOfInterest.getClosest({
 			lat,
