@@ -4,7 +4,6 @@ import {CountryType} from './CountryController';
 import {EntranceCostEnum, ReviewRatingEnum, ReviewSummary, SiteConditionEnum, SiteDifficultyEnum} from './ReviewController';
 import {OrganizationType} from './OrganizationController';
 import {ImageHeaderType, ImageType} from './ImageController';
-import {getUrlSafeString} from '@northernexplorer/tools-web';
 
 export enum PublishStatusEnum {
 	Published = 'Published',
