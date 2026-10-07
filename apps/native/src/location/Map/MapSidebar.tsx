@@ -78,7 +78,7 @@ export function MapSidebar() {
 		}
 	}
 
-	// Default to maximum permitted index (e.g. 4 if full access) when untouched in Redux
+	// Default to maximum permitted index (e.g. 4 if full access, 2 if no higher difficulty permissions) when untouched in Redux
 	const effectiveDifficultyIndex = maxDifficultyIndex ?? maxAllowedDifficultyIndex;
 
 	const bannerHref = isLoggedIn ? `/user/${authentication.username}/change-subscription` : '/user/login';
