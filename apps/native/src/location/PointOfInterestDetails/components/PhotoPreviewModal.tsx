@@ -3,12 +3,14 @@ import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, 
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl, ImageView} from '@northernexplorer/tools-web';
+import {ReportTypeEnum} from '@northernexplorer/types';
 import {useRouter} from 'expo-router';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
 import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
 import {alertStore} from '~/core/alertStore';
+import {ReportModal} from '~/system/ReportModal';
 
 type PhotoPreviewModalProps = {
 	selectedImageId: string;
@@ -44,6 +46,7 @@ export function PhotoPreviewModal({
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
 	const [isLiked, setIsLiked] = useState<boolean>(false);
+	const [isReporting, setIsReporting] = useState<boolean>(false);
 
 	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
 	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
@@ -267,6 +270,21 @@ export function PhotoPreviewModal({
 							<Text style={styles.likeCount}>{imageData.likes}</Text>
 						</Pressable>
 
+						{/* Report Button (Visible to non-owners) */}
+						{imageData.user.id !== currentUserId && (
+							<Pressable
+								style={styles.modalReportButton}
+								onPress={e => {
+									e.stopPropagation();
+									setIsReporting(true);
+								}}
+								hitSlop={8}
+								accessibilityLabel="Report photo"
+							>
+								<Ionicons name="flag-outline" size={18} color="#94a3b8" />
+							</Pressable>
+						)}
+
 						{/* Standard Delete Button (When not using dedicated reject) */}
 						{canManage && !onReject && (
 							<Pressable style={styles.modalDeleteButton} onPress={handleDelete} disabled={isDeleting || isApproving}>
@@ -279,6 +297,10 @@ export function PhotoPreviewModal({
 						)}
 					</View>
 				</Pressable>
+
+				{isReporting && (
+					<ReportModal visible={isReporting} type={ReportTypeEnum.Image} targetId={imageData.id} onClose={() => setIsReporting(false)} />
+				)}
 			</Pressable>
 		</Modal>
 	);
@@ -407,6 +429,13 @@ const styles = StyleSheet.create({
 		color: '#ffffff',
 		fontSize: 14,
 		fontWeight: '600',
+	},
+	modalReportButton: {
+		padding: 8,
+		borderRadius: 8,
+		backgroundColor: 'rgba(255, 255, 255, 0.1)',
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	modalDeleteButton: {
 		backgroundColor: 'rgba(239, 68, 68, 0.2)',
