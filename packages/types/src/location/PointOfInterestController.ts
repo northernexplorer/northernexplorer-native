@@ -4,6 +4,7 @@ import {CountryType} from './CountryController';
 import {EntranceCostEnum, ReviewRatingEnum, ReviewSummary, SiteConditionEnum, SiteDifficultyEnum} from './ReviewController';
 import {OrganizationType} from './OrganizationController';
 import {ImageHeaderType, ImageType} from './ImageController';
+import {getUrlSafeString} from '@northernexplorer/tools-web';
 
 export enum PublishStatusEnum {
 	Published = 'Published',
@@ -89,6 +90,14 @@ export type PointOfInterestCreateType = {
 	type: PointOfInterestTypeEnum[];
 };
 
+export type PointOfInterestCreateResponseType = {
+	success: boolean;
+	countryName: string;
+	regionName: string;
+	id: string;
+	poiName: string;
+};
+
 export const PointOfInterestController = {
 	getNearby: {
 		params: {} as {
@@ -136,6 +145,6 @@ export const PointOfInterestController = {
 	},
 	create: {
 		params: {} as PointOfInterestCreateType,
-		response: {} as GenericResponseType,
+		response: {} as PointOfInterestCreateResponseType,
 	},
 };

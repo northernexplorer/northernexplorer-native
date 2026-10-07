@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {ScrollView, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
 import {Redirect, router} from 'expo-router';
-import {FormField, TextAreaField, DropdownField} from '@northernexplorer/tools-web';
+import {FormField, TextAreaField, DropdownField, getUrlSafeString} from '@northernexplorer/tools-web';
 import {PointOfInterestCreateType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
 import {useApiMutation} from '~/core/useApiMutation';
@@ -112,7 +112,13 @@ export function PointOfInterestAdd() {
 		const response = await mutate(payload);
 		if (response?.success) {
 			router.replace({
-				pathname: '/admin/draft-point-of-interest',
+				pathname: '/[country]/[region]/[name]/[id]',
+				params: {
+					country: getUrlSafeString(response.countryName),
+					region: getUrlSafeString(response.regionName),
+					id: getUrlSafeString(response.id),
+					name: getUrlSafeString(response.poiName),
+				},
 			});
 		}
 	};
