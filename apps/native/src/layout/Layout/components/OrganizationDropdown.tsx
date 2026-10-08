@@ -13,6 +13,7 @@ interface ComponentProps<T extends string> {
 	updateField: (name: T, value: string) => void;
 	error?: string;
 	isSearchable?: boolean;
+	disabled?: boolean;
 }
 
 export function OrganizationDropdown<T extends string>({
@@ -23,6 +24,7 @@ export function OrganizationDropdown<T extends string>({
 	updateField,
 	error,
 	isSearchable = true,
+	disabled,
 }: OrganizationDropdownProps<T>) {
 	const {data, loading} = useApiFetch('location', 'OrganizationController', 'getAll', regionId ? {regionId} : {}, {
 		skip: !Boolean(regionId),
@@ -46,6 +48,7 @@ export function OrganizationDropdown<T extends string>({
 			loading={loading}
 			error={error}
 			isSearchable={isSearchable}
+			disabled={disabled || !Boolean(regionId)}
 		/>
 	);
 }

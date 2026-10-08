@@ -9,9 +9,18 @@ interface ComponentProps<T extends string> {
 	updateField: (name: T, value: string) => void;
 	error?: string;
 	isSearchable?: boolean;
+	disabled?: boolean;
 }
 
-export function CountryDropdown<T extends string>({fieldName, label = 'Country', value, updateField, error, isSearchable = true}: ComponentProps<T>) {
+export function CountryDropdown<T extends string>({
+	fieldName,
+	label = 'Country',
+	value,
+	updateField,
+	error,
+	isSearchable = true,
+	disabled,
+}: ComponentProps<T>) {
 	const {data, loading} = useApiFetch('location', 'CountryController', 'getAll', {});
 
 	const options = useMemo(() => {
@@ -32,6 +41,7 @@ export function CountryDropdown<T extends string>({fieldName, label = 'Country',
 			loading={loading}
 			error={error}
 			isSearchable={isSearchable}
+			disabled={disabled}
 		/>
 	);
 }

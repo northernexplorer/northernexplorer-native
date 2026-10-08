@@ -12,6 +12,7 @@ interface BaseProps<T extends string, V> {
 	options: Option<V>[];
 	error?: string;
 	loading?: boolean;
+	disabled?: boolean;
 	darkMode?: boolean;
 	isSearchable?: boolean;
 	searchPlaceholder?: string;
@@ -34,7 +35,7 @@ type Props<T extends string, V> = SingleProps<T, V> | MultiProps<T, V>;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export function DropdownField<T extends string, V>(props: Props<T, V>) {
-	const {fieldName, label, options, error, loading, isMultiSelect, darkMode = false, isSearchable = false, searchPlaceholder} = props;
+	const {fieldName, label, options, error, loading, disabled, isMultiSelect, darkMode = false, isSearchable = false, searchPlaceholder} = props;
 	const [isOpen, setIsOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [dropdownCoords, setDropdownCoords] = useState<{x: number; y: number; width: number; height: number}>({
@@ -47,7 +48,7 @@ export function DropdownField<T extends string, V>(props: Props<T, V>) {
 	const modalInputRef = useRef<TextInput>(null);
 
 	const toggleDropdown = () => {
-		if (loading) return;
+		if (loading || disabled) return;
 
 		if (!isOpen && inputRef.current) {
 			inputRef.current.measureInWindow((x, y, width, height) => {
@@ -117,10 +118,10 @@ export function DropdownField<T extends string, V>(props: Props<T, V>) {
 
 			<View style={styles.fieldWrapper} ref={inputRef}>
 				<TouchableOpacity
-					style={[styles.input, darkMode && styles.inputDark, error ? styles.inputError : null, loading && styles.disabled]}
+					style={[styles.input, darkMode && styles.inputDark, error ? styles.inputError : null, (loading || disabled) && styles.disabled]}
 					onPress={toggleDropdown}
 					activeOpacity={0.7}
-					disabled={loading}
+					disabled={loading || disabled}
 				>
 					<Text
 						style={[styles.inputText, darkMode && styles.inputTextDark, !selectedLabel && !isMultiSelect && styles.placeholderText]}

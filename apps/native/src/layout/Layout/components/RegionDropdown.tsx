@@ -3,7 +3,7 @@ import {DropdownField} from '@northernexplorer/tools-web';
 import {useApiFetch} from '~/core/useApiFetch';
 
 interface RegionDropdownProps<T extends string> extends ComponentProps<T> {
-	countryId: string;
+	countryId?: string;
 }
 
 interface ComponentProps<T extends string> {
@@ -13,6 +13,7 @@ interface ComponentProps<T extends string> {
 	updateField: (name: T, value: string) => void;
 	error?: string;
 	isSearchable?: boolean;
+	disabled?: boolean;
 }
 
 export function RegionDropdown<T extends string>({
@@ -23,8 +24,9 @@ export function RegionDropdown<T extends string>({
 	updateField,
 	error,
 	isSearchable = true,
+	disabled,
 }: RegionDropdownProps<T>) {
-	const {data, loading} = useApiFetch('location', 'RegionController', 'getByCountryId', {id: countryId}, {skip: !Boolean(countryId)});
+	const {data, loading} = useApiFetch('location', 'RegionController', 'getByCountryId', {id: countryId!}, {skip: !Boolean(countryId)});
 
 	const options = useMemo(() => {
 		if (!Array.isArray(data)) return [];
@@ -44,6 +46,7 @@ export function RegionDropdown<T extends string>({
 			loading={loading}
 			error={error}
 			isSearchable={isSearchable}
+			disabled={disabled || !Boolean(countryId)}
 		/>
 	);
 }
