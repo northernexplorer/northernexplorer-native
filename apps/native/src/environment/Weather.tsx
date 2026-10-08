@@ -3,10 +3,12 @@ import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Spinner} from '@northernexplorer/tools-web';
 import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
-import {useWeather} from '~/environment/state/weather';
+import {useWeather, useWeatherWarnings} from '~/environment/state/weather';
+import {WeatherWarningsWidget} from '~/layout/Home/components/WeatherWarningsWidget';
 
 export function Weather() {
 	const weather = useWeather();
+	const warnings = useWeatherWarnings();
 
 	if (!weather) {
 		return (
@@ -28,6 +30,13 @@ export function Weather() {
 				<View style={styles.centerContainer}>
 					{/* Location Header */}
 					<Text style={styles.locationName}>{weather.location.name}</Text>
+
+					{/* Active Weather Warnings */}
+					{warnings.length > 0 && (
+						<View style={{width: '100%', maxWidth: 500, marginVertical: 12}}>
+							<WeatherWarningsWidget warnings={warnings} />
+						</View>
+					)}
 
 					{/* Hero Weather Condition & Temperature */}
 					<View style={styles.heroSection}>
