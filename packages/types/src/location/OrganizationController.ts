@@ -12,7 +12,11 @@ export type OrganizationType = {
 
 export const OrganizationController = {
 	getAll: {
-		params: {} as Record<string, never>,
+		params: {} as {regionId?: string; id?: string} | Record<string, never>,
+		response: null as unknown as OrganizationType[],
+	},
+	getByRegionId: {
+		params: {} as {id: string},
 		response: null as unknown as OrganizationType[],
 	},
 };
