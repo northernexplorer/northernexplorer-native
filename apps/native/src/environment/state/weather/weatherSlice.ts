@@ -3,7 +3,7 @@ import {WeatherType, WeatherWarningType} from '@northernexplorer/types';
 
 export type WeatherState = {
 	data: WeatherType | null;
-	warnings: WeatherWarningType[];
+	warnings?: WeatherWarningType[];
 	loading: boolean;
 	error: string | null;
 	lastUpdated: number | null;

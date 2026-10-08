@@ -1,5 +1,6 @@
+import {WeatherWarningType} from '@northernexplorer/types';
 import {useAppSelector} from '~/core/storeHooks';
 
-export function useWeatherWarnings() {
-	return useAppSelector(s => s.weather.warnings);
+export function useWeatherWarnings(): WeatherWarningType[] {
+	return useAppSelector(s => s.weather.warnings ?? []);
 }
