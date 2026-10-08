@@ -50,9 +50,36 @@ export function Map() {
 	const canAccessExpeditionDifficulty = permissionData?.navigation.useExpeditionDifficulty ?? false;
 
 	// Center resolution logic
-	const initialLat = params.lat ? parseFloat(params.lat) : coords?.lat;
-	const initialLon = params.lon ? parseFloat(params.lon) : coords?.lon;
+	const paramLat = params.lat ? parseFloat(params.lat) : undefined;
+	const paramLon = params.lon ? parseFloat(params.lon) : undefined;
 	const initialZoom = params.zoom ? parseFloat(params.zoom) : 10;
+
+	const [initialCoords, setInitialCoords] = useState<{lat: number; lon: number} | null>(() => {
+		if (paramLat !== undefined && paramLon !== undefined && !isNaN(paramLat) && !isNaN(paramLon)) {
+			return {lat: paramLat, lon: paramLon};
+		}
+		if (coords) {
+			return {lat: coords.lat, lon: coords.lon};
+		}
+		return null;
+	});
+
+	useEffect(() => {
+		if (paramLat !== undefined && paramLon !== undefined && !isNaN(paramLat) && !isNaN(paramLon)) {
+			setInitialCoords({lat: paramLat, lon: paramLon});
+		} else {
+			setInitialCoords(prev => {
+				if (prev) return prev;
+				if (coords) {
+					return {lat: coords.lat, lon: coords.lon};
+				}
+				return null;
+			});
+		}
+	}, [paramLat, paramLon, coords]);
+
+	const initialLat = initialCoords?.lat;
+	const initialLon = initialCoords?.lon;
 
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
 	const [zoom, setZoom] = useState<number>(initialZoom);

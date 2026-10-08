@@ -218,12 +218,17 @@ export function MapView({
 							}}
 							latitude={coords.lat}
 							longitude={coords.lon}
-							anchor="bottom"
-							color="#0088cc"
-						/>
+							anchor="center"
+						>
+							<div style={styles.userLocationMarker} title="Your Location">
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff">
+									<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-4-4z" />
+								</svg>
+							</div>
+						</Marker>
 
 						{userMarker && (
-							<Marker latitude={coords.lat} longitude={coords.lon} anchor="bottom" offset={[0, -65]}>
+							<Marker latitude={coords.lat} longitude={coords.lon} anchor="bottom" offset={[0, -25]}>
 								<div style={styles.popupContainer}>
 									<h3 style={styles.popupTitle}>Your Location</h3>
 									<p style={styles.popupDescription}>{coords.lat}</p>
@@ -340,6 +345,18 @@ const styles = {
 		fontWeight: 'bold',
 		fontSize: 14,
 		boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+		cursor: 'pointer',
+	},
+	userLocationMarker: {
+		width: '34px',
+		height: '34px',
+		borderRadius: '50%',
+		backgroundColor: '#0088cc',
+		border: '2.5px solid #ffffff',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		boxShadow: '0 2px 6px rgba(0,0,0,0.35)',
 		cursor: 'pointer',
 	},
 };
