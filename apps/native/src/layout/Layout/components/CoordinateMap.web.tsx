@@ -102,7 +102,7 @@ export function CoordinateMap({lat, lon, onSelectCoordinates, disabled}: Props) 
 						onPress={handleUseCurrentLocation}
 						disabled={disabled}
 					>
-						<Ionicons name="locate" size={16} color="#2563EB" />
+						<Ionicons name="locate" size={16} color="#0088cc" />
 						<Text style={styles.locationButtonText}>My Location</Text>
 					</TouchableOpacity>
 				) : null}
@@ -180,14 +180,14 @@ const styles = StyleSheet.create({
 		gap: 4,
 		paddingHorizontal: 10,
 		paddingVertical: 6,
-		backgroundColor: '#EFF6FF',
+		backgroundColor: '#F0F8FF',
 		borderRadius: 6,
 		borderWidth: 1,
-		borderColor: '#BFDBFE',
+		borderColor: '#BEE3F8',
 	},
 	locationButtonText: {
 		fontSize: 12,
-		color: '#2563EB',
+		color: '#0088cc',
 		fontWeight: '600',
 	},
 	disabledButton: {

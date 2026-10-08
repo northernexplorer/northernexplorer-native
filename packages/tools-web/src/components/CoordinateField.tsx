@@ -45,7 +45,7 @@ export function CoordinateField<TLat extends string = string, TLon extends strin
 	lonError,
 	loading = false,
 	disabled = false,
-	initialMode = 'manual',
+	initialMode = 'map',
 	renderMap,
 	mapComponent: MapComponent,
 }: CoordinateFieldProps<TLat, TLon>) {
@@ -83,21 +83,21 @@ export function CoordinateField<TLat extends string = string, TLon extends strin
 				{showMapToggle ? (
 					<View style={styles.toggleContainer}>
 						<TouchableOpacity
-							style={[styles.toggleButton, mode === 'manual' && styles.toggleButtonActive]}
-							onPress={() => setMode('manual')}
-							activeOpacity={0.7}
-						>
-							<Ionicons name="create-outline" size={14} color={mode === 'manual' ? '#FFFFFF' : '#4B5563'} />
-							<Text style={[styles.toggleText, mode === 'manual' && styles.toggleTextActive]}>Text Input</Text>
-						</TouchableOpacity>
-
-						<TouchableOpacity
 							style={[styles.toggleButton, mode === 'map' && styles.toggleButtonActive]}
 							onPress={() => setMode('map')}
 							activeOpacity={0.7}
 						>
 							<Ionicons name="map-outline" size={14} color={mode === 'map' ? '#FFFFFF' : '#4B5563'} />
 							<Text style={[styles.toggleText, mode === 'map' && styles.toggleTextActive]}>Select on Map</Text>
+						</TouchableOpacity>
+
+						<TouchableOpacity
+							style={[styles.toggleButton, mode === 'manual' && styles.toggleButtonActive]}
+							onPress={() => setMode('manual')}
+							activeOpacity={0.7}
+						>
+							<Ionicons name="create-outline" size={14} color={mode === 'manual' ? '#FFFFFF' : '#4B5563'} />
+							<Text style={[styles.toggleText, mode === 'manual' && styles.toggleTextActive]}>Text Input</Text>
 						</TouchableOpacity>
 					</View>
 				) : null}
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
 		borderRadius: 6,
 	},
 	toggleButtonActive: {
-		backgroundColor: '#2563EB',
+		backgroundColor: '#0088cc',
 	},
 	toggleText: {
 		fontSize: 12,
