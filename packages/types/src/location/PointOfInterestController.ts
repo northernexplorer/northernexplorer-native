@@ -89,6 +89,14 @@ export type PointOfInterestCreateType = {
 	type: PointOfInterestTypeEnum[];
 };
 
+export type PointOfInterestCreateResponseType = {
+	success: boolean;
+	countryName: string;
+	regionName: string;
+	id: string;
+	poiName: string;
+};
+
 export const PointOfInterestController = {
 	getNearby: {
 		params: {} as {
@@ -136,6 +144,6 @@ export const PointOfInterestController = {
 	},
 	create: {
 		params: {} as PointOfInterestCreateType,
-		response: {} as GenericResponseType,
+		response: {} as PointOfInterestCreateResponseType,
 	},
 };

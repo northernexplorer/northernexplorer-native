@@ -200,6 +200,6 @@ export class PointOfInterestController extends BaseController {
 
 		await this.flush();
 
-		return {success: true};
+		return {success: true, id: pointOfInterest.id, countryName: country.name, regionName: region.name, poiName: pointOfInterest.name};
 	}
 }
