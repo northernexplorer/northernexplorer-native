@@ -8,9 +8,17 @@ interface ComponentProps<T extends string> {
 	value: string;
 	updateField: (name: T, value: string) => void;
 	error?: string;
+	isSearchable?: boolean;
 }
 
-export function OrganizationDropdown<T extends string>({fieldName, label = 'Organization', value, updateField, error}: ComponentProps<T>) {
+export function OrganizationDropdown<T extends string>({
+	fieldName,
+	label = 'Organization',
+	value,
+	updateField,
+	error,
+	isSearchable = true,
+}: ComponentProps<T>) {
 	const {data, loading} = useApiFetch('location', 'OrganizationController', 'getAll', {});
 
 	const options = useMemo(() => {
@@ -30,6 +38,7 @@ export function OrganizationDropdown<T extends string>({fieldName, label = 'Orga
 			updateField={updateField}
 			loading={loading}
 			error={error}
+			isSearchable={isSearchable}
 		/>
 	);
 }
