@@ -7,6 +7,36 @@ interface WeatherWarningsWidgetProps {
 	warnings?: WeatherWarningType[];
 }
 
+function formatAlertText(text?: string): string {
+	if (!text) return '';
+
+	// Fix common typos such as "in affect" -> "in effect"
+	const cleaned = text.replace(/\bin affect\b/gi, 'in effect');
+
+	const words = cleaned.split(/\s+/);
+	const lowerCaseWords = new Set(['in', 'of', 'for', 'and', 'to', 'at', 'by', 'on', 'a', 'an', 'the', 'with', 'from']);
+
+	const formattedWords = words.map((word, index) => {
+		if (!word) return '';
+		const lower = word.toLowerCase();
+
+		// Keep short prepositions and articles lowercase unless they start or end the title
+		if (index > 0 && index < words.length - 1 && lowerCaseWords.has(lower)) {
+			return lower;
+		}
+
+		// Preserve short uppercase acronyms/codes (e.g., NWT, BC, UV)
+		if (word === word.toUpperCase() && word.length <= 3) {
+			return word;
+		}
+
+		// Format word with initial capital letter
+		return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+	});
+
+	return formattedWords.join(' ');
+}
+
 function formatExpiryTime(expiresStr?: string): string {
 	if (!expiresStr) return 'Active until cancelled';
 	try {
@@ -51,10 +81,10 @@ function getSeverityColor(severity?: string): {border: string; bg: string; text:
 		};
 	}
 	return {
-		border: 'rgba(56, 189, 248, 0.4)',
-		bg: 'rgba(56, 189, 248, 0.12)',
-		text: '#7DD3FC',
-		icon: '#38BDF8',
+		border: 'rgba(255, 255, 255, 0.2)',
+		bg: 'rgba(255, 255, 255, 0.06)',
+		text: '#E5E7EB',
+		icon: '#9CA3AF',
 	};
 }
 
@@ -87,6 +117,9 @@ export function WeatherWarningsWidget({warnings}: WeatherWarningsWidgetProps) {
 				{activeWarnings.map((warning, index) => {
 					const colors = getSeverityColor(warning.severity);
 					const isExpanded = expandedIndex === index;
+					const displayEvent = formatAlertText(warning.event || warning.headline || 'Weather Alert');
+					const displayHeadline = warning.headline ? formatAlertText(warning.headline) : undefined;
+					const showHeadline = !!displayHeadline && displayHeadline.toLowerCase() !== displayEvent.toLowerCase();
 
 					return (
 						<View
@@ -96,12 +129,10 @@ export function WeatherWarningsWidget({warnings}: WeatherWarningsWidgetProps) {
 							<View style={styles.cardHeader}>
 								<View style={styles.headlineRow}>
 									<View style={styles.eventInfo}>
-										<Text style={[styles.eventName, {color: colors.text}]}>
-											{warning.event || warning.headline || 'Weather Alert'}
-										</Text>
-										{warning.headline && warning.headline !== warning.event && (
+										<Text style={[styles.eventName, {color: colors.text}]}>{displayEvent}</Text>
+										{showHeadline && (
 											<Text style={styles.headlineText} numberOfLines={isExpanded ? undefined : 2}>
-												{warning.headline}
+												{displayHeadline}
 											</Text>
 										)}
 									</View>
@@ -137,14 +168,16 @@ export function WeatherWarningsWidget({warnings}: WeatherWarningsWidgetProps) {
 											{warning.desc ? (
 												<View style={styles.detailSection}>
 													<Text style={styles.detailLabel}>Description</Text>
-													<Text style={styles.detailBody}>{warning.desc}</Text>
+													<Text style={styles.detailBody}>{warning.desc.replace(/\bin affect\b/gi, 'in effect')}</Text>
 												</View>
 											) : null}
 
 											{warning.instruction ? (
 												<View style={styles.detailSection}>
 													<Text style={styles.detailLabel}>Instructions / Action Required</Text>
-													<Text style={styles.detailBody}>{warning.instruction}</Text>
+													<Text style={styles.detailBody}>
+														{warning.instruction.replace(/\bin affect\b/gi, 'in effect')}
+													</Text>
 												</View>
 											) : null}
 										</View>
