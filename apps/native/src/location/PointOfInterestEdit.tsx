@@ -84,9 +84,14 @@ export function PointOfInterestEdit() {
 	const updateField = <K extends FormKeys>(name: K, value: FormState[K]) => {
 		setForm(prev => {
 			const next = {...prev, [name]: value};
-			// Reset region if country changes
+			// Reset region and organization if country changes
 			if (name === 'countryId' && prev.countryId !== value) {
 				next.regionId = '';
+				next.organizationId = '';
+			}
+			// Reset organization if region changes
+			if (name === 'regionId' && prev.regionId !== value) {
+				next.organizationId = '';
 			}
 			return next;
 		});
@@ -185,28 +190,15 @@ export function PointOfInterestEdit() {
 				<Text style={formStyles.heading}>Edit Point of Interest</Text>
 
 				<View style={formStyles.formGroup}>
-					<View style={formStyles.row}>
-						<View style={formStyles.halfWidth}>
-							<FormField
-								fieldName="name"
-								label="Site Name"
-								placeholder="Enter site name"
-								value={form.name}
-								updateField={updateField}
-								error={errors.name}
-								loading={mutationLoading}
-							/>
-						</View>
-						<View style={formStyles.halfWidth}>
-							<OrganizationDropdown
-								fieldName="organizationId"
-								label="Organization"
-								value={form.organizationId}
-								updateField={updateField}
-								error={errors.organizationId}
-							/>
-						</View>
-					</View>
+					<FormField
+						fieldName="name"
+						label="Site Name"
+						placeholder="Enter site name"
+						value={form.name}
+						updateField={updateField}
+						error={errors.name}
+						loading={mutationLoading}
+					/>
 
 					<FormField
 						fieldName="image"
@@ -239,6 +231,15 @@ export function PointOfInterestEdit() {
 							/>
 						</View>
 					</View>
+
+					<OrganizationDropdown
+						fieldName="organizationId"
+						label="Organization"
+						regionId={form.regionId}
+						value={form.organizationId}
+						updateField={updateField}
+						error={errors.organizationId}
+					/>
 
 					<View style={formStyles.row}>
 						<View style={formStyles.halfWidth}>

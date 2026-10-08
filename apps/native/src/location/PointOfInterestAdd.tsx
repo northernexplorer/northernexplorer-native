@@ -59,6 +59,10 @@ export function PointOfInterestAdd() {
 			const next = {...prev, [name]: value};
 			if (name === 'countryId' && prev.countryId !== value) {
 				next.regionId = '';
+				next.organizationId = '';
+			}
+			if (name === 'regionId' && prev.regionId !== value) {
+				next.organizationId = '';
 			}
 			return next;
 		});
@@ -127,28 +131,15 @@ export function PointOfInterestAdd() {
 		<ScrollView style={formStyles.container} contentContainerStyle={formStyles.contentContainer}>
 			<View style={detailStyles.content}>
 				<View style={formStyles.formGroup}>
-					<View style={formStyles.row}>
-						<View style={formStyles.halfWidth}>
-							<FormField
-								fieldName="name"
-								label="Site Name"
-								placeholder="Enter site name"
-								value={form.name}
-								updateField={updateField}
-								error={errors.name}
-								loading={mutationLoading}
-							/>
-						</View>
-						<View style={formStyles.halfWidth}>
-							<OrganizationDropdown
-								fieldName="organizationId"
-								label="Organization"
-								value={form.organizationId}
-								updateField={updateField}
-								error={errors.organizationId}
-							/>
-						</View>
-					</View>
+					<FormField
+						fieldName="name"
+						label="Site Name"
+						placeholder="Enter site name"
+						value={form.name}
+						updateField={updateField}
+						error={errors.name}
+						loading={mutationLoading}
+					/>
 
 					<View style={[formStyles.row, {zIndex: 2000}]}>
 						<View style={formStyles.halfWidth}>
@@ -171,6 +162,15 @@ export function PointOfInterestAdd() {
 							/>
 						</View>
 					</View>
+
+					<OrganizationDropdown
+						fieldName="organizationId"
+						label="Organization"
+						regionId={form.regionId}
+						value={form.organizationId}
+						updateField={updateField}
+						error={errors.organizationId}
+					/>
 
 					<View style={formStyles.row}>
 						<View style={formStyles.halfWidth}>

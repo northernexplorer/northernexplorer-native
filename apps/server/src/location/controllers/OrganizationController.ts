@@ -1,4 +1,4 @@
-import {Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 
@@ -9,7 +9,15 @@ export class OrganizationController extends BaseController {
 		super(repos);
 	}
 
-	getAll(): Promise<Response<Route<'getAll'>>> {
+	async getAll(params?: Params<Route<'getAll'>>): Promise<Response<Route<'getAll'>>> {
+		const regionId = params?.regionId || params?.id;
+		if (regionId) {
+			return this.repos.organization.getByRegion(regionId);
+		}
 		return this.repos.organization.getAll();
+	}
+
+	async getByRegionId(params: Params<Route<'getByRegionId'>>): Promise<Response<Route<'getByRegionId'>>> {
+		return this.repos.organization.getByRegion(params.id);
 	}
 }
