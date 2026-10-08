@@ -28,15 +28,9 @@ export function CoordinateMap({lat, lon, onSelectCoordinates, disabled}: Props) 
 
 	const handlePress: React.ComponentProps<typeof NativeMap>['onPress'] = event => {
 		if (disabled) return;
-		const payload = 'nativeEvent' in event ? event.nativeEvent : event;
-		if (typeof payload === 'object' && 'geometry' in payload) {
-			const geo = (payload as {geometry?: {coordinates?: unknown}}).geometry;
-			if (geo && typeof geo === 'object' && 'coordinates' in geo && Array.isArray(geo.coordinates) && geo.coordinates.length >= 2) {
-				const [clickedLon, clickedLat] = geo.coordinates;
-				if (typeof clickedLat === 'number' && typeof clickedLon === 'number') {
-					onSelectCoordinates(clickedLat, clickedLon);
-				}
-			}
+		const [selectedLon, selectedLat] = event.nativeEvent.lngLat;
+		if (!isNaN(selectedLat) && !isNaN(selectedLon)) {
+			onSelectCoordinates(selectedLat, selectedLon);
 		}
 	};
 
