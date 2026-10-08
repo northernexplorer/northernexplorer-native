@@ -12,9 +12,18 @@ interface ComponentProps<T extends string> {
 	value: string;
 	updateField: (name: T, value: string) => void;
 	error?: string;
+	isSearchable?: boolean;
 }
 
-export function RegionDropdown<T extends string>({fieldName, countryId, label = 'Region', value, updateField, error}: RegionDropdownProps<T>) {
+export function RegionDropdown<T extends string>({
+	fieldName,
+	countryId,
+	label = 'Region',
+	value,
+	updateField,
+	error,
+	isSearchable = true,
+}: RegionDropdownProps<T>) {
 	const {data, loading} = useApiFetch('location', 'RegionController', 'getByCountryId', {id: countryId}, {skip: !Boolean(countryId)});
 
 	const options = useMemo(() => {
@@ -34,6 +43,7 @@ export function RegionDropdown<T extends string>({fieldName, countryId, label = 
 			updateField={updateField}
 			loading={loading}
 			error={error}
+			isSearchable={isSearchable}
 		/>
 	);
 }

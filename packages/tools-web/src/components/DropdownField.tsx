@@ -1,5 +1,5 @@
-import React, {useState, useRef} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, Dimensions, ScrollView} from 'react-native';
+import React, {useState, useRef, useMemo} from 'react';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, Pressable, Dimensions, ScrollView} from 'react-native';
 
 interface Option<V> {
 	label: string;
@@ -13,6 +13,8 @@ interface BaseProps<T extends string, V> {
 	error?: string;
 	loading?: boolean;
 	darkMode?: boolean;
+	isSearchable?: boolean;
+	searchPlaceholder?: string;
 }
 
 interface SingleProps<T extends string, V> extends BaseProps<T, V> {
@@ -32,10 +34,17 @@ type Props<T extends string, V> = SingleProps<T, V> | MultiProps<T, V>;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export function DropdownField<T extends string, V>(props: Props<T, V>) {
-	const {fieldName, label, options, error, loading, isMultiSelect, darkMode = false} = props;
+	const {fieldName, label, options, error, loading, isMultiSelect, darkMode = false, isSearchable = false, searchPlaceholder} = props;
 	const [isOpen, setIsOpen] = useState(false);
-	const [dropdownCoords, setDropdownCoords] = useState<{x: number; y: number; width: number}>({x: 0, y: 0, width: 0});
+	const [searchQuery, setSearchQuery] = useState('');
+	const [dropdownCoords, setDropdownCoords] = useState<{x: number; y: number; width: number; height: number}>({
+		x: 0,
+		y: 0,
+		width: 0,
+		height: 48,
+	});
 	const inputRef = useRef<View>(null);
+	const modalInputRef = useRef<TextInput>(null);
 
 	const toggleDropdown = () => {
 		if (loading) return;
@@ -44,14 +53,21 @@ export function DropdownField<T extends string, V>(props: Props<T, V>) {
 			inputRef.current.measureInWindow((x, y, width, height) => {
 				setDropdownCoords({
 					x,
-					y: y + height,
+					y,
 					width,
+					height,
 				});
+				setSearchQuery('');
 				setIsOpen(true);
 			});
 		} else {
-			setIsOpen(false);
+			closeDropdown();
 		}
+	};
+
+	const closeDropdown = () => {
+		setSearchQuery('');
+		setIsOpen(false);
 	};
 
 	const isSelected = (itemValue: V): boolean => {
@@ -68,9 +84,17 @@ export function DropdownField<T extends string, V>(props: Props<T, V>) {
 			props.updateField(fieldName, nextValues);
 		} else {
 			props.updateField(fieldName, itemValue);
-			setIsOpen(false);
+			closeDropdown();
 		}
 	};
+
+	const filteredOptions = useMemo(() => {
+		if (!isSearchable || !searchQuery.trim()) {
+			return options;
+		}
+		const query = searchQuery.toLowerCase().trim();
+		return options.filter(opt => opt.label.toLowerCase().includes(query));
+	}, [options, isSearchable, searchQuery]);
 
 	const getDisplayText = (): string => {
 		if (isMultiSelect) {
@@ -83,71 +107,123 @@ export function DropdownField<T extends string, V>(props: Props<T, V>) {
 		return selectedOption ? selectedOption.label : 'Select...';
 	};
 
+	const selectedOption = !isMultiSelect ? options.find(opt => opt.value === props.value) : undefined;
+	const selectedLabel = selectedOption ? selectedOption.label : '';
+	const placeholderText = searchPlaceholder || (selectedLabel ? selectedLabel : 'Select...');
+
 	return (
 		<View style={styles.container}>
 			<Text style={[styles.label, darkMode && styles.labelDark]}>{label}</Text>
 
 			<View style={styles.fieldWrapper} ref={inputRef}>
 				<TouchableOpacity
-					style={[
-						styles.input,
-						darkMode && styles.inputDark,
-						error ? styles.inputError : null,
-						isOpen && styles.inputOpen,
-						isOpen && darkMode && styles.inputOpenDark,
-						loading && styles.disabled,
-					]}
+					style={[styles.input, darkMode && styles.inputDark, error ? styles.inputError : null, loading && styles.disabled]}
 					onPress={toggleDropdown}
 					activeOpacity={0.7}
 					disabled={loading}
 				>
-					<Text style={[styles.inputText, darkMode && styles.inputTextDark]} numberOfLines={1}>
+					<Text
+						style={[styles.inputText, darkMode && styles.inputTextDark, !selectedLabel && !isMultiSelect && styles.placeholderText]}
+						numberOfLines={1}
+					>
 						{getDisplayText()}
 					</Text>
-					<Text style={[styles.chevron, darkMode && styles.chevronDark, isOpen && styles.chevronOpen]}>▾</Text>
+					<Text style={[styles.chevron, darkMode && styles.chevronDark]}>▾</Text>
 				</TouchableOpacity>
 			</View>
 
-			<Modal visible={isOpen} transparent animationType="none" onRequestClose={() => setIsOpen(false)}>
-				<Pressable style={styles.modalOverlay} onPress={() => setIsOpen(false)}>
-					<View
+			<Modal visible={isOpen} transparent animationType="none" onRequestClose={closeDropdown}>
+				<Pressable style={styles.modalOverlay} onPress={closeDropdown}>
+					<Pressable
+						onPress={e => e.stopPropagation()}
 						style={[
-							styles.dropdownMenu,
-							darkMode && styles.dropdownMenuDark,
+							styles.dropdownContainer,
 							{
 								left: dropdownCoords.x,
 								top: dropdownCoords.y,
 								width: dropdownCoords.width,
-								maxHeight: SCREEN_HEIGHT - dropdownCoords.y - 16,
 							},
 						]}
 					>
-						<ScrollView bounces={false} nestedScrollEnabled>
-							{options.map((item, index) => {
-								const selected = isSelected(item.value);
-								const isLast = index === options.length - 1;
-								return (
-									<TouchableOpacity
-										key={String(item.value)}
-										style={[
-											styles.optionRow,
-											darkMode && styles.optionRowDark,
-											selected && styles.optionRowSelected,
-											selected && darkMode && styles.optionRowSelectedDark,
-											isLast && styles.optionRowLast,
-										]}
-										onPress={() => handleSelect(item.value)}
-										activeOpacity={0.7}
-									>
-										<Text style={[styles.optionText, darkMode && styles.optionTextDark, selected && styles.optionTextSelected]}>
-											{item.label}
-										</Text>
-										{isMultiSelect ? <Text style={styles.checkbox}>{selected ? '☑' : '☐'}</Text> : null}
-									</TouchableOpacity>
-								);
-							})}
-						</ScrollView>
-					</View>
+						<View
+							style={[
+								styles.input,
+								styles.inputOpen,
+								darkMode && styles.inputDark,
+								darkMode && styles.inputOpenDark,
+								error ? styles.inputError : null,
+							]}
+						>
+							{isSearchable ? (
+								<TextInput
+									ref={modalInputRef}
+									style={[styles.inputText, darkMode && styles.inputTextDark]}
+									placeholder={placeholderText}
+									placeholderTextColor={darkMode ? 'rgba(255, 255, 255, 0.4)' : '#999'}
+									value={searchQuery}
+									onChangeText={setSearchQuery}
+									autoFocus={true}
+									autoCapitalize="none"
+									autoCorrect={false}
+								/>
+							) : (
+								<Text style={[styles.inputText, darkMode && styles.inputTextDark]} numberOfLines={1}>
+									{getDisplayText()}
+								</Text>
+							)}
+							<TouchableOpacity onPress={closeDropdown} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+								<Text style={[styles.chevron, darkMode && styles.chevronDark, styles.chevronOpen]}>▾</Text>
+							</TouchableOpacity>
+						</View>
+
+						<View
+							style={[
+								styles.dropdownMenu,
+								darkMode && styles.dropdownMenuDark,
+								{
+									maxHeight: Math.max(120, SCREEN_HEIGHT - dropdownCoords.y - dropdownCoords.height - 16),
+								},
+							]}
+						>
+							<ScrollView bounces={false} nestedScrollEnabled keyboardShouldPersistTaps="handled">
+								{filteredOptions.length === 0 ? (
+									<View style={styles.noResultsContainer}>
+										<Text style={[styles.noResultsText, darkMode && styles.noResultsTextDark]}>No results found</Text>
+									</View>
+								) : (
+									filteredOptions.map((item, index) => {
+										const selected = isSelected(item.value);
+										const isLast = index === filteredOptions.length - 1;
+										return (
+											<TouchableOpacity
+												key={String(item.value)}
+												style={[
+													styles.optionRow,
+													darkMode && styles.optionRowDark,
+													selected && styles.optionRowSelected,
+													selected && darkMode && styles.optionRowSelectedDark,
+													isLast && styles.optionRowLast,
+												]}
+												onPress={() => handleSelect(item.value)}
+												activeOpacity={0.7}
+											>
+												<Text
+													style={[
+														styles.optionText,
+														darkMode && styles.optionTextDark,
+														selected && styles.optionTextSelected,
+													]}
+												>
+													{item.label}
+												</Text>
+												{isMultiSelect ? <Text style={styles.checkbox}>{selected ? '☑' : '☐'}</Text> : null}
+											</TouchableOpacity>
+										);
+									})
+								)}
+							</ScrollView>
+						</View>
+					</Pressable>
 				</Pressable>
 			</Modal>
 
@@ -174,13 +250,18 @@ const styles = StyleSheet.create({
 	input: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		justifyContent: 'space-between',
-		height: 48,
-		paddingHorizontal: 12,
 		borderWidth: 1,
 		borderColor: '#CCC',
 		borderRadius: 8,
 		backgroundColor: '#FFF',
+		paddingHorizontal: 14,
+	},
+
+	inputText: {
+		flex: 1,
+		paddingVertical: 12,
+		fontSize: 16,
+		color: '#000',
 	},
 	inputDark: {
 		backgroundColor: 'rgba(255, 255, 255, 0.06)',
@@ -196,12 +277,6 @@ const styles = StyleSheet.create({
 	},
 	inputOpenDark: {
 		borderColor: '#33aaff',
-	},
-	inputText: {
-		flex: 1,
-		fontSize: 16,
-		color: '#333',
-		marginRight: 8,
 	},
 	inputTextDark: {
 		color: '#FFF',
@@ -223,19 +298,21 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: 'transparent',
 	},
-	dropdownMenu: {
+	dropdownContainer: {
 		position: 'absolute',
+		shadowColor: '#000',
+		shadowOffset: {width: 0, height: 4},
+		shadowOpacity: 0.1,
+		shadowRadius: 6,
+		elevation: 5,
+	},
+	dropdownMenu: {
 		backgroundColor: '#FFF',
 		borderWidth: 1,
 		borderTopWidth: 0,
 		borderColor: '#0088cc',
 		borderBottomLeftRadius: 8,
 		borderBottomRightRadius: 8,
-		shadowColor: '#000',
-		shadowOffset: {width: 0, height: 4},
-		shadowOpacity: 0.1,
-		shadowRadius: 6,
-		elevation: 5,
 		fontFamily: 'System',
 	},
 	dropdownMenuDark: {
@@ -243,6 +320,21 @@ const styles = StyleSheet.create({
 		borderColor: '#33aaff',
 		shadowColor: '#000',
 		shadowOpacity: 0.4,
+	},
+	placeholderText: {
+		color: '#888',
+	},
+	noResultsContainer: {
+		padding: 16,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	noResultsText: {
+		fontSize: 14,
+		color: '#888',
+	},
+	noResultsTextDark: {
+		color: '#AAA',
 	},
 	optionRow: {
 		flexDirection: 'row',
