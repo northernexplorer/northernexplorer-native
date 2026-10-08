@@ -11,9 +11,17 @@ export class WeatherController extends BaseController {
 
 	public async getData(params: Params<Route<'getData'>>): Promise<Response<Route<'getData'>>> {
 		const {lat, lon} = params;
-		const weather = this.repos.weather.getCache(Number(lat), Number(lon));
+		const weather = await this.repos.weather.getCache(Number(lat), Number(lon));
 
 		await this.flush();
 		return weather;
+	}
+
+	public async getWarnings(params: Params<Route<'getWarnings'>>): Promise<Response<Route<'getWarnings'>>> {
+		const {lat, lon} = params;
+		const warnings = await this.repos.weather.getWarnings(Number(lat), Number(lon));
+
+		await this.flush();
+		return warnings;
 	}
 }
