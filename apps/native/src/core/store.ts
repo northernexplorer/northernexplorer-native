@@ -1,4 +1,4 @@
-import {configureStore, combineReducers} from '@reduxjs/toolkit';
+import {configureStore, combineReducers, UnknownAction} from '@reduxjs/toolkit';
 import {persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import locationReducer from '~/location/state/location/locationSlice';
@@ -6,9 +6,9 @@ import mapReducer from '~/location/state/map/mapSlice';
 import weatherReducer from '~/environment/state/weather/weatherSlice';
 import lunarReducer from '~/environment/state/lunar/lunarSlice';
 import cityReducer from '~/location/state/city/citySlice';
-import authenticationReducer from '~/user/state/authentication/authenticationSlice';
+import authenticationReducer, {clearAuthentication} from '~/user/state/authentication/authenticationSlice';
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
 	location: locationReducer,
 	weather: weatherReducer,
 	lunar: lunarReducer,
@@ -16,6 +16,14 @@ const rootReducer = combineReducers({
 	authentication: authenticationReducer,
 	map: mapReducer,
 });
+
+const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: UnknownAction) => {
+	if (action.type === clearAuthentication.type) {
+		AsyncStorage.removeItem('persist:root');
+		return appReducer(undefined, action);
+	}
+	return appReducer(state, action);
+};
 
 const persistConfig = {
 	key: 'root',
