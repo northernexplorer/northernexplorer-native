@@ -1,7 +1,16 @@
 import React, {useState, useEffect} from 'react';
 import {ScrollView, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
-import {getUrlSafeString, Spinner, FormField, TextAreaField, DropdownField, ImageView, getImageUrl} from '@northernexplorer/tools-web';
+import {
+	getUrlSafeString,
+	Spinner,
+	FormField,
+	TextAreaField,
+	DropdownField,
+	ImageView,
+	getImageUrl,
+	CoordinateField,
+} from '@northernexplorer/tools-web';
 import {PointOfInterestEditType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
@@ -12,6 +21,7 @@ import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
 import {RegionDropdown} from '~/layout/Layout/components/RegionDropdown';
 import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
 import {OrganizationDropdown} from '~/layout/Layout/components/OrganizationDropdown';
+import {CoordinateMap} from '~/layout/Layout/components/CoordinateMap';
 import {Map} from '~/location/PointOfInterestDetails/components/Map';
 
 type FormState = {
@@ -241,30 +251,17 @@ export function PointOfInterestEdit() {
 						error={errors.organizationId}
 					/>
 
-					<View style={formStyles.row}>
-						<View style={formStyles.halfWidth}>
-							<FormField
-								fieldName="lat"
-								label="Latitude"
-								placeholder="e.g. 54.1234"
-								value={form.lat}
-								updateField={updateField}
-								error={errors.lat}
-								loading={mutationLoading}
-							/>
-						</View>
-						<View style={formStyles.halfWidth}>
-							<FormField
-								fieldName="lon"
-								label="Longitude"
-								placeholder="e.g. -94.5678"
-								value={form.lon}
-								updateField={updateField}
-								error={errors.lon}
-								loading={mutationLoading}
-							/>
-						</View>
-					</View>
+					<CoordinateField
+						latFieldName="lat"
+						lonFieldName="lon"
+						latValue={form.lat}
+						lonValue={form.lon}
+						updateField={updateField}
+						latError={errors.lat}
+						lonError={errors.lon}
+						loading={mutationLoading}
+						mapComponent={CoordinateMap}
+					/>
 
 					<View style={formStyles.row}>
 						<View style={formStyles.halfWidth}>
