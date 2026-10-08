@@ -40,9 +40,29 @@ export type WeatherType = {
 	};
 };
 
+export type WeatherWarningType = {
+	headline: string;
+	msgtype?: string;
+	severity: string;
+	urgency?: string;
+	areas?: string;
+	category?: string;
+	certainty?: string;
+	event: string;
+	note?: string;
+	effective: string;
+	expires: string;
+	desc: string;
+	instruction: string;
+};
+
 export const WeatherController = {
 	getData: {
 		params: {lat: 0, lon: 0} as {lat: number; lon: number},
 		response: null as unknown as WeatherType,
+	},
+	getWarnings: {
+		params: {lat: 0, lon: 0} as {lat: number; lon: number},
+		response: [] as WeatherWarningType[],
 	},
 };

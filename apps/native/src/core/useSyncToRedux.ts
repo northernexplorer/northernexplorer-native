@@ -8,18 +8,22 @@ export function useSyncToRedux<T>(
 	error: Error | null,
 	actions: {
 		set: ActionCreatorWithPayload<T>;
-		setLoading: ActionCreatorWithPayload<boolean>;
-		setError: ActionCreatorWithPayload<string | null>;
+		setLoading?: ActionCreatorWithPayload<boolean>;
+		setError?: ActionCreatorWithPayload<string | null>;
 	},
 ) {
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		dispatch(actions.setLoading(loading));
+		if (actions.setLoading) {
+			dispatch(actions.setLoading(loading));
+		}
 	}, [dispatch, loading, actions.setLoading]);
 
 	useEffect(() => {
-		dispatch(actions.setError(error ? error.message : null));
+		if (actions.setError) {
+			dispatch(actions.setError(error ? error.message : null));
+		}
 	}, [dispatch, error, actions.setError]);
 
 	useEffect(() => {
