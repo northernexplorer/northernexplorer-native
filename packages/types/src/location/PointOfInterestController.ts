@@ -85,7 +85,7 @@ export type PointOfInterestCreateType = {
 	organizationId: string;
 	startDate?: number;
 	endDate?: number;
-	status: PublishStatusEnum;
+	status?: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 };
 

@@ -10,9 +10,11 @@ import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 type Props = {
-	refetch: () => void;
+	refetch?: () => void;
 	initialData?: ReviewType | ReviewSummary;
 	onCancel?: () => void;
+	pointOfInterestId?: string;
+	onSuccess?: () => void;
 };
 
 type RouteParams = {
@@ -30,9 +32,10 @@ type ReviewFormState = {
 
 type FormKeys = keyof ReviewFormState;
 
-export function ReviewForm({refetch, initialData, onCancel}: Props) {
+export function ReviewForm({refetch, initialData, onCancel, pointOfInterestId: propPoiId, onSuccess}: Props) {
 	const authentication = useAuthentication();
 	const {id} = useLocalSearchParams<RouteParams>();
+	const pointOfInterestId = propPoiId || id;
 
 	const isEditing = Boolean(initialData);
 
@@ -45,7 +48,7 @@ export function ReviewForm({refetch, initialData, onCancel}: Props) {
 	const isLoading = isEditing ? updateMutation.loading : createMutation.loading;
 
 	const [formData, setFormData] = useState<ReviewFormState>({
-		pointOfInterestId: id,
+		pointOfInterestId,
 		description: initialData?.description ?? '',
 		rating: initialData?.rating ?? ReviewRatingEnum.DEFAULT,
 		difficulty: initialData?.difficulty ?? null,
@@ -108,7 +111,7 @@ export function ReviewForm({refetch, initialData, onCancel}: Props) {
 				});
 			} else {
 				response = await createMutation.mutate({
-					pointOfInterestId: id,
+					pointOfInterestId,
 					description: formData.description || '',
 					rating: formData.rating,
 					difficulty: formData.difficulty!,
@@ -126,7 +129,8 @@ export function ReviewForm({refetch, initialData, onCancel}: Props) {
 				});
 			}
 
-			refetch();
+			if (refetch) refetch();
+			if (onSuccess) onSuccess();
 			if (onCancel) onCancel();
 			return response;
 		} catch (error) {
