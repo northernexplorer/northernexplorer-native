@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState, useEffect} from 'react';
+import React, {createContext, useContext, useState, useEffect, useRef} from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import {Platform} from 'react-native';
 import {getBuildNumber} from 'react-native-device-info';
@@ -14,12 +14,9 @@ export function ConnectivityProvider({children}: {children: React.ReactNode}) {
 	const [isDeviceConnected, setIsDeviceConnected] = useState(true);
 	const [isServerReachable, setIsServerReachable] = useState(true);
 	const [isRequiredAppUpdate, setIsRequiredAppUpdate] = useState(false);
+	const failureCountRef = useRef(0);
 
 	useEffect(() => {
-		const unsubscribe = NetInfo.addEventListener(state => {
-			setIsDeviceConnected(state.isConnected ?? true);
-		});
-
 		const checkServerStatus = async () => {
 			try {
 				const response = await apiClient(
@@ -33,12 +30,25 @@ export function ConnectivityProvider({children}: {children: React.ReactNode}) {
 					},
 					'GET',
 				);
+				failureCountRef.current = 0;
 				setIsServerReachable(String(response.online).toLowerCase() === 'true');
 				setIsRequiredAppUpdate(String(response.upgradeRequired).toLowerCase() === 'true');
 			} catch {
-				setIsServerReachable(false);
+				failureCountRef.current += 1;
+				// Require 3 consecutive failed checks before marking server unreachable to prevent transient blips from unmounting active views
+				if (failureCountRef.current >= 3) {
+					setIsServerReachable(false);
+				}
 			}
 		};
+
+		const unsubscribe = NetInfo.addEventListener(state => {
+			const connected = state.isConnected ?? true;
+			setIsDeviceConnected(connected);
+			if (connected) {
+				checkServerStatus();
+			}
+		});
 
 		checkServerStatus();
 		const interval = setInterval(checkServerStatus, 10000);
