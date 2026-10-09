@@ -20,8 +20,6 @@ export function ConnectivityProvider({children}: {children: React.ReactNode}) {
 			setIsDeviceConnected(state.isConnected ?? true);
 		});
 
-		let consecutiveFailures = 0;
-
 		const checkServerStatus = async () => {
 			try {
 				const response = await apiClient(
@@ -35,19 +33,15 @@ export function ConnectivityProvider({children}: {children: React.ReactNode}) {
 					},
 					'GET',
 				);
-				consecutiveFailures = 0;
 				setIsServerReachable(String(response.online).toLowerCase() === 'true');
 				setIsRequiredAppUpdate(String(response.upgradeRequired).toLowerCase() === 'true');
 			} catch {
-				consecutiveFailures++;
-				if (consecutiveFailures >= 3) {
-					setIsServerReachable(false);
-				}
+				setIsServerReachable(false);
 			}
 		};
 
 		checkServerStatus();
-		const interval = setInterval(checkServerStatus, 30000);
+		const interval = setInterval(checkServerStatus, 10000);
 
 		return () => {
 			unsubscribe();

@@ -54,21 +54,12 @@ export function useLocationBootstrap() {
 					locationSubscription = await watchPositionAsync(
 						{
 							accuracy: Platform.OS === 'android' ? Accuracy.Balanced : Accuracy.High,
-							timeInterval: 5000,
-							distanceInterval: 10,
+							timeInterval: 2000,
+							distanceInterval: 1,
 						},
 						loc => {
 							if (!cancelled) {
-								setData(prev => {
-									if (
-										prev &&
-										Math.abs(prev.lat - loc.coords.latitude) < 0.0001 &&
-										Math.abs(prev.lon - loc.coords.longitude) < 0.0001
-									) {
-										return prev;
-									}
-									return {lat: loc.coords.latitude, lon: loc.coords.longitude};
-								});
+								setData({lat: loc.coords.latitude, lon: loc.coords.longitude});
 							}
 						},
 					);

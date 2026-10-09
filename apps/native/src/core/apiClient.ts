@@ -95,7 +95,7 @@ export async function apiClient<C extends NonEmptyCategory, K extends keyof ROUT
 			// Retry request with fresh access token
 			const retryHeaders = {...headers, Authorization: `Bearer ${tokenData.accessToken}`};
 			res = await fetch(url.toString(), {...options, headers: retryHeaders});
-		} else if (activeRefreshToken || tokenToUse) {
+		} else {
 			authEvents.emit('FORCE_LOGOUT');
 		}
 	}
