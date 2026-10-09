@@ -47,7 +47,7 @@ export function ConnectivityProvider({children}: {children: React.ReactNode}) {
 		};
 
 		checkServerStatus();
-		const interval = setInterval(checkServerStatus, 10000);
+		const interval = setInterval(checkServerStatus, 30000);
 
 		return () => {
 			unsubscribe();
