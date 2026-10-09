@@ -10,6 +10,10 @@ import {useIsOffline} from '~/core/ConnectivityProvider';
 
 const apiCache = new Map<string, unknown>();
 
+export function clearApiCache() {
+	apiCache.clear();
+}
+
 export interface UseApiFetchOptions {
 	skip?: boolean;
 }
@@ -37,6 +41,8 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const skipRef = useRef(skip);
 	skipRef.current = skip;
 
+	const lastFetchedRef = useRef<number>(0);
+
 	// Type-safe helper to retrieve cached data without returning 'unknown'
 	const getCachedData = useCallback((key: string | null): GetResponse<C, K, M> | null => {
 		if (key && apiCache.has(key)) {
@@ -48,6 +54,9 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const [data, setData] = useState<GetResponse<C, K, M> | null>(() => (isSkipped ? null : getCachedData(cacheKey)));
 	const [loading, setLoading] = useState<boolean>(() => !isSkipped && !getCachedData(cacheKey));
 	const [error, setError] = useState<Error | null>(null);
+
+	const dataRef = useRef(data);
+	dataRef.current = data;
 
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
@@ -70,100 +79,108 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 		}
 	}, [cacheKey, getCachedData, isSkipped]);
 
-	const fetchData = useCallback(async () => {
-		if (skipRef.current) {
-			setLoading(false);
-			setData(null);
-			return;
-		}
-
-		const currentCacheKey = cacheKeyRef.current;
-		const currentParams = paramsRef.current;
-
-		if (isOffline) {
-			setLoading(false);
-			const cached = getCachedData(currentCacheKey);
-			if (cached !== null) {
-				setData(cached);
+	const fetchData = useCallback(
+		async (isFocusRefetch = false) => {
+			if (skipRef.current) {
+				setLoading(false);
+				setData(null);
+				return;
 			}
-			return;
-		}
 
-		if (!currentParams) {
-			setLoading(false);
-			setData(null);
-			return;
-		}
+			const currentCacheKey = cacheKeyRef.current;
+			const currentParams = paramsRef.current;
 
-		// Only show full loading state on initial load when cache is empty
-		if (!currentCacheKey || !apiCache.has(currentCacheKey)) {
-			setLoading(true);
-		}
-
-		setError(null);
-
-		try {
-			const result = await apiClient(
-				category,
-				controller,
-				method,
-				currentParams,
-				'GET',
-				authentication?.accessToken,
-				authentication?.refreshToken,
-				response => {
-					if (authentication) {
-						dispatch(setAuthentication(response));
-					}
-				},
-			);
-
-			if (currentCacheKey) {
-				apiCache.set(currentCacheKey, result);
+			if (isOffline) {
+				setLoading(false);
+				const cached = getCachedData(currentCacheKey);
+				if (cached !== null) {
+					setData(cached);
+				}
+				return;
 			}
-			setData(result as GetResponse<C, K, M>);
-		} catch (err) {
-			const e = err instanceof Error ? err : new Error(typeof err === 'string' ? err : 'Network request failed');
-			setError(e);
 
-			const msg = e.message.toLowerCase();
-
-			const isNetworkError =
-				msg.includes('failed to fetch') ||
-				msg.includes('network request failed') ||
-				msg.includes('fetch failed') ||
-				msg.includes('connectexception') ||
-				msg.includes('failed to connect') ||
-				msg.includes('connection refused') ||
-				msg.includes('networkerror') ||
-				msg.includes('load failed');
-
-			if (!isNetworkError) {
-				const alertType = e.message.includes('Session Expired') ? 'warning' : 'error';
-				alertStore.showAlert({message: e.message, type: alertType});
-			} else {
-				console.log(`Silencing alert for network failure on ${String(method)}. Relying on cache.`);
+			if (!currentParams) {
+				setLoading(false);
+				setData(null);
+				return;
 			}
-		} finally {
-			setLoading(false);
-		}
-	}, [
-		category,
-		controller,
-		method,
-		serializedParams,
-		skip,
-		isOffline,
-		authentication?.accessToken,
-		authentication?.refreshToken,
-		dispatch,
-		authentication,
-		getCachedData,
-	]);
+
+			if (isFocusRefetch && Date.now() - lastFetchedRef.current < 15000) {
+				return;
+			}
+
+			// Only show full loading state on initial load when cache is empty and no data exists
+			if (!dataRef.current && (!currentCacheKey || !apiCache.has(currentCacheKey))) {
+				setLoading(true);
+			}
+
+			setError(null);
+
+			try {
+				const result = await apiClient(
+					category,
+					controller,
+					method,
+					currentParams,
+					'GET',
+					authentication?.accessToken,
+					authentication?.refreshToken,
+					response => {
+						if (authentication) {
+							dispatch(setAuthentication(response));
+						}
+					},
+				);
+
+				lastFetchedRef.current = Date.now();
+				if (currentCacheKey) {
+					apiCache.set(currentCacheKey, result);
+				}
+				setData(result as GetResponse<C, K, M>);
+			} catch (err) {
+				const e = err instanceof Error ? err : new Error(typeof err === 'string' ? err : 'Network request failed');
+				setError(e);
+
+				const msg = e.message.toLowerCase();
+
+				const isNetworkError =
+					msg.includes('failed to fetch') ||
+					msg.includes('network request failed') ||
+					msg.includes('fetch failed') ||
+					msg.includes('connectexception') ||
+					msg.includes('failed to connect') ||
+					msg.includes('connection refused') ||
+					msg.includes('networkerror') ||
+					msg.includes('load failed');
+
+				if (!isNetworkError) {
+					const alertType = e.message.includes('Session Expired') ? 'warning' : 'error';
+					alertStore.showAlert({message: e.message, type: alertType});
+				} else {
+					console.log(`Silencing alert for network failure on ${String(method)}. Relying on cache.`);
+				}
+			} finally {
+				setLoading(false);
+			}
+		},
+		[
+			category,
+			controller,
+			method,
+			serializedParams,
+			skip,
+			isOffline,
+			authentication?.accessToken,
+			authentication?.refreshToken,
+			dispatch,
+			authentication,
+			getCachedData,
+		],
+	);
 
 	useFocusEffect(
 		useCallback(() => {
-			fetchData();
+			fetchData(true);
 		}, [fetchData]),
 	);
 
