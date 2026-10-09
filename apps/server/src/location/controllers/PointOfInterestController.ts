@@ -176,7 +176,9 @@ export class PointOfInterestController extends BaseController {
 	}
 
 	async create(params: Params<Route<'create'>>, auth?: AuthContext): Promise<Response<Route<'create'>>> {
-		this.permissionService.canAccessAdmin(auth);
+		const {userId} = this.permissionService.isLoggedIn(auth);
+		const user = await this.repos.user.getById(userId);
+		const isAdmin = user.roles?.includes(RolesEnum.Admin);
 
 		const {countryId, regionId, startDate, endDate, organizationId, ...data} = params;
 
@@ -186,8 +188,11 @@ export class PointOfInterestController extends BaseController {
 		const image = await this.repos.image.getDefault(params.type.at(0) || PointOfInterestTypeEnum.HistoricSite);
 		if (!image) throw new Error('An image could not be found associated with this type.');
 
+		const status = isAdmin ? data.status || PublishStatusEnum.Draft : PublishStatusEnum.Draft;
+
 		const pointOfInterest = new PointOfInterest({
 			...data,
+			status,
 			country,
 			region,
 			startDate,

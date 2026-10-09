@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto';
-import {ImageStatusEnum, ImageUploadStatus, Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {ImageStatusEnum, ImageUploadStatus, Params, PublishStatusEnum, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {SpacesManagementService} from '@northernexplorer/tools-server';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
@@ -99,7 +99,7 @@ export class ImageController extends BaseController {
 		});
 
 		let status = ImageStatusEnum.Pending;
-		if (this.repos.user.isPostApproved(user)) {
+		if (pointOfInterest.status !== PublishStatusEnum.Draft && this.repos.user.isPostApproved(user)) {
 			status = ImageStatusEnum.Approved;
 		}
 
@@ -118,7 +118,7 @@ export class ImageController extends BaseController {
 
 		this.repos.image.persist(image);
 
-		if (this.repos.user.isPostApproved(user)) {
+		if (status === ImageStatusEnum.Approved) {
 			user.score += 10;
 		}
 

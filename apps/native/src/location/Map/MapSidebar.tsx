@@ -198,6 +198,15 @@ export function MapSidebar() {
 
 			<PointOfInterestTypeDropdown fieldName="poiTypes" label="Types" value={selectedPoiTypes} updateField={handlePoiTypeChange} darkMode />
 
+			<View style={styles.section}>
+				<Link href={isLoggedIn ? '/admin/add-point-of-interest' : '/user/login'} asChild>
+					<TouchableOpacity style={styles.suggestPoiButton} activeOpacity={0.8}>
+						<MaterialCommunityIcons name="map-marker-plus" size={18} color="#ffffff" />
+						<Text style={styles.suggestPoiButtonText}>Suggest Point of Interest</Text>
+					</TouchableOpacity>
+				</Link>
+			</View>
+
 			{/* Admin Controls Section */}
 			{isAdmin && (
 				<View style={styles.adminSection}>
@@ -322,6 +331,22 @@ const styles = StyleSheet.create({
 	},
 	activeText: {
 		color: 'white',
+		fontWeight: '600',
+	},
+	suggestPoiButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+		backgroundColor: '#0088cc',
+		borderRadius: 10,
+		paddingVertical: 12,
+		paddingHorizontal: 16,
+		marginTop: 6,
+	},
+	suggestPoiButtonText: {
+		color: '#ffffff',
+		fontSize: 14,
 		fontWeight: '600',
 	},
 	banner: {
