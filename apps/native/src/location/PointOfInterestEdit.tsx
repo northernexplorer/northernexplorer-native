@@ -11,7 +11,13 @@ import {
 	getImageUrl,
 	CoordinateField,
 } from '@northernexplorer/tools-web';
-import {PointOfInterestEditType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
+import {
+	PointOfInterestEditType,
+	PointOfInterestSuggestionCreateType,
+	PointOfInterestTypeEnum,
+	PublishStatusEnum,
+	RolesEnum,
+} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
 import {styles, styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
@@ -23,6 +29,7 @@ import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInt
 import {OrganizationDropdown} from '~/layout/Layout/components/OrganizationDropdown';
 import {CoordinateMap} from '~/layout/Layout/components/CoordinateMap';
 import {Map} from '~/location/PointOfInterestDetails/components/Map';
+import {alertStore} from '~/core/alertStore';
 
 type FormState = {
 	name: string;
@@ -49,8 +56,12 @@ const STATUS_OPTIONS = [
 export function PointOfInterestEdit() {
 	const {id} = useLocalSearchParams<{id: string}>();
 	const authentication = useAuthentication();
+	const isAdmin = !!authentication?.roles?.includes(RolesEnum.Admin);
 	const {data, loading} = useApiFetch('location', 'PointOfInterestController', 'getById', {id});
-	const {mutate, loading: mutationLoading} = useApiMutation('location', 'PointOfInterestController', 'edit');
+	const {mutate: editMutate, loading: editLoading} = useApiMutation('location', 'PointOfInterestController', 'edit');
+	const {mutate: suggestMutate, loading: suggestLoading} = useApiMutation('location', 'PointOfInterestSuggestionController', 'create');
+
+	const mutationLoading = isAdmin ? editLoading : suggestLoading;
 
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const [form, setForm] = useState<FormState>({
@@ -88,7 +99,6 @@ export function PointOfInterestEdit() {
 	}, [data]);
 
 	if (!authentication) return <Redirect href="/user/login" />;
-	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading || !data) return <Spinner />;
 
 	const updateField = <K extends FormKeys>(name: K, value: FormState[K]) => {
@@ -118,6 +128,7 @@ export function PointOfInterestEdit() {
 		if (!form.description.trim()) newErrors.description = 'Description is required';
 		if (!form.countryId) newErrors.countryId = 'Country is required';
 		if (!form.regionId) newErrors.regionId = 'Region is required';
+		if (!form.organizationId) newErrors.organizationId = 'Organization is required';
 		if (form.type.length === 0) newErrors.type = 'At least one type must be selected';
 
 		const parsedLat = parseFloat(form.lat);
@@ -138,33 +149,74 @@ export function PointOfInterestEdit() {
 	};
 
 	const handleSubmit = async (parsedLat: number, parsedLon: number) => {
-		const payload: PointOfInterestEditType = {
-			id: data.id,
-			name: form.name,
-			description: form.description,
-			imageId: form.image,
-			lat: parsedLat,
-			lon: parsedLon,
-			countryId: form.countryId,
-			regionId: form.regionId,
-			type: form.type,
-			startDate: form.startDate.trim() ? Number(form.startDate) : undefined,
-			endDate: form.endDate.trim() ? Number(form.endDate) : undefined,
-			status: form.status,
-			organizationId: form.organizationId,
-		};
+		if (isAdmin) {
+			const payload: PointOfInterestEditType = {
+				id: data.id,
+				name: form.name,
+				description: form.description,
+				imageId: form.image,
+				lat: parsedLat,
+				lon: parsedLon,
+				countryId: form.countryId,
+				regionId: form.regionId,
+				type: form.type,
+				startDate: form.startDate.trim() ? Number(form.startDate) : undefined,
+				endDate: form.endDate.trim() ? Number(form.endDate) : undefined,
+				status: form.status,
+				organizationId: form.organizationId,
+			};
 
-		const response = await mutate(payload);
-		if (response?.success) {
-			router.replace({
-				pathname: '/[country]/[region]/[name]/[id]',
-				params: {
-					country: getUrlSafeString(data.country.name),
-					region: getUrlSafeString(data.region.name),
-					id: getUrlSafeString(data.id),
-					name: getUrlSafeString(form.name),
-				},
-			});
+			const response = await editMutate(payload);
+			if (response?.success) {
+				router.replace({
+					pathname: '/[country]/[region]/[name]/[id]',
+					params: {
+						country: getUrlSafeString(data.country.name),
+						region: getUrlSafeString(data.region.name),
+						id: getUrlSafeString(data.id),
+						name: getUrlSafeString(form.name),
+					},
+				});
+			}
+		} else {
+			const payload: PointOfInterestSuggestionCreateType = {
+				pointOfInterestId: data.id,
+				name: form.name,
+				description: form.description,
+				lat: parsedLat,
+				lon: parsedLon,
+				countryId: form.countryId,
+				regionId: form.regionId,
+				organizationId: form.organizationId,
+				type: form.type,
+				startDate: form.startDate.trim() ? Number(form.startDate) : undefined,
+				endDate: form.endDate.trim() ? Number(form.endDate) : undefined,
+			};
+
+			const response = await suggestMutate(payload);
+			if (response?.success) {
+				alertStore.showAlert({
+					title: 'Suggestion Submitted',
+					message: 'Thank you for your contribution! Your suggested update has been submitted for admin review.',
+					type: 'success',
+					buttons: [
+						{
+							text: 'OK',
+							onPress: () => {
+								router.replace({
+									pathname: '/[country]/[region]/[name]/[id]',
+									params: {
+										country: getUrlSafeString(data.country.name),
+										region: getUrlSafeString(data.region.name),
+										id: getUrlSafeString(data.id),
+										name: getUrlSafeString(data.name),
+									},
+								});
+							},
+						},
+					],
+				});
+			}
 		}
 	};
 
@@ -197,7 +249,12 @@ export function PointOfInterestEdit() {
 					{data.country.name} › {data.region.name}
 				</Text>
 
-				<Text style={formStyles.heading}>Edit Point of Interest</Text>
+				<Text style={formStyles.heading}>{isAdmin ? 'Edit Point of Interest' : 'Suggest Point of Interest Update'}</Text>
+				{!isAdmin && (
+					<Text style={formStyles.subheading}>
+						Suggest updates or corrections for this point of interest. Submissions will be reviewed by administrators.
+					</Text>
+				)}
 
 				<View style={formStyles.formGroup}>
 					<FormField
@@ -210,15 +267,17 @@ export function PointOfInterestEdit() {
 						loading={mutationLoading}
 					/>
 
-					<FormField
-						fieldName="image"
-						label="Image Id"
-						placeholder="Id of image"
-						value={form.image}
-						updateField={updateField}
-						error={errors.image}
-						loading={mutationLoading}
-					/>
+					{isAdmin && (
+						<FormField
+							fieldName="image"
+							label="Image Id"
+							placeholder="Id of image"
+							value={form.image}
+							updateField={updateField}
+							error={errors.image}
+							loading={mutationLoading}
+						/>
+					)}
 
 					<View style={[formStyles.row, {zIndex: 2000}]}>
 						<View style={formStyles.halfWidth}>
@@ -301,20 +360,22 @@ export function PointOfInterestEdit() {
 				</View>
 
 				<View style={formStyles.row}>
-					<View style={formStyles.halfWidth}>
+					<View style={isAdmin ? formStyles.halfWidth : {flex: 1}}>
 						<PointOfInterestTypeDropdown fieldName="type" label="Type" value={form.type} updateField={updateField} error={errors.type} />
 					</View>
-					<View style={formStyles.halfWidth}>
-						<DropdownField
-							fieldName="status"
-							label="Status"
-							value={form.status}
-							options={STATUS_OPTIONS}
-							updateField={updateField}
-							error={errors.status}
-							loading={mutationLoading}
-						/>
-					</View>
+					{isAdmin && (
+						<View style={formStyles.halfWidth}>
+							<DropdownField
+								fieldName="status"
+								label="Status"
+								value={form.status}
+								options={STATUS_OPTIONS}
+								updateField={updateField}
+								error={errors.status}
+								loading={mutationLoading}
+							/>
+						</View>
+					)}
 				</View>
 
 				<View style={formStyles.buttonRow}>
@@ -340,7 +401,11 @@ export function PointOfInterestEdit() {
 						onPress={validateForm}
 						disabled={mutationLoading}
 					>
-						{mutationLoading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={formStyles.saveButtonText}>Save Changes</Text>}
+						{mutationLoading ? (
+							<ActivityIndicator color="#FFFFFF" />
+						) : (
+							<Text style={formStyles.saveButtonText}>{isAdmin ? 'Save Changes' : 'Submit Suggestion'}</Text>
+						)}
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -360,6 +425,12 @@ const formStyles = StyleSheet.create({
 		fontWeight: '700',
 		color: '#111',
 		marginVertical: 12,
+	},
+	subheading: {
+		fontSize: 14,
+		color: '#666',
+		marginBottom: 12,
+		lineHeight: 20,
 	},
 	formGroup: {
 		gap: 16,

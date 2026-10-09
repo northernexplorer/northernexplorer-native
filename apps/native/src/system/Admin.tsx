@@ -20,9 +20,23 @@ export function Admin() {
 	const pendingReviewsCount = data?.pendingReviews ?? 0;
 	const pendingImagesCount = data?.pendingImages ?? 0;
 	const pendingReportsCount = data?.pendingReports ?? 0;
+	const pendingSuggestionsCount = data?.pendingSuggestions ?? 0;
 
 	return (
 		<View style={styles.grid}>
+			{/* Suggested Updates Card */}
+			<Pressable
+				style={({pressed}) => [styles.card, pendingSuggestionsCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
+				onPress={() => router.push('/admin/suggested-updates')}
+			>
+				{pendingSuggestionsCount > 0 && <View style={styles.badgeDot} />}
+				<View style={[styles.iconBadge, {backgroundColor: '#e0f2fe'}]}>
+					<Ionicons name="bulb-outline" size={24} color="#0284c7" />
+				</View>
+				<Text style={styles.statValue}>{pendingSuggestionsCount}</Text>
+				<Text style={styles.statLabel}>Suggested Updates</Text>
+			</Pressable>
+
 			{/* Draft Sites Card */}
 			<Pressable
 				style={({pressed}) => [styles.card, draftCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}

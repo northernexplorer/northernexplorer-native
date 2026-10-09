@@ -2,6 +2,7 @@ import {LunarController, WeatherController} from '../environment';
 import {
 	CityController,
 	PointOfInterestController,
+	PointOfInterestSuggestionController,
 	CountryController,
 	RegionController,
 	ReviewController,
@@ -20,6 +21,7 @@ export const controllers: ControllerConstructor[] = [
 	ImageController,
 	CityController,
 	PointOfInterestController,
+	PointOfInterestSuggestionController,
 	OrganizationController,
 	CountryController,
 	UserController,
