@@ -103,7 +103,6 @@ export class PointOfInterestSuggestionController extends BaseController {
 		const country = await this.repos.country.getById(params.countryId);
 		const region = await this.repos.region.getById(params.regionId);
 		const organization = await this.repos.organization.getById(params.organizationId);
-		const image = params.imageId ? await this.repos.image.getById(params.imageId) : pointOfInterest.image;
 
 		const suggestion = new PointOfInterestSuggestion({
 			user,
@@ -115,7 +114,7 @@ export class PointOfInterestSuggestionController extends BaseController {
 			country,
 			region,
 			organization,
-			image,
+			image: pointOfInterest.image,
 			startDate: params.startDate,
 			endDate: params.endDate,
 			type: params.type,

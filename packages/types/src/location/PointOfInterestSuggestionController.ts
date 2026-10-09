@@ -49,7 +49,6 @@ export type PointOfInterestSuggestionCreateType = {
 	pointOfInterestId: string;
 	name: string;
 	description: string;
-	imageId?: string;
 	lat: number;
 	lon: number;
 	countryId: string;

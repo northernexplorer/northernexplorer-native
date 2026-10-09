@@ -183,7 +183,6 @@ export function PointOfInterestEdit() {
 				pointOfInterestId: data.id,
 				name: form.name,
 				description: form.description,
-				imageId: form.image || undefined,
 				lat: parsedLat,
 				lon: parsedLon,
 				countryId: form.countryId,
@@ -268,15 +267,17 @@ export function PointOfInterestEdit() {
 						loading={mutationLoading}
 					/>
 
-					<FormField
-						fieldName="image"
-						label="Image Id"
-						placeholder="Id of image"
-						value={form.image}
-						updateField={updateField}
-						error={errors.image}
-						loading={mutationLoading}
-					/>
+					{isAdmin && (
+						<FormField
+							fieldName="image"
+							label="Image Id"
+							placeholder="Id of image"
+							value={form.image}
+							updateField={updateField}
+							error={errors.image}
+							loading={mutationLoading}
+						/>
+					)}
 
 					<View style={[formStyles.row, {zIndex: 2000}]}>
 						<View style={formStyles.halfWidth}>
