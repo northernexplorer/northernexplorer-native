@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {View, Text, TextInput, Pressable, Switch, ScrollView} from 'react-native';
 import {Link, router} from 'expo-router';
-import {DateField, DropdownField, FormField} from '@northernexplorer/tools-web';
+import {DateField, DropdownField, FormField, CaptchaField} from '@northernexplorer/tools-web';
 import {GenderEnum} from '@northernexplorer/types';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
+import {apiClient} from '~/core/apiClient';
 import {isValidEmail} from '~/user/isValidEmail';
 
 const initialFormData = {
@@ -20,6 +21,8 @@ const initialFormData = {
 	acceptPrivacy: false,
 	acceptCodeOfConduct: false,
 	website: '',
+	captchaId: '',
+	captchaAnswer: '',
 };
 
 type FormData = typeof initialFormData;
@@ -34,8 +37,29 @@ const genderOptions = [
 export function Register() {
 	const [formData, setFormData] = useState<FormData>(initialFormData);
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
+	const [captcha, setCaptcha] = useState<{captchaId: string; image: string; svg: string} | null>(null);
+	const [captchaLoading, setCaptchaLoading] = useState(false);
 
 	const {mutate, loading} = useApiMutation('user', 'UserController', 'register');
+
+	const fetchCaptcha = useCallback(async () => {
+		setCaptchaLoading(true);
+		try {
+			const res = await apiClient('user', 'UserController', 'getCaptcha', {}, 'GET');
+			if (res.captchaId) {
+				setCaptcha(res);
+				setFormData(prev => ({...prev, captchaId: res.captchaId, captchaAnswer: ''}));
+			}
+		} catch {
+			// Failed to fetch captcha
+		} finally {
+			setCaptchaLoading(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		fetchCaptcha();
+	}, [fetchCaptcha]);
 
 	const updateField = (key: FormKeys, value: unknown) => {
 		setFormData(prev => ({...prev, [key]: value}));
@@ -61,6 +85,10 @@ export function Register() {
 			newErrors.confirmPassword = 'Passwords do not match';
 		}
 
+		if (!formData.captchaAnswer.trim()) {
+			newErrors.captchaAnswer = 'Please enter the verification code';
+		}
+
 		if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the terms of service';
 		if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'You must accept the privacy policy';
 		if (!formData.acceptCodeOfConduct) newErrors.acceptCodeOfConduct = "You must accept the Explorer's Code of Conduct";
@@ -73,9 +101,15 @@ export function Register() {
 	};
 
 	const handleSubmit = async () => {
-		const response = await mutate(formData);
-		if (response?.success) {
-			router.replace('/user/email-confirmation');
+		try {
+			const response = await mutate(formData);
+			if (response?.success) {
+				router.replace('/user/email-confirmation');
+			} else {
+				fetchCaptcha();
+			}
+		} catch {
+			fetchCaptcha();
 		}
 	};
 
@@ -170,6 +204,20 @@ export function Register() {
 				error={errors.confirmPassword}
 				loading={loading}
 				secureTextEntry
+			/>
+
+			<CaptchaField
+				fieldName="captchaAnswer"
+				label="Security Verification"
+				placeholder="Enter the code above"
+				value={formData.captchaAnswer}
+				updateField={updateField}
+				image={captcha?.image}
+				svg={captcha?.svg}
+				onRefresh={fetchCaptcha}
+				error={errors.captchaAnswer}
+				loading={loading}
+				refreshing={captchaLoading}
 			/>
 
 			<View style={styles.switchRow}>

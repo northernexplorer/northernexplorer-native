@@ -3,6 +3,7 @@ import {wrap} from '@mikro-orm/core';
 import {Repositories} from '../../core/repositories';
 import {TokenService} from '../services/TokenService';
 import {PermissionService} from '../services/PermisionService';
+import {CaptchaService} from '../services/CaptchaService';
 import {EmailSendService} from '../../system/services/EmailSendService';
 import {config} from '../../config';
 import {AuthContext} from '../../core/types';
@@ -21,9 +22,16 @@ export class UserController extends BaseController {
 	private tokenService = new TokenService();
 	private permissionService = new PermissionService();
 	private emailSendService = new EmailSendService();
+	private captchaService = new CaptchaService();
+
+	async getCaptcha(): Promise<Response<Route<'getCaptcha'>>> {
+		return Promise.resolve(this.captchaService.generateCaptcha());
+	}
 
 	async register(params: Params<Route<'register'>>): Promise<Response<Route<'register'>>> {
 		if (params.website) throw new Error('Form submission failed. Please try again.');
+
+		this.captchaService.verifyCaptcha(params.captchaId, params.captchaAnswer);
 
 		const existingUserWithEmail = await this.repos.user.findByIdentifier(params.email.toLowerCase());
 		if (existingUserWithEmail) throw new Error('This email address is already in use.');
