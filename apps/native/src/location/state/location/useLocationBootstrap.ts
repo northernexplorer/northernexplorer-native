@@ -2,10 +2,12 @@ import {useEffect, useState} from 'react';
 import {Platform} from 'react-native';
 import {
 	Accuracy,
+	LocationSubscription,
 	getForegroundPermissionsAsync,
 	requestForegroundPermissionsAsync,
 	getLastKnownPositionAsync,
 	getCurrentPositionAsync,
+	watchPositionAsync,
 } from 'expo-location';
 import {useAppSelector} from '~/core/storeHooks';
 import {setLocation, setLocationError, setLocationLoading} from '~/location/state/location/locationSlice';
@@ -19,12 +21,13 @@ export function useLocationBootstrap() {
 	const [error, setError] = useState<Error | null>(null);
 
 	useEffect(() => {
-		if (coords) return;
-
 		let cancelled = false;
+		let locationSubscription: LocationSubscription | null = null;
 
 		const resolve = async () => {
-			setLoading(true);
+			if (!coords) {
+				setLoading(true);
+			}
 			setError(null);
 
 			try {
@@ -37,27 +40,44 @@ export function useLocationBootstrap() {
 
 				if (granted) {
 					const cached = await getLastKnownPositionAsync();
-					if (cached) {
-						if (!cancelled) setData({lat: cached.coords.latitude, lon: cached.coords.longitude});
-						return;
+					if (cached && !cancelled) {
+						setData({lat: cached.coords.latitude, lon: cached.coords.longitude});
+					} else {
+						const loc = await getCurrentPositionAsync({
+							accuracy: Platform.OS === 'android' ? Accuracy.Balanced : Accuracy.High,
+						});
+						if (!cancelled) {
+							setData({lat: loc.coords.latitude, lon: loc.coords.longitude});
+						}
 					}
-					const loc = await getCurrentPositionAsync({
-						accuracy: Platform.OS === 'android' ? Accuracy.Balanced : Accuracy.High,
-					});
-					if (!cancelled) setData({lat: loc.coords.latitude, lon: loc.coords.longitude});
+
+					locationSubscription = await watchPositionAsync(
+						{
+							accuracy: Platform.OS === 'android' ? Accuracy.Balanced : Accuracy.High,
+							timeInterval: 2000,
+							distanceInterval: 1,
+						},
+						loc => {
+							if (!cancelled) {
+								setData({lat: loc.coords.latitude, lon: loc.coords.longitude});
+							}
+						},
+					);
 				} else {
 					// --- IP Fallback ---
-					const res = await fetch('https://ipwho.is/');
-					const ipData = (await res.json()) as {
-						success: boolean;
-						latitude: number;
-						longitude: number;
-					};
+					if (!coords) {
+						const res = await fetch('https://ipwho.is/');
+						const ipData = (await res.json()) as {
+							success: boolean;
+							latitude: number;
+							longitude: number;
+						};
 
-					if (!cancelled && ipData.success) {
-						setData({lat: ipData.latitude, lon: ipData.longitude});
-					} else if (!cancelled && !ipData.success) {
-						throw new Error('IP geolocation lookup failed');
+						if (!cancelled && ipData.success) {
+							setData({lat: ipData.latitude, lon: ipData.longitude});
+						} else if (!cancelled && !ipData.success) {
+							throw new Error('IP geolocation lookup failed');
+						}
 					}
 				}
 			} catch (err) {
@@ -70,8 +90,9 @@ export function useLocationBootstrap() {
 		resolve();
 		return () => {
 			cancelled = true;
+			locationSubscription?.remove();
 		};
-	}, [coords]);
+	}, []);
 
 	useSyncToRedux(data, loading, error, {
 		set: setLocation,
