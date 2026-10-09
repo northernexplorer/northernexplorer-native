@@ -7,6 +7,7 @@ import {
 	ReviewStatusEnum,
 	RouteDefinition,
 	ROUTES,
+	SuggestionStatusEnum,
 } from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
@@ -50,6 +51,7 @@ export class StatusController extends BaseController {
 		const pendingReviews = await this.repos.review.count({status: ReviewStatusEnum.Pending});
 		const pendingImages = await this.repos.image.count({status: ImageStatusEnum.Pending});
 		const pendingReports = await this.repos.report.count({status: ReportStatusEnum.Pending});
+		const pendingSuggestions = await this.repos.pointOfInterestSuggestion.count({status: SuggestionStatusEnum.Pending});
 		return {
 			users,
 			pointOfInterestsPublished,
@@ -57,6 +59,7 @@ export class StatusController extends BaseController {
 			pendingReviews,
 			pendingImages,
 			pendingReports,
+			pendingSuggestions,
 		};
 	}
 }

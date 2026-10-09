@@ -80,7 +80,7 @@ export function PointOfInterestDetails() {
 					<Text style={styles.breadcrumbs}>
 						{data.country.name} › {data.region.name}
 					</Text>
-					{auth?.roles?.includes(RolesEnum.Admin) && (
+					{auth && (
 						<Link
 							href={{
 								pathname: '/[country]/[region]/[name]/[id]/edit',
@@ -94,7 +94,13 @@ export function PointOfInterestDetails() {
 							asChild
 						>
 							<TouchableOpacity style={styles.editButton}>
-								<Text style={styles.editButtonText}>Edit</Text>
+								<Ionicons
+									name={auth.roles?.includes(RolesEnum.Admin) ? 'create-outline' : 'bulb-outline'}
+									size={16}
+									color="#0088cc"
+									style={{marginRight: 4}}
+								/>
+								<Text style={styles.editButtonText}>{auth.roles?.includes(RolesEnum.Admin) ? 'Edit' : 'Suggest Edit'}</Text>
 							</TouchableOpacity>
 						</Link>
 					)}
