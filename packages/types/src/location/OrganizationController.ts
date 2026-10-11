@@ -10,6 +10,12 @@ export type OrganizationType = {
 	name: string;
 };
 
+export type OrganizationCreateType = {
+	name: string;
+	regionIds?: string[];
+	regionId?: string;
+};
+
 export const OrganizationController = {
 	getAll: {
 		params: {} as {regionId?: string; id?: string} | Record<string, never>,
@@ -18,5 +24,9 @@ export const OrganizationController = {
 	getByRegionId: {
 		params: {} as {id: string},
 		response: null as unknown as OrganizationType[],
+	},
+	create: {
+		params: {} as OrganizationCreateType,
+		response: null as unknown as OrganizationType,
 	},
 };
