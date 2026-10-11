@@ -31,6 +31,14 @@ type RegisterParams = {
 	website?: string;
 	birthday: Date;
 	gender: GenderEnum;
+	captchaId: string;
+	captchaAnswer: string;
+};
+
+export type CaptchaResponseType = {
+	captchaId: string;
+	image: string;
+	svg: string;
 };
 
 type ActivateParams = {
@@ -123,6 +131,10 @@ export type UserEvents = {
 };
 
 export const UserController = {
+	getCaptcha: {
+		params: {} as Record<string, never>,
+		response: {} as CaptchaResponseType,
+	},
 	register: {
 		params: {} as RegisterParams,
 		response: {success: true} as GenericResponseType,

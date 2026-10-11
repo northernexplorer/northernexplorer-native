@@ -11,6 +11,8 @@ export const StatusController = {
 			pointOfInterestsDraft: number;
 			pendingReviews: number;
 			pendingImages: number;
+			pendingReports: number;
+			pendingSuggestions?: number;
 		},
 	},
 };

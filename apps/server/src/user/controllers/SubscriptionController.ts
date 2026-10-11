@@ -22,16 +22,7 @@ export class SubscriptionController extends BaseController {
 		const subscription = await this.repos.subscription.getById(user.subscription.id);
 		const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
 
-		return {
-			navigation: {
-				useCompass: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
-				useFlashlight: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
-				useSignal: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
-				changeMapStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
-				useOffTrailDifficulty: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
-				useExpeditionDifficulty: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
-			},
-		};
+		return this.repos.subscriptionLevel.getPermissions(subscriptionLevel);
 	}
 
 	async getByUsername(params: Params<Route<'getByUsername'>>, auth?: AuthContext): Promise<Response<Route<'getByUsername'>>> {

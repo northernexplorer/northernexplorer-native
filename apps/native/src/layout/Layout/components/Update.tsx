@@ -82,12 +82,14 @@ const styles = StyleSheet.create({
 		fontWeight: '700',
 		marginBottom: 8,
 		textAlign: 'center',
+		color: '#ffffff',
 	},
 	subtitle: {
 		fontSize: 14,
 		lineHeight: 20,
 		textAlign: 'center',
 		marginBottom: 20,
+		color: '#94a3b8',
 	},
 	buttonContainer: {
 		flexDirection: 'column',

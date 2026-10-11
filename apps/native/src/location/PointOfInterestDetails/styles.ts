@@ -101,6 +101,8 @@ export const styles = StyleSheet.create({
 		color: '#475569',
 	},
 	editButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
 		paddingHorizontal: 12,
 		paddingVertical: 6,
 		backgroundColor: '#f0f9ff',

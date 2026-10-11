@@ -51,10 +51,8 @@ export function Navigation() {
 		</View>
 	);
 
-	const MainContainer = isMobile ? SafeAreaView : View;
-
 	return (
-		<MainContainer edges={['top']} style={styles.navbarContainer}>
+		<View style={styles.navbarContainer}>
 			<View style={[styles.navbar, isMobile ? styles.mobileNavbar : styles.desktopNavbar]}>
 				{isMobile ? (
 					<>
@@ -84,22 +82,24 @@ export function Navigation() {
 				{isMobile && (
 					<Modal visible={isMenuOpen} transparent={true} animationType="fade" onRequestClose={() => setIsMenuOpen(false)}>
 						<Pressable style={styles.backdrop} onPress={() => setIsMenuOpen(false)}>
-							<SafeAreaView edges={['top']} style={styles.drawerContainer}>
-								{/* Drawer Header */}
-								<View style={styles.drawerHeader}>
-									<MenuBranding setIsMenuOpen={setIsMenuOpen} isDrawer={true} />
-									<Pressable onPress={() => setIsMenuOpen(false)}>
-										<Ionicons name="close-outline" size={28} color="white" />
-									</Pressable>
-								</View>
+							<Pressable style={styles.drawerContainer} onPress={e => e.stopPropagation()}>
+								<SafeAreaView edges={['top', 'bottom', 'left', 'right']}>
+									{/* Drawer Header */}
+									<View style={styles.drawerHeader}>
+										<MenuBranding setIsMenuOpen={setIsMenuOpen} isDrawer={true} />
+										<Pressable onPress={() => setIsMenuOpen(false)}>
+											<Ionicons name="close-outline" size={28} color="white" />
+										</Pressable>
+									</View>
 
-								{/* Menu Links List */}
-								{renderLinks(true)}
-							</SafeAreaView>
+									{/* Menu Links List */}
+									{renderLinks(true)}
+								</SafeAreaView>
+							</Pressable>
 						</Pressable>
 					</Modal>
 				)}
 			</View>
-		</MainContainer>
+		</View>
 	);
 }

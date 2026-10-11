@@ -21,4 +21,17 @@ export class SubscriptionLevelRepository extends BaseRepository<SubscriptionLeve
 	getFree() {
 		return this.findOneOrFail({cost: 0});
 	}
+
+	getPermissions(subscriptionLevel: SubscriptionLevel) {
+		return {
+			navigation: {
+				useCompass: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				useFlashlight: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				useSignal: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				changeMapStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				useOffTrailDifficulty: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				useExpeditionDifficulty: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+			},
+		};
+	}
 }

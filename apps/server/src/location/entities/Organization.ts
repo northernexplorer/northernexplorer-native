@@ -1,7 +1,8 @@
-import {Entity, PrimaryKey, Property, OneToMany} from '@mikro-orm/decorators/legacy';
+import {Entity, PrimaryKey, Property, OneToMany, ManyToMany} from '@mikro-orm/decorators/legacy';
 import {Collection} from '@mikro-orm/core';
 import {v4} from 'uuid';
 import {PointOfInterest} from './PointOfInterest';
+import {Region} from './Region';
 
 type OrganizationInput = {
 	name: string;
@@ -21,6 +22,9 @@ export class Organization {
 
 	@OneToMany(() => PointOfInterest, pointOfInterest => pointOfInterest.organization)
 	pointsOfInterest = new Collection<PointOfInterest>(this);
+
+	@ManyToMany(() => Region, 'organizations', {owner: true})
+	regions = new Collection<Region>(this);
 
 	constructor(data: OrganizationInput) {
 		this.name = data.name;

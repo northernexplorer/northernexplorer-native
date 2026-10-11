@@ -36,18 +36,21 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		marginBottom: 16,
 		borderWidth: 1,
+		borderColor: '#333333',
 	},
 	title: {
 		fontSize: 20,
 		fontWeight: '700',
 		marginBottom: 8,
 		textAlign: 'center',
+		color: '#ffffff',
 	},
 	subtitle: {
 		fontSize: 14,
 		lineHeight: 20,
 		textAlign: 'center',
 		marginBottom: 20,
+		color: '#94a3b8',
 	},
 	pill: {
 		flexDirection: 'row',

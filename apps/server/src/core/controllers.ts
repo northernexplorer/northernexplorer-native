@@ -2,13 +2,14 @@ import {LunarController, WeatherController} from '../environment';
 import {
 	CityController,
 	PointOfInterestController,
+	PointOfInterestSuggestionController,
 	CountryController,
 	RegionController,
 	ReviewController,
 	OrganizationController,
 	ImageController,
 } from '../location';
-import {StatusController, SupportController} from '../system';
+import {ReportController, StatusController, SupportController} from '../system';
 import {SessionController, SubscriptionController, SubscriptionLevelController, UserController} from '../user';
 import {Repositories} from './repositories';
 import {BaseController} from './BaseController';
@@ -20,11 +21,13 @@ export const controllers: ControllerConstructor[] = [
 	ImageController,
 	CityController,
 	PointOfInterestController,
+	PointOfInterestSuggestionController,
 	OrganizationController,
 	CountryController,
 	UserController,
 	RegionController,
 	ReviewController,
+	ReportController,
 	StatusController,
 	SubscriptionController,
 	SessionController,

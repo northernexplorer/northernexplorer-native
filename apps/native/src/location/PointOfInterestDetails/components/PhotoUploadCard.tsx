@@ -9,13 +9,8 @@ import {useApiMutation} from '~/core/useApiMutation';
 type PhotoUploadCardProps = {
 	pointOfInterestId: string;
 	maxImages?: number;
-	maxTotalSizeBytes?: number;
 	maxImageSizeBytes?: number;
 };
-
-const DEFAULT_MAX_IMAGES = 10;
-const DEFAULT_MAX_TOTAL_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB total batch limit
-const DEFAULT_MAX_IMAGE_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB per image limit
 
 const uriToBase64 = async (uri: string): Promise<string> => {
 	const response = await fetch(uri);
@@ -33,14 +28,12 @@ const uriToBase64 = async (uri: string): Promise<string> => {
 	});
 };
 
-export function PhotoUploadCard({
-	pointOfInterestId,
-	maxImages = DEFAULT_MAX_IMAGES,
-	maxTotalSizeBytes = DEFAULT_MAX_TOTAL_SIZE_BYTES,
-	maxImageSizeBytes = DEFAULT_MAX_IMAGE_SIZE_BYTES,
-}: PhotoUploadCardProps) {
+export function PhotoUploadCard({pointOfInterestId}: PhotoUploadCardProps) {
 	const [stagedUploads, setStagedUploads] = useState<UploadImageFileInput[]>([]);
 	const [isUploading, setIsUploading] = useState(false);
+
+	const maxImages = 10;
+	const maxImageSizeBytes = 12 * 1024 * 1024;
 
 	// Track upload statuses mapped by file URI
 	const [statusMap, setStatusMap] = useState<Record<string, ImageUploadStatus | undefined>>({});
@@ -77,44 +70,38 @@ export function PhotoUploadCard({
 			return;
 		}
 
-		const rawTotalBytes = pendingUploads.reduce((acc, file) => acc + file.size, 0);
-		const maxMbTotal = Math.round(maxTotalSizeBytes / (1024 * 1024));
-		if (rawTotalBytes > maxTotalSizeBytes) {
-			alertStore.showAlert({
-				title: 'Payload Too Large',
-				message: `The total size of the selected new photos exceeds the ${maxMbTotal} MB limit. Please remove some photos and try again.`,
-				type: 'warning',
-			});
-			return;
-		}
-
 		setIsUploading(true);
 
-		// Convert only pending/new files to Base64
-		const preparedFiles: FileUpload[] = await Promise.all(
-			pendingUploads.map(async file => ({
-				...file,
-				base64: await uriToBase64(file.uri),
-			})),
-		);
+		for (const file of pendingUploads) {
+			try {
+				const base64 = await uriToBase64(file.uri);
+				const preparedFile: FileUpload = {
+					...file,
+					base64,
+				};
 
-		const response = await uploadMutation({
-			pointOfInterestId,
-			files: preparedFiles,
-		});
-
-		if (response) {
-			// Merge incoming upload statuses into statusMap
-			setStatusMap(prev => {
-				const nextMap = {...prev};
-				response.forEach((result, idx) => {
-					const targetUri = pendingUploads.find(p => p.uri === result.file || p.filename === result.file)?.uri || pendingUploads[idx]?.uri;
-					if (targetUri) {
-						nextMap[targetUri] = result.status;
-					}
+				const response = await uploadMutation({
+					pointOfInterestId,
+					file: preparedFile,
 				});
-				return nextMap;
-			});
+
+				if (response) {
+					setStatusMap(prev => ({
+						...prev,
+						[file.uri]: response.status,
+					}));
+				} else {
+					setStatusMap(prev => ({
+						...prev,
+						[file.uri]: ImageUploadStatus.Error,
+					}));
+				}
+			} catch {
+				setStatusMap(prev => ({
+					...prev,
+					[file.uri]: ImageUploadStatus.Error,
+				}));
+			}
 		}
 
 		setIsUploading(false);

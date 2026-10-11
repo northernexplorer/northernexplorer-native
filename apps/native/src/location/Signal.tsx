@@ -1,6 +1,5 @@
 import React, {ComponentProps, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Platform, ScrollView} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import NetInfo, {NetInfoStateType, NetInfoState} from '@react-native-community/netinfo';
 import {Accuracy, LocationObjectCoords, LocationSubscription, requestForegroundPermissionsAsync, watchPositionAsync} from 'expo-location';
@@ -63,11 +62,11 @@ export function Signal() {
 
 	if (loading) {
 		return (
-			<SafeAreaView style={styles.container}>
+			<View style={styles.container}>
 				<View style={styles.centerContainer}>
 					<Spinner />
 				</View>
-			</SafeAreaView>
+			</View>
 		);
 	}
 
@@ -75,7 +74,7 @@ export function Signal() {
 
 	if (isWeb) {
 		return (
-			<SafeAreaView style={styles.container}>
+			<View style={styles.container}>
 				<View style={styles.centerContainer}>
 					<MaterialCommunityIcons name="signal-off" size={72} color="#64748b" />
 					<Text style={styles.unavailableTitle}>Signal Diagnostics Unavailable</Text>
@@ -83,7 +82,7 @@ export function Signal() {
 						Cellular network metrics, Wi-Fi status, and satellite diagnostics are not supported on web browsers.
 					</Text>
 				</View>
-			</SafeAreaView>
+			</View>
 		);
 	}
 
@@ -198,7 +197,7 @@ export function Signal() {
 	const isWifiInternet = networkState?.type === NetInfoStateType.wifi && Boolean(networkState.isInternetReachable);
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<View style={styles.container}>
 			<ScrollView contentContainerStyle={styles.scrollContent}>
 				{/* Cellular Card */}
 				<View style={styles.card}>
@@ -295,7 +294,7 @@ export function Signal() {
 					</View>
 				</View>
 			</ScrollView>
-		</SafeAreaView>
+		</View>
 	);
 }
 

@@ -19,9 +19,24 @@ export function Admin() {
 	const draftCount = data?.pointOfInterestsDraft ?? 0;
 	const pendingReviewsCount = data?.pendingReviews ?? 0;
 	const pendingImagesCount = data?.pendingImages ?? 0;
+	const pendingReportsCount = data?.pendingReports ?? 0;
+	const pendingSuggestionsCount = data?.pendingSuggestions ?? 0;
 
 	return (
 		<View style={styles.grid}>
+			{/* Suggested Updates Card */}
+			<Pressable
+				style={({pressed}) => [styles.card, pendingSuggestionsCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
+				onPress={() => router.push('/admin/suggested-updates')}
+			>
+				{pendingSuggestionsCount > 0 && <View style={styles.badgeDot} />}
+				<View style={[styles.iconBadge, {backgroundColor: '#e0f2fe'}]}>
+					<Ionicons name="bulb-outline" size={24} color="#0284c7" />
+				</View>
+				<Text style={styles.statValue}>{pendingSuggestionsCount}</Text>
+				<Text style={styles.statLabel}>Suggested Updates</Text>
+			</Pressable>
+
 			{/* Draft Sites Card */}
 			<Pressable
 				style={({pressed}) => [styles.card, draftCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
@@ -59,6 +74,19 @@ export function Admin() {
 				</View>
 				<Text style={styles.statValue}>{pendingImagesCount}</Text>
 				<Text style={styles.statLabel}>Pending Images</Text>
+			</Pressable>
+
+			{/* User Reports Card */}
+			<Pressable
+				style={({pressed}) => [styles.card, pendingReportsCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
+				onPress={() => router.push('/admin/reports')}
+			>
+				{pendingReportsCount > 0 && <View style={styles.badgeDot} />}
+				<View style={[styles.iconBadge, {backgroundColor: '#fee2e2'}]}>
+					<Ionicons name="flag-outline" size={24} color="#dc2626" />
+				</View>
+				<Text style={styles.statValue}>{pendingReportsCount}</Text>
+				<Text style={styles.statLabel}>User Reports</Text>
 			</Pressable>
 
 			{/* Published Sites Card */}

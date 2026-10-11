@@ -1,21 +1,22 @@
 import React from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Spinner} from '@northernexplorer/tools-web';
 import {getWeatherIcon} from '~/layout/Layout/getWeatherIcon';
-import {useWeather} from '~/environment/state/weather';
+import {useWeather, useWeatherWarnings} from '~/environment/state/weather';
+import {WeatherWarningsWidget} from '~/layout/Home/components/WeatherWarningsWidget';
 
 export function Weather() {
 	const weather = useWeather();
+	const warnings = useWeatherWarnings();
 
 	if (!weather) {
 		return (
-			<SafeAreaView style={styles.container}>
+			<View style={styles.container}>
 				<View style={styles.centerContainer}>
 					<Spinner />
 				</View>
-			</SafeAreaView>
+			</View>
 		);
 	}
 
@@ -24,11 +25,18 @@ export function Weather() {
 	const iconName = getWeatherIcon(String(condition.code));
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<View style={styles.container}>
 			<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 				<View style={styles.centerContainer}>
 					{/* Location Header */}
 					<Text style={styles.locationName}>{weather.location.name}</Text>
+
+					{/* Active Weather Warnings */}
+					{warnings.length > 0 && (
+						<View style={{width: '100%', maxWidth: 500, marginVertical: 12}}>
+							<WeatherWarningsWidget warnings={warnings} />
+						</View>
+					)}
 
 					{/* Hero Weather Condition & Temperature */}
 					<View style={styles.heroSection}>
@@ -120,7 +128,7 @@ export function Weather() {
 					</View>
 				</View>
 			</ScrollView>
-		</SafeAreaView>
+		</View>
 	);
 }
 

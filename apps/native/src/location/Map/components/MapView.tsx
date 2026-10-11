@@ -219,15 +219,15 @@ export function MapView({
 								setSelectedSite(null);
 							}}
 							lngLat={[coords.lon, coords.lat]}
-							anchor="bottom"
+							anchor="center"
 						>
-							<View style={styles.locationPin}>
-								<View style={styles.locationPinCenter} />
+							<View style={styles.userLocationMarker}>
+								<Ionicons name="person" size={18} color="#ffffff" />
 							</View>
 						</Marker>
 
 						{userMarker && (
-							<Marker lngLat={[coords.lon, coords.lat]} anchor="bottom" offset={[0, -45]}>
+							<Marker lngLat={[coords.lon, coords.lat]} anchor="bottom" offset={[0, -25]}>
 								<View style={styles.popupContainer}>
 									<Text style={styles.popupTitle}>Your Location</Text>
 									<Text style={styles.popupDescription}>{coords.lat}</Text>
@@ -373,20 +373,19 @@ const styles = StyleSheet.create({
 		fontWeight: '700',
 		fontSize: 16,
 	},
-	locationPin: {
-		width: 32,
-		height: 32,
+	userLocationMarker: {
+		width: 34,
+		height: 34,
+		borderRadius: 17,
 		backgroundColor: '#0088cc',
-		borderRadius: 18,
-		borderBottomLeftRadius: 4,
-		transform: [{rotate: '-45deg'}],
+		borderWidth: 2.5,
+		borderColor: '#ffffff',
 		alignItems: 'center',
 		justifyContent: 'center',
-	},
-	locationPinCenter: {
-		width: 12,
-		height: 12,
-		backgroundColor: '#fff',
-		borderRadius: 6,
+		shadowColor: '#000',
+		shadowOffset: {width: 0, height: 2},
+		shadowOpacity: 0.35,
+		shadowRadius: 4,
+		elevation: 5,
 	},
 });

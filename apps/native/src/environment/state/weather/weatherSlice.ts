@@ -1,18 +1,22 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {WeatherType} from '@northernexplorer/types';
+import {WeatherType, WeatherWarningType} from '@northernexplorer/types';
 
 export type WeatherState = {
 	data: WeatherType | null;
+	warnings?: WeatherWarningType[];
 	loading: boolean;
 	error: string | null;
 	lastUpdated: number | null;
+	warningsLastUpdated: number | null;
 };
 
 const initialState: WeatherState = {
 	data: null,
+	warnings: [],
 	loading: false,
 	error: null,
 	lastUpdated: null,
+	warningsLastUpdated: null,
 };
 
 const weatherSlice = createSlice({
@@ -24,6 +28,10 @@ const weatherSlice = createSlice({
 			state.lastUpdated = Date.now();
 			state.error = null;
 		},
+		setWeatherWarnings(state, action: PayloadAction<WeatherWarningType[]>) {
+			state.warnings = action.payload;
+			state.warningsLastUpdated = Date.now();
+		},
 		setWeatherLoading(state, action: PayloadAction<boolean>) {
 			state.loading = action.payload;
 		},
@@ -32,13 +40,15 @@ const weatherSlice = createSlice({
 		},
 		clearWeather(state) {
 			state.data = null;
+			state.warnings = [];
 			state.loading = false;
 			state.error = null;
 			state.lastUpdated = null;
+			state.warningsLastUpdated = null;
 		},
 	},
 });
 
-export const {setWeather, setWeatherLoading, setWeatherError, clearWeather} = weatherSlice.actions;
+export const {setWeather, setWeatherWarnings, setWeatherLoading, setWeatherError, clearWeather} = weatherSlice.actions;
 
 export default weatherSlice.reducer;

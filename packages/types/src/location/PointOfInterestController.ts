@@ -96,8 +96,16 @@ export type PointOfInterestCreateType = {
 	organizationId: string;
 	startDate?: number;
 	endDate?: number;
-	status: PublishStatusEnum;
+	status?: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
+};
+
+export type PointOfInterestCreateResponseType = {
+	success: boolean;
+	countryName: string;
+	regionName: string;
+	id: string;
+	poiName: string;
 };
 
 export const PointOfInterestController = {
@@ -169,6 +177,6 @@ export const PointOfInterestController = {
 	},
 	create: {
 		params: {} as PointOfInterestCreateType,
-		response: {} as GenericResponseType,
+		response: {} as PointOfInterestCreateResponseType,
 	},
 };

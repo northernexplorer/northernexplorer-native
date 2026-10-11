@@ -1,6 +1,8 @@
-import {Entity, PrimaryKey, Property, ManyToOne} from '@mikro-orm/decorators/legacy';
+import {Entity, PrimaryKey, Property, ManyToOne, ManyToMany} from '@mikro-orm/decorators/legacy';
+import {Collection} from '@mikro-orm/core';
 import {v4} from 'uuid';
 import {Country} from './Country';
+import {Organization} from './Organization';
 
 type RegionInput = {
 	name: string;
@@ -21,6 +23,9 @@ export class Region {
 
 	@ManyToOne(() => Country)
 	country: Country;
+
+	@ManyToMany(() => Organization, organization => organization.regions)
+	organizations = new Collection<Organization>(this);
 
 	constructor(data: RegionInput) {
 		this.name = data.name;

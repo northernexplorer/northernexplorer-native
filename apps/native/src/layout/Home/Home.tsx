@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, ActivityIndicator, Text, ScrollView, useWindowDimensions} from 'react-native';
 import {WeatherWidget} from './components/WeatherWidget';
+import {WeatherWarningsWidget} from './components/WeatherWarningsWidget';
 import {LunarWidget} from './components/LunarWidget';
 import {CompassWidget} from '~/layout/Home/components/CompassWidget';
 import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
@@ -8,6 +9,7 @@ import {TopImagesWidget} from '~/layout/Home/components/TopImagesWidget';
 import {FlashlightWidget} from '~/layout/Home/components/FlashlightWidget';
 import {SignalWidget} from '~/layout/Home/components/SignalWidget';
 import {useWeather} from '~/environment/state/weather/useWeather';
+import {useWeatherWarnings} from '~/environment/state/weather/useWeatherWarnings';
 import {useLunar} from '~/environment/state/lunar/useLunar';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -18,8 +20,13 @@ export function Home() {
 	const isMobile = width < 768;
 
 	const weather = useWeather();
+	const reduxWarnings = useWeatherWarnings();
 	const lunar = useLunar();
 	const coords = useLocation();
+
+	const {data: warningsData} = useApiFetch('environment', 'WeatherController', 'getWarnings', coords ? {lat: coords.lat, lon: coords.lon} : null);
+
+	const warnings = warningsData && warningsData.length > 0 ? warningsData : reduxWarnings;
 
 	const {data: pointOfInterestData} = useApiFetch(
 		'location',
@@ -73,6 +80,13 @@ export function Home() {
 
 			{/* Main Dashboard Content */}
 			<ScrollView style={styles.mainContent} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+				{/* Active Weather Warnings Banner */}
+				{warnings.length > 0 && (
+					<View style={styles.sectionContainer}>
+						<WeatherWarningsWidget warnings={warnings} />
+					</View>
+				)}
+
 				{/* Featured Destinations Container Card */}
 				<View style={styles.sectionContainer}>
 					<View style={styles.tile}>

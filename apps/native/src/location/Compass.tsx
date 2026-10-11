@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, Text, Animated, StyleSheet} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {ProFeatureOnly, Spinner} from '@northernexplorer/tools-web';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -17,18 +16,18 @@ export function Compass() {
 
 	if (!isAvailable) {
 		return (
-			<SafeAreaView style={styles.container}>
+			<View style={styles.container}>
 				<View style={styles.centerContainer}>
 					<MaterialCommunityIcons name="compass-off-outline" size={72} color="#94a3b8" />
 					<Text style={styles.unavailableTitle}>Compass Unavailable</Text>
 					<Text style={styles.unavailableSubtext}>Sensors are unavailable or location permissions were not granted.</Text>
 				</View>
-			</SafeAreaView>
+			</View>
 		);
 	}
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<View style={styles.container}>
 			<View style={styles.centerContainer}>
 				{/* Compass Housing */}
 				<View style={styles.compassContainer}>
@@ -76,7 +75,7 @@ export function Compass() {
 					)}
 				</View>
 			</View>
-		</SafeAreaView>
+		</View>
 	);
 }
 

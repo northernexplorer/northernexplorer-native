@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Spinner} from '@northernexplorer/tools-web';
 import {useLunar} from '~/environment/state/lunar/useLunar';
@@ -11,18 +10,18 @@ export function Lunar() {
 
 	if (!lunar) {
 		return (
-			<SafeAreaView style={styles.container}>
+			<View style={styles.container}>
 				<View style={styles.centerContainer}>
 					<Spinner />
 				</View>
-			</SafeAreaView>
+			</View>
 		);
 	}
 
 	const icon = getMoonIcon(lunar);
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<View style={styles.container}>
 			<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 				<View style={styles.centerContainer}>
 					{/* Expanded Moon Icon */}
@@ -69,7 +68,7 @@ export function Lunar() {
 					</View>
 				</View>
 			</ScrollView>
-		</SafeAreaView>
+		</View>
 	);
 }
 

@@ -1,3 +1,5 @@
+export {CaptchaField, CaptchaFieldProps} from './CaptchaField';
+export {CoordinateField, CoordinateFieldProps, CoordinateMapProps} from './CoordinateField';
 export {DateField} from './DateField';
 export {DropdownField} from './DropdownField';
 export {FormField} from './FormField';
