@@ -107,7 +107,7 @@ export function Map() {
 		lon: initialLon || 0,
 		zoom: initialZoom,
 	});
-	const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+	const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	// Keep map center aligned when location updates initially
 	const isInitializedRef = useRef<boolean>(false);
