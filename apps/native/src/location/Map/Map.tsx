@@ -39,6 +39,17 @@ export interface MapViewProps {
 	updateMapCenterAndBounds: (bounds: BBox, zoom: number, center: {lat: number; lon: number}) => void;
 }
 
+function calculateDistanceInKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+	const R = 6371; // Earth radius in km
+	const dLat = ((lat2 - lat1) * Math.PI) / 180;
+	const dLon = ((lon2 - lon1) * Math.PI) / 180;
+	const a =
+		Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+		Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	return R * c;
+}
+
 export function Map() {
 	const {baseLayer, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = useMap();
 	const coords = useLocation();
@@ -91,14 +102,30 @@ export function Map() {
 		lon: initialLon || 0,
 	});
 
+	const lastFetchedCenterRef = useRef<{lat: number; lon: number; zoom: number}>({
+		lat: initialLat || 0,
+		lon: initialLon || 0,
+		zoom: initialZoom,
+	});
+	const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
 	// Keep map center aligned when location updates initially
 	const isInitializedRef = useRef<boolean>(false);
 	useEffect(() => {
 		if (!isInitializedRef.current && initialLat && initialLon) {
 			setMapCenter({lat: initialLat, lon: initialLon});
+			lastFetchedCenterRef.current = {lat: initialLat, lon: initialLon, zoom: initialZoom};
 			isInitializedRef.current = true;
 		}
-	}, [initialLat, initialLon]);
+	}, [initialLat, initialLon, initialZoom]);
+
+	useEffect(() => {
+		return () => {
+			if (debounceTimerRef.current) {
+				clearTimeout(debounceTimerRef.current);
+			}
+		};
+	}, []);
 
 	// Data fetching
 	const {data} = useApiFetch('location', 'PointOfInterestController', 'getForMap', {
@@ -132,7 +159,22 @@ export function Map() {
 	const updateMapCenterAndBounds = (nextBounds: BBox, nextZoom: number, nextCenter: {lat: number; lon: number}) => {
 		setBounds(nextBounds);
 		setZoom(nextZoom);
-		setMapCenter(nextCenter);
+
+		if (debounceTimerRef.current) {
+			clearTimeout(debounceTimerRef.current);
+		}
+
+		debounceTimerRef.current = setTimeout(() => {
+			const lastFetched = lastFetchedCenterRef.current;
+			const distance = calculateDistanceInKm(lastFetched.lat, lastFetched.lon, nextCenter.lat, nextCenter.lon);
+			const thresholdKm = Math.max(0.5, 10000 / Math.pow(2, nextZoom));
+			const zoomDelta = Math.abs(nextZoom - lastFetched.zoom);
+
+			if (distance >= thresholdKm || zoomDelta >= 1.5) {
+				lastFetchedCenterRef.current = {lat: nextCenter.lat, lon: nextCenter.lon, zoom: nextZoom};
+				setMapCenter(nextCenter);
+			}
+		}, 400);
 	};
 
 	// Lock condition evaluation

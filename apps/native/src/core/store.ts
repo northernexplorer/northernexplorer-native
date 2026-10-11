@@ -7,6 +7,7 @@ import weatherReducer from '~/environment/state/weather/weatherSlice';
 import lunarReducer from '~/environment/state/lunar/lunarSlice';
 import cityReducer from '~/location/state/city/citySlice';
 import authenticationReducer, {clearAuthentication} from '~/user/state/authentication/authenticationSlice';
+import referenceReducer from '~/location/state/reference/referenceSlice';
 
 const appReducer = combineReducers({
 	location: locationReducer,
@@ -15,6 +16,7 @@ const appReducer = combineReducers({
 	city: cityReducer,
 	authentication: authenticationReducer,
 	map: mapReducer,
+	reference: referenceReducer,
 });
 
 const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: UnknownAction) => {
@@ -28,7 +30,7 @@ const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: U
 const persistConfig = {
 	key: 'root',
 	storage: AsyncStorage,
-	whitelist: ['city', 'weather', 'authentication'],
+	whitelist: ['city', 'weather', 'authentication', 'reference'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

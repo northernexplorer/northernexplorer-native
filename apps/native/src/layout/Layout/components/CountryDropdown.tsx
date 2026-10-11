@@ -1,6 +1,8 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useEffect} from 'react';
 import {DropdownField} from '@northernexplorer/tools-web';
 import {useApiFetch} from '~/core/useApiFetch';
+import {useAppDispatch, useAppSelector} from '~/core/storeHooks';
+import {setCountries} from '~/location/state/reference/referenceSlice';
 
 interface ComponentProps<T extends string> {
 	fieldName: T;
@@ -21,15 +23,27 @@ export function CountryDropdown<T extends string>({
 	isSearchable = true,
 	disabled,
 }: ComponentProps<T>) {
-	const {data, loading} = useApiFetch('location', 'CountryController', 'getAll', {});
+	const dispatch = useAppDispatch();
+	const cachedCountries = useAppSelector(s => s.reference.countries);
+
+	const shouldFetch = !cachedCountries || cachedCountries.length === 0;
+	const {data, loading} = useApiFetch('location', 'CountryController', 'getAll', {}, {skip: !shouldFetch});
+
+	useEffect(() => {
+		if (data && Array.isArray(data) && data.length > 0) {
+			dispatch(setCountries(data));
+		}
+	}, [data, dispatch]);
+
+	const countries = cachedCountries && cachedCountries.length > 0 ? cachedCountries : data;
 
 	const options = useMemo(() => {
-		if (!Array.isArray(data)) return [];
-		return data.map(country => ({
+		if (!Array.isArray(countries)) return [];
+		return countries.map(country => ({
 			label: country.name,
 			value: country.id,
 		}));
-	}, [data]);
+	}, [countries]);
 
 	return (
 		<DropdownField
@@ -38,7 +52,7 @@ export function CountryDropdown<T extends string>({
 			value={value}
 			options={options}
 			updateField={updateField}
-			loading={loading}
+			loading={shouldFetch && loading}
 			error={error}
 			isSearchable={isSearchable}
 			disabled={disabled}
