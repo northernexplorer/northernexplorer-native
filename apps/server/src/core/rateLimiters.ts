@@ -17,5 +17,6 @@ export const strictAuthLimiter = rateLimit({
 });
 
 export const STRICT_ROUTES: Record<string, string[] | undefined> = {
-	UserController: ['login', 'register', 'forgotPassword', 'create'],
+	UserController: ['login', 'register', 'forgotPassword'],
+	ReviewController: ['create'],
 };

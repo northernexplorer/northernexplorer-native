@@ -80,10 +80,10 @@ export class ReviewController extends BaseController {
 	}
 
 	async hasLiked(params: Params<Route<'hasLiked'>>, auth?: AuthContext): Promise<Response<Route<'hasLiked'>>> {
-		if (!auth?.userId) return {liked: false, likeCount: 0};
+		const review = await this.repos.review.getById(params.id);
+		if (!auth?.userId) return {liked: false, likeCount: review.likes.length};
 
 		const like = await this.repos.reviewLike.findLike(params.id, auth.userId);
-		const review = await this.repos.review.getById(params.id);
 		return {liked: Boolean(like), likeCount: review.likes.length};
 	}
 

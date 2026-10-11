@@ -202,10 +202,10 @@ export class ImageController extends BaseController {
 	}
 
 	async hasLiked(params: Params<Route<'hasLiked'>>, auth?: AuthContext): Promise<Response<Route<'hasLiked'>>> {
-		if (!auth?.userId) return {liked: false, likeCount: 0};
+		const image = await this.repos.image.getById(params.id);
+		if (!auth?.userId) return {liked: false, likeCount: image.likes.length};
 
 		const like = await this.repos.imageLike.findLike(params.id, auth.userId);
-		const image = await this.repos.image.getById(params.id);
 		return {liked: Boolean(like), likeCount: image.likes.length};
 	}
 
