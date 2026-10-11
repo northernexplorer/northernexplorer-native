@@ -3,7 +3,7 @@ import {CityCache} from '../entities/CityCache';
 import {config} from '../../config';
 
 export class CityRepository extends BaseRepository<CityCache> {
-	async getCityCache(lat: number, lon: number) {
+	async getCache(lat: number, lon: number) {
 		const query = `
 			SELECT city_data as "cityData", updated_at as "updatedAt", distance_meters as "distanceMeters"
 			FROM (

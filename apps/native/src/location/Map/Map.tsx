@@ -1,47 +1,79 @@
-import React, {useState, useMemo, useRef, useCallback} from 'react';
-import {View, Text, StyleSheet, Image, NativeSyntheticEvent} from 'react-native';
-import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
+import React, {useState, useMemo, useRef, useEffect} from 'react';
+import {useLocalSearchParams} from 'expo-router';
+import {BBox, Point, Feature} from 'geojson';
+import Supercluster, {AnyProps} from 'supercluster';
 import useSupercluster from 'use-supercluster';
-import {useRouter, useLocalSearchParams} from 'expo-router';
-import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
+import {Spinner} from '@northernexplorer/tools-web';
 import {PointOfInterestType, SiteDifficultyEnum} from '@northernexplorer/types';
-import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
-import {BBox} from 'geojson';
-import {config} from '~/config';
+import {MapView} from './components/MapView';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
-import {MapMarkerNative} from '~/location/Map/components/MapMarkerNative';
-import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
+import {MapStyleObject} from '~/location/state/map/mapSlice';
+
+export interface PointOfInterestProperties {
+	cluster?: boolean;
+	siteId?: string;
+	site?: PointOfInterestType;
+}
+
+export type PointOfInterestFeature = Feature<Point, PointOfInterestProperties>;
+
+export type SuperclusterItem = PointOfInterestFeature | Supercluster.ClusterFeature<AnyProps>;
+
+export interface MapViewProps {
+	baseLayer: MapStyleObject;
+	clusters: SuperclusterItem[];
+	supercluster: Supercluster<PointOfInterestProperties, Point> | null | undefined;
+	selectedSite: PointOfInterestType | null;
+	setSelectedSite: React.Dispatch<React.SetStateAction<PointOfInterestType | null>>;
+	userMarker: boolean;
+	setUserMarker: React.Dispatch<React.SetStateAction<boolean>>;
+	coords: {lat: number; lon: number} | null;
+	initialLat: number;
+	initialLon: number;
+	initialZoom: number;
+	canAccessOffTrailDifficulty: boolean;
+	canAccessExpeditionDifficulty: boolean;
+	isSelectedLocked: boolean;
+	updateMapCenterAndBounds: (bounds: BBox, zoom: number, center: {lat: number; lon: number}) => void;
+}
 
 export function Map() {
-	const router = useRouter();
 	const {baseLayer, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = useMap();
-	const cameraRef = useRef<CameraRef>(null);
-
+	const coords = useLocation();
 	const params = useLocalSearchParams<{lat?: string; lon?: string; zoom?: string; selectedId?: string}>();
 
-	const coords = useLocation();
-
-	// Fetch user permissions
+	// Permissions
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 	const canAccessOffTrailDifficulty = permissionData?.navigation.useOffTrailDifficulty ?? false;
 	const canAccessExpeditionDifficulty = permissionData?.navigation.useExpeditionDifficulty ?? false;
 
-	const initialLat = params.lat ? parseFloat(params.lat) : (coords?.lat ?? 49.8951);
-	const initialLon = params.lon ? parseFloat(params.lon) : (coords?.lon ?? -97.1384);
+	// Center resolution logic
+	const initialLat = params.lat ? parseFloat(params.lat) : coords?.lat;
+	const initialLon = params.lon ? parseFloat(params.lon) : coords?.lon;
 	const initialZoom = params.zoom ? parseFloat(params.zoom) : 10;
 
 	const [bounds, setBounds] = useState<BBox | undefined>(undefined);
-	const [zoom, setZoom] = useState(initialZoom);
+	const [zoom, setZoom] = useState<number>(initialZoom);
 	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
-	const [userMarker, setUserMarker] = useState(false);
+	const [userMarker, setUserMarker] = useState<boolean>(false);
 
 	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number}>({
-		lat: initialLat,
-		lon: initialLon,
+		lat: initialLat || 0,
+		lon: initialLon || 0,
 	});
 
+	// Keep map center aligned when location updates initially
+	const isInitializedRef = useRef<boolean>(false);
+	useEffect(() => {
+		if (!isInitializedRef.current && initialLat && initialLon) {
+			setMapCenter({lat: initialLat, lon: initialLon});
+			isInitializedRef.current = true;
+		}
+	}, [initialLat, initialLon]);
+
+	// Data fetching
 	const {data} = useApiFetch('location', 'PointOfInterestController', 'getForMap', {
 		lat: mapCenter.lat,
 		lon: mapCenter.lon,
@@ -54,376 +86,54 @@ export function Map() {
 		showDrafts,
 	});
 
-	const points = useMemo(() => {
+	const points = useMemo<PointOfInterestFeature[]>(() => {
 		if (!data) return [];
-		return data.map(site => ({
+		return data.map((site: PointOfInterestType) => ({
 			type: 'Feature',
 			properties: {cluster: false, siteId: site.id, site},
 			geometry: {type: 'Point', coordinates: [site.lon, site.lat]},
 		}));
 	}, [data]);
 
-	const {clusters, supercluster} = useSupercluster({
+	const {clusters, supercluster} = useSupercluster<PointOfInterestProperties, Point>({
 		points,
 		bounds,
 		zoom,
 		options: {radius: 75, maxZoom: 20},
 	});
 
-	const onRegionDidChange = useCallback((e: NativeSyntheticEvent<ViewStateChangeEvent>) => {
-		const {bounds, zoom, center} = e.nativeEvent;
+	const updateMapCenterAndBounds = (nextBounds: BBox, nextZoom: number, nextCenter: {lat: number; lon: number}) => {
+		setBounds(nextBounds);
+		setZoom(nextZoom);
+		setMapCenter(nextCenter);
+	};
 
-		if (!Array.isArray(bounds)) return;
-
-		const newBounds: BBox = [bounds[0], bounds[1], bounds[2], bounds[3]];
-
-		setBounds(newBounds);
-		setZoom(zoom);
-
-		if (Array.isArray(center)) {
-			const [lon, lat] = center;
-			setMapCenter({lat, lon});
-		} else {
-			// Fallback calculation using bounding box center
-			const lon = (bounds[0] + bounds[2]) / 2;
-			const lat = (bounds[1] + bounds[3]) / 2;
-			setMapCenter({lat, lon});
-		}
-	}, []);
-
-	const handleNavigateToSite = useCallback(
-		(site: PointOfInterestType) => {
-			router.push({
-				pathname: '/[country]/[region]/[name]/[id]',
-				params: {
-					country: getUrlSafeString(site.country.name),
-					region: getUrlSafeString(site.region.name),
-					id: getUrlSafeString(site.id),
-					name: getUrlSafeString(site.name),
-				},
-			});
-		},
-		[router],
-	);
-
-	const rawRating = selectedSite?.rating
-		? typeof selectedSite.rating === 'number'
-			? selectedSite.rating
-			: parseFloat(String(selectedSite.rating))
-		: 0;
-	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
-	const reviewCount = selectedSite?.reviews?.length ?? 0;
-	const difficultyInfo = selectedSite?.difficulty ? DIFFICULTY_CONFIG[selectedSite.difficulty] : null;
-
-	// Evaluate lock status for selected site
+	// Lock condition evaluation
 	const selectedIsOffTrail = selectedSite?.difficulty === SiteDifficultyEnum.OFF_TRAIL_REMOTE;
 	const selectedIsExpedition = selectedSite?.difficulty === SiteDifficultyEnum.EXPEDITION_ONLY;
 	const isSelectedLocked = (selectedIsOffTrail && !canAccessOffTrailDifficulty) || (selectedIsExpedition && !canAccessExpeditionDifficulty);
 
+	if (!initialLat || !initialLon) {
+		return <Spinner />;
+	}
+
 	return (
-		<View style={{flex: 1}}>
-			<NativeMap
-				style={{width: '100%', height: '100%'}}
-				mapStyle={baseLayer}
-				onRegionDidChange={onRegionDidChange}
-				onPress={() => {
-					if (selectedSite) setSelectedSite(null);
-					if (userMarker) setUserMarker(false);
-				}}
-			>
-				<Camera ref={cameraRef} zoom={initialZoom} center={[initialLon, initialLat]} />
-
-				{clusters.map(cluster => {
-					const [longitude, latitude] = cluster.geometry.coordinates;
-					const {cluster: isCluster, point_count} = cluster.properties;
-
-					if (isCluster) {
-						return (
-							<Marker
-								key={`cluster-${cluster.id}`}
-								lngLat={[longitude, latitude]}
-								anchor="center"
-								onPress={() => {
-									const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(cluster.id), 20);
-
-									if (cameraRef.current) {
-										cameraRef.current.flyTo({
-											center: [longitude, latitude],
-											zoom: expansionZoom,
-											duration: 500,
-										});
-									}
-								}}
-							>
-								<View style={styles.clusterMarker}>
-									<Text style={styles.clusterText}>{point_count}</Text>
-								</View>
-							</Marker>
-						);
-					}
-
-					const site = cluster.properties.site as PointOfInterestType;
-					return (
-						<MapMarkerNative
-							key={site.id}
-							site={site}
-							longitude={longitude}
-							latitude={latitude}
-							selectedSite={selectedSite}
-							setSelectedSite={setSelectedSite}
-							image={site.image}
-							difficulty={site.difficulty}
-							canAccessOffTrailDifficulty={canAccessOffTrailDifficulty}
-							canAccessExpeditionDifficulty={canAccessExpeditionDifficulty}
-						/>
-					);
-				})}
-
-				{selectedSite && (
-					<Marker
-						key={`popup-${selectedSite.id}`}
-						lngLat={[selectedSite.lon, selectedSite.lat]}
-						anchor="bottom"
-						offset={[0, -65]}
-						onPress={() => {
-							if (!isSelectedLocked) {
-								handleNavigateToSite(selectedSite);
-							}
-						}}
-						style={{cursor: 'pointer'}}
-					>
-						{isSelectedLocked ? (
-							<View style={styles.lockedPopupContainer}>
-								<MaterialCommunityIcons name="lock" size={24} color="#e67e22" />
-								<Text style={styles.lockedPopupTitle}>Restricted Access</Text>
-								<Text style={styles.lockedPopupSubtext}>Sign in or upgrade your account to view details for this location.</Text>
-								<View style={styles.popupArrow} />
-							</View>
-						) : (
-							<View style={styles.popupContainer}>
-								<Image
-									source={{
-										uri: getImageUrl({
-											path: selectedSite.image.url,
-											cdn: config.CONTENT_DELIVERY_NETWORK,
-											processed: selectedSite.image.processed,
-											size: 'thumbnail',
-										}),
-									}}
-									style={styles.popupImage}
-								/>
-
-								<View style={styles.popupContent}>
-									<Text style={styles.popupTitle}>{selectedSite.name}</Text>
-
-									<View style={popupMetaStyles.metaRow}>
-										{averageRating > 0 ? (
-											<View style={popupMetaStyles.ratingRow}>
-												<Ionicons name="star" size={12} color="#f59e0b" />
-												<Text style={popupMetaStyles.ratingText}>{averageRating.toFixed(1)}</Text>
-												<Text style={popupMetaStyles.countText}>({reviewCount})</Text>
-											</View>
-										) : (
-											<Text style={popupMetaStyles.noReviewsText}>No reviews</Text>
-										)}
-
-										{difficultyInfo && (
-											<View style={[popupMetaStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
-												<Text style={[popupMetaStyles.difficultyText, {color: difficultyInfo.color}]}>
-													{difficultyInfo.label.split(' ')[0]}
-												</Text>
-											</View>
-										)}
-									</View>
-
-									<Text style={styles.popupDescription} numberOfLines={4} ellipsizeMode="tail">
-										{selectedSite.description}
-									</Text>
-								</View>
-
-								<View style={styles.popupArrow} />
-							</View>
-						)}
-					</Marker>
-				)}
-
-				{coords && (
-					<>
-						<Marker
-							onPress={e => {
-								e.stopPropagation();
-								setUserMarker(prev => !prev);
-								setSelectedSite(null);
-							}}
-							lngLat={[coords.lon, coords.lat]}
-							anchor="bottom"
-						>
-							<View style={styles.locationPin}>
-								<View style={styles.locationPinCenter} />
-							</View>
-						</Marker>
-
-						{userMarker && (
-							<Marker lngLat={[coords.lon, coords.lat]} anchor="bottom" offset={[0, -45]}>
-								<View style={styles.popupContainer}>
-									<Text style={styles.popupTitle}>Your Location</Text>
-									<Text style={styles.popupDescription}>{coords.lat}</Text>
-									<Text style={styles.popupDescription}>{coords.lon}</Text>
-									<View style={styles.popupArrow} />
-								</View>
-							</Marker>
-						)}
-					</>
-				)}
-			</NativeMap>
-		</View>
+		<MapView
+			baseLayer={baseLayer}
+			clusters={clusters as SuperclusterItem[]}
+			supercluster={supercluster}
+			selectedSite={selectedSite}
+			setSelectedSite={setSelectedSite}
+			userMarker={userMarker}
+			setUserMarker={setUserMarker}
+			coords={coords ? {lat: coords.lat, lon: coords.lon} : null}
+			initialLat={initialLat}
+			initialLon={initialLon}
+			initialZoom={initialZoom}
+			canAccessOffTrailDifficulty={canAccessOffTrailDifficulty}
+			canAccessExpeditionDifficulty={canAccessExpeditionDifficulty}
+			isSelectedLocked={isSelectedLocked}
+			updateMapCenterAndBounds={updateMapCenterAndBounds}
+		/>
 	);
 }
-
-const popupMetaStyles = StyleSheet.create({
-	metaRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		width: '100%',
-		marginVertical: 4,
-		gap: 4,
-	},
-	ratingRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 3,
-	},
-	ratingText: {
-		fontSize: 11,
-		fontWeight: '700',
-		color: '#0f172a',
-	},
-	countText: {
-		fontSize: 10,
-		color: '#64748b',
-	},
-	noReviewsText: {
-		fontSize: 10,
-		color: '#94a3b8',
-		fontStyle: 'italic',
-	},
-	difficultyBadge: {
-		paddingHorizontal: 6,
-		paddingVertical: 2,
-		borderRadius: 4,
-	},
-	difficultyText: {
-		fontSize: 9,
-		fontWeight: '700',
-	},
-});
-
-const styles = StyleSheet.create({
-	popupContainer: {
-		backgroundColor: '#fff',
-		padding: 10,
-		width: 220,
-		position: 'relative',
-		alignItems: 'flex-start',
-		shadowColor: '#000',
-		shadowOffset: {width: 0, height: 2},
-		shadowOpacity: 0.25,
-		shadowRadius: 10,
-		elevation: 5,
-	},
-	lockedPopupContainer: {
-		backgroundColor: '#fff',
-		padding: 12,
-		width: 220,
-		position: 'relative',
-		alignItems: 'center',
-		justifyContent: 'center',
-		shadowColor: '#000',
-		shadowOffset: {width: 0, height: 2},
-		shadowOpacity: 0.25,
-		shadowRadius: 10,
-		elevation: 5,
-		borderRadius: 8,
-	},
-	lockedPopupTitle: {
-		fontSize: 13,
-		fontWeight: '700',
-		color: '#0f172a',
-		marginTop: 6,
-		textAlign: 'center',
-	},
-	lockedPopupSubtext: {
-		fontSize: 11,
-		color: '#64748b',
-		textAlign: 'center',
-		marginVertical: 6,
-	},
-	popupTitle: {
-		fontSize: 13,
-		fontWeight: '700',
-		color: '#333',
-		textAlign: 'left',
-	},
-	popupDescription: {
-		margin: 0,
-		fontSize: 11,
-		color: '#666',
-	},
-	popupArrow: {
-		position: 'absolute',
-		bottom: -6,
-		left: '50%',
-		width: 0,
-		height: 0,
-		borderLeftWidth: 6,
-		borderRightWidth: 6,
-		borderTopWidth: 6,
-		borderLeftColor: 'transparent',
-		borderRightColor: 'transparent',
-		borderTopColor: '#ffffff',
-	},
-	popupImage: {
-		width: '100%',
-		height: 100,
-		marginBottom: 6,
-	},
-	popupContent: {
-		flexDirection: 'column',
-		width: '100%',
-	},
-	clusterMarker: {
-		width: 44,
-		height: 44,
-		borderRadius: 22,
-		backgroundColor: '#1e1e1e',
-		justifyContent: 'center',
-		alignItems: 'center',
-		shadowColor: '#000',
-		shadowOffset: {width: 0, height: 2},
-		shadowOpacity: 0.2,
-		shadowRadius: 4,
-		elevation: 4,
-	},
-	clusterText: {
-		color: '#fff',
-		fontWeight: '700',
-		fontSize: 16,
-	},
-	locationPin: {
-		width: 32,
-		height: 32,
-		backgroundColor: '#0088cc',
-		borderRadius: 18,
-		borderBottomLeftRadius: 4,
-		transform: [{rotate: '-45deg'}],
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	locationPinCenter: {
-		width: 12,
-		height: 12,
-		backgroundColor: '#fff',
-		borderRadius: 6,
-	},
-});

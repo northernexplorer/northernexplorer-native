@@ -14,7 +14,7 @@ export function useWeatherBootstrap() {
 		data: fetchedData,
 		loading,
 		error,
-	} = useApiFetch('environment', 'WeatherController', 'getWeatherData', shouldFetch ? {lat: coords!.lat, lon: coords!.lon} : null);
+	} = useApiFetch('environment', 'WeatherController', 'getData', shouldFetch ? {lat: coords!.lat, lon: coords!.lon} : null);
 
 	useSyncToRedux(fetchedData, loading, error, {
 		set: setWeather,

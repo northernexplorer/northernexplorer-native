@@ -41,7 +41,7 @@ export type WeatherType = {
 };
 
 export const WeatherController = {
-	getWeatherData: {
+	getData: {
 		params: {lat: 0, lon: 0} as {lat: number; lon: number},
 		response: null as unknown as WeatherType,
 	},

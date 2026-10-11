@@ -7,7 +7,7 @@ export function useCityBootstrap() {
 	const dispatch = useAppDispatch();
 	const coords = useAppSelector(s => s.location.data);
 
-	const {data, loading, error} = useApiFetch('location', 'CityController', 'getCityData', coords ? {lat: coords.lat, lon: coords.lon} : null);
+	const {data, loading, error} = useApiFetch('location', 'CityController', 'getData', coords ? {lat: coords.lat, lon: coords.lon} : null);
 
 	useEffect(() => {
 		dispatch(setCityLoading(loading));

@@ -9,7 +9,7 @@ export function useLunarBootstrap() {
 	const isStale = !lastUpdated || Date.now() - lastUpdated > 1000 * 60 * 60 * 6;
 	const shouldFetch = !data || isStale;
 
-	const {data: fetchedData, loading, error} = useApiFetch('environment', 'LunarController', 'getLunarData', shouldFetch ? {} : null);
+	const {data: fetchedData, loading, error} = useApiFetch('environment', 'LunarController', 'getData', shouldFetch ? {} : null);
 
 	useSyncToRedux(fetchedData, loading, error, {
 		set: setLunar,

@@ -93,15 +93,15 @@ export const ImageController = {
 			success: boolean;
 		},
 	},
-	getPendingImages: {
+	getPending: {
 		params: {} as {limit?: number; offset?: number},
 		response: null as unknown as PendingImageType[],
 	},
-	approveImage: {
+	approve: {
 		params: {} as {id: string},
 		response: null as unknown as PendingImageType,
 	},
-	rejectImage: {
+	reject: {
 		params: {} as {id: string},
 		response: null as unknown as {success: boolean},
 	},
@@ -126,13 +126,6 @@ export const ImageController = {
 		response: null as unknown as {
 			liked: boolean;
 			likeCount: number;
-		},
-	},
-	getPending: {
-		params: {},
-		response: null as unknown as {
-			images: ImageType[];
-			total: number;
 		},
 	},
 	topImages: {

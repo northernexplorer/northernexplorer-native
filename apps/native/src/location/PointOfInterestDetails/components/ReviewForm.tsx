@@ -9,7 +9,7 @@ import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
-type CreateReviewProps = {
+type Props = {
 	refetch: () => void;
 	initialData?: ReviewType | ReviewSummary;
 	onCancel?: () => void;
@@ -30,7 +30,7 @@ type ReviewFormState = {
 
 type FormKeys = keyof ReviewFormState;
 
-export function ReviewForm({refetch, initialData, onCancel}: CreateReviewProps) {
+export function ReviewForm({refetch, initialData, onCancel}: Props) {
 	const authentication = useAuthentication();
 	const {id} = useLocalSearchParams<RouteParams>();
 
@@ -39,8 +39,8 @@ export function ReviewForm({refetch, initialData, onCancel}: CreateReviewProps) 
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-	const createMutation = useApiMutation('location', 'ReviewController', 'createNewReview');
-	const updateMutation = useApiMutation('location', 'ReviewController', 'editReview');
+	const createMutation = useApiMutation('location', 'ReviewController', 'create');
+	const updateMutation = useApiMutation('location', 'ReviewController', 'edit');
 
 	const isLoading = isEditing ? updateMutation.loading : createMutation.loading;
 

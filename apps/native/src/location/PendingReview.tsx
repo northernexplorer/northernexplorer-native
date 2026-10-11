@@ -12,11 +12,11 @@ import {RenderStars} from '~/location/PointOfInterestDetails/components/RenderSt
 export function PendingReview() {
 	const {id} = useLocalSearchParams<{id: string}>();
 
-	const {data: review, loading: isLoadingData} = useApiFetch('location', 'ReviewController', 'getReviewById', {id});
+	const {data: review, loading: isLoadingData} = useApiFetch('location', 'ReviewController', 'getById', {id});
 
-	const {mutate: approveReview, loading: isApproving} = useApiMutation('location', 'ReviewController', 'approveReview');
+	const {mutate: approve, loading: isApproving} = useApiMutation('location', 'ReviewController', 'approve');
 
-	const {mutate: rejectReview, loading: isRejecting} = useApiMutation('location', 'ReviewController', 'rejectReview');
+	const {mutate: reject, loading: isRejecting} = useApiMutation('location', 'ReviewController', 'reject');
 
 	const handleApprovePress = () => {
 		alertStore.showAlert({
@@ -32,7 +32,7 @@ export function PendingReview() {
 					text: 'Approve',
 					style: 'default',
 					onPress: async () => {
-						await approveReview({id});
+						await approve({id});
 						alertStore.showAlert({
 							title: 'Success',
 							message: 'Review approved successfully.',
@@ -59,7 +59,7 @@ export function PendingReview() {
 					text: 'Reject',
 					style: 'destructive',
 					onPress: async () => {
-						await rejectReview({id});
+						await reject({id});
 						alertStore.showAlert({
 							title: 'Success',
 							message: 'Review rejected and removed.',

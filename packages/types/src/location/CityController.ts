@@ -9,7 +9,7 @@ export type CityType = {
 };
 
 export const CityController = {
-	getCityData: {
+	getData: {
 		params: {} as {lat: number; lon: number},
 		response: null as unknown as CityType,
 	},

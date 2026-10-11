@@ -1,4 +1,3 @@
-export {MigrationController} from './controllers/MigrationController';
 export {StatusController} from './controllers/StatusController';
 export {SupportController} from './controllers/SupportController';
 

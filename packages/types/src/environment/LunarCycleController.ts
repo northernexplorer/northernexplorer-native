@@ -7,7 +7,7 @@ export type LunarCycleType = {
 };
 
 export const LunarController = {
-	getLunarData: {
+	getData: {
 		params: {} as Record<string, never>,
 		response: null as unknown as LunarCycleType,
 	},

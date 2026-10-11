@@ -9,9 +9,9 @@ export class CityController extends BaseController {
 		super(repos);
 	}
 
-	public async getCityData(params: Params<Route<'getCityData'>>): Promise<Response<Route<'getCityData'>>> {
+	public async getData(params: Params<Route<'getData'>>): Promise<Response<Route<'getData'>>> {
 		const {lat, lon} = params;
-		const city = this.repos.city.getCityCache(lat, lon);
+		const city = this.repos.city.getCache(lat, lon);
 
 		await this.flush();
 		return city;

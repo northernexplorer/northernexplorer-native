@@ -39,7 +39,7 @@ const STATUS_OPTIONS = [
 export function PointOfInterestEdit() {
 	const {id} = useLocalSearchParams<{id: string}>();
 	const authentication = useAuthentication();
-	const {data, loading} = useApiFetch('location', 'PointOfInterestController', 'getPointOfInterestById', {id});
+	const {data, loading} = useApiFetch('location', 'PointOfInterestController', 'getById', {id});
 	const {mutate, loading: mutationLoading} = useApiMutation('location', 'PointOfInterestController', 'edit');
 
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});

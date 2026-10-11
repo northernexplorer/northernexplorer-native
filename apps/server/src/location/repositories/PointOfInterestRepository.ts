@@ -52,7 +52,7 @@ export interface GetClosestPoisOptions {
 }
 
 export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
-	async getPointOfInterestById(id: string, currentUserId?: string): Promise<PointOfInterestType> {
+	async getByIdPopulated(id: string, currentUserId?: string): Promise<PointOfInterestType> {
 		const site = await this.findOneOrFail(
 			{id},
 			{populate: ['country', 'region', 'reviews', 'reviews.user', 'organization', 'images', 'images.user', 'images.likes', 'image']},
@@ -121,7 +121,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		};
 	}
 
-	async getClosestPointOfInterests({
+	async getClosest({
 		lat,
 		lon,
 		limit,

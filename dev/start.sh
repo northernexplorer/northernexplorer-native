@@ -49,7 +49,7 @@ app () {
 
 close () {
   local sessions
-  getSessions sessions
+  getByUsername sessions
   for el in "${sessions[@]}"; do
     closeTabIfNameMatches "$el" "^Northern Explorer.*"
   done

@@ -9,7 +9,7 @@ export class LunarController extends BaseController {
 		super(repos);
 	}
 
-	public getLunarData(): Response<Route<'getLunarData'>> {
+	public getData(): Response<Route<'getData'>> {
 		// Known reference New Moon date (January 6, 2000, 18:14 UTC) in milliseconds
 		const referenceTimeMs = Date.UTC(2000, 0, 6, 18, 14, 0);
 

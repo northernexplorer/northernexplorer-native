@@ -30,11 +30,11 @@ const getIconForClient = (client: string) => {
 
 export function Security({username}: Props) {
 	const auth = useAuthentication();
-	const {data, loading, refetch} = useApiFetch('user', 'SessionController', 'getSessions', {
+	const {data, loading, refetch} = useApiFetch('user', 'SessionController', 'getByUsername', {
 		username,
 		refreshToken: auth?.refreshToken || '',
 	});
-	const {mutate} = useApiMutation('user', 'SessionController', 'removeSession');
+	const {mutate} = useApiMutation('user', 'SessionController', 'deleteById');
 
 	if (loading || !data) return <Spinner />;
 

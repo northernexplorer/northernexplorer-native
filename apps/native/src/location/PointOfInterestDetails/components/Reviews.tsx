@@ -25,7 +25,7 @@ export function Reviews({data, refetch}: ReviewsProps) {
 	const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
 	const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
 
-	const deleteMutation = useApiMutation('location', 'ReviewController', 'deleteReview');
+	const deleteMutation = useApiMutation('location', 'ReviewController', 'deleteById');
 	const reviews = data.reviews ?? [];
 	const myReviews = reviews.filter(r => r.user.id === authentication?.userId);
 	const otherReviews = reviews.filter(r => r.user.id !== authentication?.userId);

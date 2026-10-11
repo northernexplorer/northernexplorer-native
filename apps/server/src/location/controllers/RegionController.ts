@@ -9,7 +9,7 @@ export class RegionController extends BaseController {
 		super(repos);
 	}
 
-	public async getRegionById(params: Params<Route<'getRegionById'>>): Promise<Response<Route<'getRegionById'>>> {
+	public async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
 		const {id} = params;
 		return this.repos.region.getById(id);
 	}
