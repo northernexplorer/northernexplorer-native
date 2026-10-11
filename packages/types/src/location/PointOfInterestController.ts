@@ -8,6 +8,13 @@ import {ImageHeaderType, ImageType} from './ImageController';
 export enum PublishStatusEnum {
 	Published = 'Published',
 	Draft = 'Draft',
+	Rejected = 'Rejected',
+}
+
+export enum RejectionReasonEnum {
+	NotPubliclyAccessible = 'Not publicly accessible',
+	NotHistoricalCaveWaterfall = 'Not Historical/Cave/Waterfall',
+	NoLongerExists = 'NoLongerExists',
 }
 
 export enum PointOfInterestTypeEnum {
@@ -42,6 +49,7 @@ export type PointOfInterestType = {
 	rating?: ReviewRatingEnum;
 	difficulty?: SiteDifficultyEnum;
 	images?: ImageType[];
+	rejectionReason?: RejectionReasonEnum;
 };
 
 export type PointOfInterestSummary = {
@@ -73,6 +81,7 @@ export type PointOfInterestEditType = {
 	endDate?: number;
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
+	rejectionReason?: RejectionReasonEnum;
 };
 
 export type PointOfInterestCreateType = {
@@ -87,6 +96,7 @@ export type PointOfInterestCreateType = {
 	endDate?: number;
 	status?: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
+	rejectionReason?: RejectionReasonEnum;
 };
 
 export type PointOfInterestCreateResponseType = {
