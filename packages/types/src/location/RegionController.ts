@@ -19,6 +19,10 @@ export type RegionEditType = {
 };
 
 export const RegionController = {
+	getAll: {
+		params: {} as Record<string, never>,
+		response: null as unknown as RegionType[],
+	},
 	getById: {
 		params: {} as {id: string},
 		response: null as unknown as RegionType,

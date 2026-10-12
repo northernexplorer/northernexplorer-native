@@ -14,6 +14,19 @@ export class RegionController extends BaseController {
 		super(repos);
 	}
 
+	public async getAll(): Promise<Response<Route<'getAll'>>> {
+		const regions = await this.repos.region.getAll();
+		return regions.map(region => ({
+			id: region.id,
+			name: region.name,
+			countryId: region.country.id,
+			country: {
+				id: region.country.id,
+				name: region.country.name,
+			},
+		}));
+	}
+
 	public async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
 		const {id} = params;
 		const region = await this.repos.region.getById(id);

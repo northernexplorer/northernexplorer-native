@@ -7,6 +7,10 @@ export class RegionRepository extends BaseRepository<Region> {
 		return this.findOneOrFail({id}, {populate: ['country']});
 	}
 
+	async getAll() {
+		return this.findAll({populate: ['country'], orderBy: {name: 'asc'}});
+	}
+
 	async getByCountry(country: Country) {
 		return this.find({country}, {orderBy: {name: 'asc'}});
 	}

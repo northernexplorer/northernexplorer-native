@@ -110,6 +110,33 @@ export function Admin() {
 					<Text style={styles.statValue}>{data?.users ?? 0}</Text>
 					<Text style={styles.statLabel}>Registered Users</Text>
 				</Pressable>
+
+				{/* Countries Card */}
+				<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/countries')}>
+					<View style={[styles.iconBadge, {backgroundColor: '#e0f7fa'}]}>
+						<Ionicons name="globe-outline" size={24} color="#00838f" />
+					</View>
+					<Text style={styles.statValue}>{data?.countries ?? 0}</Text>
+					<Text style={styles.statLabel}>Countries</Text>
+				</Pressable>
+
+				{/* Regions Card */}
+				<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/regions')}>
+					<View style={[styles.iconBadge, {backgroundColor: '#ede7f6'}]}>
+						<Ionicons name="location-outline" size={24} color="#512da8" />
+					</View>
+					<Text style={styles.statValue}>{data?.regions ?? 0}</Text>
+					<Text style={styles.statLabel}>Regions</Text>
+				</Pressable>
+
+				{/* Organizations Card */}
+				<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/organizations')}>
+					<View style={[styles.iconBadge, {backgroundColor: '#fce4ec'}]}>
+						<Ionicons name="business-outline" size={24} color="#c2185b" />
+					</View>
+					<Text style={styles.statValue}>{data?.organizations ?? 0}</Text>
+					<Text style={styles.statLabel}>Organizations</Text>
+				</Pressable>
 			</View>
 		</View>
 	);
