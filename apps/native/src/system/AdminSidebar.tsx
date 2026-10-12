@@ -14,9 +14,6 @@ export function AdminSidebar() {
 			<Link href="/admin/add-region/" style={[styles.button, styles.secondaryButton]}>
 				<Text style={[styles.buttonText, styles.secondaryButtonText]}>+ Add Region</Text>
 			</Link>
-			<Link href="/admin/edit-region/" style={[styles.button, styles.secondaryButton]}>
-				<Text style={[styles.buttonText, styles.secondaryButtonText]}>✎ Edit Region</Text>
-			</Link>
 			<Link href="/admin/add-organization/" style={[styles.button, styles.secondaryButton]}>
 				<Text style={[styles.buttonText, styles.secondaryButtonText]}>+ Add Organization</Text>
 			</Link>

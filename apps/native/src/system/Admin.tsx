@@ -111,60 +111,6 @@ export function Admin() {
 					<Text style={styles.statLabel}>Registered Users</Text>
 				</Pressable>
 			</View>
-
-			<View style={styles.sectionHeader}>
-				<Text style={styles.sectionTitle}>Locations & Organizations</Text>
-			</View>
-
-			<View style={styles.grid}>
-				{/* Add Country Card */}
-				<Pressable
-					style={({pressed}) => [styles.card, styles.actionCard, pressed && styles.cardPressed]}
-					onPress={() => router.push('/admin/add-country')}
-				>
-					<View style={[styles.iconBadge, {backgroundColor: '#ecfdf5'}]}>
-						<Ionicons name="globe-outline" size={24} color="#059669" />
-					</View>
-					<Text style={styles.actionCardTitle}>Add Country</Text>
-					<Text style={styles.actionCardSubtitle}>Register a sovereign country</Text>
-				</Pressable>
-
-				{/* Add Region Card */}
-				<Pressable
-					style={({pressed}) => [styles.card, styles.actionCard, pressed && styles.cardPressed]}
-					onPress={() => router.push('/admin/add-region')}
-				>
-					<View style={[styles.iconBadge, {backgroundColor: '#eff6ff'}]}>
-						<Ionicons name="navigate-outline" size={24} color="#2563eb" />
-					</View>
-					<Text style={styles.actionCardTitle}>Add Region</Text>
-					<Text style={styles.actionCardSubtitle}>Add a district or territory</Text>
-				</Pressable>
-
-				{/* Edit Region Card */}
-				<Pressable
-					style={({pressed}) => [styles.card, styles.actionCard, pressed && styles.cardPressed]}
-					onPress={() => router.push('/admin/edit-region')}
-				>
-					<View style={[styles.iconBadge, {backgroundColor: '#fef3c7'}]}>
-						<Ionicons name="create-outline" size={24} color="#d97706" />
-					</View>
-					<Text style={styles.actionCardTitle}>Edit Region</Text>
-					<Text style={styles.actionCardSubtitle}>Modify an existing region</Text>
-				</Pressable>
-
-				{/* Add Organization Card */}
-				<Pressable
-					style={({pressed}) => [styles.card, styles.actionCard, pressed && styles.cardPressed]}
-					onPress={() => router.push('/admin/add-organization')}
-				>
-					<View style={[styles.iconBadge, {backgroundColor: '#f5f3ff'}]}>
-						<Ionicons name="business-outline" size={24} color="#7c3aed" />
-					</View>
-					<Text style={styles.actionCardTitle}>Add Organization</Text>
-					<Text style={styles.actionCardSubtitle}>Register a park authority or trust</Text>
-				</Pressable>
-			</View>
 		</View>
 	);
 }
@@ -178,15 +124,6 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 		gap: 16,
 		marginBottom: 24,
-	},
-	sectionHeader: {
-		marginBottom: 12,
-		marginTop: 8,
-	},
-	sectionTitle: {
-		fontSize: 18,
-		fontWeight: '700',
-		color: '#212529',
 	},
 	card: {
 		flex: 1,
@@ -207,19 +144,6 @@ const styles = StyleSheet.create({
 		borderColor: '#f59e0b',
 		borderWidth: 1.5,
 		backgroundColor: '#fffcf5',
-	},
-	actionCard: {
-		minWidth: '30%',
-	},
-	actionCardTitle: {
-		fontSize: 16,
-		fontWeight: '700',
-		color: '#212529',
-		marginBottom: 4,
-	},
-	actionCardSubtitle: {
-		fontSize: 12,
-		color: '#6c757d',
 	},
 	badgeDot: {
 		position: 'absolute',
