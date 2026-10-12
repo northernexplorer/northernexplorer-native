@@ -1,5 +1,4 @@
 const NATIONAL_PARK_SERVICE_ORG_ID = 'e0000000-0000-4000-8000-000000000001';
-const OTHER_ORG_ID = '5b47c519-02fa-49cb-af9d-ec4ee5db5abd';
 
 const US_STATES = [
 	{name: 'Alabama', orgName: 'Alabama State Parks', orgId: 'b0110001-0001-4001-8001-000000000001'},
@@ -83,11 +82,7 @@ select '${state.orgId}', "id" from "region" where lower("name") = '${state.name.
 on conflict ("organization_id", "region_id") do nothing;`,
 	),
 
-	// Link Other organization to all American regions and territories
-	`insert into "organization_regions" ("organization_id", "region_id")
-select '${OTHER_ORG_ID}', "region"."id"
-from "region"
-inner join "country" on "country"."id" = "region"."country_id"
-where lower("country"."name") in ('united states', 'united states of america', 'usa', 'us')
-on conflict ("organization_id", "region_id") do nothing;`,
+	// Clean up Unknown organization region mappings and ensure name is 'Unknown'
+	`update "organization" set "name" = 'Unknown' where "id" = '5b47c519-02fa-49cb-af9d-ec4ee5db5abd';`,
+	`delete from "organization_regions" where "organization_id" = '5b47c519-02fa-49cb-af9d-ec4ee5db5abd';`,
 ];
