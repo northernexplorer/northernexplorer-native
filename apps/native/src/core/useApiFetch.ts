@@ -7,8 +7,7 @@ import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {alertStore} from '~/core/alertStore';
 import {useIsOffline} from '~/core/ConnectivityProvider';
-
-const apiCache = new Map<string, unknown>();
+import {apiCache, cacheInitPromise, getApiCacheKey, getApiCache, setApiCache, subscribeToCacheLoad, cacheEntityLookups} from '~/core/apiCache';
 
 export interface UseApiFetchOptions {
 	skip?: boolean;
@@ -25,8 +24,7 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const {isOffline} = useIsOffline();
 
 	const isSkipped = skip || params === null;
-	const serializedParams = !isSkipped && params ? JSON.stringify(params) : null;
-	const cacheKey = serializedParams !== null ? `${category}:${String(controller)}:${String(method)}:${serializedParams}` : null;
+	const cacheKey = !isSkipped ? getApiCacheKey(category, String(controller), String(method), params) : null;
 
 	const cacheKeyRef = useRef(cacheKey);
 	cacheKeyRef.current = cacheKey;
@@ -39,10 +37,7 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 
 	// Type-safe helper to retrieve cached data without returning 'unknown'
 	const getCachedData = useCallback((key: string | null): GetResponse<C, K, M> | null => {
-		if (key && apiCache.has(key)) {
-			return apiCache.get(key) as GetResponse<C, K, M>;
-		}
-		return null;
+		return getApiCache<GetResponse<C, K, M>>(key);
 	}, []);
 
 	const [data, setData] = useState<GetResponse<C, K, M> | null>(() => (isSkipped ? null : getCachedData(cacheKey)));
@@ -51,6 +46,20 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
+
+	// Sync state when cache finishes loading from AsyncStorage
+	useEffect(() => {
+		const unsubscribe = subscribeToCacheLoad(() => {
+			if (!isSkipped && cacheKey) {
+				const cached = getCachedData(cacheKey);
+				if (cached !== null) {
+					setData(cached);
+					setLoading(false);
+				}
+			}
+		});
+		return unsubscribe;
+	}, [cacheKey, getCachedData, isSkipped]);
 
 	// Sync state when cacheKey or skip status changes
 	useEffect(() => {
@@ -79,6 +88,8 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 
 		const currentCacheKey = cacheKeyRef.current;
 		const currentParams = paramsRef.current;
+
+		await cacheInitPromise;
 
 		if (isOffline) {
 			setLoading(false);
@@ -119,12 +130,19 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 			);
 
 			if (currentCacheKey) {
-				apiCache.set(currentCacheKey, result);
+				setApiCache(currentCacheKey, result);
+				cacheEntityLookups(category, String(controller), String(method), result);
 			}
 			setData(result as GetResponse<C, K, M>);
 		} catch (err) {
 			const e = err instanceof Error ? err : new Error(typeof err === 'string' ? err : 'Network request failed');
 			setError(e);
+
+			// Fallback to cached data if available
+			const cached = getCachedData(currentCacheKey);
+			if (cached !== null) {
+				setData(cached);
+			}
 
 			const msg = e.message.toLowerCase();
 
@@ -151,7 +169,6 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 		category,
 		controller,
 		method,
-		serializedParams,
 		skip,
 		isOffline,
 		authentication?.accessToken,

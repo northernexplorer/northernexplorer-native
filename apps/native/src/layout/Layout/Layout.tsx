@@ -21,14 +21,14 @@ interface Props {
 	disableScroll?: boolean;
 }
 
-export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline, disableScroll}: Props) {
+export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline = true, disableScroll}: Props) {
 	const {width} = useWindowDimensions();
 	const insets = useSafeAreaInsets();
 	const {isOffline, isRequiredAppUpdate} = useIsOffline();
 	const isMobileView = width < 1000;
 	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
-	const online = !isOffline || !!showOffline;
+	const online = !isOffline || showOffline !== false;
 	const isMobileFullPage = fullPage && isMobileView;
 
 	const floatingButtonBottom = (insets.bottom || 0) + 16;

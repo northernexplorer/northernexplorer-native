@@ -13,11 +13,13 @@ import {useWeatherWarnings} from '~/environment/state/weather/useWeatherWarnings
 import {useLunar} from '~/environment/state/lunar/useLunar';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useApiFetch} from '~/core/useApiFetch';
+import {useIsOffline} from '~/core/ConnectivityProvider';
 import {styles} from '~/layout/Home/styles';
 
 export function Home() {
 	const {width} = useWindowDimensions();
 	const isMobile = width < 768;
+	const {isOffline} = useIsOffline();
 
 	const weather = useWeather();
 	const reduxWarnings = useWeatherWarnings();
@@ -28,19 +30,28 @@ export function Home() {
 
 	const warnings = warningsData && warningsData.length > 0 ? warningsData : reduxWarnings;
 
-	const {data: pointOfInterestData} = useApiFetch(
+	const {data: pointOfInterestData, loading: poiLoading} = useApiFetch(
 		'location',
 		'PointOfInterestController',
 		'getNearby',
-		coords ? {lat: coords.lat, lon: coords.lon, limit: 5} : null,
+		coords ? {lat: coords.lat, lon: coords.lon, limit: 10} : null,
 	);
 
 	const {data: topImagesData} = useApiFetch('location', 'ImageController', 'topImages', {});
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
-	const isCoreReady = !!weather && !!lunar;
+	// Prefetch map data and geography data in background when online to maximize cached data for offline use
+	useApiFetch('location', 'PointOfInterestController', 'getForMap', coords ? {lat: coords.lat, lon: coords.lon, limit: 500} : null, {
+		skip: isOffline,
+	});
+	useApiFetch('location', 'CountryController', 'getAll', {}, {skip: isOffline});
+	useApiFetch('location', 'RegionController', 'getAll', {}, {skip: isOffline});
+	useApiFetch('location', 'OrganizationController', 'getAll', {}, {skip: isOffline});
 
-	if (!isCoreReady) {
+	const isCoreReady = !!weather && !!lunar;
+	const isInitialLoading = !isOffline && !isCoreReady && !coords;
+
+	if (isInitialLoading) {
 		return (
 			<View style={styles.loadingContainer}>
 				<ActivityIndicator size="large" color="#ffffff" />
@@ -48,9 +59,9 @@ export function Home() {
 		);
 	}
 
-	const canUseCompass = !!permissionData?.navigation.useCompass;
-	const canUseFlashlight = !!permissionData?.navigation.useFlashlight;
-	const canUseSignal = !!permissionData?.navigation.useSignal;
+	const canUseCompass = permissionData ? !!permissionData.navigation.useCompass : true;
+	const canUseFlashlight = permissionData ? !!permissionData.navigation.useFlashlight : true;
+	const canUseSignal = permissionData ? !!permissionData.navigation.useSignal : true;
 	const hasTools = canUseSignal || canUseCompass || canUseFlashlight;
 
 	return (
@@ -97,8 +108,18 @@ export function Home() {
 							</View>
 							<View style={styles.pointOfInterestsSection}>
 								{!pointOfInterestData ? (
-									<View style={styles.loadingCard}>
-										<ActivityIndicator size="small" color="#ffffff" />
+									poiLoading ? (
+										<View style={styles.loadingCard}>
+											<ActivityIndicator size="small" color="#ffffff" />
+										</View>
+									) : (
+										<View style={[styles.loadingCard, {padding: 12}]}>
+											<Text style={{color: '#94a3b8', fontSize: 13}}>No destinations available offline.</Text>
+										</View>
+									)
+								) : pointOfInterestData.length === 0 ? (
+									<View style={[styles.loadingCard, {padding: 12}]}>
+										<Text style={{color: '#94a3b8', fontSize: 13}}>No destinations found.</Text>
 									</View>
 								) : (
 									<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12}}>
@@ -141,18 +162,24 @@ export function Home() {
 				)}
 
 				{/* Environment Highlights Grid */}
-				<View style={styles.sectionContainer}>
-					<View style={styles.environmentGrid}>
-						<View style={styles.gridRow}>
-							<View style={styles.weatherSection}>
-								<WeatherWidget data={weather} />
-							</View>
-							<View style={styles.lunarSection}>
-								<LunarWidget data={lunar} />
+				{(weather || lunar) && (
+					<View style={styles.sectionContainer}>
+						<View style={styles.environmentGrid}>
+							<View style={styles.gridRow}>
+								{weather && (
+									<View style={styles.weatherSection}>
+										<WeatherWidget data={weather} />
+									</View>
+								)}
+								{lunar && (
+									<View style={styles.lunarSection}>
+										<LunarWidget data={lunar} />
+									</View>
+								)}
 							</View>
 						</View>
 					</View>
-				</View>
+				)}
 			</ScrollView>
 		</View>
 	);
