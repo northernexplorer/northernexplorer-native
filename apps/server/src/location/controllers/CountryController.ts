@@ -43,4 +43,26 @@ export class CountryController extends BaseController {
 			name: country.name,
 		};
 	}
+
+	public async edit(params: Params<Route<'edit'>>, auth?: AuthContext): Promise<Response<Route<'edit'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		if (!params.id) {
+			throw new Error('Country ID is required');
+		}
+		if (!params.name || !params.name.trim()) {
+			throw new Error('Country name is required');
+		}
+
+		const country = await this.repos.country.getById(params.id);
+		country.name = params.name.trim();
+
+		await this.flush();
+
+		return {
+			id: country.id,
+			name: country.name,
+		};
+	}
 }

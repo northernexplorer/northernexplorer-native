@@ -14,6 +14,11 @@ export class OrganizationController extends BaseController {
 		super(repos);
 	}
 
+	async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
+		const {id} = params;
+		return this.repos.organization.getById(id);
+	}
+
 	async getAll(params?: Params<Route<'getAll'>>): Promise<Response<Route<'getAll'>>> {
 		const regionId = params?.regionId || params?.id;
 		if (regionId) {
@@ -47,6 +52,39 @@ export class OrganizationController extends BaseController {
 		}
 
 		this.persist(organization);
+		await this.flush();
+
+		return {
+			id: organization.id,
+			name: organization.name,
+		};
+	}
+
+	public async edit(params: Params<Route<'edit'>>, auth?: AuthContext): Promise<Response<Route<'edit'>>> {
+		this.permissionService.isLoggedIn(auth);
+		this.permissionService.canAccessAdmin(auth);
+
+		if (!params.id) {
+			throw new Error('Organization ID is required');
+		}
+		if (!params.name || !params.name.trim()) {
+			throw new Error('Organization name is required');
+		}
+
+		const organization = await this.repos.organization.getById(params.id);
+		organization.name = params.name.trim();
+
+		await organization.regions.init();
+		organization.regions.removeAll();
+
+		const regionIds = params.regionIds || (params.regionId ? [params.regionId] : []);
+		if (regionIds.length > 0) {
+			const regions = await this.repos.region.find({id: {$in: regionIds}});
+			for (const region of regions) {
+				organization.regions.add(region);
+			}
+		}
+
 		await this.flush();
 
 		return {
