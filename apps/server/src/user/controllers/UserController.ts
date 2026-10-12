@@ -66,7 +66,7 @@ export class UserController extends BaseController {
 		await this.flush();
 
 		const activationToken = this.tokenService.generateToken({userId: user.id, email: user.email.toLowerCase()}, 'account_activation');
-		const activationUrl = `${config.WEB_URL}/profile/activate?token=${activationToken}`;
+		const activationUrl = `${config.WEB_URL}/user/activate?token=${activationToken}`;
 
 		await this.emailSendService.send({
 			to: user.email.toLowerCase(),
@@ -147,7 +147,7 @@ export class UserController extends BaseController {
 		if (!user.isActive) throw new Error("Your account isn't active yet. Please check your email for the activation link.");
 
 		const resetPasswordToken = this.tokenService.generateToken({userId: user.id, email: user.email.toLowerCase()}, 'password_reset');
-		const resetPasswordUrl = `${config.WEB_URL}/profile/reset-password?token=${resetPasswordToken}`;
+		const resetPasswordUrl = `${config.WEB_URL}/user/reset-password?token=${resetPasswordToken}`;
 
 		await this.emailSendService.send({
 			to: user.email.toLowerCase(),
