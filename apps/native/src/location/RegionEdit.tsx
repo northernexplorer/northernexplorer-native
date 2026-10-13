@@ -88,12 +88,6 @@ export function RegionEdit() {
 
 	return (
 		<ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-			<View style={styles.header}>
-				<Ionicons name="create-outline" size={28} color="#0088cc" />
-				<Text style={styles.headerTitle}>Edit Region</Text>
-			</View>
-			<Text style={styles.headerSubtitle}>Modify an existing district or territory name and update its associated country.</Text>
-
 			<View style={styles.card}>
 				{!paramId && (
 					<View style={styles.selectorSection}>
@@ -202,23 +196,6 @@ const styles = StyleSheet.create({
 		maxWidth: 600,
 		width: '100%',
 		alignSelf: 'center',
-	},
-	header: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 10,
-		marginBottom: 6,
-	},
-	headerTitle: {
-		fontSize: 22,
-		fontWeight: '700',
-		color: '#212529',
-	},
-	headerSubtitle: {
-		fontSize: 14,
-		color: '#6c757d',
-		marginBottom: 20,
-		lineHeight: 20,
 	},
 	card: {
 		backgroundColor: '#ffffff',
