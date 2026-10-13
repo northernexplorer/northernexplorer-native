@@ -13,6 +13,9 @@ export const StatusController = {
 			pendingImages: number;
 			pendingReports: number;
 			pendingSuggestions?: number;
+			countries?: number;
+			regions?: number;
+			organizations?: number;
 		},
 	},
 };

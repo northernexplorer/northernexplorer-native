@@ -52,6 +52,9 @@ export class StatusController extends BaseController {
 		const pendingImages = await this.repos.image.count({status: ImageStatusEnum.Pending});
 		const pendingReports = await this.repos.report.count({status: ReportStatusEnum.Pending});
 		const pendingSuggestions = await this.repos.pointOfInterestSuggestion.count({status: SuggestionStatusEnum.Pending});
+		const countries = await this.repos.country.count({});
+		const regions = await this.repos.region.count({});
+		const organizations = await this.repos.organization.count({});
 		return {
 			users,
 			pointOfInterestsPublished,
@@ -60,6 +63,9 @@ export class StatusController extends BaseController {
 			pendingImages,
 			pendingReports,
 			pendingSuggestions,
+			countries,
+			regions,
+			organizations,
 		};
 	}
 }
