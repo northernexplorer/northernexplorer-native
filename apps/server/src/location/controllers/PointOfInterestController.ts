@@ -124,7 +124,10 @@ export class PointOfInterestController extends BaseController {
 			region: site.region,
 			country: site.country,
 			type: site.type,
-			organization: site.organization,
+			organization: {
+				id: site.organization.id,
+				name: site.organization.name,
+			},
 		}));
 	}
 
@@ -145,7 +148,10 @@ export class PointOfInterestController extends BaseController {
 			region: site.region,
 			country: site.country,
 			type: site.type,
-			organization: site.organization,
+			organization: {
+				id: site.organization.id,
+				name: site.organization.name,
+			},
 		}));
 	}
 

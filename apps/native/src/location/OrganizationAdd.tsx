@@ -1,26 +1,41 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator} from 'react-native';
 import {Redirect, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {FormField} from '@northernexplorer/tools-web';
+import {DropdownField, FormField} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
+import {useApiFetch} from '~/core/useApiFetch';
 import {alertStore} from '~/core/alertStore';
 import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
-import {RegionDropdown} from '~/layout/Layout/components/RegionDropdown';
 
 export function OrganizationAdd() {
 	const router = useRouter();
 	const authentication = useAuthentication();
 	const isAdmin = Boolean(authentication?.roles?.includes(RolesEnum.Admin));
 
-	const [countryId, setCountryId] = useState('');
-	const [regionId, setRegionId] = useState('');
+	const [filterCountryId, setFilterCountryId] = useState('');
+	const [selectedRegionIds, setSelectedRegionIds] = useState<string[]>([]);
 	const [name, setName] = useState('');
 	const [errors, setErrors] = useState<{name?: string}>({});
 
+	const {data: allRegions, loading: loadingRegions} = useApiFetch('location', 'RegionController', 'getAll', {});
 	const {mutate: createOrganization, loading} = useApiMutation('location', 'OrganizationController', 'create');
+
+	const regionOptions = useMemo(() => {
+		if (!Array.isArray(allRegions)) return [];
+		const filtered = filterCountryId ? allRegions.filter(r => r.country?.id === filterCountryId || r.countryId === filterCountryId) : allRegions;
+		return filtered.map(region => ({
+			label: filterCountryId ? region.name : `${region.name} (${region.country?.name || 'Unknown'})`,
+			value: region.id,
+		}));
+	}, [allRegions, filterCountryId]);
+
+	const selectedRegionsList = useMemo(() => {
+		if (!Array.isArray(allRegions)) return [];
+		return allRegions.filter(r => selectedRegionIds.includes(r.id));
+	}, [allRegions, selectedRegionIds]);
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!isAdmin) return <Redirect href="404" />;
@@ -39,7 +54,7 @@ export function OrganizationAdd() {
 
 		const result = await createOrganization({
 			name: name.trim(),
-			regionIds: regionId ? [regionId] : undefined,
+			regionIds: selectedRegionIds.length > 0 ? selectedRegionIds : undefined,
 		});
 
 		if (result) {
@@ -76,26 +91,50 @@ export function OrganizationAdd() {
 				/>
 
 				<CountryDropdown
-					fieldName="countryId"
-					label="Country (Optional - filters regions)"
-					value={countryId}
+					fieldName="filterCountryId"
+					label="Filter Regions by Country (Optional)"
+					value={filterCountryId}
 					updateField={(_, val) => {
-						setCountryId(val);
-						setRegionId('');
+						setFilterCountryId(val);
 					}}
 					disabled={loading}
 				/>
 
-				<RegionDropdown
-					fieldName="regionId"
-					countryId={countryId}
-					label="Associated Region (Optional)"
-					value={regionId}
-					updateField={(_, val) => {
-						setRegionId(val);
-					}}
-					disabled={loading || !countryId}
+				<DropdownField<'regions', string>
+					fieldName="regions"
+					label="Associated Regions (Optional)"
+					value={selectedRegionIds}
+					options={regionOptions}
+					updateField={(_, val) => setSelectedRegionIds(val)}
+					isMultiSelect
+					isSearchable
+					searchPlaceholder="Search and select regions..."
+					loading={loadingRegions}
+					disabled={loading}
 				/>
+
+				{selectedRegionsList.length > 0 && (
+					<View style={styles.selectedSection}>
+						<Text style={styles.selectedSectionTitle}>Selected Regions ({selectedRegionsList.length}):</Text>
+						<View style={styles.chipsContainer}>
+							{selectedRegionsList.map(region => (
+								<View key={region.id} style={styles.chip}>
+									<Text style={styles.chipText}>
+										{region.name}
+										{region.country?.name ? ` (${region.country.name})` : ''}
+									</Text>
+									<TouchableOpacity
+										onPress={() => setSelectedRegionIds(prev => prev.filter(id => id !== region.id))}
+										hitSlop={{top: 6, bottom: 6, left: 6, right: 6}}
+										style={styles.chipRemove}
+									>
+										<Ionicons name="close-circle" size={16} color="#6c757d" />
+									</TouchableOpacity>
+								</View>
+							))}
+						</View>
+					</View>
+				)}
 
 				<View style={styles.buttonRow}>
 					<TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => router.push('/admin')} disabled={loading}>
@@ -161,6 +200,41 @@ const styles = StyleSheet.create({
 		shadowRadius: 8,
 		elevation: 2,
 	},
+	selectedSection: {
+		marginTop: 8,
+		marginBottom: 12,
+	},
+	selectedSectionTitle: {
+		fontSize: 13,
+		fontWeight: '600',
+		color: '#495057',
+		marginBottom: 8,
+	},
+	chipsContainer: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 8,
+	},
+	chip: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		backgroundColor: '#e7f5ff',
+		borderWidth: 1,
+		borderColor: '#a5d8ff',
+		borderRadius: 16,
+		paddingVertical: 4,
+		paddingHorizontal: 10,
+		gap: 6,
+	},
+	chipText: {
+		fontSize: 13,
+		color: '#1864ab',
+		fontWeight: '500',
+	},
+	chipRemove: {
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
 	buttonRow: {
 		flexDirection: 'row',
 		justifyContent: 'flex-end',
@@ -178,6 +252,7 @@ const styles = StyleSheet.create({
 	},
 	cancelButton: {
 		backgroundColor: '#f1f3f5',
+		minWidth: 120,
 	},
 	cancelButtonText: {
 		color: '#495057',

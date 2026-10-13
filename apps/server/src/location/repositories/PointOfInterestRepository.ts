@@ -80,7 +80,10 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			region: site.region,
 			status: site.status,
 			type: site.type,
-			organization: site.organization,
+			organization: {
+				id: site.organization.id,
+				name: site.organization.name,
+			},
 			reviews: visibleReviews.map(review => ({
 				id: review.id,
 				description: review.description,

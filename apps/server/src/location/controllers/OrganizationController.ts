@@ -14,21 +14,40 @@ export class OrganizationController extends BaseController {
 		super(repos);
 	}
 
+	private formatOrganization(organization: Organization) {
+		return {
+			id: organization.id,
+			name: organization.name,
+			regions: organization.regions.isInitialized()
+				? organization.regions.getItems().map(r => ({
+						id: r.id,
+						name: r.name,
+						countryId: r.country.id,
+						country: {id: r.country.id, name: r.country.name},
+					}))
+				: undefined,
+		};
+	}
+
 	async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
 		const {id} = params;
-		return this.repos.organization.getById(id);
+		const organization = await this.repos.organization.getById(id);
+		return this.formatOrganization(organization);
 	}
 
 	async getAll(params?: Params<Route<'getAll'>>): Promise<Response<Route<'getAll'>>> {
 		const regionId = params?.regionId || params?.id;
 		if (regionId) {
-			return this.repos.organization.getByRegion(regionId);
+			const orgs = await this.repos.organization.getByRegion(regionId);
+			return orgs.map(org => this.formatOrganization(org));
 		}
-		return this.repos.organization.getAll();
+		const orgs = await this.repos.organization.getAll();
+		return orgs.map(org => this.formatOrganization(org));
 	}
 
 	async getByRegionId(params: Params<Route<'getByRegionId'>>): Promise<Response<Route<'getByRegionId'>>> {
-		return this.repos.organization.getByRegion(params.id);
+		const orgs = await this.repos.organization.getByRegion(params.id);
+		return orgs.map(org => this.formatOrganization(org));
 	}
 
 	public async create(params: Params<Route<'create'>>, auth?: AuthContext): Promise<Response<Route<'create'>>> {
@@ -45,7 +64,7 @@ export class OrganizationController extends BaseController {
 
 		const regionIds = params.regionIds || (params.regionId ? [params.regionId] : []);
 		if (regionIds.length > 0) {
-			const regions = await this.repos.region.find({id: {$in: regionIds}});
+			const regions = await this.repos.region.find({id: {$in: regionIds}}, {populate: ['country']});
 			for (const region of regions) {
 				organization.regions.add(region);
 			}
@@ -54,10 +73,7 @@ export class OrganizationController extends BaseController {
 		this.persist(organization);
 		await this.flush();
 
-		return {
-			id: organization.id,
-			name: organization.name,
-		};
+		return this.formatOrganization(organization);
 	}
 
 	public async edit(params: Params<Route<'edit'>>, auth?: AuthContext): Promise<Response<Route<'edit'>>> {
@@ -79,7 +95,7 @@ export class OrganizationController extends BaseController {
 
 		const regionIds = params.regionIds || (params.regionId ? [params.regionId] : []);
 		if (regionIds.length > 0) {
-			const regions = await this.repos.region.find({id: {$in: regionIds}});
+			const regions = await this.repos.region.find({id: {$in: regionIds}}, {populate: ['country']});
 			for (const region of regions) {
 				organization.regions.add(region);
 			}
@@ -87,9 +103,6 @@ export class OrganizationController extends BaseController {
 
 		await this.flush();
 
-		return {
-			id: organization.id,
-			name: organization.name,
-		};
+		return this.formatOrganization(organization);
 	}
 }

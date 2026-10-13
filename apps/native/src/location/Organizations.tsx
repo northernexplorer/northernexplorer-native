@@ -23,12 +23,26 @@ export function Organizations() {
 		{
 			key: 'name',
 			title: 'Organization Name',
-			flex: 1,
+			flex: 1.5,
 			render: org => (
 				<Text style={styles.nameText} numberOfLines={1}>
 					{org.name}
 				</Text>
 			),
+		},
+		{
+			key: 'regions',
+			title: 'Regions',
+			flex: 2,
+			render: org => {
+				const regionNames = org.regions?.map(r => r.name).filter(Boolean);
+				const displayText = regionNames && regionNames.length > 0 ? regionNames.join(', ') : '-';
+				return (
+					<Text style={styles.regionsText} numberOfLines={2}>
+						{displayText}
+					</Text>
+				);
+			},
 		},
 		{
 			key: 'action',
@@ -60,5 +74,9 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: '600',
 		color: '#212529',
+	},
+	regionsText: {
+		fontSize: 13,
+		color: '#6c757d',
 	},
 });

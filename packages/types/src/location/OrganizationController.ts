@@ -1,3 +1,5 @@
+import {RegionType} from './RegionController';
+
 export enum OrganizationTypeEnum {
 	Government = 'Government',
 	Charity = 'Charity',
@@ -8,6 +10,7 @@ export enum OrganizationTypeEnum {
 export type OrganizationType = {
 	id: string;
 	name: string;
+	regions?: RegionType[];
 };
 
 export type OrganizationCreateType = {
