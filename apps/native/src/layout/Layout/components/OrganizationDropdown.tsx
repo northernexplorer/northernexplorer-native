@@ -4,6 +4,7 @@ import {useApiFetch} from '~/core/useApiFetch';
 
 interface OrganizationDropdownProps<T extends string> extends ComponentProps<T> {
 	regionId?: string;
+	allowAll?: boolean;
 }
 
 interface ComponentProps<T extends string> {
@@ -19,6 +20,7 @@ interface ComponentProps<T extends string> {
 export function OrganizationDropdown<T extends string>({
 	fieldName,
 	regionId,
+	allowAll = false,
 	label = 'Organization',
 	value,
 	updateField,
@@ -27,7 +29,7 @@ export function OrganizationDropdown<T extends string>({
 	disabled,
 }: OrganizationDropdownProps<T>) {
 	const {data, loading} = useApiFetch('location', 'OrganizationController', 'getAll', regionId ? {regionId} : {}, {
-		skip: !Boolean(regionId),
+		skip: !Boolean(regionId) && !allowAll,
 	});
 
 	const options = useMemo(() => {
