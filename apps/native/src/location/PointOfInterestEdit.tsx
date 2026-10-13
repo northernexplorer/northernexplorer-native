@@ -16,6 +16,7 @@ import {
 	PointOfInterestSuggestionCreateType,
 	PointOfInterestTypeEnum,
 	PublishStatusEnum,
+	RejectionReasonEnum,
 	RolesEnum,
 } from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -44,6 +45,7 @@ type FormState = {
 	endDate: string;
 	status: PublishStatusEnum;
 	organizationId: string;
+	rejectionReason?: RejectionReasonEnum;
 };
 
 type FormKeys = keyof FormState;
@@ -51,6 +53,15 @@ type FormKeys = keyof FormState;
 const STATUS_OPTIONS = [
 	{label: 'Draft', value: PublishStatusEnum.Draft},
 	{label: 'Published', value: PublishStatusEnum.Published},
+	{label: 'Rejected', value: PublishStatusEnum.Rejected},
+];
+
+const REJECTION_REASONS = [
+	{label: 'Trespassing Required', value: RejectionReasonEnum.TRESPASSING_REQUIRED},
+	{label: 'Ecologically Sensitive', value: RejectionReasonEnum.ECOLOGICALLY_SENSITIVE},
+	{label: 'Closed Permanently', value: RejectionReasonEnum.CLOSED_PERMANENTLY},
+	{label: 'Duplicate', value: RejectionReasonEnum.DUPLICATE},
+	{label: 'Out of Scope', value: RejectionReasonEnum.OUT_OF_SCOPE},
 ];
 
 export function PointOfInterestEdit() {
@@ -94,6 +105,7 @@ export function PointOfInterestEdit() {
 				endDate: data.endDate != null ? String(data.endDate) : '',
 				status: data.status,
 				organizationId: data.organization.id,
+				rejectionReason: data.rejectionReason,
 			});
 		}
 	}, [data]);
@@ -113,6 +125,9 @@ export function PointOfInterestEdit() {
 			if (name === 'regionId' && prev.regionId !== value) {
 				next.organizationId = '';
 			}
+			if (name === 'status' && value !== PublishStatusEnum.Rejected) {
+				next.rejectionReason = undefined;
+			}
 			return next;
 		});
 
@@ -130,6 +145,9 @@ export function PointOfInterestEdit() {
 		if (!form.regionId) newErrors.regionId = 'Region is required';
 		if (!form.organizationId) newErrors.organizationId = 'Organization is required';
 		if (form.type.length === 0) newErrors.type = 'At least one type must be selected';
+		if (isAdmin && form.status === PublishStatusEnum.Rejected && !form.rejectionReason) {
+			newErrors.rejectionReason = 'Rejection reason is required';
+		}
 
 		const parsedLat = parseFloat(form.lat);
 		if (isNaN(parsedLat) || parsedLat < -90 || parsedLat > 90) {
@@ -163,6 +181,7 @@ export function PointOfInterestEdit() {
 				startDate: form.startDate.trim() ? Number(form.startDate) : undefined,
 				endDate: form.endDate.trim() ? Number(form.endDate) : undefined,
 				status: form.status,
+				rejectionReason: form.status === PublishStatusEnum.Rejected ? form.rejectionReason : undefined,
 				organizationId: form.organizationId,
 			};
 
@@ -377,6 +396,22 @@ export function PointOfInterestEdit() {
 						</View>
 					)}
 				</View>
+
+				{isAdmin && form.status === PublishStatusEnum.Rejected && (
+					<View style={formStyles.row}>
+						<View style={{flex: 1}}>
+							<DropdownField
+								fieldName="rejectionReason"
+								label="Rejection Reason"
+								value={form.rejectionReason}
+								options={REJECTION_REASONS}
+								updateField={updateField}
+								error={errors.rejectionReason}
+								loading={mutationLoading}
+							/>
+						</View>
+					</View>
+				)}
 
 				<View style={formStyles.buttonRow}>
 					<Link

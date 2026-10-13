@@ -3,7 +3,7 @@ import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {Link, useLocalSearchParams} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, Spinner} from '@northernexplorer/tools-web';
-import {SiteDifficultyEnum, RolesEnum} from '@northernexplorer/types';
+import {SiteDifficultyEnum, RolesEnum, PublishStatusEnum, RejectionReasonEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
 import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
@@ -13,6 +13,14 @@ import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {Map} from '~/location/PointOfInterestDetails/components/Map';
 import {useLocation} from '~/location/state/location/useLocation';
+
+const REJECTION_REASON_LABELS: Record<RejectionReasonEnum, string> = {
+	[RejectionReasonEnum.TRESPASSING_REQUIRED]: 'Trespassing Required',
+	[RejectionReasonEnum.ECOLOGICALLY_SENSITIVE]: 'Ecologically Sensitive',
+	[RejectionReasonEnum.CLOSED_PERMANENTLY]: 'Closed Permanently',
+	[RejectionReasonEnum.DUPLICATE]: 'Duplicate',
+	[RejectionReasonEnum.OUT_OF_SCOPE]: 'Out of Scope',
+};
 
 export function PointOfInterestDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
@@ -107,6 +115,22 @@ export function PointOfInterestDetails() {
 				</View>
 
 				<Text style={styles.title}>{data.name}</Text>
+
+				{auth?.roles?.includes(RolesEnum.Admin) && data.status === PublishStatusEnum.Rejected && (
+					<View style={statusBannerStyles.rejectedContainer}>
+						<Text style={statusBannerStyles.rejectedTitle}>Status: Rejected</Text>
+						{data.rejectionReason && (
+							<Text style={statusBannerStyles.rejectedReason}>
+								Reason: {REJECTION_REASON_LABELS[data.rejectionReason] || data.rejectionReason}
+							</Text>
+						)}
+					</View>
+				)}
+				{auth?.roles?.includes(RolesEnum.Admin) && data.status === PublishStatusEnum.Draft && (
+					<View style={statusBannerStyles.draftContainer}>
+						<Text style={statusBannerStyles.draftTitle}>Status: Draft</Text>
+					</View>
+				)}
 
 				{/* 5-Star Rating Summary Row */}
 				<View style={ratingStyles.ratingBadge}>
@@ -272,5 +296,39 @@ const restrictedStyles = StyleSheet.create({
 		fontWeight: '600',
 		color: '#0284c7',
 		marginTop: 4,
+	},
+});
+
+const statusBannerStyles = StyleSheet.create({
+	rejectedContainer: {
+		backgroundColor: '#fee2e2',
+		borderRadius: 10,
+		padding: 12,
+		marginTop: 8,
+		borderWidth: 1,
+		borderColor: '#fca5a5',
+	},
+	rejectedTitle: {
+		color: '#991b1b',
+		fontWeight: '700',
+		fontSize: 14,
+	},
+	rejectedReason: {
+		color: '#b91c1c',
+		fontSize: 13,
+		marginTop: 4,
+	},
+	draftContainer: {
+		backgroundColor: '#fef3c7',
+		borderRadius: 10,
+		padding: 12,
+		marginTop: 8,
+		borderWidth: 1,
+		borderColor: '#fcd34d',
+	},
+	draftTitle: {
+		color: '#92400e',
+		fontWeight: '700',
+		fontSize: 14,
 	},
 });

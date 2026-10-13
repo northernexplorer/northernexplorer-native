@@ -6,6 +6,7 @@ import {
 	PointOfInterestType,
 	PointOfInterestTypeEnum,
 	PublishStatusEnum,
+	RejectionReasonEnum,
 	RegionType,
 	ReviewStatusEnum,
 	SiteConditionEnum,
@@ -30,6 +31,7 @@ interface PointOfInterestRawRow {
 	region: RegionType;
 	distanceMeters: number;
 	status: PublishStatusEnum;
+	rejectionReason?: RejectionReasonEnum;
 	type: PointOfInterestTypeEnum[];
 	organization: OrganizationType;
 	entranceCost?: EntranceCostEnum;
@@ -79,6 +81,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			country: site.country,
 			region: site.region,
 			status: site.status,
+			rejectionReason: site.rejectionReason,
 			type: site.type,
 			organization: {
 				id: site.organization.id,
@@ -222,11 +225,11 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		params.push(limit);
 
 		const query = `
-			SELECT id, name, description, image, lat, lon, country, region, status, type,
+			SELECT id, name, description, image, lat, lon, country, region, status, rejection_reason as "rejectionReason", type,
 				   difficulty, entrance_cost as "entranceCost", rating, reviews,
 				   start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
 			FROM (
-					 SELECT h.id, h.name, h.description, h.lat, h.lon, h.status, h.type,
+					 SELECT h.id, h.name, h.description, h.lat, h.lon, h.status, h.rejection_reason, h.type,
 							h.difficulty, h.entrance_cost,
 							CASE WHEN img.id IS NOT NULL THEN
 									 json_build_object(
@@ -281,7 +284,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 						 ${visitedFilterSql}
 						 ${difficultyFilterSql}
 						 ${costFilterSql}
-					 GROUP BY h.id, h.status, c.id, r.id, img.id
+					 GROUP BY h.id, h.status, h.rejection_reason, c.id, r.id, img.id
 						 ${minRatingSql}
 				 ) AS spatial_search
 			ORDER BY distanceMeters ASC
@@ -306,6 +309,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			startDate: site.startDate ? Number(site.startDate) : undefined,
 			endDate: site.endDate ? Number(site.endDate) : undefined,
 			status: site.status,
+			rejectionReason: site.rejectionReason,
 			type: site.type,
 			organization: site.organization,
 		})) as PointOfInterestType[];
@@ -322,6 +326,18 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 				limit,
 				offset,
 				orderBy: {createdAt: 'asc', name: 'asc'},
+				populate: ['region', 'country', 'image'],
+			},
+		);
+	}
+
+	getRejected({limit, offset}: {limit?: number; offset?: number}) {
+		return this.find(
+			{status: PublishStatusEnum.Rejected},
+			{
+				limit,
+				offset,
+				orderBy: {updatedAt: 'desc', name: 'asc'},
 				populate: ['region', 'country', 'image'],
 			},
 		);
