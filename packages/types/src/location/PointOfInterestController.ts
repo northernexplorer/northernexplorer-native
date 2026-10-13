@@ -12,9 +12,11 @@ export enum PublishStatusEnum {
 }
 
 export enum RejectionReasonEnum {
-	NotPubliclyAccessible = 'Not publicly accessible',
-	NotHistoricalCaveWaterfall = 'Not Historical/Cave/Waterfall',
-	NoLongerExists = 'NoLongerExists',
+	TRESPASSING_REQUIRED = 'TRESPASSING_REQUIRED',
+	ECOLOGICALLY_SENSITIVE = 'ECOLOGICALLY_SENSITIVE',
+	CLOSED_PERMANENTLY = 'CLOSED_PERMANENTLY',
+	DUPLICATE = 'DUPLICATE',
+	OUT_OF_SCOPE = 'OUT_OF_SCOPE',
 }
 
 export enum PointOfInterestTypeEnum {

@@ -57,9 +57,11 @@ const STATUS_OPTIONS = [
 ];
 
 const REJECTION_REASONS = [
-	{label: 'Not publicly accessible', value: RejectionReasonEnum.NotPubliclyAccessible},
-	{label: 'Not Historical/Cave/Waterfall', value: RejectionReasonEnum.NotHistoricalCaveWaterfall},
-	{label: 'NoLongerExists', value: RejectionReasonEnum.NoLongerExists},
+	{label: 'Trespassing Required', value: RejectionReasonEnum.TRESPASSING_REQUIRED},
+	{label: 'Ecologically Sensitive', value: RejectionReasonEnum.ECOLOGICALLY_SENSITIVE},
+	{label: 'Closed Permanently', value: RejectionReasonEnum.CLOSED_PERMANENTLY},
+	{label: 'Duplicate', value: RejectionReasonEnum.DUPLICATE},
+	{label: 'Out of Scope', value: RejectionReasonEnum.OUT_OF_SCOPE},
 ];
 
 export function PointOfInterestEdit() {

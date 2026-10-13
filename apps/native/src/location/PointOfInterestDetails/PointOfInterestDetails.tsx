@@ -3,7 +3,7 @@ import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {Link, useLocalSearchParams} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, Spinner} from '@northernexplorer/tools-web';
-import {SiteDifficultyEnum, RolesEnum, PublishStatusEnum} from '@northernexplorer/types';
+import {SiteDifficultyEnum, RolesEnum, PublishStatusEnum, RejectionReasonEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
 import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
@@ -13,6 +13,14 @@ import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {Map} from '~/location/PointOfInterestDetails/components/Map';
 import {useLocation} from '~/location/state/location/useLocation';
+
+const REJECTION_REASON_LABELS: Record<RejectionReasonEnum, string> = {
+	[RejectionReasonEnum.TRESPASSING_REQUIRED]: 'Trespassing Required',
+	[RejectionReasonEnum.ECOLOGICALLY_SENSITIVE]: 'Ecologically Sensitive',
+	[RejectionReasonEnum.CLOSED_PERMANENTLY]: 'Closed Permanently',
+	[RejectionReasonEnum.DUPLICATE]: 'Duplicate',
+	[RejectionReasonEnum.OUT_OF_SCOPE]: 'Out of Scope',
+};
 
 export function PointOfInterestDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
@@ -111,7 +119,11 @@ export function PointOfInterestDetails() {
 				{auth?.roles?.includes(RolesEnum.Admin) && data.status === PublishStatusEnum.Rejected && (
 					<View style={statusBannerStyles.rejectedContainer}>
 						<Text style={statusBannerStyles.rejectedTitle}>Status: Rejected</Text>
-						{data.rejectionReason && <Text style={statusBannerStyles.rejectedReason}>Reason: {data.rejectionReason}</Text>}
+						{data.rejectionReason && (
+							<Text style={statusBannerStyles.rejectedReason}>
+								Reason: {REJECTION_REASON_LABELS[data.rejectionReason] || data.rejectionReason}
+							</Text>
+						)}
 					</View>
 				)}
 				{auth?.roles?.includes(RolesEnum.Admin) && data.status === PublishStatusEnum.Draft && (
