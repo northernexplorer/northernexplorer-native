@@ -87,23 +87,40 @@ export function Map() {
 	const [userMarker, setUserMarker] = useState<boolean>(false);
 
 	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number}>({
-		lat: initialLat || 0,
-		lon: initialLon || 0,
+		lat: initialLat ?? 0,
+		lon: initialLon ?? 0,
+	});
+	const [debouncedMapCenter, setDebouncedMapCenter] = useState<{lat: number; lon: number}>({
+		lat: initialLat ?? 0,
+		lon: initialLon ?? 0,
 	});
 
 	// Keep map center aligned when location updates initially
 	const isInitializedRef = useRef<boolean>(false);
 	useEffect(() => {
-		if (!isInitializedRef.current && initialLat && initialLon) {
+		if (!isInitializedRef.current && initialLat !== undefined && initialLon !== undefined) {
 			setMapCenter({lat: initialLat, lon: initialLon});
+			setDebouncedMapCenter({lat: initialLat, lon: initialLon});
 			isInitializedRef.current = true;
 		}
 	}, [initialLat, initialLon]);
 
+	// Debounce map center updates for querying
+	useEffect(() => {
+		if (!isInitializedRef.current) return;
+		const timer = setTimeout(() => {
+			setDebouncedMapCenter(mapCenter);
+		}, 500);
+
+		return () => {
+			clearTimeout(timer);
+		};
+	}, [mapCenter]);
+
 	// Data fetching
 	const {data} = useApiFetch('location', 'PointOfInterestController', 'getForMap', {
-		lat: mapCenter.lat,
-		lon: mapCenter.lon,
+		lat: debouncedMapCenter.lat,
+		lon: debouncedMapCenter.lon,
 		limit: 500,
 		selectedPoiTypes,
 		visitedFilter,
@@ -140,7 +157,7 @@ export function Map() {
 	const selectedIsExpedition = selectedSite?.difficulty === SiteDifficultyEnum.EXPEDITION_ONLY;
 	const isSelectedLocked = (selectedIsOffTrail && !canAccessOffTrailDifficulty) || (selectedIsExpedition && !canAccessExpeditionDifficulty);
 
-	if (!initialLat || !initialLon) {
+	if (initialLat === undefined || initialLon === undefined) {
 		return <Spinner />;
 	}
 
