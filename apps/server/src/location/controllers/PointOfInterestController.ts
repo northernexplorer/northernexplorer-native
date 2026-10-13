@@ -101,7 +101,7 @@ export class PointOfInterestController extends BaseController {
 
 	public async getById(params: Params<Route<'getById'>>, auth?: AuthContext): Promise<Response<Route<'getById'>>> {
 		const pointOfInterest = await this.repos.pointOfInterest.getByIdPopulated(params.id, auth?.userId);
-		if (pointOfInterest.status === PublishStatusEnum.Draft) {
+		if (pointOfInterest.status === PublishStatusEnum.Draft || pointOfInterest.status === PublishStatusEnum.Rejected) {
 			this.permissionService.canAccessAdmin(auth);
 		}
 		return pointOfInterest;
@@ -121,10 +121,14 @@ export class PointOfInterestController extends BaseController {
 			startDate: site.startDate,
 			endDate: site.endDate,
 			status: site.status,
+			rejectionReason: site.rejectionReason,
 			region: site.region,
 			country: site.country,
 			type: site.type,
-			organization: site.organization,
+			organization: {
+				id: site.organization.id,
+				name: site.organization.name,
+			},
 		}));
 	}
 
@@ -142,10 +146,39 @@ export class PointOfInterestController extends BaseController {
 			startDate: site.startDate,
 			endDate: site.endDate,
 			status: site.status,
+			rejectionReason: site.rejectionReason,
 			region: site.region,
 			country: site.country,
 			type: site.type,
-			organization: site.organization,
+			organization: {
+				id: site.organization.id,
+				name: site.organization.name,
+			},
+		}));
+	}
+
+	async getRejected(params: Params<Route<'getRejected'>>, auth?: AuthContext): Promise<Response<Route<'getRejected'>>> {
+		this.permissionService.canAccessAdmin(auth);
+		const sites = await this.repos.pointOfInterest.getRejected({limit: params.limit, offset: params.offset});
+
+		return sites.map(site => ({
+			id: site.id,
+			name: site.name,
+			description: site.description,
+			image: site.image,
+			lat: site.lat,
+			lon: site.lon,
+			startDate: site.startDate,
+			endDate: site.endDate,
+			status: site.status,
+			rejectionReason: site.rejectionReason,
+			region: site.region,
+			country: site.country,
+			type: site.type,
+			organization: {
+				id: site.organization.id,
+				name: site.organization.name,
+			},
 		}));
 	}
 

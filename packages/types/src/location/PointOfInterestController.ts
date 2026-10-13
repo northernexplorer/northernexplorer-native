@@ -8,6 +8,15 @@ import {ImageHeaderType, ImageType} from './ImageController';
 export enum PublishStatusEnum {
 	Published = 'Published',
 	Draft = 'Draft',
+	Rejected = 'Rejected',
+}
+
+export enum RejectionReasonEnum {
+	TRESPASSING_REQUIRED = 'TRESPASSING_REQUIRED',
+	ECOLOGICALLY_SENSITIVE = 'ECOLOGICALLY_SENSITIVE',
+	CLOSED_PERMANENTLY = 'CLOSED_PERMANENTLY',
+	DUPLICATE = 'DUPLICATE',
+	OUT_OF_SCOPE = 'OUT_OF_SCOPE',
 }
 
 export enum PointOfInterestTypeEnum {
@@ -42,6 +51,7 @@ export type PointOfInterestType = {
 	rating?: ReviewRatingEnum;
 	difficulty?: SiteDifficultyEnum;
 	images?: ImageType[];
+	rejectionReason?: RejectionReasonEnum;
 };
 
 export type PointOfInterestSummary = {
@@ -73,6 +83,7 @@ export type PointOfInterestEditType = {
 	endDate?: number;
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
+	rejectionReason?: RejectionReasonEnum;
 };
 
 export type PointOfInterestCreateType = {
@@ -87,6 +98,7 @@ export type PointOfInterestCreateType = {
 	endDate?: number;
 	status?: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
+	rejectionReason?: RejectionReasonEnum;
 };
 
 export type PointOfInterestCreateResponseType = {
@@ -131,6 +143,10 @@ export const PointOfInterestController = {
 		response: null as unknown as PointOfInterestType,
 	},
 	getDrafts: {
+		params: {} as {limit?: number; offset?: number},
+		response: {} as PointOfInterestType[],
+	},
+	getRejected: {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},

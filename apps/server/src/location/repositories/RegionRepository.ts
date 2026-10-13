@@ -4,7 +4,11 @@ import {Country} from '../entities/Country';
 
 export class RegionRepository extends BaseRepository<Region> {
 	async getById(id: string) {
-		return this.findOneOrFail({id});
+		return this.findOneOrFail({id}, {populate: ['country']});
+	}
+
+	async getAll() {
+		return this.findAll({populate: ['country'], orderBy: {name: 'asc'}});
 	}
 
 	async getByCountry(country: Country) {

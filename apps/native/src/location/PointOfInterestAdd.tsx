@@ -41,6 +41,7 @@ type CreatedPoiData = {
 const STATUS_OPTIONS = [
 	{label: 'Draft', value: PublishStatusEnum.Draft},
 	{label: 'Published', value: PublishStatusEnum.Published},
+	{label: 'Rejected', value: PublishStatusEnum.Rejected},
 ];
 
 export function PointOfInterestAdd() {

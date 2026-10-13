@@ -23,97 +23,141 @@ export function Admin() {
 	const pendingSuggestionsCount = data?.pendingSuggestions ?? 0;
 
 	return (
-		<View style={styles.grid}>
-			{/* Suggested Updates Card */}
-			<Pressable
-				style={({pressed}) => [styles.card, pendingSuggestionsCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
-				onPress={() => router.push('/admin/suggested-updates')}
-			>
-				{pendingSuggestionsCount > 0 && <View style={styles.badgeDot} />}
-				<View style={[styles.iconBadge, {backgroundColor: '#e0f2fe'}]}>
-					<Ionicons name="bulb-outline" size={24} color="#0284c7" />
-				</View>
-				<Text style={styles.statValue}>{pendingSuggestionsCount}</Text>
-				<Text style={styles.statLabel}>Suggested Updates</Text>
-			</Pressable>
+		<View style={styles.container}>
+			<View style={styles.grid}>
+				{/* Suggested Updates Card */}
+				<Pressable
+					style={({pressed}) => [styles.card, pendingSuggestionsCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
+					onPress={() => router.push('/admin/suggested-updates')}
+				>
+					{pendingSuggestionsCount > 0 && <View style={styles.badgeDot} />}
+					<View style={[styles.iconBadge, {backgroundColor: '#e0f2fe'}]}>
+						<Ionicons name="bulb-outline" size={24} color="#0284c7" />
+					</View>
+					<Text style={styles.statValue}>{pendingSuggestionsCount}</Text>
+					<Text style={styles.statLabel}>Suggested Updates</Text>
+				</Pressable>
 
-			{/* Draft Sites Card */}
-			<Pressable
-				style={({pressed}) => [styles.card, draftCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
-				onPress={() => router.push('/admin/draft-point-of-interest')}
-			>
-				{draftCount > 0 && <View style={styles.badgeDot} />}
-				<View style={[styles.iconBadge, {backgroundColor: '#fff3e0'}]}>
-					<Ionicons name="document-text-outline" size={24} color="#e65100" />
-				</View>
-				<Text style={styles.statValue}>{draftCount}</Text>
-				<Text style={styles.statLabel}>Draft Sites</Text>
-			</Pressable>
+				{/* Draft Sites Card */}
+				<Pressable
+					style={({pressed}) => [styles.card, draftCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
+					onPress={() => router.push('/admin/draft-point-of-interest')}
+				>
+					{draftCount > 0 && <View style={styles.badgeDot} />}
+					<View style={[styles.iconBadge, {backgroundColor: '#fff3e0'}]}>
+						<Ionicons name="document-text-outline" size={24} color="#e65100" />
+					</View>
+					<Text style={styles.statValue}>{draftCount}</Text>
+					<Text style={styles.statLabel}>Draft Sites</Text>
+				</Pressable>
 
-			{/* Pending Reviews Card */}
-			<Pressable
-				style={({pressed}) => [styles.card, pendingReviewsCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
-				onPress={() => router.push('/admin/pending-reviews')}
-			>
-				{pendingReviewsCount > 0 && <View style={styles.badgeDot} />}
-				<View style={[styles.iconBadge, {backgroundColor: '#fef3c7'}]}>
-					<Ionicons name="chatbox-ellipses-outline" size={24} color="#d97706" />
-				</View>
-				<Text style={styles.statValue}>{pendingReviewsCount}</Text>
-				<Text style={styles.statLabel}>Pending Reviews</Text>
-			</Pressable>
+				{/* Pending Reviews Card */}
+				<Pressable
+					style={({pressed}) => [styles.card, pendingReviewsCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
+					onPress={() => router.push('/admin/pending-reviews')}
+				>
+					{pendingReviewsCount > 0 && <View style={styles.badgeDot} />}
+					<View style={[styles.iconBadge, {backgroundColor: '#fef3c7'}]}>
+						<Ionicons name="chatbox-ellipses-outline" size={24} color="#d97706" />
+					</View>
+					<Text style={styles.statValue}>{pendingReviewsCount}</Text>
+					<Text style={styles.statLabel}>Pending Reviews</Text>
+				</Pressable>
 
-			{/* Pending Images Card */}
-			<Pressable
-				style={({pressed}) => [styles.card, pendingImagesCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
-				onPress={() => router.push('/admin/pending-images')}
-			>
-				{pendingImagesCount > 0 && <View style={styles.badgeDot} />}
-				<View style={[styles.iconBadge, {backgroundColor: '#f3e5f5'}]}>
-					<Ionicons name="image-outline" size={24} color="#7b1fa2" />
-				</View>
-				<Text style={styles.statValue}>{pendingImagesCount}</Text>
-				<Text style={styles.statLabel}>Pending Images</Text>
-			</Pressable>
+				{/* Pending Images Card */}
+				<Pressable
+					style={({pressed}) => [styles.card, pendingImagesCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
+					onPress={() => router.push('/admin/pending-images')}
+				>
+					{pendingImagesCount > 0 && <View style={styles.badgeDot} />}
+					<View style={[styles.iconBadge, {backgroundColor: '#f3e5f5'}]}>
+						<Ionicons name="image-outline" size={24} color="#7b1fa2" />
+					</View>
+					<Text style={styles.statValue}>{pendingImagesCount}</Text>
+					<Text style={styles.statLabel}>Pending Images</Text>
+				</Pressable>
 
-			{/* User Reports Card */}
-			<Pressable
-				style={({pressed}) => [styles.card, pendingReportsCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
-				onPress={() => router.push('/admin/reports')}
-			>
-				{pendingReportsCount > 0 && <View style={styles.badgeDot} />}
-				<View style={[styles.iconBadge, {backgroundColor: '#fee2e2'}]}>
-					<Ionicons name="flag-outline" size={24} color="#dc2626" />
-				</View>
-				<Text style={styles.statValue}>{pendingReportsCount}</Text>
-				<Text style={styles.statLabel}>User Reports</Text>
-			</Pressable>
+				{/* User Reports Card */}
+				<Pressable
+					style={({pressed}) => [styles.card, pendingReportsCount > 0 && styles.cardUrgent, pressed && styles.cardPressed]}
+					onPress={() => router.push('/admin/reports')}
+				>
+					{pendingReportsCount > 0 && <View style={styles.badgeDot} />}
+					<View style={[styles.iconBadge, {backgroundColor: '#fee2e2'}]}>
+						<Ionicons name="flag-outline" size={24} color="#dc2626" />
+					</View>
+					<Text style={styles.statValue}>{pendingReportsCount}</Text>
+					<Text style={styles.statLabel}>User Reports</Text>
+				</Pressable>
 
-			{/* Published Sites Card */}
-			<Pressable
-				style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
-				onPress={() => router.push('/admin/published-point-of-interest')}
-			>
-				<View style={[styles.iconBadge, {backgroundColor: '#e8f5e9'}]}>
-					<Ionicons name="map-outline" size={24} color="#2e7d32" />
-				</View>
-				<Text style={styles.statValue}>{data?.pointOfInterestsPublished ?? 0}</Text>
-				<Text style={styles.statLabel}>Published Sites</Text>
-			</Pressable>
+				{/* Published Sites Card */}
+				<Pressable
+					style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
+					onPress={() => router.push('/admin/published-point-of-interest')}
+				>
+					<View style={[styles.iconBadge, {backgroundColor: '#e8f5e9'}]}>
+						<Ionicons name="map-outline" size={24} color="#2e7d32" />
+					</View>
+					<Text style={styles.statValue}>{data?.pointOfInterestsPublished ?? 0}</Text>
+					<Text style={styles.statLabel}>Published Sites</Text>
+				</Pressable>
 
-			{/* Users Card */}
-			<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/users')}>
-				<View style={[styles.iconBadge, {backgroundColor: '#e3f2fd'}]}>
-					<Ionicons name="people-outline" size={24} color="#1565c0" />
-				</View>
-				<Text style={styles.statValue}>{data?.users ?? 0}</Text>
-				<Text style={styles.statLabel}>Registered Users</Text>
-			</Pressable>
+				{/* Rejected Sites Card */}
+				<Pressable
+					style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
+					onPress={() => router.push('/admin/rejected-point-of-interest')}
+				>
+					<View style={[styles.iconBadge, {backgroundColor: '#ffebee'}]}>
+						<Ionicons name="close-circle-outline" size={24} color="#c62828" />
+					</View>
+					<Text style={styles.statValue}>{data?.pointOfInterestsRejected ?? 0}</Text>
+					<Text style={styles.statLabel}>Rejected Sites</Text>
+				</Pressable>
+
+				{/* Users Card */}
+				<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/users')}>
+					<View style={[styles.iconBadge, {backgroundColor: '#e3f2fd'}]}>
+						<Ionicons name="people-outline" size={24} color="#1565c0" />
+					</View>
+					<Text style={styles.statValue}>{data?.users ?? 0}</Text>
+					<Text style={styles.statLabel}>Registered Users</Text>
+				</Pressable>
+
+				{/* Countries Card */}
+				<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/countries')}>
+					<View style={[styles.iconBadge, {backgroundColor: '#e0f7fa'}]}>
+						<Ionicons name="globe-outline" size={24} color="#00838f" />
+					</View>
+					<Text style={styles.statValue}>{data?.countries ?? 0}</Text>
+					<Text style={styles.statLabel}>Countries</Text>
+				</Pressable>
+
+				{/* Regions Card */}
+				<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/regions')}>
+					<View style={[styles.iconBadge, {backgroundColor: '#ede7f6'}]}>
+						<Ionicons name="location-outline" size={24} color="#512da8" />
+					</View>
+					<Text style={styles.statValue}>{data?.regions ?? 0}</Text>
+					<Text style={styles.statLabel}>Regions</Text>
+				</Pressable>
+
+				{/* Organizations Card */}
+				<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/organizations')}>
+					<View style={[styles.iconBadge, {backgroundColor: '#fce4ec'}]}>
+						<Ionicons name="business-outline" size={24} color="#c2185b" />
+					</View>
+					<Text style={styles.statValue}>{data?.organizations ?? 0}</Text>
+					<Text style={styles.statLabel}>Organizations</Text>
+				</Pressable>
+			</View>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
 	grid: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
