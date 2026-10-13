@@ -157,6 +157,31 @@ export class PointOfInterestController extends BaseController {
 		}));
 	}
 
+	async getRejected(params: Params<Route<'getRejected'>>, auth?: AuthContext): Promise<Response<Route<'getRejected'>>> {
+		this.permissionService.canAccessAdmin(auth);
+		const sites = await this.repos.pointOfInterest.getRejected({limit: params.limit, offset: params.offset});
+
+		return sites.map(site => ({
+			id: site.id,
+			name: site.name,
+			description: site.description,
+			image: site.image,
+			lat: site.lat,
+			lon: site.lon,
+			startDate: site.startDate,
+			endDate: site.endDate,
+			status: site.status,
+			rejectionReason: site.rejectionReason,
+			region: site.region,
+			country: site.country,
+			type: site.type,
+			organization: {
+				id: site.organization.id,
+				name: site.organization.name,
+			},
+		}));
+	}
+
 	async edit(params: Params<Route<'edit'>>, auth?: AuthContext): Promise<Response<Route<'edit'>>> {
 		this.permissionService.canAccessAdmin(auth);
 

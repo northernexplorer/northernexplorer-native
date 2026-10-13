@@ -146,6 +146,10 @@ export const PointOfInterestController = {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},
+	getRejected: {
+		params: {} as {limit?: number; offset?: number},
+		response: {} as PointOfInterestType[],
+	},
 	getPublished: {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],

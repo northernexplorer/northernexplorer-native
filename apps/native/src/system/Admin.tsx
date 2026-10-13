@@ -102,6 +102,18 @@ export function Admin() {
 					<Text style={styles.statLabel}>Published Sites</Text>
 				</Pressable>
 
+				{/* Rejected Sites Card */}
+				<Pressable
+					style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
+					onPress={() => router.push('/admin/rejected-point-of-interest')}
+				>
+					<View style={[styles.iconBadge, {backgroundColor: '#ffebee'}]}>
+						<Ionicons name="close-circle-outline" size={24} color="#c62828" />
+					</View>
+					<Text style={styles.statValue}>{data?.pointOfInterestsRejected ?? 0}</Text>
+					<Text style={styles.statLabel}>Rejected Sites</Text>
+				</Pressable>
+
 				{/* Users Card */}
 				<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/users')}>
 					<View style={[styles.iconBadge, {backgroundColor: '#e3f2fd'}]}>

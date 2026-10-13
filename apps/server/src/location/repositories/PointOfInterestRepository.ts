@@ -331,6 +331,18 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		);
 	}
 
+	getRejected({limit, offset}: {limit?: number; offset?: number}) {
+		return this.find(
+			{status: PublishStatusEnum.Rejected},
+			{
+				limit,
+				offset,
+				orderBy: {updatedAt: 'desc', name: 'asc'},
+				populate: ['region', 'country', 'image'],
+			},
+		);
+	}
+
 	getPublished({limit, offset}: {limit?: number; offset?: number}) {
 		return this.find(
 			{status: PublishStatusEnum.Published},

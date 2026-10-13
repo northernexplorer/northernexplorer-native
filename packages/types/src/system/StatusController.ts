@@ -9,6 +9,7 @@ export const StatusController = {
 			users: number;
 			pointOfInterestsPublished: number;
 			pointOfInterestsDraft: number;
+			pointOfInterestsRejected?: number;
 			pendingReviews: number;
 			pendingImages: number;
 			pendingReports: number;
