@@ -1,7 +1,7 @@
 import {View, Text, Pressable, StyleSheet} from 'react-native';
 import {Link, useLocalSearchParams} from 'expo-router';
 import React, {useMemo, useState} from 'react';
-import {formatDate, getImageUrl, ImageView, Pagination, Spinner} from '@northernexplorer/tools-web';
+import {formatDate, getImageUrl, getUrlSafeString, ImageView, Pagination, Spinner} from '@northernexplorer/tools-web';
 import {Ionicons} from '@expo/vector-icons';
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
@@ -75,9 +75,20 @@ export function ProfileTimeline({username}: Props) {
 									<View style={styles.eventBody}>
 										<View style={styles.eventHeader}>
 											<Ionicons name="location-sharp" size={16} color="#0284c7" />
-											<Text style={styles.eventTypeLabel}>POI Visit</Text>
+											<Text style={styles.eventTypeLabel}>Visited</Text>
 										</View>
-										<Link href={`/poi/${item.pointOfInterest.id}`} style={styles.poiLink}>
+										<Link
+											href={{
+												pathname: '/[country]/[region]/[name]/[id]',
+												params: {
+													country: getUrlSafeString(item.pointOfInterest.country.name),
+													region: getUrlSafeString(item.pointOfInterest.region.name),
+													name: getUrlSafeString(item.pointOfInterest.name),
+													id: item.pointOfInterest.id,
+												},
+											}}
+											style={styles.poiLink}
+										>
 											<Text style={styles.poiTitle}>{item.pointOfInterest.name}</Text>
 										</Link>
 									</View>
