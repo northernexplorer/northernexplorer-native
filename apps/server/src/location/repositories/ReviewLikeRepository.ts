@@ -8,4 +8,10 @@ export class ReviewLikeRepository extends BaseRepository<ReviewLike> {
 			user: userId,
 		});
 	}
+
+	async countLikes(reviewId: string): Promise<number> {
+		return this.count({
+			review: reviewId,
+		});
+	}
 }

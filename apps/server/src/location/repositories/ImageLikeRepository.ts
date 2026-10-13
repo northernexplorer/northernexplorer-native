@@ -8,4 +8,10 @@ export class ImageLikeRepository extends BaseRepository<ImageLike> {
 			user: userId,
 		});
 	}
+
+	async countLikes(imageId: string): Promise<number> {
+		return this.count({
+			image: imageId,
+		});
+	}
 }
