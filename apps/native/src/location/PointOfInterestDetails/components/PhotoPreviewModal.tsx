@@ -267,7 +267,7 @@ export function PhotoPreviewModal({
 						{/* Like Button (Visible to everyone) */}
 						<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
 							<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
-							<Text style={styles.likeCount}>{imageData.likes}</Text>
+							<Text style={styles.likeCount}>{hasLikedData?.likeCount ?? imageData.likes}</Text>
 						</Pressable>
 
 						{/* Report Button (Visible to non-owners) */}
