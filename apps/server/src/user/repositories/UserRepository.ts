@@ -117,7 +117,15 @@ export class UserRepository extends BaseRepository<User> {
 		const reviewIds = rows.filter(r => r.type === 'poi').map(r => r.id);
 
 		const [images, reviews] = await Promise.all([
-			imageIds.length > 0 ? this.getEntityManager().find(Image, {id: {$in: imageIds}}, {populate: ['likes']}) : [],
+			imageIds.length > 0
+				? this.getEntityManager().find(
+						Image,
+						{id: {$in: imageIds}},
+						{
+							populate: ['likes', 'pointOfInterest', 'pointOfInterest.region', 'pointOfInterest.country', 'pointOfInterest.image'],
+						},
+					)
+				: [],
 			reviewIds.length > 0
 				? this.getEntityManager().find(
 						Review,
