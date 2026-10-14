@@ -21,7 +21,7 @@
 		"dotenv": "^17.4.2",
 		"reflect-metadata": "^0.2.2",
 		"sharp": "^0.35.5",
-		"uuid": "^14.0.2"
+		"uuid": "^14.0.3"
 	},
 	"devDependencies": {
 		"@mikro-orm/cli": "^7.1.15"
