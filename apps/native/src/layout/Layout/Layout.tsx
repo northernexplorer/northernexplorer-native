@@ -94,7 +94,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 										</View>
 
 										{/* Desktop Footer */}
-										{!fullPage && !isMobileView && <Footer />}
+										{(!fullPage || home) && !isMobileView && <Footer />}
 									</ImageBackground>
 								)}
 								{!online && <Offline />}
@@ -108,7 +108,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 							)}
 
 							{/* Mobile Footer */}
-							{!fullPage && isMobileView && <Footer />}
+							{(!fullPage || home) && isMobileView && <Footer />}
 						</View>
 					</ScrollView>
 
