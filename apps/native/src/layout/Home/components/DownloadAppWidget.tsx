@@ -3,35 +3,80 @@ import {View, Text, Pressable, StyleSheet, Linking, Platform} from 'react-native
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {styles as globalStyles} from '~/layout/Home/styles';
 
-const ANDROID_PLAY_STORE_URL = 'market://details?id=org.northernexplorer.app';
-const ANDROID_PLAY_STORE_WEB_URL = 'https://play.google.com/store/apps/details?id=org.northernexplorer.app';
+type MobileOS = 'android' | 'ios' | null;
 
-export function isAndroidBrowser(): boolean {
-	if (Platform.OS !== 'web') {
-		return false;
-	}
-
-	if (typeof navigator === 'undefined' || !navigator.userAgent) {
-		return false;
-	}
-
-	const ua = navigator.userAgent.toLowerCase();
-	const isAndroid = /android/.test(ua);
-	const isWebView = /wv/.test(ua);
-
-	return isAndroid && !isWebView;
+interface StoreConfig {
+	nativeUrl: string;
+	webUrl: string;
+	iconName: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+	badgeSubtext: string;
+	badgeTitle: string;
+	accessibilityLabel: string;
 }
 
-export function DownloadAppWidget() {
-	if (!isAndroidBrowser()) {
+const STORE_CONFIG: Record<'android' | 'ios', StoreConfig> = {
+	android: {
+		nativeUrl: 'market://details?id=org.northernexplorer.app',
+		webUrl: 'https://play.google.com/store/apps/details?id=org.northernexplorer.app',
+		iconName: 'google-play',
+		badgeSubtext: 'GET IT ON',
+		badgeTitle: 'Google Play',
+		accessibilityLabel: 'Get it on Google Play',
+	},
+	ios: {
+		nativeUrl: 'itms-apps://apps.apple.com/app/id6742512039', // Replace with App Store ID when live
+		webUrl: 'https://apps.apple.com/app/id6742512039',
+		iconName: 'apple',
+		badgeSubtext: 'DOWNLOAD ON THE',
+		badgeTitle: 'App Store',
+		accessibilityLabel: 'Download on the App Store',
+	},
+};
+
+export function getMobileBrowserOS(): MobileOS {
+	if (Platform.OS !== 'web') {
 		return null;
 	}
 
+	if (typeof navigator === 'undefined' || !navigator.userAgent) {
+		return null;
+	}
+
+	const ua = navigator.userAgent.toLowerCase();
+
+	// Exclude embedded WebViews (e.g., custom app WebViews or in-app browsers)
+	const isWebView = /wv|fbav|instagram/.test(ua);
+	if (isWebView) {
+		return null;
+	}
+
+	if (/android/.test(ua)) {
+		return 'android';
+	}
+
+	// Detect iOS devices (iPhone, iPad, iPod, or iPad OS desktop emulation)
+	const isIOS = /iphone|ipad|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+	if (isIOS) {
+		return 'ios';
+	}
+
+	return null;
+}
+
+export function DownloadAppWidget() {
+	const mobileOS = getMobileBrowserOS();
+
+	if (!mobileOS) {
+		return null;
+	}
+
+	const config = STORE_CONFIG[mobileOS];
+
 	const handleDownload = async () => {
 		try {
-			await Linking.openURL(ANDROID_PLAY_STORE_URL);
+			await Linking.openURL(config.nativeUrl);
 		} catch {
-			await Linking.openURL(ANDROID_PLAY_STORE_WEB_URL);
+			await Linking.openURL(config.webUrl);
 		}
 	};
 
@@ -41,11 +86,11 @@ export function DownloadAppWidget() {
 				<View style={styles.inner}>
 					<View style={styles.content}>
 						<View style={styles.headerRow}>
-							<MaterialCommunityIcons name="google-play" size={16} color="#00F0FF" style={styles.headerIcon} />
+							<MaterialCommunityIcons name={config.iconName} size={16} color="#00F0FF" style={styles.headerIcon} />
 							<Text style={styles.title}>GET THE APP</Text>
 						</View>
 						<Text style={styles.description} numberOfLines={1}>
-							Get the best experience with our Android app.
+							Get the best experience with our native app.
 						</Text>
 					</View>
 
@@ -53,12 +98,12 @@ export function DownloadAppWidget() {
 						style={({pressed}) => [styles.storeBadge, pressed && styles.badgePressed]}
 						onPress={handleDownload}
 						accessibilityRole="button"
-						accessibilityLabel="Get it on Google Play"
+						accessibilityLabel={config.accessibilityLabel}
 					>
-						<MaterialCommunityIcons name="google-play" size={20} color="#00F0FF" style={styles.badgeIcon} />
+						<MaterialCommunityIcons name={config.iconName} size={20} color="#00F0FF" style={styles.badgeIcon} />
 						<View style={styles.badgeTextContainer}>
-							<Text style={styles.badgeSubtext}>GET IT ON</Text>
-							<Text style={styles.badgeTitle}>Google Play</Text>
+							<Text style={styles.badgeSubtext}>{config.badgeSubtext}</Text>
+							<Text style={styles.badgeTitle}>{config.badgeTitle}</Text>
 						</View>
 					</Pressable>
 				</View>
@@ -82,7 +127,7 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flex: 1,
-		minWidth: 0, // Ensures text truncation works correctly in flexbox
+		minWidth: 0,
 	},
 	headerRow: {
 		flexDirection: 'row',
