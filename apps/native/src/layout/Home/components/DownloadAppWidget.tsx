@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Pressable, StyleSheet, Linking, Platform, useWindowDimensions} from 'react-native';
+import {View, Text, Pressable, StyleSheet, Linking, Platform} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {styles as globalStyles} from '~/layout/Home/styles';
 
@@ -17,25 +17,20 @@ export function isAndroidBrowser(): boolean {
 
 	const ua = navigator.userAgent.toLowerCase();
 	const isAndroid = /android/.test(ua);
-	const isWebView = /wv/.test(ua); // Excludes embedded WebViews
+	const isWebView = /wv/.test(ua);
 
 	return isAndroid && !isWebView;
 }
 
 export function DownloadAppWidget() {
-	const {width} = useWindowDimensions();
-	const isMobile = width < 768;
-
 	if (!isAndroidBrowser()) {
 		return null;
 	}
 
 	const handleDownload = async () => {
 		try {
-			// Attempt opening the native market scheme directly
 			await Linking.openURL(ANDROID_PLAY_STORE_URL);
 		} catch {
-			// Fallback to web link if market:// isn't supported or fails
 			await Linking.openURL(ANDROID_PLAY_STORE_WEB_URL);
 		}
 	};
@@ -43,13 +38,15 @@ export function DownloadAppWidget() {
 	return (
 		<View style={globalStyles.sectionContainer}>
 			<View style={[globalStyles.tile, styles.container]}>
-				<View style={[styles.inner, isMobile && styles.innerMobile]}>
+				<View style={styles.inner}>
 					<View style={styles.content}>
 						<View style={styles.headerRow}>
-							<MaterialCommunityIcons name="google-play" size={18} color="#00F0FF" style={styles.headerIcon} />
+							<MaterialCommunityIcons name="google-play" size={16} color="#00F0FF" style={styles.headerIcon} />
 							<Text style={styles.title}>GET THE APP</Text>
 						</View>
-						<Text style={styles.description}>Get the best experience with our Android app.</Text>
+						<Text style={styles.description} numberOfLines={1}>
+							Get the best experience with our Android app.
+						</Text>
 					</View>
 
 					<Pressable
@@ -58,7 +55,7 @@ export function DownloadAppWidget() {
 						accessibilityRole="button"
 						accessibilityLabel="Get it on Google Play"
 					>
-						<MaterialCommunityIcons name="google-play" size={24} color="#00F0FF" style={styles.badgeIcon} />
+						<MaterialCommunityIcons name="google-play" size={20} color="#00F0FF" style={styles.badgeIcon} />
 						<View style={styles.badgeTextContainer}>
 							<Text style={styles.badgeSubtext}>GET IT ON</Text>
 							<Text style={styles.badgeTitle}>Google Play</Text>
@@ -76,76 +73,72 @@ const styles = StyleSheet.create({
 		borderColor: 'rgba(0, 240, 255, 0.2)',
 	},
 	inner: {
-		padding: 16,
+		paddingHorizontal: 16,
+		paddingVertical: 12,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		gap: 16,
-	},
-	innerMobile: {
-		flexDirection: 'column',
-		alignItems: 'flex-start',
+		gap: 12,
 	},
 	content: {
 		flex: 1,
+		minWidth: 0, // Ensures text truncation works correctly in flexbox
 	},
 	headerRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		marginBottom: 4,
+		marginBottom: 2,
 	},
 	headerIcon: {
 		marginRight: 6,
 	},
 	title: {
 		color: '#FFFFFF',
-		fontSize: 14,
+		fontSize: 13,
 		fontWeight: '600',
-		marginBottom: 4,
+		letterSpacing: 0.3,
 	},
 	description: {
 		color: 'rgba(255, 255, 255, 0.7)',
-		fontSize: 13,
-		lineHeight: 18,
+		fontSize: 12,
 	},
 	storeBadge: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		backgroundColor: '#000000',
-		paddingVertical: 8,
-		paddingHorizontal: 16,
-		borderRadius: 8,
+		paddingVertical: 6,
+		paddingHorizontal: 12,
+		borderRadius: 6,
 		borderWidth: 1,
 		borderColor: '#333333',
-		minWidth: 160,
 		shadowColor: '#000',
-		shadowOffset: {width: 0, height: 2},
-		shadowOpacity: 0.25,
-		shadowRadius: 3.84,
-		elevation: 5,
+		shadowOffset: {width: 0, height: 1},
+		shadowOpacity: 0.2,
+		shadowRadius: 2,
+		elevation: 3,
 	},
 	badgePressed: {
 		opacity: 0.8,
 		backgroundColor: '#1a1a1a',
 	},
 	badgeIcon: {
-		marginRight: 10,
+		marginRight: 8,
 	},
 	badgeTextContainer: {
 		flexDirection: 'column',
 	},
 	badgeSubtext: {
 		color: '#FFFFFF',
-		fontSize: 9,
+		fontSize: 8,
 		fontWeight: '500',
 		letterSpacing: 0.2,
 		textTransform: 'uppercase',
 	},
 	badgeTitle: {
 		color: '#FFFFFF',
-		fontSize: 16,
+		fontSize: 14,
 		fontWeight: '600',
 		letterSpacing: -0.3,
-		lineHeight: 18,
+		lineHeight: 16,
 	},
 });
