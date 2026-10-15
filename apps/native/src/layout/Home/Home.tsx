@@ -3,6 +3,7 @@ import {View, ActivityIndicator, Text, ScrollView, useWindowDimensions} from 're
 import {WeatherWidget} from './components/WeatherWidget';
 import {WeatherWarningsWidget} from './components/WeatherWarningsWidget';
 import {LunarWidget} from './components/LunarWidget';
+import {DownloadAppWidget} from './components/DownloadAppWidget';
 import {CompassWidget} from '~/layout/Home/components/CompassWidget';
 import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
 import {TopImagesWidget} from '~/layout/Home/components/TopImagesWidget';
@@ -86,6 +87,9 @@ export function Home() {
 						<WeatherWarningsWidget warnings={warnings} />
 					</View>
 				)}
+
+				{/* Download App Widget */}
+				<DownloadAppWidget />
 
 				{/* Featured Destinations Container Card */}
 				<View style={styles.sectionContainer}>
