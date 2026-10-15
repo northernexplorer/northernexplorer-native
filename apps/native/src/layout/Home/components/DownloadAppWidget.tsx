@@ -15,7 +15,11 @@ export function isAndroidBrowser(): boolean {
 		return false;
 	}
 
-	return /android/i.test(navigator.userAgent);
+	const ua = navigator.userAgent.toLowerCase();
+	const isAndroid = /android/.test(ua);
+	const isWebView = /wv/.test(ua); // Excludes embedded WebViews
+
+	return isAndroid && !isWebView;
 }
 
 export function DownloadAppWidget() {
@@ -28,13 +32,10 @@ export function DownloadAppWidget() {
 
 	const handleDownload = async () => {
 		try {
-			const supported = await Linking.canOpenURL(ANDROID_PLAY_STORE_URL);
-			if (supported) {
-				await Linking.openURL(ANDROID_PLAY_STORE_URL);
-			} else {
-				await Linking.openURL(ANDROID_PLAY_STORE_WEB_URL);
-			}
+			// Attempt opening the native market scheme directly
+			await Linking.openURL(ANDROID_PLAY_STORE_URL);
 		} catch {
+			// Fallback to web link if market:// isn't supported or fails
 			await Linking.openURL(ANDROID_PLAY_STORE_WEB_URL);
 		}
 	};
