@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons';
-import {formatName, getImageUrl, ImageView} from '@northernexplorer/tools-web';
+import {formatName, getImageUrl} from '@northernexplorer/tools-web';
 import {ReportTypeEnum} from '@northernexplorer/types';
 import {useRouter} from 'expo-router';
+import {ZoomableImage, ZoomableImageRef} from './ZoomableImage';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -45,6 +46,8 @@ export function PhotoPreviewModal({
 }: PhotoPreviewModalProps) {
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
+	const zoomRef = useRef<ZoomableImageRef>(null);
+	const [zoomScale, setZoomScale] = useState<number>(1);
 	const [isLiked, setIsLiked] = useState<boolean>(false);
 	const [isReporting, setIsReporting] = useState<boolean>(false);
 
@@ -57,6 +60,11 @@ export function PhotoPreviewModal({
 	useEffect(() => {
 		setIsLiked(Boolean(hasLikedData?.liked));
 	}, [hasLikedData]);
+
+	useEffect(() => {
+		setZoomScale(1);
+		zoomRef.current?.resetZoom(false);
+	}, [selectedImageId]);
 
 	if (!imageData) {
 		return (
@@ -166,16 +174,52 @@ export function PhotoPreviewModal({
 						{selectedIndex + 1} / {totalImages}
 					</Text>
 
-					<Pressable
-						style={styles.modalCloseButton}
-						onPress={e => {
-							e.stopPropagation();
-							onClose();
-						}}
-						hitSlop={12}
-					>
-						<Ionicons name="close" size={24} color="#ffffff" />
-					</Pressable>
+					<View style={styles.headerRight}>
+						{/* Zoom Controls */}
+						<View style={styles.zoomControls}>
+							<Pressable
+								style={[styles.zoomButton, zoomScale <= 1 && styles.zoomButtonDisabled]}
+								onPress={() => zoomRef.current?.zoomOut()}
+								disabled={zoomScale <= 1}
+								hitSlop={8}
+								accessibilityLabel="Zoom out"
+							>
+								<Ionicons name="remove" size={18} color={zoomScale <= 1 ? '#64748b' : '#ffffff'} />
+							</Pressable>
+
+							{zoomScale > 1.05 && (
+								<Pressable
+									style={styles.zoomBadge}
+									onPress={() => zoomRef.current?.resetZoom()}
+									hitSlop={8}
+									accessibilityLabel="Reset zoom"
+								>
+									<Text style={styles.zoomBadgeText}>{Math.round(zoomScale * 100)}%</Text>
+								</Pressable>
+							)}
+
+							<Pressable
+								style={[styles.zoomButton, zoomScale >= 5 && styles.zoomButtonDisabled]}
+								onPress={() => zoomRef.current?.zoomIn()}
+								disabled={zoomScale >= 5}
+								hitSlop={8}
+								accessibilityLabel="Zoom in"
+							>
+								<Ionicons name="add" size={18} color={zoomScale >= 5 ? '#64748b' : '#ffffff'} />
+							</Pressable>
+						</View>
+
+						<Pressable
+							style={styles.modalCloseButton}
+							onPress={e => {
+								e.stopPropagation();
+								onClose();
+							}}
+							hitSlop={12}
+						>
+							<Ionicons name="close" size={24} color="#ffffff" />
+						</Pressable>
+					</View>
 				</Pressable>
 
 				{/* Middle Area */}
@@ -193,8 +237,9 @@ export function PhotoPreviewModal({
 						</Pressable>
 					)}
 
-					<View style={styles.modalImageWrapper} pointerEvents="box-none">
-						<ImageView
+					<View style={styles.modalImageWrapper}>
+						<ZoomableImage
+							ref={zoomRef}
 							source={{
 								uri: getImageUrl({
 									processed: imageData.processed,
@@ -205,6 +250,7 @@ export function PhotoPreviewModal({
 							}}
 							style={styles.modalImage}
 							resizeMode="contain"
+							onScaleChange={setZoomScale}
 						/>
 					</View>
 
@@ -319,13 +365,48 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		paddingHorizontal: 20,
 	},
+	headerRight: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 16,
+	},
+	zoomControls: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		backgroundColor: 'rgba(255, 255, 255, 0.12)',
+		borderRadius: 16,
+		paddingHorizontal: 4,
+		paddingVertical: 2,
+		gap: 2,
+	},
+	zoomButton: {
+		width: 28,
+		height: 28,
+		borderRadius: 14,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	zoomButtonDisabled: {
+		opacity: 0.4,
+	},
+	zoomBadge: {
+		paddingHorizontal: 6,
+		paddingVertical: 2,
+		borderRadius: 8,
+		backgroundColor: 'rgba(255, 255, 255, 0.15)',
+	},
+	zoomBadgeText: {
+		color: '#38bdf8',
+		fontSize: 12,
+		fontWeight: '600',
+	},
 	modalCounterText: {
 		color: '#94a3b8',
 		fontSize: 14,
 		fontWeight: '600',
 	},
 	modalCloseButton: {
-		paddingTop: 10,
+		paddingTop: 2,
 	},
 	modalBody: {
 		flex: 1,
@@ -334,6 +415,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		position: 'relative',
+		overflow: 'hidden',
 	},
 	modalImageWrapper: {
 		width: '100%',
