@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {ImageUpload} from '@northernexplorer/tools-web';
@@ -10,6 +10,7 @@ type PhotoUploadCardProps = {
 	pointOfInterestId: string;
 	maxImages?: number;
 	maxImageSizeBytes?: number;
+	onPendingUploadsChange?: (hasPending: boolean) => void;
 };
 
 const uriToBase64 = async (uri: string): Promise<string> => {
@@ -28,7 +29,7 @@ const uriToBase64 = async (uri: string): Promise<string> => {
 	});
 };
 
-export function PhotoUploadCard({pointOfInterestId}: PhotoUploadCardProps) {
+export function PhotoUploadCard({pointOfInterestId, onPendingUploadsChange}: PhotoUploadCardProps) {
 	const [stagedUploads, setStagedUploads] = useState<UploadImageFileInput[]>([]);
 	const [isUploading, setIsUploading] = useState(false);
 
@@ -42,6 +43,10 @@ export function PhotoUploadCard({pointOfInterestId}: PhotoUploadCardProps) {
 
 	// Filter to get only files that have not been uploaded yet or previously failed
 	const pendingUploads = stagedUploads.filter(file => statusMap[file.uri] !== ImageUploadStatus.Success);
+
+	useEffect(() => {
+		onPendingUploadsChange?.(isUploading || pendingUploads.length > 0);
+	}, [isUploading, pendingUploads.length, onPendingUploadsChange]);
 
 	const handleConfirmUpload = async () => {
 		if (pendingUploads.length === 0) return;
