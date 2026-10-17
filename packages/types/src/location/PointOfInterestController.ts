@@ -86,23 +86,22 @@ export type PointOfInterestEditType = {
 	rejectionReason?: RejectionReasonEnum;
 };
 
-
 export type PointOfInterestFavoriteType = {
 	id: string;
 	pointOfInterest: {
-		name:string,
+		name: string;
 		id: string;
 		description: string;
 		country: string;
 		region: string;
-		lat:number;
-		lon:number;
-		difficulty:SiteDifficultyEnum |undefined,
-		rating:ReviewRatingEnum | undefined 
+		lat: number;
+		lon: number;
+		difficulty: SiteDifficultyEnum | undefined;
+		rating: ReviewRatingEnum | undefined;
 	};
-	image:ImageHeaderType;
+	image: ImageHeaderType;
 	user: string;
-}
+};
 export type PointOfInterestCreateType = {
 	name: string;
 	description: string;

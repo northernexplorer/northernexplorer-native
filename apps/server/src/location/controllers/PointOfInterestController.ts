@@ -3,11 +3,8 @@ import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
-
 import {PointOfInterestFavorite} from '../entities/PointofInterestFavorite';
-
 import {PointOfInterest} from '../entities/PointOfInterest';
-
 
 type Route<M extends keyof ROUTES['location']['PointOfInterestController']> = RouteDefinition<'location', 'PointOfInterestController'>[M];
 
@@ -62,7 +59,6 @@ export class PointOfInterestController extends BaseController {
 			maxCostIndex: parsedCostIndex,
 		});
 	}
-
 
 	public async createPointOfInterestFavorite(
 		params: Params<Route<'createPointOfInterestFavorite'>>,
@@ -125,7 +121,7 @@ export class PointOfInterestController extends BaseController {
 	): Promise<Response<Route<'isPointOfInterestFavorite'>>> {
 		if (!auth?.userId) return {Favorited: false};
 
-		const favorite = await this.repos.pointOfInterestFavorite.findPointOfInterestFavoritesById(params.id, auth.userId,);
+		const favorite = await this.repos.pointOfInterestFavorite.findPointOfInterestFavoritesById(params.id, auth.userId);
 		return {Favorited: Boolean(favorite)};
 	}
 	public async getForMap(params: Params<Route<'getForMap'>>, auth?: AuthContext): Promise<Response<Route<'getForMap'>>> {
@@ -166,7 +162,6 @@ export class PointOfInterestController extends BaseController {
 			maxDifficultyIndex: parsedDifficultyIndex,
 			maxCostIndex: parsedCostIndex,
 		});
-
 	}
 
 	public async getById(params: Params<Route<'getById'>>, auth?: AuthContext): Promise<Response<Route<'getById'>>> {
@@ -189,16 +184,16 @@ export class PointOfInterestController extends BaseController {
 			id: favorite.id,
 			pointOfInterest: {
 				id: favorite.pointOfInterest.id,
-				name:favorite.pointOfInterest.name,
+				name: favorite.pointOfInterest.name,
 				description: favorite.pointOfInterest.description,
 				country: favorite.pointOfInterest.country.name,
 				region: favorite.pointOfInterest.region.name,
 				lat: favorite.pointOfInterest.lat,
 				lon: favorite.pointOfInterest.lon,
-				difficulty:favorite.pointOfInterest.difficulty,
-				rating:favorite.pointOfInterest.rating
+				difficulty: favorite.pointOfInterest.difficulty,
+				rating: favorite.pointOfInterest.rating,
 			},
-			image:favorite.pointOfInterest.image,
+			image: favorite.pointOfInterest.image,
 			user: favorite.user.id,
 		}));
 	}

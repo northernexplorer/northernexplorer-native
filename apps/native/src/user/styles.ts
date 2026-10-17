@@ -11,11 +11,11 @@ const styles = StyleSheet.create({
 	},
 
 	favoritesContainer: {
+		padding: 10,
 		flex: 1,
 		flexDirection: 'row',
-		backgroundColor: '#1a1a1a',
+		backgroundColor: '#313030',
 	},
-
 
 	tabBarContainer: {
 		borderBottomWidth: 1,

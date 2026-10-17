@@ -1,6 +1,6 @@
 export const m20260921: string[] = [
 	`alter table "image" alter column "point_of_interest_id" drop not null;`,
-    
+
 	// Add the three default images because the image table is currently empty.
 	`insert into "image" (
 		id,
@@ -66,7 +66,6 @@ export const m20260921: string[] = [
 		'default-waterfall',
 		false
 	);`,
-
 
 	`update "image" set "point_of_interest_id" = null where "id" in (
 																	 'c82b2c06-366f-4449-a800-c991ef61d8db',

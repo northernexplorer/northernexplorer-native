@@ -6,7 +6,6 @@ export class PointOfInterestFavoriteRepository extends BaseRepository<PointOfInt
 		return this.findOne({
 			pointOfInterest: PointOfInterestid,
 			user: CurrentUserId,
-
 		});
 	}
 
@@ -15,7 +14,7 @@ export class PointOfInterestFavoriteRepository extends BaseRepository<PointOfInt
 			{
 				user: CurrentUserId,
 			},
-			{populate: ['pointOfInterest.country', 'pointOfInterest.region', 'user','pointOfInterest.image','pointOfInterest.name']},
+			{populate: ['pointOfInterest.country', 'pointOfInterest.region', 'user', 'pointOfInterest.image', 'pointOfInterest.name']},
 		);
 	}
 }

@@ -22,26 +22,21 @@ export class TokenService {
 		return jwt.sign(payload, config.ACCESS_SECRET, {
 			expiresIn: '10m',
 		});
-			
-        
 	}
 
 	/**
 	 * Generates a long-lived refresh token (expires in 7 days)
 	 */
 	generateRefreshToken(payload: Pick<TokenPayload, 'userId'>): string {
-		
 		return jwt.sign(payload, config.REFRESH_SECRET, {
 			expiresIn: '30d',
 		});
-	
 	}
 
 	/**
 	 * Verifies an access token string and returns its typed payload
 	 */
 	verifyAccessToken(token: string): TokenPayload {
-		
 		return jwt.verify(token, config.ACCESS_SECRET) as TokenPayload;
 	}
 

@@ -2,6 +2,7 @@ import {Spinner} from '@northernexplorer/tools-web';
 import {View, Text, TouchableOpacity, ScrollView, StyleSheet} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import React from 'react';
+import {FavoritePointsOfInterest} from './components/FavoritesPointsOfInterest';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {ProfileDetails} from '~/user/Profile/components/ProfileDetails';
@@ -11,7 +12,6 @@ import {Security} from '~/user/Profile/components/Security';
 import {Other} from '~/user/Profile/components/Other';
 import {useApiFetch} from '~/core/useApiFetch';
 import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
-import { FavoritePointsOfInterest } from './components/Favorites';
 
 type RouteParams = {
 	username: string;
@@ -60,20 +60,18 @@ export function Profile() {
 							style={[styles.tabButton, tab === 'timeline' && styles.activeTabButton]}
 							onPress={() => switchTab('timeline')}
 						>
-							
 							<Text style={tab === 'timeline' ? styles.activeTabText : styles.tabText}>Timeline</Text>
 						</TouchableOpacity>
-                          <TouchableOpacity
+						<TouchableOpacity
 							style={[styles.tabButton, tab === 'favorite' && styles.activeTabButton]}
 							onPress={() => switchTab('favorite')}
 						>
-							 <Text style={tab === 'favorite' ? styles.activeTabText : styles.tabText}>Favorite</Text>
+							<Text style={tab === 'favorite' ? styles.activeTabText : styles.tabText}>Favorite</Text>
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={[styles.tabButton, tab === 'details' && styles.activeTabButton]}
 							onPress={() => switchTab('details')}
 						>
-							
 							<Text style={tab === 'details' ? styles.activeTabText : styles.tabText}>Details</Text>
 						</TouchableOpacity>
 
