@@ -11,11 +11,9 @@ const styles = StyleSheet.create({
 	},
 
 	favoritesContainer: {
-		width: '100%',
-		maxWidth: 420,
-		alignSelf: 'center',
-		padding: 24,
-		gap: 10,
+		flex: 1,
+		flexDirection: 'row',
+		backgroundColor: '#1a1a1a',
 	},
 
 
@@ -162,6 +160,10 @@ const styles = StyleSheet.create({
 		marginTop: 3,
 		borderRadius: 2,
 		backgroundColor: '#a1c4e6',
+	},
+	banner: {
+		width: '100%',
+		height: '100%',
 	},
 });
 

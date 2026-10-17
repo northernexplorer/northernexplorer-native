@@ -121,6 +121,7 @@ export class ImageController extends BaseController {
 		if (status === ImageStatusEnum.Approved) {
 			user.score += 10;
 		}
+		
 
 		await this.flush();
 		return {file: params.file.uri, status: ImageUploadStatus.Success};

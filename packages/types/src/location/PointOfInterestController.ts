@@ -79,11 +79,17 @@ export type PointOfInterestEditType = {
 export type PointOfInterestFavoriteType = {
 	id: string;
 	pointOfInterest: {
+		name:string,
 		id: string;
 		description: string;
 		country: string;
 		region: string;
+		lat:number;
+		lon:number;
+		difficulty:SiteDifficultyEnum |undefined,
+		rating:ReviewRatingEnum | undefined 
 	};
+	image:ImageHeaderType;
 	user: string;
 }
 export type PointOfInterestCreateType = {

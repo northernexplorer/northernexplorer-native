@@ -125,7 +125,7 @@ export class PointOfInterestController extends BaseController {
 	): Promise<Response<Route<'isPointOfInterestFavorite'>>> {
 		if (!auth?.userId) return {Favorited: false};
 
-		const favorite = await this.repos.pointOfInterestFavorite.findPointOfInterestFavoritesById(params.id, auth.userId);
+		const favorite = await this.repos.pointOfInterestFavorite.findPointOfInterestFavoritesById(params.id, auth.userId,);
 		return {Favorited: Boolean(favorite)};
 	}
 	public async getForMap(params: Params<Route<'getForMap'>>, auth?: AuthContext): Promise<Response<Route<'getForMap'>>> {
@@ -189,10 +189,16 @@ export class PointOfInterestController extends BaseController {
 			id: favorite.id,
 			pointOfInterest: {
 				id: favorite.pointOfInterest.id,
+				name:favorite.pointOfInterest.name,
 				description: favorite.pointOfInterest.description,
 				country: favorite.pointOfInterest.country.name,
 				region: favorite.pointOfInterest.region.name,
+				lat: favorite.pointOfInterest.lat,
+				lon: favorite.pointOfInterest.lon,
+				difficulty:favorite.pointOfInterest.difficulty,
+				rating:favorite.pointOfInterest.rating
 			},
+			image:favorite.pointOfInterest.image,
 			user: favorite.user.id,
 		}));
 	}

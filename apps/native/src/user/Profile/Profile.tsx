@@ -63,15 +63,17 @@ export function Profile() {
 							
 							<Text style={tab === 'timeline' ? styles.activeTabText : styles.tabText}>Timeline</Text>
 						</TouchableOpacity>
-
+                          <TouchableOpacity
+							style={[styles.tabButton, tab === 'favorite' && styles.activeTabButton]}
+							onPress={() => switchTab('favorite')}
+						>
+							 <Text style={tab === 'favorite' ? styles.activeTabText : styles.tabText}>Favorite</Text>
+						</TouchableOpacity>
 						<TouchableOpacity
 							style={[styles.tabButton, tab === 'details' && styles.activeTabButton]}
 							onPress={() => switchTab('details')}
 						>
-							<TouchableOpacity
-							style={[styles.tabButton, tab === 'favorite' && styles.activeTabButton]}
-							onPress={() => switchTab('favorite')}
-						/>
+							
 							<Text style={tab === 'details' ? styles.activeTabText : styles.tabText}>Details</Text>
 						</TouchableOpacity>
 
