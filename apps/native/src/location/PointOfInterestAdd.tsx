@@ -41,6 +41,7 @@ type CreatedPoiData = {
 const STATUS_OPTIONS = [
 	{label: 'Draft', value: PublishStatusEnum.Draft},
 	{label: 'Published', value: PublishStatusEnum.Published},
+	{label: 'Rejected', value: PublishStatusEnum.Rejected},
 ];
 
 export function PointOfInterestAdd() {
@@ -50,6 +51,7 @@ export function PointOfInterestAdd() {
 
 	const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 	const [createdPoi, setCreatedPoi] = useState<CreatedPoiData | null>(null);
+	const [hasPendingPhotos, setHasPendingPhotos] = useState(false);
 
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const [form, setForm] = useState<FormState>({
@@ -355,14 +357,18 @@ export function PointOfInterestAdd() {
 							</Text>
 						</View>
 
-						<PhotoUploadCard pointOfInterestId={createdPoi.id} />
+						<PhotoUploadCard pointOfInterestId={createdPoi.id} onPendingUploadsChange={setHasPendingPhotos} />
 
 						<View style={formStyles.buttonRow}>
 							<TouchableOpacity style={[formStyles.button, formStyles.secondaryButton]} onPress={() => setStep(3)}>
 								<Text style={formStyles.secondaryButtonText}>Skip Photos</Text>
 							</TouchableOpacity>
 
-							<TouchableOpacity style={[formStyles.button, formStyles.saveButton]} onPress={() => setStep(3)}>
+							<TouchableOpacity
+								style={[formStyles.button, formStyles.saveButton, hasPendingPhotos && formStyles.disabledButton]}
+								onPress={() => setStep(3)}
+								disabled={hasPendingPhotos}
+							>
 								<Text style={formStyles.saveButtonText}>Continue to Review</Text>
 							</TouchableOpacity>
 						</View>

@@ -8,6 +8,7 @@ import {
 	SiteConditionEnum,
 	ReviewRatingEnum,
 	SiteDifficultyEnum,
+	RejectionReasonEnum,
 } from '@northernexplorer/types';
 import {Region} from './Region';
 import {Country} from './Country';
@@ -28,6 +29,7 @@ type PointOfInterestInput = {
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 	organization: Organization;
+	rejectionReason?: RejectionReasonEnum;
 };
 
 @Entity()
@@ -83,6 +85,9 @@ export class PointOfInterest {
 	@Enum({items: () => PublishStatusEnum, type: 'enum'})
 	status: PublishStatusEnum;
 
+	@Enum({items: () => RejectionReasonEnum, nullable: true})
+	rejectionReason?: RejectionReasonEnum;
+
 	@Enum({type: () => PointOfInterestTypeEnum, items: () => PointOfInterestTypeEnum, array: true})
 	type!: PointOfInterestTypeEnum[];
 
@@ -114,6 +119,7 @@ export class PointOfInterest {
 		this.endDate = data.endDate;
 		this.type = data.type;
 		this.organization = data.organization;
+		this.rejectionReason = data.rejectionReason;
 	}
 
 	edit(data: Partial<PointOfInterestInput>) {
@@ -129,6 +135,7 @@ export class PointOfInterest {
 		if (data.endDate !== undefined) this.endDate = data.endDate;
 		if (data.type !== undefined) this.type = data.type;
 		if (data.organization !== undefined) this.organization = data.organization;
+		if (data.rejectionReason !== undefined) this.rejectionReason = data.rejectionReason;
 
 		this.updatedAt = new Date();
 	}

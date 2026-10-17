@@ -16,7 +16,6 @@ export function ReviewLikes({currentUserId, reviewId}: UserLikesProps) {
 	const {mutate: unlikeMutation} = useApiMutation('location', 'ReviewController', 'unLike');
 
 	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ReviewController', 'hasLiked', {id: reviewId});
-	const {data: reviewData, refetch: refetchReview} = useApiFetch('location', 'ReviewController', 'getById', {id: reviewId});
 
 	useEffect(() => {
 		setIsLiked(Boolean(hasLikedData?.liked));
@@ -24,23 +23,23 @@ export function ReviewLikes({currentUserId, reviewId}: UserLikesProps) {
 
 	const handleLikeToggle = async (e: GestureResponderEvent) => {
 		e.stopPropagation();
-		if (!currentUserId || !reviewData) return;
+		if (!currentUserId) return;
 
 		const nextState = !isLiked;
 		setIsLiked(nextState);
 
 		if (isLiked) {
-			await unlikeMutation({id: reviewData.id});
+			await unlikeMutation({id: reviewId});
 		} else {
-			await likeMutation({id: reviewData.id});
+			await likeMutation({id: reviewId});
 		}
-		await Promise.all([refetchLikeState(), refetchReview()]);
+		await refetchLikeState();
 	};
 
 	return (
 		<Pressable onPress={handleLikeToggle} style={[styles.likeButton, isLiked && styles.likeButtonActive]}>
 			<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#0088cc'} />
-			<Text style={styles.likeCount}>{reviewData?.likes ?? 0}</Text>
+			<Text style={styles.likeCount}>{hasLikedData?.likeCount ?? 0}</Text>
 		</Pressable>
 	);
 }

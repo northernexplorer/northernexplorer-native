@@ -30,9 +30,19 @@ export function ConnectivityProvider({children}: {children: React.ReactNode}) {
 					},
 					'GET',
 				);
-				failureCountRef.current = 0;
-				setIsServerReachable(String(response.online).toLowerCase() === 'true');
+				const isOnline = String(response.online).toLowerCase() === 'true';
 				setIsRequiredAppUpdate(String(response.upgradeRequired).toLowerCase() === 'true');
+
+				if (isOnline) {
+					failureCountRef.current = 0;
+					setIsServerReachable(true);
+				} else {
+					failureCountRef.current += 1;
+					// Require 3 consecutive failed checks before marking server unreachable to prevent transient blips from unmounting active views
+					if (failureCountRef.current >= 3) {
+						setIsServerReachable(false);
+					}
+				}
 			} catch {
 				failureCountRef.current += 1;
 				// Require 3 consecutive failed checks before marking server unreachable to prevent transient blips from unmounting active views
