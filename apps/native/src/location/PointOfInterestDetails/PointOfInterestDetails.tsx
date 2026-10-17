@@ -6,6 +6,7 @@ import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, Sp
 import {SiteDifficultyEnum, RolesEnum, PublishStatusEnum, RejectionReasonEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
+import AddNewPointOfInterestFavorite from './components/AddPointOfInterestFavorite';
 import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
 import {styles} from '~/location/PointOfInterestDetails/styles';
 import {config} from '~/config';
@@ -112,6 +113,7 @@ export function PointOfInterestDetails() {
 							</TouchableOpacity>
 						</Link>
 					)}
+					<AddNewPointOfInterestFavorite pointOfInterestId={data.id} />
 				</View>
 
 				<Text style={styles.title}>{data.name}</Text>

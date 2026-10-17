@@ -86,6 +86,22 @@ export type PointOfInterestEditType = {
 	rejectionReason?: RejectionReasonEnum;
 };
 
+export type PointOfInterestFavoriteType = {
+	id: string;
+	pointOfInterest: {
+		name: string;
+		id: string;
+		description: string;
+		country: string;
+		region: string;
+		lat: number;
+		lon: number;
+		difficulty: SiteDifficultyEnum | undefined;
+		rating: ReviewRatingEnum | undefined;
+	};
+	image: ImageHeaderType;
+	user: string;
+};
 export type PointOfInterestCreateType = {
 	name: string;
 	description: string;
@@ -141,6 +157,28 @@ export const PointOfInterestController = {
 	getById: {
 		params: {} as {id: string},
 		response: null as unknown as PointOfInterestType,
+	},
+	getPointOfInterestFavorites: {
+		params: {},
+		response: null as unknown as PointOfInterestFavoriteType[],
+	},
+	createPointOfInterestFavorite: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			success: boolean;
+		},
+	},
+	unmarkPointOfInterestFavorite: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			success: boolean;
+		},
+	},
+	isPointOfInterestFavorite: {
+		params: {} as {id: string},
+		response: null as unknown as {
+			Favorited: boolean;
+		},
 	},
 	getDrafts: {
 		params: {} as {limit?: number; offset?: number},
