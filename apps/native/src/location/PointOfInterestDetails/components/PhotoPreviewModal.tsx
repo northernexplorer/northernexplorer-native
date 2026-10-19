@@ -1,10 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl, ImageView} from '@northernexplorer/tools-web';
 import {ReportTypeEnum} from '@northernexplorer/types';
 import {useRouter} from 'expo-router';
+import Animated, {useAnimatedStyle, useSharedValue, withTiming, runOnJS} from 'react-native-reanimated';
+import {Gesture, GestureDetector, GestureHandlerRootView} from 'react-native-gesture-handler';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -54,9 +56,101 @@ export function PhotoPreviewModal({
 	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ImageController', 'hasLiked', {id: selectedImageId});
 	const {data: imageData, refetch: refetchImage} = useApiFetch('location', 'ImageController', 'getById', {id: selectedImageId});
 
+	// Navigation ref to safely access props inside worklets without triggering remote function errors
+	const navRef = useRef({selectedIndex, totalImages, onPrevious, onNext});
+	navRef.current = {selectedIndex, totalImages, onPrevious, onNext};
+
+	// Reanimated shared values for zoom and pan
+	const scale = useSharedValue(1);
+	const savedScale = useSharedValue(1);
+	const translateX = useSharedValue(0);
+	const translateY = useSharedValue(0);
+	const savedTranslateX = useSharedValue(0);
+	const savedTranslateY = useSharedValue(0);
+
+	// Reset zoom/position when changing photos
+	useEffect(() => {
+		scale.value = withTiming(1);
+		savedScale.value = 1;
+		translateX.value = withTiming(0);
+		savedTranslateX.value = 0;
+		translateY.value = withTiming(0);
+		savedTranslateY.value = 0;
+	}, [selectedImageId, selectedIndex, scale, savedScale, translateX, savedTranslateX, translateY, savedTranslateY]);
+
 	useEffect(() => {
 		setIsLiked(Boolean(hasLikedData?.liked));
 	}, [hasLikedData]);
+
+	// JS-thread handler for swipe completion
+	const handleSwipeCompletion = (isSwipeLeft: boolean, isSwipeRight: boolean) => {
+		const {selectedIndex: idx, totalImages: total, onPrevious: prevFn, onNext: nextFn} = navRef.current;
+		if (isSwipeLeft && idx < total - 1) {
+			nextFn();
+		} else if (isSwipeRight && idx > 0) {
+			prevFn();
+		} else {
+			translateX.value = withTiming(0);
+		}
+	};
+
+	// Gesture Handlers
+	const pinchGesture = Gesture.Pinch()
+		.onUpdate(e => {
+			scale.value = Math.max(1, savedScale.value * e.scale);
+		})
+		.onEnd(() => {
+			if (scale.value < 1) {
+				scale.value = withTiming(1);
+				savedScale.value = 1;
+			} else {
+				savedScale.value = scale.value;
+			}
+		});
+
+	const panGesture = Gesture.Pan()
+		.averageTouches(true)
+		.onUpdate(e => {
+			if (scale.value > 1) {
+				translateX.value = savedTranslateX.value + e.translationX;
+				translateY.value = savedTranslateY.value + e.translationY;
+			} else {
+				translateX.value = e.translationX;
+			}
+		})
+		.onEnd(e => {
+			if (scale.value > 1) {
+				savedTranslateX.value = translateX.value;
+				savedTranslateY.value = translateY.value;
+			} else {
+				const isSwipeLeft = e.translationX < -50 || (e.velocityX < -300 && e.translationX < -20);
+				const isSwipeRight = e.translationX > 50 || (e.velocityX > 300 && e.translationX > 20);
+
+				runOnJS(handleSwipeCompletion)(isSwipeLeft, isSwipeRight);
+			}
+		});
+
+	const doubleTapGesture = Gesture.Tap()
+		.numberOfTaps(2)
+		.onEnd(() => {
+			if (scale.value > 1) {
+				scale.value = withTiming(1);
+				savedScale.value = 1;
+				translateX.value = withTiming(0);
+				savedTranslateX.value = 0;
+				translateY.value = withTiming(0);
+				savedTranslateY.value = 0;
+			} else {
+				scale.value = withTiming(2.5);
+				savedScale.value = 2.5;
+			}
+		});
+
+	const composedGesture = Gesture.Simultaneous(pinchGesture, Gesture.Race(doubleTapGesture, panGesture));
+
+	const animatedImageStyle = useAnimatedStyle(() => ({
+		transform: [{translateX: translateX.value}, {translateY: translateY.value}, {scale: scale.value}],
+	}));
 
 	if (!imageData) {
 		return (
@@ -150,158 +244,171 @@ export function PhotoPreviewModal({
 
 	return (
 		<Modal transparent animationType="fade" onRequestClose={onClose}>
-			<Pressable
-				style={[
-					styles.modalContainer,
-					{
-						paddingTop: Math.max(insets.top, 20),
-						paddingBottom: Math.max(insets.bottom, 16),
-					},
-				]}
-				onPress={onClose}
-			>
-				{/* Header */}
-				<Pressable style={styles.modalHeader} onPress={e => e.stopPropagation()}>
-					<Text style={styles.modalCounterText}>
-						{selectedIndex + 1} / {totalImages}
-					</Text>
+			<GestureHandlerRootView style={{flex: 1}}>
+				<Pressable
+					style={[
+						styles.modalContainer,
+						{
+							paddingTop: Math.max(insets.top, 20),
+							paddingBottom: Math.max(insets.bottom, 16),
+						},
+					]}
+					onPress={onClose}
+				>
+					{/* Header */}
+					<Pressable style={styles.modalHeader} onPress={e => e.stopPropagation()}>
+						<Text style={styles.modalCounterText}>
+							{selectedIndex + 1} / {totalImages}
+						</Text>
 
-					<Pressable
-						style={styles.modalCloseButton}
-						onPress={e => {
-							e.stopPropagation();
-							onClose();
-						}}
-						hitSlop={12}
-					>
-						<Ionicons name="close" size={24} color="#ffffff" />
+						<Pressable
+							style={styles.modalCloseButton}
+							onPress={e => {
+								e.stopPropagation();
+								onClose();
+							}}
+							hitSlop={12}
+						>
+							<Ionicons name="close" size={24} color="#ffffff" />
+						</Pressable>
 					</Pressable>
-				</Pressable>
 
-				{/* Middle Area */}
-				<View style={styles.modalBody}>
-					{selectedIndex > 0 && (
-						<Pressable
-							style={[styles.navButton, styles.navButtonLeft]}
-							onPress={e => {
-								e.stopPropagation();
-								onPrevious();
-							}}
-							hitSlop={12}
-						>
-							<Ionicons name="chevron-back" size={28} color="#ffffff" />
-						</Pressable>
-					)}
-
-					<View style={styles.modalImageWrapper} pointerEvents="box-none">
-						<ImageView
-							source={{
-								uri: getImageUrl({
-									processed: imageData.processed,
-									size: 'large',
-									path: imageData.url,
-									cdn: config.CONTENT_DELIVERY_NETWORK,
-								}),
-							}}
-							style={styles.modalImage}
-							resizeMode="contain"
-						/>
-					</View>
-
-					{selectedIndex < totalImages - 1 && (
-						<Pressable
-							style={[styles.navButton, styles.navButtonRight]}
-							onPress={e => {
-								e.stopPropagation();
-								onNext();
-							}}
-							hitSlop={12}
-						>
-							<Ionicons name="chevron-forward" size={28} color="#ffffff" />
-						</Pressable>
-					)}
-				</View>
-
-				{/* Footer Bar */}
-				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
-					<View style={styles.userInfo}>
-						<UserAvatar username={imageData.user.username} onPress={handleUserProfileNavigation} />
-						<Pressable style={styles.userDetails} onPress={handleUserProfileNavigation}>
-							<Text style={styles.userName}>{formatName(imageData.user)}</Text>
-							{imageData.altText && <Text style={styles.altText}>{imageData.altText}</Text>}
-						</Pressable>
-					</View>
-
-					<View style={styles.modalActions}>
-						{/* Admin Moderation Actions */}
-						{isAdmin && onApprove && (
+					{/* Middle Area */}
+					<View style={styles.modalBody}>
+						{selectedIndex > 0 && (
 							<Pressable
-								style={[styles.actionButton, styles.approveButton]}
-								onPress={handleApprove}
-								disabled={isApproving || isDeleting}
-							>
-								{isApproving ? (
-									<ActivityIndicator size="small" color="#ffffff" />
-								) : (
-									<>
-										<Ionicons name="checkmark-circle-outline" size={18} color="#ffffff" />
-										<Text style={styles.actionButtonText}>Approve</Text>
-									</>
-								)}
-							</Pressable>
-						)}
-
-						{isAdmin && onReject && (
-							<Pressable style={[styles.actionButton, styles.rejectButton]} onPress={handleReject} disabled={isApproving || isDeleting}>
-								{isDeleting ? (
-									<ActivityIndicator size="small" color="#ffffff" />
-								) : (
-									<>
-										<Ionicons name="close-circle-outline" size={18} color="#ffffff" />
-										<Text style={styles.actionButtonText}>Reject</Text>
-									</>
-								)}
-							</Pressable>
-						)}
-
-						{/* Like Button (Visible to everyone) */}
-						<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
-							<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
-							<Text style={styles.likeCount}>{hasLikedData?.likeCount ?? imageData.likes}</Text>
-						</Pressable>
-
-						{/* Report Button (Visible to non-owners) */}
-						{imageData.user.id !== currentUserId && (
-							<Pressable
-								style={styles.modalReportButton}
+								style={[styles.navButton, styles.navButtonLeft]}
 								onPress={e => {
 									e.stopPropagation();
-									setIsReporting(true);
+									onPrevious();
 								}}
-								hitSlop={8}
-								accessibilityLabel="Report photo"
+								hitSlop={12}
 							>
-								<Ionicons name="flag-outline" size={18} color="#94a3b8" />
+								<Ionicons name="chevron-back" size={28} color="#ffffff" />
 							</Pressable>
 						)}
 
-						{/* Standard Delete Button (When not using dedicated reject) */}
-						{canManage && !onReject && (
-							<Pressable style={styles.modalDeleteButton} onPress={handleDelete} disabled={isDeleting || isApproving}>
-								{isDeleting ? (
-									<ActivityIndicator size="small" color="#ef4444" />
-								) : (
-									<Ionicons name="trash-outline" size={20} color="#ef4444" />
-								)}
+						<GestureDetector gesture={composedGesture}>
+							<Animated.View style={[styles.modalImageWrapper, animatedImageStyle]}>
+								<ImageView
+									source={{
+										uri: getImageUrl({
+											processed: imageData.processed,
+											size: 'large',
+											path: imageData.url,
+											cdn: config.CONTENT_DELIVERY_NETWORK,
+										}),
+									}}
+									style={styles.modalImage}
+									resizeMode="contain"
+								/>
+							</Animated.View>
+						</GestureDetector>
+
+						{selectedIndex < totalImages - 1 && (
+							<Pressable
+								style={[styles.navButton, styles.navButtonRight]}
+								onPress={e => {
+									e.stopPropagation();
+									onNext();
+								}}
+								hitSlop={12}
+							>
+								<Ionicons name="chevron-forward" size={28} color="#ffffff" />
 							</Pressable>
 						)}
 					</View>
-				</Pressable>
 
-				{isReporting && (
-					<ReportModal visible={isReporting} type={ReportTypeEnum.Image} targetId={imageData.id} onClose={() => setIsReporting(false)} />
-				)}
-			</Pressable>
+					{/* Footer Bar */}
+					<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
+						<View style={styles.userInfo}>
+							<UserAvatar username={imageData.user.username} onPress={handleUserProfileNavigation} />
+							<Pressable style={styles.userDetails} onPress={handleUserProfileNavigation}>
+								<Text style={styles.userName}>{formatName(imageData.user)}</Text>
+								{imageData.altText && <Text style={styles.altText}>{imageData.altText}</Text>}
+							</Pressable>
+						</View>
+
+						<View style={styles.modalActions}>
+							{/* Admin Moderation Actions */}
+							{isAdmin && onApprove && (
+								<Pressable
+									style={[styles.actionButton, styles.approveButton]}
+									onPress={handleApprove}
+									disabled={isApproving || isDeleting}
+								>
+									{isApproving ? (
+										<ActivityIndicator size="small" color="#ffffff" />
+									) : (
+										<>
+											<Ionicons name="checkmark-circle-outline" size={18} color="#ffffff" />
+											<Text style={styles.actionButtonText}>Approve</Text>
+										</>
+									)}
+								</Pressable>
+							)}
+
+							{isAdmin && onReject && (
+								<Pressable
+									style={[styles.actionButton, styles.rejectButton]}
+									onPress={handleReject}
+									disabled={isApproving || isDeleting}
+								>
+									{isDeleting ? (
+										<ActivityIndicator size="small" color="#ffffff" />
+									) : (
+										<>
+											<Ionicons name="close-circle-outline" size={18} color="#ffffff" />
+											<Text style={styles.actionButtonText}>Reject</Text>
+										</>
+									)}
+								</Pressable>
+							)}
+
+							{/* Like Button (Visible to everyone) */}
+							<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
+								<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
+								<Text style={styles.likeCount}>{hasLikedData?.likeCount ?? imageData.likes}</Text>
+							</Pressable>
+
+							{/* Report Button (Visible to non-owners) */}
+							{imageData.user.id !== currentUserId && (
+								<Pressable
+									style={styles.modalReportButton}
+									onPress={e => {
+										e.stopPropagation();
+										setIsReporting(true);
+									}}
+									hitSlop={8}
+									accessibilityLabel="Report photo"
+								>
+									<Ionicons name="flag-outline" size={18} color="#94a3b8" />
+								</Pressable>
+							)}
+
+							{/* Standard Delete Button (When not using dedicated reject) */}
+							{canManage && !onReject && (
+								<Pressable style={styles.modalDeleteButton} onPress={handleDelete} disabled={isDeleting || isApproving}>
+									{isDeleting ? (
+										<ActivityIndicator size="small" color="#ef4444" />
+									) : (
+										<Ionicons name="trash-outline" size={20} color="#ef4444" />
+									)}
+								</Pressable>
+							)}
+						</View>
+					</Pressable>
+
+					{isReporting && (
+						<ReportModal
+							visible={isReporting}
+							type={ReportTypeEnum.Image}
+							targetId={imageData.id}
+							onClose={() => setIsReporting(false)}
+						/>
+					)}
+				</Pressable>
+			</GestureHandlerRootView>
 		</Modal>
 	);
 }
