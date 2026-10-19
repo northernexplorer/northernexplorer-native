@@ -24,7 +24,7 @@ const STORE_CONFIG: Record<'android' | 'ios', StoreConfig> = {
 		accessibilityLabel: 'Get it on Google Play',
 	},
 	ios: {
-		nativeUrl: 'itms-apps://apps.apple.com/app/id6742512039', // Replace with App Store ID when live
+		nativeUrl: 'itms-apps://apps.apple.com/app/id6742512039', //todo Replace the IOS store id when released
 		webUrl: 'https://apps.apple.com/app/id6742512039',
 		iconName: 'apple',
 		badgeSubtext: 'DOWNLOAD ON THE',
@@ -82,7 +82,12 @@ export function DownloadAppWidget() {
 
 	return (
 		<View style={globalStyles.sectionContainer}>
-			<View style={[globalStyles.tile, styles.container]}>
+			<Pressable
+				style={({pressed}) => [globalStyles.tile, styles.container, pressed && styles.cardPressed]}
+				onPress={handleDownload}
+				accessibilityRole="button"
+				accessibilityLabel={config.accessibilityLabel}
+			>
 				<View style={styles.inner}>
 					<View style={styles.content}>
 						<View style={styles.headerRow}>
@@ -94,20 +99,15 @@ export function DownloadAppWidget() {
 						</Text>
 					</View>
 
-					<Pressable
-						style={({pressed}) => [styles.storeBadge, pressed && styles.badgePressed]}
-						onPress={handleDownload}
-						accessibilityRole="button"
-						accessibilityLabel={config.accessibilityLabel}
-					>
+					<View style={styles.storeBadge}>
 						<MaterialCommunityIcons name={config.iconName} size={20} color="#00F0FF" style={styles.badgeIcon} />
 						<View style={styles.badgeTextContainer}>
 							<Text style={styles.badgeSubtext}>{config.badgeSubtext}</Text>
 							<Text style={styles.badgeTitle}>{config.badgeTitle}</Text>
 						</View>
-					</Pressable>
+					</View>
 				</View>
-			</View>
+			</Pressable>
 		</View>
 	);
 }
@@ -116,6 +116,11 @@ const styles = StyleSheet.create({
 	container: {
 		backgroundColor: 'rgba(255, 255, 255, 0.04)',
 		borderColor: 'rgba(0, 240, 255, 0.2)',
+		overflow: 'hidden',
+	},
+	cardPressed: {
+		backgroundColor: 'rgba(255, 255, 255, 0.08)',
+		borderColor: 'rgba(0, 240, 255, 0.4)',
 	},
 	inner: {
 		paddingHorizontal: 16,
@@ -161,10 +166,6 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.2,
 		shadowRadius: 2,
 		elevation: 3,
-	},
-	badgePressed: {
-		opacity: 0.8,
-		backgroundColor: '#1a1a1a',
 	},
 	badgeIcon: {
 		marginRight: 8,
