@@ -9,7 +9,7 @@ import reactImport from 'eslint-plugin-import';
 
 export default [
 	{
-		ignores: ['**/dist/**', '**/.expo/**', '**/node_modules/**', 'web-build/**'],
+		ignores: ['**/dist/**', '**/.expo/**', '**/node_modules/**', 'web-build/**', 'android/**', '**/android/**', 'ios/**', '**/ios/**'],
 	},
 	// Target pure JS/MJS scripts for Prettier
 	{
