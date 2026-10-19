@@ -6,7 +6,15 @@ import {formatName, getImageUrl, ImageView} from '@northernexplorer/tools-web';
 import {ReportTypeEnum} from '@northernexplorer/types';
 import {useRouter} from 'expo-router';
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated';
-import {Gesture, GestureDetector, GestureHandlerRootView} from 'react-native-gesture-handler';
+import {
+	GestureDetector,
+	GestureHandlerRootView,
+	useCompetingGestures,
+	usePanGesture,
+	usePinchGesture,
+	useSimultaneousGestures,
+	useTapGesture,
+} from 'react-native-gesture-handler';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -154,17 +162,17 @@ export function PhotoPreviewModal({
 	};
 
 	// Pinch Gesture Handler
-	const pinchGesture = Gesture.Pinch()
-		.runOnJS(true)
-		.onStart(e => {
+	const pinchGesture = usePinchGesture({
+		runOnJS: true,
+		onActivate: e => {
 			focalX.value = e.focalX - windowWidth / 2;
 			focalY.value = e.focalY - windowHeight / 2;
-		})
-		.onUpdate(e => {
+		},
+		onUpdate: e => {
 			const newScale = Math.min(Math.max(savedScale.value * e.scale, 0.8), MAX_SCALE + 0.5);
 			scale.value = newScale;
-		})
-		.onEnd(() => {
+		},
+		onDeactivate: () => {
 			if (scale.value < MIN_SCALE + 0.05) {
 				resetZoom(true);
 				handleZoomStateUpdate(false);
@@ -175,21 +183,22 @@ export function PhotoPreviewModal({
 				clampAndApplyBoundaries();
 				handleZoomStateUpdate(true);
 			}
-		});
+		},
+	});
 
 	// Pan Gesture Handler
-	const panGesture = Gesture.Pan()
-		.runOnJS(true)
-		.averageTouches(true)
-		.onUpdate(e => {
+	const panGesture = usePanGesture({
+		runOnJS: true,
+		averageTouches: true,
+		onUpdate: e => {
 			if (scale.value > 1) {
 				translateX.value = savedTranslateX.value + e.translationX;
 				translateY.value = savedTranslateY.value + e.translationY;
 			} else {
 				translateX.value = e.translationX;
 			}
-		})
-		.onEnd(e => {
+		},
+		onDeactivate: e => {
 			if (scale.value > 1) {
 				clampAndApplyBoundaries();
 			} else {
@@ -197,13 +206,14 @@ export function PhotoPreviewModal({
 				const isSwipeRight = e.translationX > 50 || (e.velocityX > 300 && e.translationX > 20);
 				handleSwipeCompletion(isSwipeLeft, isSwipeRight);
 			}
-		});
+		},
+	});
 
 	// Double Tap Gesture Handler
-	const doubleTapGesture = Gesture.Tap()
-		.runOnJS(true)
-		.numberOfTaps(2)
-		.onEnd(e => {
+	const doubleTapGesture = useTapGesture({
+		runOnJS: true,
+		numberOfTaps: 2,
+		onDeactivate: e => {
 			if (scale.value > 1.1) {
 				resetZoom(true);
 				handleZoomStateUpdate(false);
@@ -225,9 +235,11 @@ export function PhotoPreviewModal({
 
 				handleZoomStateUpdate(true);
 			}
-		});
+		},
+	});
 
-	const composedGesture = Gesture.Simultaneous(pinchGesture, Gesture.Race(doubleTapGesture, panGesture));
+	const competingGesture = useCompetingGestures(doubleTapGesture, panGesture);
+	const composedGesture = useSimultaneousGestures(pinchGesture, competingGesture);
 
 	// Top Zoom Increment / Decrement Handlers
 	const handleZoomIn = () => {
