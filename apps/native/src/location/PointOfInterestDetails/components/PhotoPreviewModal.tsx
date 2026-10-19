@@ -5,7 +5,7 @@ import {Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl, ImageView} from '@northernexplorer/tools-web';
 import {ReportTypeEnum} from '@northernexplorer/types';
 import {useRouter} from 'expo-router';
-import Animated, {runOnJS, useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated';
+import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated';
 import {Gesture, GestureDetector, GestureHandlerRootView} from 'react-native-gesture-handler';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
@@ -155,6 +155,7 @@ export function PhotoPreviewModal({
 
 	// Pinch Gesture Handler
 	const pinchGesture = Gesture.Pinch()
+		.runOnJS(true)
 		.onStart(e => {
 			focalX.value = e.focalX - windowWidth / 2;
 			focalY.value = e.focalY - windowHeight / 2;
@@ -166,18 +167,19 @@ export function PhotoPreviewModal({
 		.onEnd(() => {
 			if (scale.value < MIN_SCALE + 0.05) {
 				resetZoom(true);
-				runOnJS(handleZoomStateUpdate)(false);
+				handleZoomStateUpdate(false);
 			} else {
 				const finalScale = Math.min(scale.value, MAX_SCALE);
 				scale.value = withSpring(finalScale, SPRING_CONFIG);
 				savedScale.value = finalScale;
 				clampAndApplyBoundaries();
-				runOnJS(handleZoomStateUpdate)(true);
+				handleZoomStateUpdate(true);
 			}
 		});
 
 	// Pan Gesture Handler
 	const panGesture = Gesture.Pan()
+		.runOnJS(true)
 		.averageTouches(true)
 		.onUpdate(e => {
 			if (scale.value > 1) {
@@ -193,17 +195,18 @@ export function PhotoPreviewModal({
 			} else {
 				const isSwipeLeft = e.translationX < -50 || (e.velocityX < -300 && e.translationX < -20);
 				const isSwipeRight = e.translationX > 50 || (e.velocityX > 300 && e.translationX > 20);
-				runOnJS(handleSwipeCompletion)(isSwipeLeft, isSwipeRight);
+				handleSwipeCompletion(isSwipeLeft, isSwipeRight);
 			}
 		});
 
 	// Double Tap Gesture Handler
 	const doubleTapGesture = Gesture.Tap()
+		.runOnJS(true)
 		.numberOfTaps(2)
 		.onEnd(e => {
 			if (scale.value > 1.1) {
 				resetZoom(true);
-				runOnJS(handleZoomStateUpdate)(false);
+				handleZoomStateUpdate(false);
 			} else {
 				const targetScale = 2.5;
 				const tapX = e.x - windowWidth / 2;
@@ -220,7 +223,7 @@ export function PhotoPreviewModal({
 				savedTranslateX.value = targetX;
 				savedTranslateY.value = targetY;
 
-				runOnJS(handleZoomStateUpdate)(true);
+				handleZoomStateUpdate(true);
 			}
 		});
 
