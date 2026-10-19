@@ -1,11 +1,12 @@
-import React, {useMemo} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import React, {useMemo, useState} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Pressable} from 'react-native';
 import {Link, useLocalSearchParams} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, Spinner} from '@northernexplorer/tools-web';
 import {SiteDifficultyEnum, RolesEnum, PublishStatusEnum, RejectionReasonEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
+import {PhotoPreviewModal} from './components/PhotoPreviewModal';
 import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
 import {styles} from '~/location/PointOfInterestDetails/styles';
 import {config} from '~/config';
@@ -26,6 +27,7 @@ export function PointOfInterestDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
 	const auth = useAuthentication();
 	const coords = useLocation();
+	const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 
 	const {data, loading, refetch} = useApiFetch('location', 'PointOfInterestController', 'getById', {id});
 	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
@@ -68,17 +70,28 @@ export function PointOfInterestDetails() {
 	return (
 		<View>
 			<View style={styles.bannerContainer}>
-				<ImageView
-					source={{
-						uri: getImageUrl({
-							path: data.image.url,
-							size: 'large',
-							cdn: config.CONTENT_DELIVERY_NETWORK,
-							processed: data.image.processed,
-						}),
+				<Pressable
+					onPress={() => {
+						if (data.image.id) {
+							setSelectedImageId(data.image.id);
+						}
 					}}
-					style={styles.banner}
-				/>
+					style={styles.bannerPressable}
+					accessibilityRole="button"
+					accessibilityLabel="View cover photo"
+				>
+					<ImageView
+						source={{
+							uri: getImageUrl({
+								path: data.image.url,
+								size: 'large',
+								cdn: config.CONTENT_DELIVERY_NETWORK,
+								processed: data.image.processed,
+							}),
+						}}
+						style={styles.banner}
+					/>
+				</Pressable>
 				<View style={styles.mapCard}>
 					<Map site={data} />
 				</View>
@@ -197,7 +210,7 @@ export function PointOfInterestDetails() {
 							<Ionicons name="images-outline" size={20} color="#0f172a" />
 							<Text style={sectionStyles.title}>Photos ({photoCount})</Text>
 						</View>
-						<Photos data={data} refetch={refetch} />
+						<Photos data={data} refetch={refetch} selectedImageId={selectedImageId} setSelectedImageId={setSelectedImageId} />
 
 						<View style={styles.divider} />
 
@@ -220,6 +233,19 @@ export function PointOfInterestDetails() {
 							<Text style={restrictedStyles.linkText}>Tap to view subscription options</Text>
 						</TouchableOpacity>
 					</Link>
+				)}
+
+				{!hasPermission && selectedImageId && (
+					<PhotoPreviewModal
+						selectedImageId={selectedImageId}
+						selectedIndex={0}
+						totalImages={1}
+						currentUserId={auth?.userId}
+						isAdmin={auth?.roles?.includes(RolesEnum.Admin)}
+						onClose={() => setSelectedImageId(null)}
+						onPrevious={() => {}}
+						onNext={() => {}}
+					/>
 				)}
 			</View>
 		</View>
