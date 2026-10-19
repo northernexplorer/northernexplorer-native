@@ -45,7 +45,7 @@ export class UserController extends BaseController {
 		});
 		const passwordHash = await this.repos.user.hashPassword(params.password);
 
-		const subscriptionLevel = await this.repos.subscriptionLevel.getByName('Pathfinder');
+		const subscriptionLevel = await this.repos.subscriptionLevel.getByName('Core');
 
 		const subscription = new Subscription({subscriptionLevel});
 		this.persist(subscription);
