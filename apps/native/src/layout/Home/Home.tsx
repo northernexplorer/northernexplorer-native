@@ -130,7 +130,6 @@ export function Home() {
 										<SeeMoreCard
 											href={{pathname: '/destinations', params: {sort: 'nearby'}}}
 											title="See More"
-											subtitle="Explore all nearby"
 										/>
 									</ScrollView>
 								)}
@@ -175,7 +174,6 @@ export function Home() {
 										<SeeMoreCard
 											href={{pathname: '/destinations', params: {sort: 'newest'}}}
 											title="See More"
-											subtitle="Explore all newest"
 										/>
 									</ScrollView>
 								)}
