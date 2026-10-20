@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {getUrlSafeString, getImageUrl, ImageView, Table, Column, Pagination, Spinner, calculateHaversineDistance} from '@northernexplorer/tools-web';
@@ -38,15 +38,6 @@ export function DestinationList() {
 
 	const sites = isNearby ? nearbySites : newestSites;
 	const loading = isNearby ? loadingNearby : loadingNewest;
-
-	const handleSortChange = (newSort: 'nearby' | 'newest') => {
-		if (newSort !== currentSort) {
-			router.setParams({
-				sort: newSort,
-				page: undefined,
-			});
-		}
-	};
 
 	const columns: Column<PointOfInterestType>[] = useMemo(
 		() => [
@@ -152,19 +143,6 @@ export function DestinationList() {
 
 	return (
 		<View style={styles.container}>
-			{/* Sort Selector Bar */}
-			<View style={styles.tabBar}>
-				<TouchableOpacity style={[styles.tabButton, isNearby && styles.tabButtonActive]} onPress={() => handleSortChange('nearby')}>
-					<Ionicons name="navigate-outline" size={16} color={isNearby ? '#ffffff' : '#94a3b8'} />
-					<Text style={[styles.tabText, isNearby && styles.tabTextActive]}>Nearby Destinations</Text>
-				</TouchableOpacity>
-
-				<TouchableOpacity style={[styles.tabButton, !isNearby && styles.tabButtonActive]} onPress={() => handleSortChange('newest')}>
-					<Ionicons name="time-outline" size={16} color={!isNearby ? '#ffffff' : '#94a3b8'} />
-					<Text style={[styles.tabText, !isNearby && styles.tabTextActive]}>Newest Locations</Text>
-				</TouchableOpacity>
-			</View>
-
 			{/* Main Content List */}
 			{isNearby && !coords ? (
 				<View style={styles.loadingWrapper}>
@@ -197,36 +175,6 @@ export function DestinationList() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-	},
-	tabBar: {
-		flexDirection: 'row',
-		gap: 8,
-		marginBottom: 16,
-		backgroundColor: 'rgba(255, 255, 255, 0.05)',
-		padding: 4,
-		borderRadius: 10,
-		borderWidth: 1,
-		borderColor: 'rgba(255, 255, 255, 0.08)',
-		alignSelf: 'flex-start',
-	},
-	tabButton: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 6,
-		paddingHorizontal: 14,
-		paddingVertical: 8,
-		borderRadius: 8,
-	},
-	tabButtonActive: {
-		backgroundColor: '#0284c7',
-	},
-	tabText: {
-		fontSize: 13,
-		fontWeight: '600',
-		color: '#94a3b8',
-	},
-	tabTextActive: {
-		color: '#ffffff',
 	},
 	thumbnail: {
 		width: 42,

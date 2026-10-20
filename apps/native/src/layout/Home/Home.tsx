@@ -104,11 +104,6 @@ export function Home() {
 									<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>NEARBY</Text>
 									<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Destinations</Text>
 								</View>
-								<Link href={{pathname: '/destinations', params: {sort: 'nearby'}}} asChild>
-									<Pressable style={({pressed}) => [{opacity: pressed ? 0.7 : 1}]}>
-										<Text style={styles.sectionAction}>See More</Text>
-									</Pressable>
-								</Link>
 							</View>
 							<View style={styles.pointOfInterestsSection}>
 								{!pointOfInterestData ? (
@@ -154,11 +149,6 @@ export function Home() {
 									<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>NEWEST</Text>
 									<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Locations</Text>
 								</View>
-								<Link href={{pathname: '/destinations', params: {sort: 'newest'}}} asChild>
-									<Pressable style={({pressed}) => [{opacity: pressed ? 0.7 : 1}]}>
-										<Text style={styles.sectionAction}>See More</Text>
-									</Pressable>
-								</Link>
 							</View>
 							<View style={styles.pointOfInterestsSection}>
 								{!newestLocationsData ? (
