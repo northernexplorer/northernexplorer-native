@@ -44,6 +44,7 @@ export interface GetClosestPoisOptions {
 	lat: number;
 	lon: number;
 	limit: number;
+	offset?: number;
 	showDrafts?: boolean;
 	userId?: string;
 	selectedPoiTypes?: PointOfInterestTypeEnum[];
@@ -131,6 +132,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		lat,
 		lon,
 		limit,
+		offset,
 		showDrafts = false,
 		userId,
 		selectedPoiTypes = [],
@@ -221,8 +223,14 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			params.push(minRating);
 		}
 
-		// 5. Outer LIMIT parameter
+		// 5. Outer LIMIT and OFFSET parameters
 		params.push(limit);
+
+		let offsetSql = '';
+		if (offset !== undefined) {
+			offsetSql = 'OFFSET ?';
+			params.push(offset);
+		}
 
 		const query = `
 			SELECT id, name, description, image, lat, lon, country, region, status, rejection_reason as "rejectionReason", type,
@@ -288,7 +296,8 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 						 ${minRatingSql}
 				 ) AS spatial_search
 			ORDER BY distanceMeters ASC
-				LIMIT ?;
+				LIMIT ?
+				${offsetSql};
 		`;
 
 		const rawResults = (await this.execute(query, params)) as unknown as PointOfInterestRawRow[];
@@ -353,6 +362,58 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 				populate: ['region', 'country', 'image'],
 			},
 		);
+	}
+
+	async getNewest({limit = 5, offset = 0}: {limit?: number; offset?: number} = {}): Promise<PointOfInterestType[]> {
+		const sites = await this.find(
+			{status: PublishStatusEnum.Published},
+			{
+				limit,
+				offset,
+				orderBy: {createdAt: 'desc', name: 'asc'},
+				populate: ['region', 'region.country', 'country', 'organization', 'image', 'reviews', 'reviews.user'],
+			},
+		);
+
+		return sites.map(site => ({
+			id: site.id,
+			name: site.name,
+			description: site.description,
+			image: site.image,
+			lat: site.lat,
+			lon: site.lon,
+			startDate: site.startDate,
+			endDate: site.endDate,
+			status: site.status,
+			rejectionReason: site.rejectionReason,
+			region: site.region,
+			country: site.country,
+			type: site.type,
+			organization: {
+				id: site.organization.id,
+				name: site.organization.name,
+			},
+			rating: site.rating,
+			difficulty: site.difficulty,
+			entranceCost: site.entranceCost,
+			conditions: site.conditions,
+			reviews: site.reviews.getItems().map(r => ({
+				id: r.id,
+				rating: r.rating,
+				description: r.description,
+				difficulty: r.difficulty,
+				entranceCost: r.entranceCost,
+				conditions: r.conditions,
+				status: r.status,
+				user: {
+					id: r.user.id,
+					username: r.user.username,
+					score: r.user.score,
+					firstName: r.user.firstName,
+					lastName: r.user.lastName,
+				},
+			})),
+		})) as PointOfInterestType[];
 	}
 
 	getVisitedByUser(user: User) {
