@@ -1,11 +1,13 @@
 import React from 'react';
-import {View, ActivityIndicator, Text, ScrollView, useWindowDimensions} from 'react-native';
+import {View, ActivityIndicator, Text, ScrollView, useWindowDimensions, Pressable} from 'react-native';
+import {Link} from 'expo-router';
 import {WeatherWidget} from './components/WeatherWidget';
 import {WeatherWarningsWidget} from './components/WeatherWarningsWidget';
 import {LunarWidget} from './components/LunarWidget';
 import {DownloadAppWidget} from './components/DownloadAppWidget';
 import {CompassWidget} from '~/layout/Home/components/CompassWidget';
 import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
+import {SeeMoreCard} from '~/layout/Home/components/SeeMoreCard';
 import {TopImagesWidget} from '~/layout/Home/components/TopImagesWidget';
 import {FlashlightWidget} from '~/layout/Home/components/FlashlightWidget';
 import {SignalWidget} from '~/layout/Home/components/SignalWidget';
@@ -97,9 +99,16 @@ export function Home() {
 				<View style={styles.sectionContainer}>
 					<View style={styles.tile}>
 						<View style={{padding: 16}}>
-							<View style={{marginBottom: 8}}>
-								<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>NEARBY</Text>
-								<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Destinations</Text>
+							<View style={styles.sectionHeaderRow}>
+								<View>
+									<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>NEARBY</Text>
+									<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Destinations</Text>
+								</View>
+								<Link href="/map" asChild>
+									<Pressable style={({pressed}) => [{opacity: pressed ? 0.7 : 1}]}>
+										<Text style={styles.sectionAction}>See More</Text>
+									</Pressable>
+								</Link>
 							</View>
 							<View style={styles.pointOfInterestsSection}>
 								{!pointOfInterestData ? (
@@ -124,6 +133,7 @@ export function Home() {
 												reviews={site.reviews}
 											/>
 										))}
+										<SeeMoreCard href="/map" title="See More" subtitle="Explore all on map" />
 									</ScrollView>
 								)}
 							</View>
@@ -135,9 +145,16 @@ export function Home() {
 				<View style={styles.sectionContainer}>
 					<View style={styles.tile}>
 						<View style={{padding: 16}}>
-							<View style={{marginBottom: 8}}>
-								<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>NEWEST</Text>
-								<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Locations</Text>
+							<View style={styles.sectionHeaderRow}>
+								<View>
+									<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>NEWEST</Text>
+									<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Locations</Text>
+								</View>
+								<Link href="/map" asChild>
+									<Pressable style={({pressed}) => [{opacity: pressed ? 0.7 : 1}]}>
+										<Text style={styles.sectionAction}>See More</Text>
+									</Pressable>
+								</Link>
 							</View>
 							<View style={styles.pointOfInterestsSection}>
 								{!newestLocationsData ? (
@@ -162,6 +179,7 @@ export function Home() {
 												reviews={site.reviews}
 											/>
 										))}
+										<SeeMoreCard href="/map" title="See More" subtitle="Explore all on map" />
 									</ScrollView>
 								)}
 							</View>
