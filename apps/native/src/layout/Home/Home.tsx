@@ -127,10 +127,7 @@ export function Home() {
 												reviews={site.reviews}
 											/>
 										))}
-										<SeeMoreCard
-											href={{pathname: '/destinations', params: {sort: 'nearby'}}}
-											title="See More"
-										/>
+										<SeeMoreCard href={{pathname: '/destinations', params: {sort: 'nearby'}}} title="See More" />
 									</ScrollView>
 								)}
 							</View>
@@ -171,10 +168,7 @@ export function Home() {
 												reviews={site.reviews}
 											/>
 										))}
-										<SeeMoreCard
-											href={{pathname: '/destinations', params: {sort: 'newest'}}}
-											title="See More"
-										/>
+										<SeeMoreCard href={{pathname: '/destinations', params: {sort: 'newest'}}} title="See More" />
 									</ScrollView>
 								)}
 							</View>
