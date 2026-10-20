@@ -7,11 +7,9 @@ import {styles as globalStyles} from '~/layout/Home/styles';
 type Props = {
 	href?: Href;
 	title?: string;
-	subtitle?: string;
-	buttonText?: string;
 };
 
-export function SeeMoreCard({href = '/destinations', title = 'See More', subtitle = 'Explore all destinations', buttonText = 'View All'}: Props) {
+export function SeeMoreCard({href = '/destinations', title = 'See More'}: Props) {
 	return (
 		<Link href={href} asChild>
 			<Pressable style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
@@ -19,10 +17,8 @@ export function SeeMoreCard({href = '/destinations', title = 'See More', subtitl
 					<View style={styles.iconCircle}>
 						<Ionicons name="compass-outline" size={28} color="#38bdf8" />
 					</View>
-					<Text style={styles.title}>{title}</Text>
-					<Text style={styles.subtitle}>{subtitle}</Text>
 					<View style={styles.actionPill}>
-						<Text style={styles.actionText}>{buttonText}</Text>
+						<Text style={styles.actionText}>{title}</Text>
 						<Ionicons name="arrow-forward" size={14} color="#38bdf8" />
 					</View>
 				</View>

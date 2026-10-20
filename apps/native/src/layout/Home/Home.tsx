@@ -1,6 +1,5 @@
 import React from 'react';
-import {View, ActivityIndicator, Text, ScrollView, useWindowDimensions, Pressable} from 'react-native';
-import {Link} from 'expo-router';
+import {View, ActivityIndicator, Text, ScrollView, useWindowDimensions} from 'react-native';
 import {WeatherWidget} from './components/WeatherWidget';
 import {WeatherWarningsWidget} from './components/WeatherWarningsWidget';
 import {LunarWidget} from './components/LunarWidget';
