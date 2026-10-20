@@ -227,7 +227,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		params.push(limit);
 
 		let offsetSql = '';
-		if (offset !== undefined && offset !== null) {
+		if (offset !== undefined) {
 			offsetSql = 'OFFSET ?';
 			params.push(offset);
 		}

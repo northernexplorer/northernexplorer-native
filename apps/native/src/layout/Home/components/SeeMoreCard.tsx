@@ -8,20 +8,21 @@ type Props = {
 	href?: Href;
 	title?: string;
 	subtitle?: string;
+	buttonText?: string;
 };
 
-export function SeeMoreCard({href = '/map', title = 'See More', subtitle = 'Explore all on map'}: Props) {
+export function SeeMoreCard({href = '/destinations', title = 'See More', subtitle = 'Explore all destinations', buttonText = 'View All'}: Props) {
 	return (
 		<Link href={href} asChild>
 			<Pressable style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
 				<View style={[globalStyles.tile, styles.card]}>
 					<View style={styles.iconCircle}>
-						<Ionicons name="map-outline" size={28} color="#38bdf8" />
+						<Ionicons name="compass-outline" size={28} color="#38bdf8" />
 					</View>
 					<Text style={styles.title}>{title}</Text>
 					<Text style={styles.subtitle}>{subtitle}</Text>
 					<View style={styles.actionPill}>
-						<Text style={styles.actionText}>Open Map</Text>
+						<Text style={styles.actionText}>{buttonText}</Text>
 						<Ionicons name="arrow-forward" size={14} color="#38bdf8" />
 					</View>
 				</View>

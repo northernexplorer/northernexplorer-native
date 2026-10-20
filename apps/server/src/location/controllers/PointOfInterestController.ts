@@ -14,7 +14,7 @@ export class PointOfInterestController extends BaseController {
 	private permissionService = new PermissionService();
 
 	public async getNearby(params: Params<Route<'getNearby'>>, auth?: AuthContext): Promise<Response<Route<'getNearby'>>> {
-		const {lat, lon, limit, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = params;
+		const {lat, lon, limit, offset, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = params;
 
 		let parsedDifficultyIndex = maxDifficultyIndex !== undefined ? Number(maxDifficultyIndex) : undefined;
 		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
@@ -49,6 +49,7 @@ export class PointOfInterestController extends BaseController {
 			lat,
 			lon,
 			limit,
+			offset,
 			showDrafts: showDraftsParsed,
 			userId: auth?.userId,
 			selectedPoiTypes,
@@ -133,7 +134,7 @@ export class PointOfInterestController extends BaseController {
 	}
 
 	async getNewest(params: Params<Route<'getNewest'>>): Promise<Response<Route<'getNewest'>>> {
-		return this.repos.pointOfInterest.getNewest({limit: params.limit});
+		return this.repos.pointOfInterest.getNewest({limit: params.limit, offset: params.offset});
 	}
 
 	async getDrafts(params: Params<Route<'getDrafts'>>, auth?: AuthContext): Promise<Response<Route<'getDrafts'>>> {
