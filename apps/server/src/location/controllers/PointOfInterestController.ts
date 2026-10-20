@@ -132,6 +132,10 @@ export class PointOfInterestController extends BaseController {
 		}));
 	}
 
+	async getNewest(params: Params<Route<'getNewest'>>): Promise<Response<Route<'getNewest'>>> {
+		return this.repos.pointOfInterest.getNewest({limit: params.limit});
+	}
+
 	async getDrafts(params: Params<Route<'getDrafts'>>, auth?: AuthContext): Promise<Response<Route<'getDrafts'>>> {
 		this.permissionService.canAccessAdmin(auth);
 		const sites = await this.repos.pointOfInterest.getDrafts({limit: params.limit, offset: params.offset});

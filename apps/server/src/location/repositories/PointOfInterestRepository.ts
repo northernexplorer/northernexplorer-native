@@ -355,6 +355,57 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		);
 	}
 
+	async getNewest({limit = 5}: {limit?: number} = {}): Promise<PointOfInterestType[]> {
+		const sites = await this.find(
+			{status: PublishStatusEnum.Published},
+			{
+				limit,
+				orderBy: {createdAt: 'desc', name: 'asc'},
+				populate: ['region', 'region.country', 'country', 'organization', 'image', 'reviews', 'reviews.user'],
+			},
+		);
+
+		return sites.map(site => ({
+			id: site.id,
+			name: site.name,
+			description: site.description,
+			image: site.image,
+			lat: site.lat,
+			lon: site.lon,
+			startDate: site.startDate,
+			endDate: site.endDate,
+			status: site.status,
+			rejectionReason: site.rejectionReason,
+			region: site.region,
+			country: site.country,
+			type: site.type,
+			organization: {
+				id: site.organization.id,
+				name: site.organization.name,
+			},
+			rating: site.rating,
+			difficulty: site.difficulty,
+			entranceCost: site.entranceCost,
+			conditions: site.conditions,
+			reviews: site.reviews.getItems().map(r => ({
+				id: r.id,
+				rating: r.rating,
+				description: r.description,
+				difficulty: r.difficulty,
+				entranceCost: r.entranceCost,
+				conditions: r.conditions,
+				status: r.status,
+				user: {
+					id: r.user.id,
+					username: r.user.username,
+					score: r.user.score,
+					firstName: r.user.firstName,
+					lastName: r.user.lastName,
+				},
+			})),
+		})) as PointOfInterestType[];
+	}
+
 	getVisitedByUser(user: User) {
 		return this.find({reviews: {user}}, {populate: ['reviews', 'region', 'country']});
 	}

@@ -154,6 +154,10 @@ export const PointOfInterestController = {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},
+	getNewest: {
+		params: {} as {limit?: number},
+		response: null as unknown as PointOfInterestType[],
+	},
 	edit: {
 		params: {} as PointOfInterestEditType,
 		response: {} as GenericResponseType,
