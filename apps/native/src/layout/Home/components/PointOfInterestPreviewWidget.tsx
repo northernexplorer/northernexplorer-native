@@ -150,6 +150,7 @@ const widgetStyles = StyleSheet.create({
 		overflow: 'hidden',
 		flexDirection: 'column',
 		width: 200,
+		height: 240,
 	},
 	image: {
 		width: '100%',

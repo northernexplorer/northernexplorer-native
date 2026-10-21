@@ -150,7 +150,6 @@ export const styles = StyleSheet.create({
 		color: 'rgba(255, 255, 255, 0.72)',
 		fontSize: 12,
 		fontWeight: '600',
-		marginBottom: 8,
 	},
 
 	// Point of Interest Sections
