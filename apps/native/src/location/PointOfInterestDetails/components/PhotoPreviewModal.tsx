@@ -1,10 +1,20 @@
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl, ImageView} from '@northernexplorer/tools-web';
 import {ReportTypeEnum} from '@northernexplorer/types';
 import {useRouter} from 'expo-router';
+import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated';
+import {
+	GestureDetector,
+	GestureHandlerRootView,
+	useCompetingGestures,
+	usePanGesture,
+	usePinchGesture,
+	useSimultaneousGestures,
+	useTapGesture,
+} from 'react-native-gesture-handler';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -28,6 +38,15 @@ type PhotoPreviewModalProps = {
 	onReject?: (imageId: string) => void;
 };
 
+const MIN_SCALE = 1;
+const MAX_SCALE = 5;
+
+const SPRING_CONFIG = {
+	damping: 18,
+	stiffness: 140,
+	mass: 0.8,
+};
+
 export function PhotoPreviewModal({
 	selectedImageId,
 	selectedIndex,
@@ -45,18 +64,213 @@ export function PhotoPreviewModal({
 }: PhotoPreviewModalProps) {
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
+	const {width: windowWidth, height: windowHeight} = useWindowDimensions();
+
 	const [isLiked, setIsLiked] = useState<boolean>(false);
 	const [isReporting, setIsReporting] = useState<boolean>(false);
+	const [isZoomed, setIsZoomed] = useState<boolean>(false);
 
 	const {mutate: likeMutation} = useApiMutation('location', 'ImageController', 'like');
 	const {mutate: unlikeMutation} = useApiMutation('location', 'ImageController', 'unLike');
 
-	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ImageController', 'hasLiked', {id: selectedImageId});
-	const {data: imageData, refetch: refetchImage} = useApiFetch('location', 'ImageController', 'getById', {id: selectedImageId});
+	const {data: hasLikedData, refetch: refetchLikeState} = useApiFetch('location', 'ImageController', 'hasLiked', {
+		id: selectedImageId,
+	});
+	const {data: imageData, refetch: refetchImage} = useApiFetch('location', 'ImageController', 'getById', {
+		id: selectedImageId,
+	});
+
+	const navRef = useRef({selectedIndex, totalImages, onPrevious, onNext});
+	navRef.current = {selectedIndex, totalImages, onPrevious, onNext};
+
+	// Shared values for transformation state
+	const scale = useSharedValue(1);
+	const savedScale = useSharedValue(1);
+
+	const translateX = useSharedValue(0);
+	const translateY = useSharedValue(0);
+	const savedTranslateX = useSharedValue(0);
+	const savedTranslateY = useSharedValue(0);
+
+	const focalX = useSharedValue(0);
+	const focalY = useSharedValue(0);
+
+	const resetZoom = (animated = true) => {
+		'worklet';
+		if (animated) {
+			scale.value = withSpring(MIN_SCALE, SPRING_CONFIG);
+			translateX.value = withSpring(0, SPRING_CONFIG);
+			translateY.value = withSpring(0, SPRING_CONFIG);
+		} else {
+			scale.value = MIN_SCALE;
+			translateX.value = 0;
+			translateY.value = 0;
+		}
+		savedScale.value = MIN_SCALE;
+		savedTranslateX.value = 0;
+		savedTranslateY.value = 0;
+	};
+
+	// Reset zoom whenever image selection changes
+	useEffect(() => {
+		resetZoom(false);
+		setIsZoomed(false);
+	}, [selectedImageId, selectedIndex]);
 
 	useEffect(() => {
 		setIsLiked(Boolean(hasLikedData?.liked));
 	}, [hasLikedData]);
+
+	const handleZoomStateUpdate = (zoomed: boolean) => {
+		setIsZoomed(zoomed);
+	};
+
+	const handleSwipeCompletion = (isSwipeLeft: boolean, isSwipeRight: boolean) => {
+		const {selectedIndex: idx, totalImages: total, onPrevious: prevFn, onNext: nextFn} = navRef.current;
+		if (isSwipeLeft && idx < total - 1) {
+			nextFn();
+		} else if (isSwipeRight && idx > 0) {
+			prevFn();
+		} else {
+			translateX.value = withSpring(0, SPRING_CONFIG);
+		}
+	};
+
+	// Clamp translation so zoomed image boundaries stay within viewport
+	const clampAndApplyBoundaries = () => {
+		'worklet';
+		const currentScale = scale.value;
+		if (currentScale <= 1) {
+			translateX.value = withSpring(0, SPRING_CONFIG);
+			translateY.value = withSpring(0, SPRING_CONFIG);
+			savedTranslateX.value = 0;
+			savedTranslateY.value = 0;
+			return;
+		}
+
+		const maxTransX = (windowWidth * (currentScale - 1)) / 2;
+		const maxTransY = (windowHeight * (currentScale - 1)) / 2;
+
+		const clampedX = Math.min(Math.max(translateX.value, -maxTransX), maxTransX);
+		const clampedY = Math.min(Math.max(translateY.value, -maxTransY), maxTransY);
+
+		translateX.value = withSpring(clampedX, SPRING_CONFIG);
+		translateY.value = withSpring(clampedY, SPRING_CONFIG);
+
+		savedTranslateX.value = clampedX;
+		savedTranslateY.value = clampedY;
+	};
+
+	// Pinch Gesture Handler
+	const pinchGesture = usePinchGesture({
+		runOnJS: true,
+		onActivate: e => {
+			focalX.value = e.focalX - windowWidth / 2;
+			focalY.value = e.focalY - windowHeight / 2;
+		},
+		onUpdate: e => {
+			const newScale = Math.min(Math.max(savedScale.value * e.scale, 0.8), MAX_SCALE + 0.5);
+			scale.value = newScale;
+		},
+		onDeactivate: () => {
+			if (scale.value < MIN_SCALE + 0.05) {
+				resetZoom(true);
+				handleZoomStateUpdate(false);
+			} else {
+				const finalScale = Math.min(scale.value, MAX_SCALE);
+				scale.value = withSpring(finalScale, SPRING_CONFIG);
+				savedScale.value = finalScale;
+				clampAndApplyBoundaries();
+				handleZoomStateUpdate(true);
+			}
+		},
+	});
+
+	// Pan Gesture Handler
+	const panGesture = usePanGesture({
+		runOnJS: true,
+		averageTouches: true,
+		onUpdate: e => {
+			if (scale.value > 1) {
+				translateX.value = savedTranslateX.value + e.translationX;
+				translateY.value = savedTranslateY.value + e.translationY;
+			} else {
+				translateX.value = e.translationX;
+			}
+		},
+		onDeactivate: e => {
+			if (scale.value > 1) {
+				clampAndApplyBoundaries();
+			} else {
+				const isSwipeLeft = e.translationX < -50 || (e.velocityX < -300 && e.translationX < -20);
+				const isSwipeRight = e.translationX > 50 || (e.velocityX > 300 && e.translationX > 20);
+				handleSwipeCompletion(isSwipeLeft, isSwipeRight);
+			}
+		},
+	});
+
+	// Double Tap Gesture Handler
+	const doubleTapGesture = useTapGesture({
+		runOnJS: true,
+		numberOfTaps: 2,
+		onDeactivate: e => {
+			if (scale.value > 1.1) {
+				resetZoom(true);
+				handleZoomStateUpdate(false);
+			} else {
+				const targetScale = 2.5;
+				const tapX = e.x - windowWidth / 2;
+				const tapY = e.y - windowHeight / 2;
+
+				const targetX = -tapX * (targetScale - 1);
+				const targetY = -tapY * (targetScale - 1);
+
+				scale.value = withSpring(targetScale, SPRING_CONFIG);
+				translateX.value = withSpring(targetX, SPRING_CONFIG);
+				translateY.value = withSpring(targetY, SPRING_CONFIG);
+
+				savedScale.value = targetScale;
+				savedTranslateX.value = targetX;
+				savedTranslateY.value = targetY;
+
+				handleZoomStateUpdate(true);
+			}
+		},
+	});
+
+	const competingGesture = useCompetingGestures(doubleTapGesture, panGesture);
+	const composedGesture = useSimultaneousGestures(pinchGesture, competingGesture);
+
+	// Top Zoom Increment / Decrement Handlers
+	const handleZoomIn = () => {
+		let nextScale = 2.5;
+		if (scale.value >= 2.5) nextScale = 4.0;
+		if (scale.value >= 4.0) nextScale = 5.0;
+
+		scale.value = withSpring(nextScale, SPRING_CONFIG);
+		savedScale.value = nextScale;
+		clampAndApplyBoundaries();
+		setIsZoomed(true);
+	};
+
+	const handleZoomOut = () => {
+		let nextScale = 1.0;
+		if (scale.value > 4.0) nextScale = 4.0;
+		else if (scale.value > 2.5) nextScale = 2.5;
+
+		if (nextScale === 1.0) {
+			resetZoom(true);
+			setIsZoomed(false);
+		} else {
+			scale.value = withSpring(nextScale, SPRING_CONFIG);
+			savedScale.value = nextScale;
+			clampAndApplyBoundaries();
+		}
+	};
+
+	const animatedImageStyle = useAnimatedStyle(() => ({
+		transform: [{translateX: translateX.value}, {translateY: translateY.value}, {scale: scale.value}],
+	}));
 
 	if (!imageData) {
 		return (
@@ -150,158 +364,219 @@ export function PhotoPreviewModal({
 
 	return (
 		<Modal transparent animationType="fade" onRequestClose={onClose}>
-			<Pressable
-				style={[
-					styles.modalContainer,
-					{
-						paddingTop: Math.max(insets.top, 20),
-						paddingBottom: Math.max(insets.bottom, 16),
-					},
-				]}
-				onPress={onClose}
-			>
-				{/* Header */}
-				<Pressable style={styles.modalHeader} onPress={e => e.stopPropagation()}>
-					<Text style={styles.modalCounterText}>
-						{selectedIndex + 1} / {totalImages}
-					</Text>
+			<GestureHandlerRootView style={{flex: 1}}>
+				<Pressable
+					style={[
+						styles.modalContainer,
+						{
+							paddingTop: Math.max(insets.top, 20),
+							paddingBottom: Math.max(insets.bottom, 16),
+						},
+					]}
+					onPress={onClose}
+				>
+					{/* Header */}
+					<Pressable style={styles.modalHeader} onPress={e => e.stopPropagation()}>
+						<View style={styles.headerLeftGroup}>
+							<Text style={styles.modalCounterText}>
+								{selectedIndex + 1} / {totalImages}
+							</Text>
 
-					<Pressable
-						style={styles.modalCloseButton}
-						onPress={e => {
-							e.stopPropagation();
-							onClose();
-						}}
-						hitSlop={12}
-					>
-						<Ionicons name="close" size={24} color="#ffffff" />
+							{/* Zoom Action Controls */}
+							<View style={styles.zoomControlPill}>
+								<Pressable
+									style={styles.zoomButton}
+									onPress={e => {
+										e.stopPropagation();
+										handleZoomIn();
+									}}
+									hitSlop={8}
+									accessibilityLabel="Zoom in"
+								>
+									<Ionicons name="add" size={16} color="#ffffff" />
+								</Pressable>
+
+								{isZoomed && (
+									<>
+										<Pressable
+											style={styles.zoomButton}
+											onPress={e => {
+												e.stopPropagation();
+												handleZoomOut();
+											}}
+											hitSlop={8}
+											accessibilityLabel="Zoom out"
+										>
+											<Ionicons name="remove" size={16} color="#ffffff" />
+										</Pressable>
+
+										<View style={styles.zoomDivider} />
+
+										<Pressable
+											style={styles.zoomButton}
+											onPress={e => {
+												e.stopPropagation();
+												resetZoom(true);
+												setIsZoomed(false);
+											}}
+											hitSlop={8}
+											accessibilityLabel="Reset zoom"
+										>
+											<Ionicons name="refresh-outline" size={14} color="#94a3b8" />
+										</Pressable>
+									</>
+								)}
+							</View>
+						</View>
+
+						<Pressable
+							style={styles.modalCloseButton}
+							onPress={e => {
+								e.stopPropagation();
+								onClose();
+							}}
+							hitSlop={12}
+						>
+							<Ionicons name="close" size={24} color="#ffffff" />
+						</Pressable>
 					</Pressable>
-				</Pressable>
 
-				{/* Middle Area */}
-				<View style={styles.modalBody}>
-					{selectedIndex > 0 && (
-						<Pressable
-							style={[styles.navButton, styles.navButtonLeft]}
-							onPress={e => {
-								e.stopPropagation();
-								onPrevious();
-							}}
-							hitSlop={12}
-						>
-							<Ionicons name="chevron-back" size={28} color="#ffffff" />
-						</Pressable>
-					)}
-
-					<View style={styles.modalImageWrapper} pointerEvents="box-none">
-						<ImageView
-							source={{
-								uri: getImageUrl({
-									processed: imageData.processed,
-									size: 'large',
-									path: imageData.url,
-									cdn: config.CONTENT_DELIVERY_NETWORK,
-								}),
-							}}
-							style={styles.modalImage}
-							resizeMode="contain"
-						/>
-					</View>
-
-					{selectedIndex < totalImages - 1 && (
-						<Pressable
-							style={[styles.navButton, styles.navButtonRight]}
-							onPress={e => {
-								e.stopPropagation();
-								onNext();
-							}}
-							hitSlop={12}
-						>
-							<Ionicons name="chevron-forward" size={28} color="#ffffff" />
-						</Pressable>
-					)}
-				</View>
-
-				{/* Footer Bar */}
-				<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
-					<View style={styles.userInfo}>
-						<UserAvatar username={imageData.user.username} onPress={handleUserProfileNavigation} />
-						<Pressable style={styles.userDetails} onPress={handleUserProfileNavigation}>
-							<Text style={styles.userName}>{formatName(imageData.user)}</Text>
-							{imageData.altText && <Text style={styles.altText}>{imageData.altText}</Text>}
-						</Pressable>
-					</View>
-
-					<View style={styles.modalActions}>
-						{/* Admin Moderation Actions */}
-						{isAdmin && onApprove && (
+					{/* Middle Area */}
+					<View style={styles.modalBody}>
+						{selectedIndex > 0 && !isZoomed && (
 							<Pressable
-								style={[styles.actionButton, styles.approveButton]}
-								onPress={handleApprove}
-								disabled={isApproving || isDeleting}
-							>
-								{isApproving ? (
-									<ActivityIndicator size="small" color="#ffffff" />
-								) : (
-									<>
-										<Ionicons name="checkmark-circle-outline" size={18} color="#ffffff" />
-										<Text style={styles.actionButtonText}>Approve</Text>
-									</>
-								)}
-							</Pressable>
-						)}
-
-						{isAdmin && onReject && (
-							<Pressable style={[styles.actionButton, styles.rejectButton]} onPress={handleReject} disabled={isApproving || isDeleting}>
-								{isDeleting ? (
-									<ActivityIndicator size="small" color="#ffffff" />
-								) : (
-									<>
-										<Ionicons name="close-circle-outline" size={18} color="#ffffff" />
-										<Text style={styles.actionButtonText}>Reject</Text>
-									</>
-								)}
-							</Pressable>
-						)}
-
-						{/* Like Button (Visible to everyone) */}
-						<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
-							<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
-							<Text style={styles.likeCount}>{hasLikedData?.likeCount ?? imageData.likes}</Text>
-						</Pressable>
-
-						{/* Report Button (Visible to non-owners) */}
-						{imageData.user.id !== currentUserId && (
-							<Pressable
-								style={styles.modalReportButton}
+								style={[styles.navButton, styles.navButtonLeft]}
 								onPress={e => {
 									e.stopPropagation();
-									setIsReporting(true);
+									onPrevious();
 								}}
-								hitSlop={8}
-								accessibilityLabel="Report photo"
+								hitSlop={12}
 							>
-								<Ionicons name="flag-outline" size={18} color="#94a3b8" />
+								<Ionicons name="chevron-back" size={28} color="#ffffff" />
 							</Pressable>
 						)}
 
-						{/* Standard Delete Button (When not using dedicated reject) */}
-						{canManage && !onReject && (
-							<Pressable style={styles.modalDeleteButton} onPress={handleDelete} disabled={isDeleting || isApproving}>
-								{isDeleting ? (
-									<ActivityIndicator size="small" color="#ef4444" />
-								) : (
-									<Ionicons name="trash-outline" size={20} color="#ef4444" />
-								)}
+						<GestureDetector gesture={composedGesture}>
+							<Animated.View style={[styles.modalImageWrapper, animatedImageStyle]}>
+								<ImageView
+									source={{
+										uri: getImageUrl({
+											processed: imageData.processed,
+											size: 'large',
+											path: imageData.url,
+											cdn: config.CONTENT_DELIVERY_NETWORK,
+										}),
+									}}
+									style={styles.modalImage}
+									resizeMode="contain"
+								/>
+							</Animated.View>
+						</GestureDetector>
+
+						{selectedIndex < totalImages - 1 && !isZoomed && (
+							<Pressable
+								style={[styles.navButton, styles.navButtonRight]}
+								onPress={e => {
+									e.stopPropagation();
+									onNext();
+								}}
+								hitSlop={12}
+							>
+								<Ionicons name="chevron-forward" size={28} color="#ffffff" />
 							</Pressable>
 						)}
 					</View>
-				</Pressable>
 
-				{isReporting && (
-					<ReportModal visible={isReporting} type={ReportTypeEnum.Image} targetId={imageData.id} onClose={() => setIsReporting(false)} />
-				)}
-			</Pressable>
+					{/* Footer Bar */}
+					<Pressable style={styles.modalFooter} onPress={e => e.stopPropagation()}>
+						<View style={styles.userInfo}>
+							<UserAvatar username={imageData.user.username} onPress={handleUserProfileNavigation} />
+							<Pressable style={styles.userDetails} onPress={handleUserProfileNavigation}>
+								<Text style={styles.userName}>{formatName(imageData.user)}</Text>
+								{imageData.altText && <Text style={styles.altText}>{imageData.altText}</Text>}
+							</Pressable>
+						</View>
+
+						<View style={styles.modalActions}>
+							{/* Admin Moderation Actions */}
+							{isAdmin && onApprove && (
+								<Pressable
+									style={[styles.actionButton, styles.approveButton]}
+									onPress={handleApprove}
+									disabled={isApproving || isDeleting}
+								>
+									{isApproving ? (
+										<ActivityIndicator size="small" color="#ffffff" />
+									) : (
+										<>
+											<Ionicons name="checkmark-circle-outline" size={18} color="#ffffff" />
+											<Text style={styles.actionButtonText}>Approve</Text>
+										</>
+									)}
+								</Pressable>
+							)}
+
+							{isAdmin && onReject && (
+								<Pressable
+									style={[styles.actionButton, styles.rejectButton]}
+									onPress={handleReject}
+									disabled={isApproving || isDeleting}
+								>
+									{isDeleting ? (
+										<ActivityIndicator size="small" color="#ffffff" />
+									) : (
+										<>
+											<Ionicons name="close-circle-outline" size={18} color="#ffffff" />
+											<Text style={styles.actionButtonText}>Reject</Text>
+										</>
+									)}
+								</Pressable>
+							)}
+
+							{/* Like Button */}
+							<Pressable style={[styles.likeButton, isLiked && styles.likeButtonActive]} onPress={handleLikeToggle}>
+								<Ionicons name={isLiked ? 'heart' : 'heart-outline'} size={20} color={isLiked ? '#ef4444' : '#ffffff'} />
+								<Text style={styles.likeCount}>{hasLikedData?.likeCount ?? imageData.likes}</Text>
+							</Pressable>
+
+							{/* Report Button */}
+							{imageData.user.id !== currentUserId && (
+								<Pressable
+									style={styles.modalReportButton}
+									onPress={e => {
+										e.stopPropagation();
+										setIsReporting(true);
+									}}
+									hitSlop={8}
+									accessibilityLabel="Report photo"
+								>
+									<Ionicons name="flag-outline" size={18} color="#94a3b8" />
+								</Pressable>
+							)}
+
+							{/* Delete Button */}
+							{canManage && !onReject && (
+								<Pressable style={styles.modalDeleteButton} onPress={handleDelete} disabled={isDeleting || isApproving}>
+									{isDeleting ? (
+										<ActivityIndicator size="small" color="#ef4444" />
+									) : (
+										<Ionicons name="trash-outline" size={20} color="#ef4444" />
+									)}
+								</Pressable>
+							)}
+						</View>
+					</Pressable>
+
+					{isReporting && (
+						<ReportModal
+							visible={isReporting}
+							type={ReportTypeEnum.Image}
+							targetId={imageData.id}
+							onClose={() => setIsReporting(false)}
+						/>
+					)}
+				</Pressable>
+			</GestureHandlerRootView>
 		</Modal>
 	);
 }
@@ -319,10 +594,41 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		paddingHorizontal: 20,
 	},
+	headerLeftGroup: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
+	},
 	modalCounterText: {
 		color: '#94a3b8',
 		fontSize: 14,
 		fontWeight: '600',
+	},
+	zoomControlPill: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		backgroundColor: 'rgba(255, 255, 255, 0.12)',
+		borderRadius: 16,
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		gap: 6,
+	},
+	zoomButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		paddingHorizontal: 4,
+		paddingVertical: 2,
+	},
+	zoomResetText: {
+		color: '#94a3b8',
+		fontSize: 12,
+		fontWeight: '500',
+	},
+	zoomDivider: {
+		width: 1,
+		height: 12,
+		backgroundColor: 'rgba(255, 255, 255, 0.2)',
 	},
 	modalCloseButton: {
 		paddingTop: 10,
@@ -334,6 +640,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		position: 'relative',
+		overflow: 'hidden',
 	},
 	modalImageWrapper: {
 		width: '100%',
