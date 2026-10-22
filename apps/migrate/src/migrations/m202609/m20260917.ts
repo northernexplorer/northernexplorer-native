@@ -11,7 +11,7 @@ export const m20260917: string[] = [
 					 1,
 					 NOW(),
 					 NULL,
-					 '79722552-c811-4c77-b92c-d6cf529ead93'
+					 '2ca68efb-b245-4d16-9f26-d8e00c47ede7'
 				 ) ON CONFLICT (id) DO NOTHING;
 	`,
 	`
