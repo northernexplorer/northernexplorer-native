@@ -1,7 +1,8 @@
 import {Link, usePathname} from 'expo-router';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import React from 'react';
+import React, {useEffect} from 'react';
+import {trackEvent} from '@aptabase/react-native';
 import {styles} from '~/layout/Layout/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {UserAvatar} from '~/layout/Layout/components/UserAvatar';
@@ -15,6 +16,15 @@ export function MenuItemUser() {
 	const isLoggedIn = !!(authentication?.username && authentication.accessToken);
 	const profileHref = isLoggedIn ? `/user/${authentication.username}` : '/user/login';
 	const logoutHref = isLoggedIn ? `/user/${authentication.username}/logout` : '/user/logout';
+
+	useEffect(() => {
+		if (isActiveProfile || isActiveLogout) {
+			trackEvent('screen_view', {
+				path: currentPath,
+				label: isActiveProfile ? 'Profile' : 'Logout',
+			});
+		}
+	}, [isActiveProfile, isActiveLogout, currentPath]);
 
 	return (
 		<View

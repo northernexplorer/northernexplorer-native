@@ -1,7 +1,8 @@
 import {Link, usePathname} from 'expo-router';
 import {Pressable, StyleSheet, Text} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
-import React, {ComponentProps} from 'react';
+import React, {ComponentProps, useEffect} from 'react';
+import {trackEvent} from '@aptabase/react-native';
 import {styles} from '~/layout/Layout/styles';
 
 interface Props {
@@ -15,6 +16,12 @@ interface Props {
 export function MenuItemDefault({route, icon, isMobileDrawer, label, setIsMenuOpen}: Props) {
 	const currentPath = usePathname();
 	const isActive = currentPath === route;
+
+	useEffect(() => {
+		if (isActive) {
+			trackEvent('screen_view', {path: currentPath, label});
+		}
+	}, [isActive, currentPath, label]);
 
 	return (
 		<Link href={route} asChild>

@@ -19,6 +19,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aptabase/react-native@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "@aptabase/react-native@npm:0.6.0"
+  peerDependencies:
+    react: ">=19.1.0"
+    react-native: ">=0.81.4"
+  checksum: 10c0/4a377baacc7f73b01941053d72ce1699a1b2e6ae31d143b58a244b30867cca0f0f34fb4fa774decfdcaee82fa8bc0bd50f4d82ccf15fec7ab9b2b95bdcde96ec
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/checksums@npm:^3.1000.29":
   version: 3.1000.29
   resolution: "@aws-sdk/checksums@npm:3.1000.29"
@@ -9003,6 +9013,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "northernexplorer-native@workspace:apps/native"
   dependencies:
+    "@aptabase/react-native": "npm:^0.6.0"
     "@expo/vector-icons": "npm:^15.0.2"
     "@maplibre/maplibre-react-native": "npm:^11.3.10"
     "@northernexplorer/tools-web": "npm:*"

@@ -3,10 +3,17 @@ import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import Head from 'expo-router/head';
+import {init} from '@aptabase/react-native';
 import {store, persistor} from '~/core/store';
 import {AppBootstrap} from '~/layout/Layout/components/Boostrap';
 import {ConnectivityProvider} from '~/core/ConnectivityProvider';
 import {AlertHandler} from '~/layout/Layout/components/AlertHandler';
+import {config} from '~/config';
+
+init(config.APTABASE_KEY, {
+	enableWeb: true,
+	appVersion: '1.0.0',
+});
 
 export default function Layout() {
 	return (
