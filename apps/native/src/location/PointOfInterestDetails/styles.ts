@@ -6,6 +6,10 @@ export const styles = StyleSheet.create({
 		height: 300,
 		width: '100%',
 	},
+	bannerPressable: {
+		width: '100%',
+		height: '100%',
+	},
 	banner: {
 		width: '100%',
 		height: '100%',

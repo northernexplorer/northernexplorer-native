@@ -131,6 +131,7 @@ export const PointOfInterestController = {
 			lat: number;
 			lon: number;
 			limit: number;
+			offset?: number;
 			selectedPoiTypes?: PointOfInterestTypeEnum[];
 			visitedFilter?: VisitedFilterEnum;
 			minRating?: number | null;
@@ -191,6 +192,10 @@ export const PointOfInterestController = {
 	getPublished: {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
+	},
+	getNewest: {
+		params: {} as {limit?: number; offset?: number},
+		response: null as unknown as PointOfInterestType[],
 	},
 	edit: {
 		params: {} as PointOfInterestEditType,

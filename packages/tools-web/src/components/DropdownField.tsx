@@ -44,8 +44,8 @@ export function DropdownField<T extends string, V>(props: Props<T, V>) {
 		width: 0,
 		height: 48,
 	});
-	const inputRef = useRef<View>(null);
-	const modalInputRef = useRef<TextInput>(null);
+	const inputRef = useRef<React.ComponentRef<typeof View>>(null);
+	const modalInputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
 
 	const toggleDropdown = () => {
 		if (loading || disabled) return;

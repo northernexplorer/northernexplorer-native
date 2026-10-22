@@ -15,18 +15,23 @@ import {config} from '~/config';
 type PhotosProps = {
 	data: PointOfInterestType;
 	refetch: () => void;
+	selectedImageId?: string | null;
+	setSelectedImageId?: (id: string | null) => void;
 };
 
 type TabOption = 'top' | 'timeline';
 
 const GRID_GAP = 8;
 
-export function Photos({data, refetch}: PhotosProps) {
+export function Photos({data, refetch, selectedImageId: externalSelectedImageId, setSelectedImageId: externalSetSelectedImageId}: PhotosProps) {
 	const authentication = useAuthentication();
 	const [activeTab, setActiveTab] = useState<TabOption>('top');
 	const [containerWidth, setContainerWidth] = useState<number>(0);
-	const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
+	const [internalSelectedImageId, setInternalSelectedImageId] = useState<string | null>(null);
 	const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
+
+	const selectedImageId = externalSelectedImageId !== undefined ? externalSelectedImageId : internalSelectedImageId;
+	const setSelectedImageId = externalSetSelectedImageId || setInternalSelectedImageId;
 
 	const {mutate: deleteMutation} = useApiMutation('location', 'ImageController', 'deleteById');
 
@@ -67,7 +72,16 @@ export function Photos({data, refetch}: PhotosProps) {
 
 	const displayedImages = activeTab === 'top' ? topImages : timelineImages;
 
-	const selectedIndex = selectedImageId !== null ? displayedImages.findIndex(img => img.id === selectedImageId) : -1;
+	const imageList = useMemo(() => {
+		if (selectedImageId && displayedImages.findIndex(img => img.id === selectedImageId) === -1) {
+			if (timelineImages.findIndex(img => img.id === selectedImageId) !== -1) {
+				return timelineImages;
+			}
+		}
+		return displayedImages;
+	}, [selectedImageId, displayedImages, timelineImages]);
+
+	const selectedIndex = selectedImageId !== null ? imageList.findIndex(img => img.id === selectedImageId) : -1;
 
 	// Determine columns based on measured container width
 	const columns = containerWidth >= 1024 ? 5 : containerWidth >= 640 ? 4 : 3;
@@ -108,13 +122,13 @@ export function Photos({data, refetch}: PhotosProps) {
 
 	const handlePreviousImage = () => {
 		if (selectedIndex > 0) {
-			setSelectedImageId(displayedImages[selectedIndex - 1].id);
+			setSelectedImageId(imageList[selectedIndex - 1].id);
 		}
 	};
 
 	const handleNextImage = () => {
-		if (selectedIndex !== -1 && selectedIndex < displayedImages.length - 1) {
-			setSelectedImageId(displayedImages[selectedIndex + 1].id);
+		if (selectedIndex !== -1 && selectedIndex < imageList.length - 1) {
+			setSelectedImageId(imageList[selectedIndex + 1].id);
 		}
 	};
 
@@ -242,7 +256,7 @@ export function Photos({data, refetch}: PhotosProps) {
 				<PhotoPreviewModal
 					selectedImageId={selectedImageId}
 					selectedIndex={selectedIndex !== -1 ? selectedIndex : 0}
-					totalImages={displayedImages.length}
+					totalImages={imageList.length > 0 ? imageList.length : 1}
 					currentUserId={authentication?.userId}
 					isAdmin={isAdmin}
 					deletingImageId={deletingImageId}
