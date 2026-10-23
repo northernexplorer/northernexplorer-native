@@ -10,10 +10,12 @@ import {ConnectivityProvider} from '~/core/ConnectivityProvider';
 import {AlertHandler} from '~/layout/Layout/components/AlertHandler';
 import {config} from '~/config';
 
-init(config.APTABASE_KEY, {
-	enableWeb: true,
-	appVersion: '1.0.0',
-});
+if (config.APTABASE_KEY) {
+	init(config.APTABASE_KEY, {
+		enableWeb: true,
+		appVersion: '1.0.0',
+	});
+}
 
 export default function Layout() {
 	return (
