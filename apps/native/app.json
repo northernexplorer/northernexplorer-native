@@ -24,9 +24,7 @@
 			"versionCode": 24
 		},
 		"web": {
-			"favicon": "./assets/favicon.png",
-			"bundler": "metro",
-			"output": "server"
+			"favicon": "./assets/favicon.png"
 		},
 		"extra": {
 			"router": {},
