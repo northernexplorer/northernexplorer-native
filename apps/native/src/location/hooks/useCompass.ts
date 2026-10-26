@@ -4,6 +4,8 @@ import * as Location from 'expo-location';
 import {useFocusEffect} from 'expo-router';
 import {getCardinalDirection} from '~/location/lib/getCardinalDirection';
 
+const UPDATE_INTERVAL_MS = 300;
+
 export function useCompass() {
 	const [heading, setHeading] = useState<number>(0);
 	// Initial default per platform to avoid flash of calibration state
@@ -22,6 +24,32 @@ export function useCompass() {
 		useCallback(() => {
 			let subscription: Location.LocationSubscription | null = null;
 			let mounted = true;
+			let throttleTimer: ReturnType<typeof setTimeout> | null = null;
+			let lastUpdateTime = 0;
+			let latestHeadingData: Location.LocationHeadingObject | null = null;
+
+			const updateHeading = (headingData: Location.LocationHeadingObject) => {
+				if (!mounted) return;
+
+				const rawAngle = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
+				const rounded = Math.round(rawAngle);
+
+				setAccuracy(headingData.accuracy);
+				setHeading(rounded);
+
+				let delta = -rounded - targetDegrees.current;
+				if (delta > 180) delta -= 360;
+				if (delta < -180) delta += 360;
+
+				targetDegrees.current += delta;
+
+				Animated.timing(animatedDegrees, {
+					toValue: targetDegrees.current,
+					duration: UPDATE_INTERVAL_MS,
+					easing: Easing.out(Easing.quad),
+					useNativeDriver: true,
+				}).start();
+			};
 
 			const setupFusedCompass = async () => {
 				if (Platform.OS === 'web') {
@@ -38,24 +66,27 @@ export function useCompass() {
 				const sub = await Location.watchHeadingAsync(headingData => {
 					if (!mounted) return;
 
-					const rawAngle = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
-					const rounded = Math.round(rawAngle);
+					latestHeadingData = headingData;
+					const now = Date.now();
+					const timeSinceLastUpdate = now - lastUpdateTime;
 
-					setAccuracy(headingData.accuracy);
-					setHeading(rounded);
-
-					let delta = -rounded - targetDegrees.current;
-					if (delta > 180) delta -= 360;
-					if (delta < -180) delta += 360;
-
-					targetDegrees.current += delta;
-
-					Animated.timing(animatedDegrees, {
-						toValue: targetDegrees.current,
-						duration: 100,
-						easing: Easing.out(Easing.quad),
-						useNativeDriver: true,
-					}).start();
+					if (timeSinceLastUpdate >= UPDATE_INTERVAL_MS) {
+						if (throttleTimer) {
+							clearTimeout(throttleTimer);
+							throttleTimer = null;
+						}
+						lastUpdateTime = now;
+						updateHeading(headingData);
+					} else if (!throttleTimer) {
+						throttleTimer = setTimeout(() => {
+							if (!mounted) return;
+							throttleTimer = null;
+							lastUpdateTime = Date.now();
+							if (latestHeadingData) {
+								updateHeading(latestHeadingData);
+							}
+						}, UPDATE_INTERVAL_MS - timeSinceLastUpdate);
+					}
 				});
 
 				if (!mounted) {
@@ -69,6 +100,9 @@ export function useCompass() {
 
 			return () => {
 				mounted = false;
+				if (throttleTimer) {
+					clearTimeout(throttleTimer);
+				}
 				subscription?.remove();
 			};
 		}, []),
