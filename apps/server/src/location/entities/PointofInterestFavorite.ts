@@ -16,6 +16,7 @@ export class PointOfInterestFavorite {
 
 	@ManyToOne(() => PointOfInterest, {deleteRule: 'cascade'})
 	pointOfInterest: PointOfInterest;
+
 	@ManyToOne(() => User, {deleteRule: 'cascade'})
 	user: User;
 

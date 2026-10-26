@@ -16,6 +16,7 @@ import {Review} from './Review';
 import {Organization} from './Organization';
 import {Image} from './Image';
 import {PointOfInterestFavorite} from './PointofInterestFavorite';
+
 type PointOfInterestInput = {
 	name: string;
 	description: string;
