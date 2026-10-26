@@ -24,6 +24,7 @@ export const entities = [
 	Organization,
 	PointOfInterest,
 	PointOfInterestFavorite,
+	PointOfInterestSuggestion,
 	Region,
 	Report,
 	Review,
