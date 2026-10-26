@@ -66,7 +66,7 @@ export function Profile() {
 							style={[styles.tabButton, tab === 'favorite' && styles.activeTabButton]}
 							onPress={() => switchTab('favorite')}
 						>
-							<Text style={tab === 'favorite' ? styles.activeTabText : styles.tabText}>Favorite</Text>
+							<Text style={tab === 'favorite' ? styles.activeTabText : styles.tabText}>Favorites</Text>
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={[styles.tabButton, tab === 'details' && styles.activeTabButton]}

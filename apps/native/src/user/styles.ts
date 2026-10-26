@@ -10,13 +10,6 @@ const styles = StyleSheet.create({
 		gap: 20,
 	},
 
-	favoritesContainer: {
-		padding: 10,
-		flex: 1,
-		flexDirection: 'row',
-		backgroundColor: '#313030',
-	},
-
 	tabBarContainer: {
 		borderBottomWidth: 1,
 		borderBottomColor: '#e2e8f0',
