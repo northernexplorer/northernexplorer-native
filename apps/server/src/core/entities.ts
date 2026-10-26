@@ -9,6 +9,7 @@ import {
 	Organization,
 	Image,
 	ImageLike,
+	PointOfInterestFavorite,
 } from '../location';
 import {Migration, Report, Support} from '../system';
 import {WeatherCache, WeatherWarningCache} from '../environment';
@@ -22,6 +23,7 @@ export const entities = [
 	Migration,
 	Organization,
 	PointOfInterest,
+	PointOfInterestFavorite,
 	PointOfInterestSuggestion,
 	Region,
 	Report,

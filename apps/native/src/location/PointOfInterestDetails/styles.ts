@@ -39,6 +39,8 @@ export const styles = StyleSheet.create({
 		fontWeight: '600',
 		textTransform: 'uppercase',
 		letterSpacing: 1,
+		flex: 1,
+		marginRight: 8,
 	},
 	title: {
 		color: '#0f172a',
@@ -87,6 +89,11 @@ export const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
+	},
+	headerActions: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
 	},
 	userName: {
 		fontSize: 15,

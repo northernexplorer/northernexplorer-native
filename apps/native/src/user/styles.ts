@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 24,
 		gap: 20,
 	},
+
 	tabBarContainer: {
 		borderBottomWidth: 1,
 		borderBottomColor: '#e2e8f0',
@@ -39,6 +40,7 @@ const styles = StyleSheet.create({
 		color: '#0088cc',
 		fontWeight: '600',
 	},
+
 	noticeBackground: {
 		backgroundColor: '#fffaf3',
 		borderWidth: 1,
@@ -144,6 +146,17 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: '#e5e7eb',
 		paddingBottom: 6,
+	},
+	underline: {
+		height: 2,
+		width: '60%',
+		marginTop: 3,
+		borderRadius: 2,
+		backgroundColor: '#a1c4e6',
+	},
+	banner: {
+		width: '100%',
+		height: '100%',
 	},
 });
 
