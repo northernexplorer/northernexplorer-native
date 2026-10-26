@@ -99,34 +99,36 @@ export function PointOfInterestDetails() {
 			</View>
 			<View style={styles.content}>
 				<View style={styles.headerRow}>
-					<Text style={styles.breadcrumbs}>
+					<Text style={styles.breadcrumbs} numberOfLines={1} ellipsizeMode="tail">
 						{data.country.name} › {data.region.name}
 					</Text>
-					{auth && (
-						<Link
-							href={{
-								pathname: '/[country]/[region]/[name]/[id]/edit',
-								params: {
-									country: getUrlSafeString(data.country.name),
-									region: getUrlSafeString(data.region.name),
-									id: getUrlSafeString(data.id),
-									name: getUrlSafeString(data.name),
-								},
-							}}
-							asChild
-						>
-							<TouchableOpacity style={styles.editButton}>
-								<Ionicons
-									name={auth.roles?.includes(RolesEnum.Admin) ? 'create-outline' : 'bulb-outline'}
-									size={16}
-									color="#0088cc"
-									style={{marginRight: 4}}
-								/>
-								<Text style={styles.editButtonText}>{auth.roles?.includes(RolesEnum.Admin) ? 'Edit' : 'Suggest Edit'}</Text>
-							</TouchableOpacity>
-						</Link>
-					)}
-					<AddNewPointOfInterestFavorite pointOfInterestId={data.id} />
+					<View style={styles.headerActions}>
+						{auth && (
+							<Link
+								href={{
+									pathname: '/[country]/[region]/[name]/[id]/edit',
+									params: {
+										country: getUrlSafeString(data.country.name),
+										region: getUrlSafeString(data.region.name),
+										id: getUrlSafeString(data.id),
+										name: getUrlSafeString(data.name),
+									},
+								}}
+								asChild
+							>
+								<TouchableOpacity style={styles.editButton}>
+									<Ionicons
+										name={auth.roles?.includes(RolesEnum.Admin) ? 'create-outline' : 'bulb-outline'}
+										size={16}
+										color="#0088cc"
+										style={{marginRight: 4}}
+									/>
+									<Text style={styles.editButtonText}>{auth.roles?.includes(RolesEnum.Admin) ? 'Edit' : 'Suggest Edit'}</Text>
+								</TouchableOpacity>
+							</Link>
+						)}
+						<AddNewPointOfInterestFavorite pointOfInterestId={data.id} />
+					</View>
 				</View>
 
 				<Text style={styles.title}>{data.name}</Text>
