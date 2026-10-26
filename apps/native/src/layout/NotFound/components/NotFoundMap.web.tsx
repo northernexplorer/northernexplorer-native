@@ -1,9 +1,9 @@
-import React, {useState, useRef} from 'react';
+import React, {useRef} from 'react';
 import {View, Text, StyleSheet, Pressable} from 'react-native';
-import MapGL, {Marker, NavigationControl, MapRef, ViewStateChangeEvent} from 'react-map-gl/maplibre';
+import MapGL, {Marker, MapRef} from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useRouter} from 'expo-router';
 import {useMap} from '~/location/state/map/useMap';
 import {useLocation} from '~/location/state/location/useLocation';
@@ -20,30 +20,26 @@ export function NotFoundMap() {
 	const centerLat = userCoords?.lat ?? DEFAULT_LAT;
 	const centerLon = userCoords?.lon ?? DEFAULT_LON;
 
-	const [viewState, setViewState] = useState({
-		latitude: centerLat,
-		longitude: centerLon,
-		zoom: 4,
-	});
-
 	const handleOpenMap = () => {
 		router.push('/map');
 	};
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.mapWrapper}>
+			<Pressable onPress={handleOpenMap} style={styles.mapWrapper} accessibilityRole="button" accessibilityLabel="Open Full Interactive Map">
 				<MapGL
 					ref={mapRef}
-					{...viewState}
-					onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
+					initialViewState={{
+						latitude: centerLat,
+						longitude: centerLon,
+						zoom: 4,
+					}}
 					mapLib={maplibregl}
 					mapStyle={baseLayer}
-					cursor="grab"
+					cursor="pointer"
+					interactive={false}
 					style={{width: '100%', height: '100%'}}
 				>
-					<NavigationControl position="top-right" />
-
 					<Marker longitude={centerLon} latitude={centerLat} anchor="bottom">
 						<View style={styles.markerWrapper}>
 							<View style={styles.markerBadge}>
@@ -68,25 +64,14 @@ export function NotFoundMap() {
 					</View>
 				</View>
 
-				{/* Map CTA Button */}
-				<Pressable
-					onPress={handleOpenMap}
-					style={({pressed}) => [styles.exploreMapButton, pressed && styles.buttonPressed]}
-					accessibilityRole="button"
-					accessibilityLabel="Open Full Interactive Map"
-				>
-					<Ionicons name="map" size={16} color="#ffffff" />
-					<Text style={styles.exploreMapButtonText}>Open Interactive Map</Text>
-				</Pressable>
-
 				{/* Coordinates Footer */}
 				<View style={styles.coordsFooter}>
 					<MaterialCommunityIcons name="crosshairs-gps" size={14} color="#64748b" />
 					<Text style={styles.coordsText}>
-						{viewState.latitude.toFixed(4)}° N, {Math.abs(viewState.longitude).toFixed(4)}° W • Off-Trail Territory
+						{centerLat.toFixed(4)}° N, {Math.abs(centerLon).toFixed(4)}° W • Off-Trail Territory
 					</Text>
 				</View>
-			</View>
+			</Pressable>
 		</View>
 	);
 }
@@ -191,29 +176,6 @@ const styles = StyleSheet.create({
 		fontWeight: '700',
 		color: '#0f172a',
 	},
-	exploreMapButton: {
-		position: 'absolute',
-		bottom: 12,
-		right: 12,
-		zIndex: 10,
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 6,
-		backgroundColor: '#0284c7',
-		paddingHorizontal: 14,
-		paddingVertical: 9,
-		borderRadius: 12,
-		shadowColor: '#0284c7',
-		shadowOffset: {width: 0, height: 3},
-		shadowOpacity: 0.3,
-		shadowRadius: 6,
-		elevation: 4,
-	},
-	exploreMapButtonText: {
-		color: '#ffffff',
-		fontSize: 13,
-		fontWeight: '600',
-	},
 	coordsFooter: {
 		position: 'absolute',
 		bottom: 12,
@@ -233,9 +195,5 @@ const styles = StyleSheet.create({
 		fontSize: 11,
 		fontWeight: '600',
 		color: '#475569',
-	},
-	buttonPressed: {
-		opacity: 0.85,
-		transform: [{scale: 0.98}],
 	},
 });

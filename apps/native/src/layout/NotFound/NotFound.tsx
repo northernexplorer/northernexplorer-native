@@ -35,7 +35,7 @@ export function NotFound() {
 				{/* Navigation Waypoints / Action Buttons */}
 				<View style={styles.actionsContainer}>
 					<Link href="/map" asChild style={styles.primaryLink}>
-						<Pressable style={({pressed}) => [styles.primaryButton, pressed && styles.buttonPressed]}>
+						<Pressable style={styles.primaryButton}>
 							<Ionicons name="map-outline" size={18} color="#ffffff" style={styles.buttonIcon} />
 							<Text style={styles.primaryButtonText}>Explore Map & Nearby Points</Text>
 						</Pressable>
@@ -43,14 +43,14 @@ export function NotFound() {
 
 					<View style={styles.secondaryActionsRow}>
 						<Link href="/" asChild style={styles.secondaryLink}>
-							<Pressable style={({pressed}) => [styles.secondaryButton, pressed && styles.buttonPressed]}>
+							<Pressable style={styles.secondaryButton}>
 								<Ionicons name="grid-outline" size={18} color="#0f172a" style={styles.buttonIcon} />
 								<Text style={styles.secondaryButtonText}>Return to Dashboard</Text>
 							</Pressable>
 						</Link>
 
 						<Link href="/destinations" asChild style={styles.secondaryLink}>
-							<Pressable style={({pressed}) => [styles.secondaryButton, pressed && styles.buttonPressed]}>
+							<Pressable style={styles.secondaryButton}>
 								<Ionicons name="compass-outline" size={18} color="#0f172a" style={styles.buttonIcon} />
 								<Text style={styles.secondaryButtonText}>Browse Destinations</Text>
 							</Pressable>
@@ -202,34 +202,5 @@ const styles = StyleSheet.create({
 	},
 	buttonIcon: {
 		marginRight: 8,
-	},
-	buttonPressed: {
-		opacity: 0.85,
-		transform: [{scale: 0.99}],
-	},
-	tipsCard: {
-		marginTop: 20,
-		width: '100%',
-		backgroundColor: '#fefce8',
-		borderRadius: 12,
-		borderWidth: 1,
-		borderColor: '#fef08a',
-		padding: 14,
-	},
-	tipsHeader: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 6,
-		marginBottom: 4,
-	},
-	tipsTitle: {
-		fontSize: 13,
-		fontWeight: '700',
-		color: '#92400e',
-	},
-	tipsText: {
-		fontSize: 13,
-		lineHeight: 18,
-		color: '#78350f',
 	},
 });
