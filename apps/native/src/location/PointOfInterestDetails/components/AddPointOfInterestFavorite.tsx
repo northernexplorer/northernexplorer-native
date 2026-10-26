@@ -8,7 +8,7 @@ type PoiProps = {
 	pointOfInterestId: string;
 };
 
-export default function AddNewPointOfInterestFavorite({pointOfInterestId}: PoiProps) {
+export function AddNewPointOfInterestFavorite({pointOfInterestId}: PoiProps) {
 	const authentication = useAuthentication();
 	const [favorited, setIsFavorited] = useState<boolean>(false);
 
