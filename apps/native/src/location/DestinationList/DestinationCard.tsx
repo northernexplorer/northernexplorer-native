@@ -186,8 +186,10 @@ export function DestinationCard({site, userCoords}: Props) {
 
 						{/* Card Footer / Action */}
 						<View style={styles.footerRow}>
-							<Text style={styles.viewDetailsText}>View Destination</Text>
-							<Ionicons name="arrow-forward" size={14} color="#0284c7" />
+							<View style={styles.viewDetailsContainer}>
+								<Text style={styles.viewDetailsText}>View Destination</Text>
+								<Ionicons name="arrow-forward" size={14} color="#0284c7" />
+							</View>
 						</View>
 					</View>
 				</View>
@@ -422,9 +424,31 @@ const styles = StyleSheet.create({
 	footerRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		justifyContent: 'flex-end',
-		gap: 4,
+		justifyContent: 'space-between',
+		gap: 8,
 		paddingTop: 6,
+	},
+	directionsButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		paddingVertical: 4,
+		paddingHorizontal: 8,
+		backgroundColor: '#f0f9ff',
+		borderRadius: 6,
+		borderWidth: 1,
+		borderColor: '#bae6fd',
+	},
+	directionsButtonText: {
+		color: '#0284c7',
+		fontSize: 12,
+		fontWeight: '600',
+	},
+	viewDetailsContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		marginLeft: 'auto',
 	},
 	viewDetailsText: {
 		color: '#0284c7',

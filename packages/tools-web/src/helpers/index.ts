@@ -4,3 +4,4 @@ export {formatMoney} from './formatMoney';
 export {formatName} from './formatName';
 export {getImageUrl} from './getImageUrl';
 export {getUrlSafeString} from './getUrlSafeString';
+export {openDirections} from './openDirections';
