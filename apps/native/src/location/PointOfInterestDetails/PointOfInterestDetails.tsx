@@ -2,7 +2,7 @@ import React, {useMemo, useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Pressable} from 'react-native';
 import {Link, useLocalSearchParams} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, Spinner} from '@northernexplorer/tools-web';
+import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, openDirections, Spinner} from '@northernexplorer/tools-web';
 import {SiteDifficultyEnum, RolesEnum, PublishStatusEnum, RejectionReasonEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
@@ -104,6 +104,17 @@ export function PointOfInterestDetails() {
 						{data.country.name} › {data.region.name}
 					</Text>
 					<View style={styles.headerActions}>
+						{hasPermission && !isNaN(data.lat) && !isNaN(data.lon) && (
+							<TouchableOpacity
+								style={styles.directionsButton}
+								onPress={() => openDirections(data.lat, data.lon, data.name)}
+								accessibilityRole="button"
+								accessibilityLabel="Get directions"
+							>
+								<Ionicons name="navigate-outline" size={16} color="#0088cc" style={{marginRight: 4}} />
+								<Text style={styles.directionsButtonText}>Directions</Text>
+							</TouchableOpacity>
+						)}
 						{auth && (
 							<Link
 								href={{
@@ -196,6 +207,17 @@ export function PointOfInterestDetails() {
 							</Text>
 						)}
 						<Text style={styles.metaLabel}>Organization: {data.organization.name}</Text>
+						{!isNaN(data.lat) && !isNaN(data.lon) && (
+							<TouchableOpacity
+								style={styles.metaDirectionsButton}
+								onPress={() => openDirections(data.lat, data.lon, data.name)}
+								accessibilityRole="button"
+								accessibilityLabel="Get directions"
+							>
+								<Ionicons name="navigate" size={13} color="#0088cc" style={{marginRight: 4}} />
+								<Text style={styles.metaDirectionsText}>Get Directions</Text>
+							</TouchableOpacity>
+						)}
 					</View>
 				)}
 

@@ -124,6 +124,35 @@ export const styles = StyleSheet.create({
 		fontWeight: '600',
 		fontSize: 13,
 	},
+	directionsButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingHorizontal: 12,
+		paddingVertical: 6,
+		backgroundColor: '#f0f9ff',
+		borderRadius: 8,
+	},
+	directionsButtonText: {
+		color: '#0088cc',
+		fontWeight: '600',
+		fontSize: 13,
+	},
+	metaDirectionsButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginTop: 6,
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		backgroundColor: '#f0f9ff',
+		borderRadius: 6,
+		borderWidth: 1,
+		borderColor: '#bae6fd',
+	},
+	metaDirectionsText: {
+		color: '#0088cc',
+		fontWeight: '600',
+		fontSize: 12,
+	},
 
 	// --- MODERNIZED REVIEW FORM ---
 	reviewFormContainer: {

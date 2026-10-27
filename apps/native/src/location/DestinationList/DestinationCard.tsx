@@ -2,7 +2,7 @@ import React, {useMemo} from 'react';
 import {View, Text, StyleSheet, Pressable, useWindowDimensions} from 'react-native';
 import {Link} from 'expo-router';
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
-import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView} from '@northernexplorer/tools-web';
+import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, openDirections} from '@northernexplorer/tools-web';
 import {PointOfInterestType} from '@northernexplorer/types';
 import {config} from '~/config';
 import {CONDITION_ICON_MAP, COST_LABEL_MAP, DIFFICULTY_CONFIG, formatEnumLabel} from '~/location/PointOfInterestDetails/components/reviewOptions';
@@ -186,8 +186,25 @@ export function DestinationCard({site, userCoords}: Props) {
 
 						{/* Card Footer / Action */}
 						<View style={styles.footerRow}>
-							<Text style={styles.viewDetailsText}>View Destination</Text>
-							<Ionicons name="arrow-forward" size={14} color="#0284c7" />
+							{!isNaN(Number(site.lat)) && !isNaN(Number(site.lon)) && (
+								<Pressable
+									style={styles.directionsButton}
+									onPress={e => {
+										e.stopPropagation();
+										openDirections(site.lat, site.lon, site.name);
+									}}
+									accessibilityRole="button"
+									accessibilityLabel={`Get directions to ${site.name}`}
+									hitSlop={8}
+								>
+									<Ionicons name="navigate-outline" size={13} color="#0284c7" />
+									<Text style={styles.directionsButtonText}>Get Directions</Text>
+								</Pressable>
+							)}
+							<View style={styles.viewDetailsContainer}>
+								<Text style={styles.viewDetailsText}>View Destination</Text>
+								<Ionicons name="arrow-forward" size={14} color="#0284c7" />
+							</View>
 						</View>
 					</View>
 				</View>
@@ -422,9 +439,31 @@ const styles = StyleSheet.create({
 	footerRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		justifyContent: 'flex-end',
-		gap: 4,
+		justifyContent: 'space-between',
+		gap: 8,
 		paddingTop: 6,
+	},
+	directionsButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		paddingVertical: 4,
+		paddingHorizontal: 8,
+		backgroundColor: '#f0f9ff',
+		borderRadius: 6,
+		borderWidth: 1,
+		borderColor: '#bae6fd',
+	},
+	directionsButtonText: {
+		color: '#0284c7',
+		fontSize: 12,
+		fontWeight: '600',
+	},
+	viewDetailsContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		marginLeft: 'auto',
 	},
 	viewDetailsText: {
 		color: '#0284c7',
