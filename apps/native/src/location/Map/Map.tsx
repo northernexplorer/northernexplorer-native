@@ -9,6 +9,7 @@ import {MapView} from './components/MapView';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
+import {usePermissions} from '~/user/state/subscription';
 import {MapStyleObject} from '~/location/state/map/mapSlice';
 
 export interface PointOfInterestProperties {
@@ -43,11 +44,11 @@ export function Map() {
 	const {baseLayer, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = useMap();
 	const coords = useLocation();
 	const params = useLocalSearchParams<{lat?: string; lon?: string; zoom?: string; selectedId?: string}>();
+	const permissions = usePermissions();
 
 	// Permissions
-	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
-	const canAccessOffTrailDifficulty = permissionData?.navigation.useOffTrailDifficulty ?? false;
-	const canAccessExpeditionDifficulty = permissionData?.navigation.useExpeditionDifficulty ?? false;
+	const canAccessOffTrailDifficulty = permissions?.navigation.useOffTrailDifficulty ?? false;
+	const canAccessExpeditionDifficulty = permissions?.navigation.useExpeditionDifficulty ?? false;
 
 	// Center resolution logic
 	const paramLat = params.lat ? parseFloat(params.lat) : undefined;

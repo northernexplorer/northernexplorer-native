@@ -13,6 +13,7 @@ import {styles} from '~/location/PointOfInterestDetails/styles';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {usePermissions} from '~/user/state/subscription';
 import {Map} from '~/location/PointOfInterestDetails/components/Map';
 import {useLocation} from '~/location/state/location/useLocation';
 
@@ -28,12 +29,12 @@ export function PointOfInterestDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
 	const auth = useAuthentication();
 	const coords = useLocation();
+	const permissions = usePermissions();
 	const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 
 	const {data, loading, refetch} = useApiFetch('location', 'PointOfInterestController', 'getById', {id});
-	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
-	const canAccessExpeditionDifficulty = !!permissionData?.navigation.useExpeditionDifficulty;
-	const canAccessOffTrailDifficulty = !!permissionData?.navigation.useOffTrailDifficulty;
+	const canAccessExpeditionDifficulty = !!permissions?.navigation.useExpeditionDifficulty;
+	const canAccessOffTrailDifficulty = !!permissions?.navigation.useOffTrailDifficulty;
 
 	const distance = useMemo(() => {
 		if (!coords?.lat || !data?.lon) return null;

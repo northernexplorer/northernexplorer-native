@@ -14,6 +14,7 @@ import {useWeather} from '~/environment/state/weather/useWeather';
 import {useWeatherWarnings} from '~/environment/state/weather/useWeatherWarnings';
 import {useLunar} from '~/environment/state/lunar/useLunar';
 import {useLocation} from '~/location/state/location/useLocation';
+import {usePermissions} from '~/user/state/subscription';
 import {useApiFetch} from '~/core/useApiFetch';
 import {styles} from '~/layout/Home/styles';
 
@@ -25,6 +26,7 @@ export function Home() {
 	const reduxWarnings = useWeatherWarnings();
 	const lunar = useLunar();
 	const coords = useLocation();
+	const permissions = usePermissions();
 
 	const {data: warningsData} = useApiFetch('environment', 'WeatherController', 'getWarnings', coords ? {lat: coords.lat, lon: coords.lon} : null);
 
@@ -40,7 +42,6 @@ export function Home() {
 	const {data: newestLocationsData} = useApiFetch('location', 'PointOfInterestController', 'getNewest', {limit: 5});
 
 	const {data: topImagesData} = useApiFetch('location', 'ImageController', 'topImages', {});
-	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
 
 	const isCoreReady = !!weather && !!lunar;
 
@@ -52,9 +53,9 @@ export function Home() {
 		);
 	}
 
-	const canUseCompass = !!permissionData?.navigation.useCompass;
-	const canUseFlashlight = !!permissionData?.navigation.useFlashlight;
-	const canUseSignal = !!permissionData?.navigation.useSignal;
+	const canUseCompass = !!permissions?.navigation.useCompass;
+	const canUseFlashlight = !!permissions?.navigation.useFlashlight;
+	const canUseSignal = !!permissions?.navigation.useSignal;
 	const hasTools = canUseSignal || canUseCompass || canUseFlashlight;
 
 	return (

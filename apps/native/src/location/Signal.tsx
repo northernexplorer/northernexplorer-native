@@ -3,8 +3,8 @@ import {View, Text, StyleSheet, Platform, ScrollView} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import NetInfo, {NetInfoStateType, NetInfoState} from '@react-native-community/netinfo';
 import {Accuracy, LocationObjectCoords, LocationSubscription, requestForegroundPermissionsAsync, watchPositionAsync} from 'expo-location';
-import {ProFeatureOnly, Spinner} from '@northernexplorer/tools-web';
-import {useApiFetch} from '~/core/useApiFetch';
+import {ProFeatureOnly} from '@northernexplorer/tools-web';
+import {usePermissions} from '~/user/state/subscription';
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -23,8 +23,8 @@ export function Signal() {
 	const [locationCoords, setLocationCoords] = useState<LocationObjectCoords | null>(null);
 	const [permissionGranted, setPermissionGranted] = useState<boolean>(true);
 
-	const {data: permissionData, loading} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
-	const canUseSignal = !!permissionData?.navigation.useSignal;
+	const permissions = usePermissions();
+	const canUseSignal = !!permissions?.navigation.useSignal;
 
 	useEffect(() => {
 		if (isWeb) return;
@@ -59,16 +59,6 @@ export function Signal() {
 			locationSubscription?.remove();
 		};
 	}, [isWeb]);
-
-	if (loading) {
-		return (
-			<View style={styles.container}>
-				<View style={styles.centerContainer}>
-					<Spinner />
-				</View>
-			</View>
-		);
-	}
 
 	if (!canUseSignal) return <ProFeatureOnly />;
 
