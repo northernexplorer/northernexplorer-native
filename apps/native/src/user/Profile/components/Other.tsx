@@ -7,6 +7,7 @@ import {useApiMutation} from '~/core/useApiMutation';
 import {alertStore} from '~/core/alertStore';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {clearAuthentication} from '~/user/state/authentication/authenticationSlice';
+import {clearSubscription} from '~/user/state/subscription';
 
 type Props = {
 	username: string;
@@ -33,6 +34,7 @@ export function Other({username}: Props) {
 							await logout({refreshToken: auth.refreshToken});
 						}
 						dispatch(clearAuthentication());
+						dispatch(clearSubscription());
 						router.replace('/user/login');
 						alertStore.showAlert({
 							type: 'success',
