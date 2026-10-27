@@ -2,7 +2,7 @@ import React, {useMemo} from 'react';
 import {View, Text, StyleSheet, Pressable, useWindowDimensions} from 'react-native';
 import {Link} from 'expo-router';
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
-import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, openDirections} from '@northernexplorer/tools-web';
+import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView} from '@northernexplorer/tools-web';
 import {PointOfInterestType} from '@northernexplorer/types';
 import {config} from '~/config';
 import {CONDITION_ICON_MAP, COST_LABEL_MAP, DIFFICULTY_CONFIG, formatEnumLabel} from '~/location/PointOfInterestDetails/components/reviewOptions';
