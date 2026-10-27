@@ -1,6 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {PermissionResponse} from '@northernexplorer/types';
-import {clearAuthentication} from '~/user/state/authentication/authenticationSlice';
 
 type SubscriptionState = {
 	data: PermissionResponse | null;
@@ -37,7 +36,7 @@ const subscriptionSlice = createSlice({
 			state.error = null;
 			state.lastUpdated = null;
 		},
-	}
+	},
 });
 
 export const {setSubscription, setSubscriptionLoading, setSubscriptionError, clearSubscription} = subscriptionSlice.actions;
