@@ -1,17 +1,16 @@
 import React from 'react';
 import {View, Text, Animated, StyleSheet} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {ProFeatureOnly, Spinner} from '@northernexplorer/tools-web';
-import {useApiFetch} from '~/core/useApiFetch';
+import {ProFeatureOnly} from '@northernexplorer/tools-web';
+import {usePermissions} from '~/user/state/subscription';
 import {useCompass} from '~/location/hooks/useCompass';
 
 export function Compass() {
 	const {heading, cardinal, rotate, isAvailable, needsCalibration} = useCompass();
 
-	const {data: permissionData, loading} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
-	const canUseCompass = !!permissionData?.navigation.useCompass;
+	const permissions = usePermissions();
+	const canUseCompass = !!permissions?.navigation.useCompass;
 
-	if (loading) return <Spinner />;
 	if (!canUseCompass) return <ProFeatureOnly />;
 
 	if (!isAvailable) {

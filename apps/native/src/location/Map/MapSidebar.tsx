@@ -17,7 +17,7 @@ import {
 	setShowDrafts,
 } from '~/location/state/map/mapSlice';
 import {useMap} from '~/location/state/map/useMap';
-import {useApiFetch} from '~/core/useApiFetch';
+import {usePermissions} from '~/user/state/subscription';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {DIFFICULTY_CONFIG, COST_OPTIONS} from '~/location/PointOfInterestDetails/components/reviewOptions';
 
@@ -46,6 +46,7 @@ const COST_KEYS = COST_OPTIONS.map(c => c.value as EntranceCostEnum);
 export function MapSidebar() {
 	const dispatch = useDispatch();
 	const authentication = useAuthentication();
+	const permissions = usePermissions();
 	const {
 		baseLayer,
 		selectedPoiTypes = [],
@@ -57,10 +58,9 @@ export function MapSidebar() {
 	} = useMap();
 
 	const isLoggedIn = !!authentication?.username;
-	const {data: permissionData} = useApiFetch('user', 'SubscriptionController', 'getPermissions', {});
-	const canChangeMapStyle = !!permissionData?.navigation.changeMapStyle;
-	const canAccessExpeditionDifficulty = !!permissionData?.navigation.useExpeditionDifficulty;
-	const canAccessOffTrailDifficulty = !!permissionData?.navigation.useOffTrailDifficulty;
+	const canChangeMapStyle = !!permissions?.navigation.changeMapStyle;
+	const canAccessExpeditionDifficulty = !!permissions?.navigation.useExpeditionDifficulty;
+	const canAccessOffTrailDifficulty = !!permissions?.navigation.useOffTrailDifficulty;
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
 
 	// Determine max allowed difficulty index based on user permissions

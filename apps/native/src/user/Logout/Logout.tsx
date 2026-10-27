@@ -5,6 +5,7 @@ import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {clearAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {clearSubscription} from '~/user/state/subscription';
 
 export function Logout() {
 	const dispatch = useDispatch();
@@ -18,6 +19,7 @@ export function Logout() {
 					await mutate({refreshToken: auth.refreshToken});
 				}
 				dispatch(clearAuthentication());
+				dispatch(clearSubscription());
 			} catch (error) {
 				console.error('Server logout failed, clearing local state anyway:', error);
 			}

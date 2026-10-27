@@ -5,6 +5,7 @@ import {useDispatch} from 'react-redux';
 import {alertStore, AlertState} from '~/core/alertStore';
 import {authEvents} from '~/core/authEvents';
 import {clearAuthentication} from '~/user/state/authentication/authenticationSlice';
+import {clearSubscription} from '~/user/state/subscription';
 
 const ALERT_CONFIG = {
 	error: {
@@ -47,6 +48,7 @@ export function AlertHandler({children}: {children: React.ReactNode}) {
 		return authEvents.subscribe(event => {
 			if (event === 'FORCE_LOGOUT') {
 				dispatch(clearAuthentication());
+				dispatch(clearSubscription());
 				router.replace('/user/login');
 			}
 		});

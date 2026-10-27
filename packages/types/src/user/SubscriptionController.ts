@@ -1,7 +1,7 @@
 import {GenericResponseType} from '../GenericResponseType';
 
-type SubscriptionParams = {username: string};
-type PermissionResponse = {
+export type SubscriptionParams = {username: string};
+export type PermissionResponse = {
 	navigation: {
 		useCompass: boolean;
 		useFlashlight: boolean;
@@ -12,7 +12,7 @@ type PermissionResponse = {
 	};
 };
 
-type SubscriptionResponse = {
+export type SubscriptionResponse = {
 	subscription: {
 		id: string;
 		version: number;
@@ -46,7 +46,7 @@ export const SubscriptionController = {
 	},
 	getPermissions: {
 		params: {} as Record<string, never>,
-		response: {} as PermissionResponse | null | undefined,
+		response: null as unknown as PermissionResponse | null,
 	},
 	revenueCatUpgrade: {
 		params: {} as RevenueCatParams,
