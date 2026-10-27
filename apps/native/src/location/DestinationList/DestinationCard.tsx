@@ -186,21 +186,6 @@ export function DestinationCard({site, userCoords}: Props) {
 
 						{/* Card Footer / Action */}
 						<View style={styles.footerRow}>
-							{!isNaN(Number(site.lat)) && !isNaN(Number(site.lon)) && (
-								<Pressable
-									style={styles.directionsButton}
-									onPress={e => {
-										e.stopPropagation();
-										openDirections(site.lat, site.lon, site.name);
-									}}
-									accessibilityRole="button"
-									accessibilityLabel={`Get directions to ${site.name}`}
-									hitSlop={8}
-								>
-									<Ionicons name="navigate-outline" size={13} color="#0284c7" />
-									<Text style={styles.directionsButtonText}>Get Directions</Text>
-								</Pressable>
-							)}
 							<View style={styles.viewDetailsContainer}>
 								<Text style={styles.viewDetailsText}>View Destination</Text>
 								<Ionicons name="arrow-forward" size={14} color="#0284c7" />

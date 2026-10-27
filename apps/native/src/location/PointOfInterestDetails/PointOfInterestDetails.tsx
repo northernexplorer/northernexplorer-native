@@ -111,7 +111,7 @@ export function PointOfInterestDetails() {
 								accessibilityRole="button"
 								accessibilityLabel="Get directions"
 							>
-								<Ionicons name="navigate-outline" size={16} color="#0088cc" style={{marginRight: 4}} />
+								<Ionicons name="navigate-outline" size={16} color="#059669" style={{marginRight: 4}} />
 								<Text style={styles.directionsButtonText}>Directions</Text>
 							</TouchableOpacity>
 						)}
@@ -207,17 +207,6 @@ export function PointOfInterestDetails() {
 							</Text>
 						)}
 						<Text style={styles.metaLabel}>Organization: {data.organization.name}</Text>
-						{!isNaN(data.lat) && !isNaN(data.lon) && (
-							<TouchableOpacity
-								style={styles.metaDirectionsButton}
-								onPress={() => openDirections(data.lat, data.lon, data.name)}
-								accessibilityRole="button"
-								accessibilityLabel="Get directions"
-							>
-								<Ionicons name="navigate" size={13} color="#0088cc" style={{marginRight: 4}} />
-								<Text style={styles.metaDirectionsText}>Get Directions</Text>
-							</TouchableOpacity>
-						)}
 					</View>
 				)}
 
