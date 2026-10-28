@@ -21,7 +21,7 @@
 	},
 	"dependencies": {
 		"@northernexplorer/types": "*",
-		"@react-native-community/slider": "^5.2.1",
+		"@react-native-community/slider": "^5.2.2",
 		"expo-image-picker": "^57.0.16"
 	}
 }
