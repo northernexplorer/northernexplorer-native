@@ -15,7 +15,7 @@ Northern Explorer is a data and mapping platform built for modern explorers. Com
 ## Development
 - Database: Run yarn start in the apps/migrate directory to apply schema updates using the internal migration service.
 - Server: Start the backend with `yarn start:server`.
-- Web: Start the web frontend with `yarn start:web`.
-- Android: Start the android native app with `yarn start:android`.
+- Web: Start the web frontend with `yarn start:web` (port 7001).
+- Android: Start the android native app with `yarn start:android` (port 7002).
 
 For more detailed documentation, check out the docs directory.

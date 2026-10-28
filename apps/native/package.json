@@ -3,15 +3,15 @@
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
-		"android": "expo run:android",
+		"android": "expo run:android --port 7002",
 		"build:android": "eas build --platform android --profile production",
 		"build:ios": "eas build --platform ios --profile production",
 		"build:web": "expo export --platform web",
 		"clean": "rm -rf dist node_modules/.cache .expo ios android",
-		"ios": "expo run:ios",
-		"start": "expo start",
+		"ios": "expo run:ios --port 7001",
+		"start": "expo start --port 7001",
 		"test:deps": "depcheck --specials=typescript --ignores=\"~,expo-splash-screen,expo-build-properties,react-native-worklets\"",
-		"web": "expo start --web"
+		"web": "expo start --web --port 7001"
 	},
 	"dependencies": {
 		"@aptabase/react-native": "^0.6.0",
