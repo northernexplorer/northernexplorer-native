@@ -101,7 +101,7 @@ export function PointOfInterestDetails() {
 			</View>
 			<View style={styles.content}>
 				<View style={styles.headerRow}>
-					<Text style={styles.breadcrumbs} numberOfLines={1} ellipsizeMode="tail">
+					<Text style={styles.breadcrumbs}>
 						{data.country.name} › {data.region.name}
 					</Text>
 					<View style={styles.headerActions}>
