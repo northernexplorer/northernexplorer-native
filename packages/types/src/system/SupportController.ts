@@ -1,4 +1,4 @@
-import {UserType} from '../user';
+import {CaptchaResponseType, UserType} from '../user';
 
 export enum SupportCategory {
 	Legal = 'Legal',
@@ -24,6 +24,16 @@ export type SupportHeadingType = {
 	category: SupportCategory;
 };
 
+export type ContactParams = {
+	name: string;
+	email: string;
+	subject: string;
+	message: string;
+	captchaId: string;
+	captchaAnswer: string;
+	website?: string;
+};
+
 export const SupportController = {
 	getByUrl: {
 		params: {} as {url: string},
@@ -32,5 +42,13 @@ export const SupportController = {
 	getHeadings: {
 		params: {} as Record<string, never>,
 		response: null as unknown as SupportHeadingType[],
+	},
+	getCaptcha: {
+		params: {} as Record<string, never>,
+		response: null as unknown as CaptchaResponseType,
+	},
+	contact: {
+		params: {} as ContactParams,
+		response: null as unknown as {success: boolean},
 	},
 };
