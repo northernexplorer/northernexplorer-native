@@ -5,6 +5,7 @@ interface Send {
 	subject: string;
 	to: string;
 	html: string;
+	replyTo?: string;
 }
 
 export class EmailSendService {
@@ -12,11 +13,12 @@ export class EmailSendService {
 
 	constructor() {}
 
-	async send({to, subject, html}: Send) {
+	async send({to, subject, html, replyTo}: Send) {
 		try {
 			const data = await this.resend.emails.send({
 				from: 'noreply@northernexplorer.org',
 				to,
+				replyTo,
 				subject,
 				html,
 			});

@@ -28,6 +28,13 @@ export function Support() {
 
 	return (
 		<View style={styles.container}>
+			<View style={styles.categorySection}>
+				<Text style={styles.categoryHeader}>Get in Touch</Text>
+				<Link href="/contact">
+					<Text style={styles.linkText}>Contact Us</Text>
+				</Link>
+			</View>
+
 			{Object.entries(groupedData).map(([category, items]) => (
 				<View key={category} style={styles.categorySection}>
 					<Text style={styles.categoryHeader}>{category}</Text>
