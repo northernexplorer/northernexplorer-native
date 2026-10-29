@@ -12,3 +12,4 @@ export {Spinner} from './Spinner';
 export {SwitchField} from './SwitchField';
 export {Table, Column} from './Table';
 export {TextAreaField} from './TextAreaField';
+export {FormattedTextAreaField, FormattedTextAreaProps} from './FormattedTextAreaField';

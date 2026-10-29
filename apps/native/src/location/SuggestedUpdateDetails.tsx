@@ -7,6 +7,7 @@ import {SuggestionStatusEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useApiMutation} from '~/core/useApiMutation';
 import {alertStore} from '~/core/alertStore';
+import {Markdown} from '~/layout/Layout';
 
 export function SuggestedUpdateDetails() {
 	const {id} = useLocalSearchParams<{id: string}>();
@@ -320,11 +321,11 @@ export function SuggestedUpdateDetails() {
 				<View style={styles.compareRowStacked}>
 					<View style={styles.stackedBlock}>
 						<Text style={styles.compareLabel}>Current</Text>
-						<Text style={styles.currentValue}>{poi.description}</Text>
+						<Markdown content={poi.description} />
 					</View>
 					<View style={[styles.stackedBlock, isDescriptionChanged && styles.stackedBlockHighlight]}>
 						<Text style={styles.compareLabel}>Suggested</Text>
-						<Text style={[styles.suggestedValue, isDescriptionChanged && styles.changedValueHighlight]}>{suggestion.description}</Text>
+						<Markdown content={suggestion.description} />
 					</View>
 				</View>
 			</View>
