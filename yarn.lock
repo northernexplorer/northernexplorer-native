@@ -4969,13 +4969,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camelize@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "camelize@npm:1.0.1"
-  checksum: 10c0/4c9ac55efd356d37ac483bad3093758236ab686192751d1c9daa43188cc5a07b09bd431eb7458a4efd9ca22424bba23253e7b353feb35d7c749ba040de2385fb
-  languageName: node
-  linkType: hard
-
 "caniuse-lite@npm:^1.0.30001806":
   version: 1.0.30001806
   resolution: "caniuse-lite@npm:1.0.30001806"
@@ -5284,30 +5277,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-color-keywords@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "css-color-keywords@npm:1.0.0"
-  checksum: 10c0/af205a86c68e0051846ed91eb3e30b4517e1904aac040013ff1d742019b3f9369ba5658ba40901dbbc121186fc4bf0e75a814321cc3e3182fbb2feb81c6d9cb7
-  languageName: node
-  linkType: hard
-
 "css-in-js-utils@npm:^3.1.0":
   version: 3.1.0
   resolution: "css-in-js-utils@npm:3.1.0"
   dependencies:
     hyphenate-style-name: "npm:^1.0.3"
   checksum: 10c0/8bb042e8f7701a7edadc3cce5ce2d5cf41189631d7e2aed194d5a7059b25776dded2a0466cb9da1d1f3fc6c99dcecb51e45671148d073b8a2a71e34755152e52
-  languageName: node
-  linkType: hard
-
-"css-to-react-native@npm:^3.0.0":
-  version: 3.2.0
-  resolution: "css-to-react-native@npm:3.2.0"
-  dependencies:
-    camelize: "npm:^1.0.0"
-    css-color-keywords: "npm:^1.0.0"
-    postcss-value-parser: "npm:^4.0.2"
-  checksum: 10c0/fde850a511d5d3d7c55a1e9b8ed26b69a8ad4868b3487e36ebfbfc0b96fc34bc977d9cd1d61a289d0c74d3f9a662d8cee297da53d4433bf2e27d6acdff8e1003
   languageName: node
   linkType: hard
 
@@ -5625,13 +5600,6 @@ __metadata:
   version: 7.0.1
   resolution: "entities@npm:7.0.1"
   checksum: 10c0/b4fb9937bb47ecb00aaaceb9db9cdd1cc0b0fb649c0e843d05cf5dbbd2e9d2df8f98721d8b1b286445689c72af7b54a7242fc2d63ef7c9739037a8c73363e7ca
-  languageName: node
-  linkType: hard
-
-"entities@npm:~2.0.0":
-  version: 2.0.3
-  resolution: "entities@npm:2.0.3"
-  checksum: 10c0/81463fde5f1e4432df6faa65afa00021f3979ac8387f81d3d111beeb08179e626130a4b7488e8c3cc3d74e0d04e99d3033ff7db80e05f4a1e961b5e1efe17731
   languageName: node
   linkType: hard
 
@@ -8267,15 +8235,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkify-it@npm:^2.0.0":
-  version: 2.2.0
-  resolution: "linkify-it@npm:2.2.0"
-  dependencies:
-    uc.micro: "npm:^1.0.1"
-  checksum: 10c0/640f926fa71d46f9451b4dc999c94b2dcad920abf5fe174a85f120b420cbb34b8f950e251846ed73db715ec9aaadadf1f2482d27088dddd21b1c84761f6a0b5a
-  languageName: node
-  linkType: hard
-
 "locate-path@npm:^6.0.0":
   version: 6.0.0
   resolution: "locate-path@npm:6.0.0"
@@ -8457,32 +8416,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"markdown-it@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "markdown-it@npm:10.0.0"
-  dependencies:
-    argparse: "npm:^1.0.7"
-    entities: "npm:~2.0.0"
-    linkify-it: "npm:^2.0.0"
-    mdurl: "npm:^1.0.1"
-    uc.micro: "npm:^1.0.5"
-  bin:
-    markdown-it: bin/markdown-it.js
-  checksum: 10c0/7b2876599adb4c8bed0b45030db835d6e3e352e20b1c26624975d1b0f6d9ef54bbf6b63d29cb31b0cebb65b5ad7300aad063dc5d586a03c3745345bfc945c8fd
-  languageName: node
-  linkType: hard
-
 "math-intrinsics@npm:^1.1.0":
   version: 1.1.0
   resolution: "math-intrinsics@npm:1.1.0"
   checksum: 10c0/7579ff94e899e2f76ab64491d76cf606274c874d8f2af4a442c016bd85688927fcfca157ba6bf74b08e9439dc010b248ce05b96cc7c126a354c3bae7fcb48b7f
-  languageName: node
-  linkType: hard
-
-"mdurl@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "mdurl@npm:1.0.1"
-  checksum: 10c0/ea8534341eb002aaa532a722daef6074cd8ca66202e10a2b4cda46722c1ebdb1da92197ac300bc953d3ef1bf41cd6561ef2cc69d82d5d0237dae00d4a61a4eee
   languageName: node
   linkType: hard
 
@@ -9156,8 +9093,8 @@ __metadata:
     react-map-gl: "npm:^8.1.1"
     react-native: "npm:0.88.1"
     react-native-device-info: "npm:^15.0.2"
+    react-native-enriched-markdown: "npm:^1.1.1"
     react-native-gesture-handler: "npm:~3.3.0"
-    react-native-markdown-display: "npm:^7.0.2"
     react-native-purchases: "npm:^10.4.4"
     react-native-reanimated: "npm:^4.7.1"
     react-native-safe-area-context: "npm:~5.10.1"
@@ -9749,7 +9686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.2.0":
+"postcss-value-parser@npm:^4.2.0":
   version: 4.2.0
   resolution: "postcss-value-parser@npm:4.2.0"
   checksum: 10c0/f4142a4f56565f77c1831168e04e3effd9ffcc5aebaf0f538eee4b2d465adfd4b85a44257bb48418202a63806a7da7fe9f56c330aebb3cac898e46b4cbf49161
@@ -9921,7 +9858,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.10, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -10104,12 +10041,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-fit-image@npm:^1.5.5":
-  version: 1.5.5
-  resolution: "react-native-fit-image@npm:1.5.5"
-  dependencies:
-    prop-types: "npm:^15.5.10"
-  checksum: 10c0/04d1cb35f2acacda593c80f2d9845f7dc0ed5e0e1fb62043ba5351f914162dcd92f1ae98e80ebf9752f6b4131b1634f6a9ac90e9c649f30b5591f3187d99811f
+"react-native-enriched-markdown@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "react-native-enriched-markdown@npm:1.1.1"
+  peerDependencies:
+    katex: ">=0.16.0"
+    react: "*"
+    react-native: "*"
+  peerDependenciesMeta:
+    katex:
+      optional: true
+  checksum: 10c0/c3df3edacc673bfbb4ee58c8deb69d36531a430ef3780a47a2f8a9829ba8fa79beb290132007f91dee00f8feffe92688830dfecdf115003c66157aac7dda662d
   languageName: node
   linkType: hard
 
@@ -10133,21 +10075,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/28cebd5f1f3632864ff5e342278721d1e5e38627ae73859a8814012116ef15c629fee7137a6c9c97bb05d94bbe639b0b47e69b36fc2735ab53ed31570140663f
-  languageName: node
-  linkType: hard
-
-"react-native-markdown-display@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "react-native-markdown-display@npm:7.0.2"
-  dependencies:
-    css-to-react-native: "npm:^3.0.0"
-    markdown-it: "npm:^10.0.0"
-    prop-types: "npm:^15.7.2"
-    react-native-fit-image: "npm:^1.5.5"
-  peerDependencies:
-    react: ">=16.2.0"
-    react-native: ">=0.50.4"
-  checksum: 10c0/b90b75401340cd79c42e07e6e8961551e8b98acfbc53bc0b651174aea2a86b92430be767da7c813e54b08e7bbd8af6c09dbeb4f9369d925984979cc28b6ba8fb
   languageName: node
   linkType: hard
 
@@ -11808,13 +11735,6 @@ __metadata:
   bin:
     ua-parser-js: script/cli.js
   checksum: 10c0/45dc1f7f3ce8248e0e64640d2e29c65c0ea1fc9cb105594de84af80e2a57bba4f718b9376098ca7a5b0ffe240f8995b0fa3714afa9d36861c41370a378f1a274
-  languageName: node
-  linkType: hard
-
-"uc.micro@npm:^1.0.1, uc.micro@npm:^1.0.5":
-  version: 1.0.6
-  resolution: "uc.micro@npm:1.0.6"
-  checksum: 10c0/9bde2afc6f2e24b899db6caea47dae778b88862ca76688d844ef6e6121dec0679c152893a74a6cfbd2e6fde34654e6bd8424fee8e0166cdfa6c9ae5d42b8a17b
   languageName: node
   linkType: hard
 
