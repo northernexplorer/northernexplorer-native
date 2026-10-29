@@ -1,7 +1,9 @@
-import {ComponentType, useState} from 'react';
+import {ComponentType, useEffect, useState} from 'react';
 import {ImageBackground, Pressable, ScrollView, Text, useWindowDimensions, View} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {usePathname} from 'expo-router';
+import {trackEvent} from '@aptabase/react-native';
 import {styles} from './styles';
 import {Sidebar} from '~/layout/Layout/components/Sidebar';
 import {Navigation} from '~/layout/Layout/components/Navigation';
@@ -22,11 +24,19 @@ interface Props {
 }
 
 export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline, disableScroll}: Props) {
+	const currentPath = usePathname();
 	const {width} = useWindowDimensions();
 	const insets = useSafeAreaInsets();
 	const {isOffline, isRequiredAppUpdate} = useIsOffline();
 	const isMobileView = width < 1000;
 	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
+	useEffect(() => {
+		if (currentPath) {
+			const label = title || (home ? 'Dashboard' : currentPath);
+			trackEvent('screen_view', {path: currentPath, label});
+		}
+	}, [currentPath, title, home]);
 
 	const online = !isOffline || !!showOffline;
 	const isMobileFullPage = fullPage && isMobileView;
