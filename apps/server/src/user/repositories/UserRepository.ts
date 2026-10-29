@@ -4,6 +4,7 @@ import {wrap} from '@mikro-orm/core';
 import {BaseRepository} from '../../core/BaseRepository';
 import {User} from '../entities/User';
 import {Image, Review} from '../../location';
+import {Session} from '../entities/Session';
 
 export class UserRepository extends BaseRepository<User> {
 	async findByIdentifier(identifier: string): Promise<User | null> {
@@ -71,14 +72,40 @@ export class UserRepository extends BaseRepository<User> {
 
 	async getAll({limit, offset}: {limit?: number; offset?: number}): Promise<UserType[]> {
 		const users = await this.findAll({
+			populate: ['subscription', 'subscription.subscriptionLevel'],
 			orderBy: {firstName: 'asc'},
 			limit,
 			offset,
 		});
+
+		const userIds = users.map(user => user.id);
+		const sessions =
+			userIds.length > 0
+				? await this.getEntityManager().find(Session, {
+						user: {$in: userIds},
+					})
+				: [];
+
+		const lastActiveMap = new Map<string, Date>();
+		for (const session of sessions) {
+			const current = lastActiveMap.get(session.user.id);
+			if (!current || session.lastLoginAt > current) {
+				lastActiveMap.set(session.user.id, session.lastLoginAt);
+			}
+		}
+
 		return users.map(user => {
 			const plain = wrap(user).toObject();
 			delete (plain as {passwordHash?: string}).passwordHash;
-			return plain as UserType;
+			const lastActive = lastActiveMap.get(user.id) || null;
+			const subscriptionStatus = user.subscription.subscriptionLevel.name || 'Core';
+
+			return {
+				...plain,
+				lastActive,
+				subscriptionStatus,
+				subscriptionTier: subscriptionStatus,
+			} as unknown as UserType;
 		});
 	}
 

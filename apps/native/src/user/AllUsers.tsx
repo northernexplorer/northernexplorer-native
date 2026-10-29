@@ -64,6 +64,22 @@ export function AllUsers() {
 			),
 		},
 		{
+			key: 'subscription',
+			title: 'Subscription Status',
+			flex: 2,
+			render: user => (
+				<View style={styles.roleBadge}>
+					<Text style={styles.roleText}>{user.subscriptionStatus || user.subscription?.subscriptionLevel?.name || 'Core'}</Text>
+				</View>
+			),
+		},
+		{
+			key: 'lastActive',
+			title: 'Last Active',
+			flex: 2,
+			render: user => <Text style={styles.roleText}>{user.lastActive ? new Date(user.lastActive).toLocaleDateString() : 'Never'}</Text>,
+		},
+		{
 			key: 'registered',
 			title: 'Registered At',
 			flex: 2,

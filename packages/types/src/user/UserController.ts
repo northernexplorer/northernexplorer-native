@@ -100,6 +100,21 @@ export type UserType = {
 	roles?: RolesEnum[];
 	birthday: Date;
 	gender: GenderEnum;
+	lastActive?: Date | null;
+	subscriptionStatus?: string;
+	subscriptionTier?: string;
+	subscription?: {
+		id: string;
+		version?: number;
+		startDate?: Date;
+		renewalDate?: Date | null;
+		subscriptionLevel?: {
+			id: string;
+			name: string;
+			cost?: number;
+			description?: string;
+		};
+	};
 	// Note: We intentionally exclude passwordHash here for API security
 };
 
