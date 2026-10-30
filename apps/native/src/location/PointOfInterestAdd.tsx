@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import {ScrollView, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Pressable} from 'react-native';
 import {Redirect, router} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {FormField, TextAreaField, DropdownField, getUrlSafeString, CoordinateField} from '@northernexplorer/tools-web';
+import {FormField, FormattedTextAreaField, DropdownField, getUrlSafeString, CoordinateField} from '@northernexplorer/tools-web';
 import {PointOfInterestCreateType, PointOfInterestTypeEnum, PublishStatusEnum, RolesEnum} from '@northernexplorer/types';
 import {styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
+import {Markdown} from '~/layout/Layout';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
@@ -282,7 +283,7 @@ export function PointOfInterestAdd() {
 								</View>
 							</View>
 
-							<TextAreaField
+							<FormattedTextAreaField
 								fieldName="description"
 								label="Description"
 								placeholder="Enter site history and details..."
@@ -290,7 +291,8 @@ export function PointOfInterestAdd() {
 								updateField={updateField}
 								error={errors.description}
 								loading={mutationLoading}
-								numberOfLines={6}
+								numberOfLines={8}
+								renderPreview={content => <Markdown content={content} />}
 							/>
 						</View>
 

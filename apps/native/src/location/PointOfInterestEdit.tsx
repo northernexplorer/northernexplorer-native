@@ -5,7 +5,7 @@ import {
 	getUrlSafeString,
 	Spinner,
 	FormField,
-	TextAreaField,
+	FormattedTextAreaField,
 	DropdownField,
 	ImageView,
 	getImageUrl,
@@ -22,6 +22,7 @@ import {
 import {useApiFetch} from '~/core/useApiFetch';
 import {config} from '~/config';
 import {styles, styles as detailStyles} from '~/location/PointOfInterestDetails/styles';
+import {Markdown} from '~/layout/Layout';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {CountryDropdown} from '~/layout/Layout/components/CountryDropdown';
@@ -366,7 +367,7 @@ export function PointOfInterestEdit() {
 						</View>
 					</View>
 
-					<TextAreaField
+					<FormattedTextAreaField
 						fieldName="description"
 						label="Description"
 						placeholder="Enter site history and details..."
@@ -374,7 +375,8 @@ export function PointOfInterestEdit() {
 						updateField={updateField}
 						error={errors.description}
 						loading={mutationLoading}
-						numberOfLines={6}
+						numberOfLines={8}
+						renderPreview={content => <Markdown content={content} />}
 					/>
 				</View>
 

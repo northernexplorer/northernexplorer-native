@@ -10,6 +10,7 @@ import {AddNewPointOfInterestFavorite} from './components/AddPointOfInterestFavo
 import {PhotoPreviewModal} from './components/PhotoPreviewModal';
 import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
 import {styles} from '~/location/PointOfInterestDetails/styles';
+import {Markdown} from '~/layout/Layout';
 import {config} from '~/config';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -100,7 +101,7 @@ export function PointOfInterestDetails() {
 			</View>
 			<View style={styles.content}>
 				<View style={styles.headerRow}>
-					<Text style={styles.breadcrumbs} numberOfLines={1} ellipsizeMode="tail">
+					<Text style={styles.breadcrumbs}>
 						{data.country.name} › {data.region.name}
 					</Text>
 					<View style={styles.headerActions}>
@@ -212,9 +213,13 @@ export function PointOfInterestDetails() {
 
 				<View style={styles.divider} />
 
-				<Text style={styles.body} numberOfLines={hasPermission ? undefined : 3} ellipsizeMode="tail">
-					{data.description}
-				</Text>
+				{hasPermission ? (
+					<Markdown content={data.description} />
+				) : (
+					<Text style={styles.body} numberOfLines={3} ellipsizeMode="tail">
+						{data.description}
+					</Text>
+				)}
 
 				<View style={styles.divider} />
 
