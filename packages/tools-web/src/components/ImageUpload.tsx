@@ -1,5 +1,18 @@
 import React, {useState} from 'react';
-import {ActivityIndicator, Alert, FlatList, Image, Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+	ActivityIndicator,
+	Alert,
+	FlatList,
+	Image,
+	Platform,
+	StyleProp,
+	StyleSheet,
+	Text,
+	TextStyle,
+	TouchableOpacity,
+	View,
+	ViewStyle,
+} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {launchImageLibraryAsync, MediaTypeOptions, requestMediaLibraryPermissionsAsync} from 'expo-image-picker';
 import {UploadImageFileInput} from '@northernexplorer/types';
@@ -14,6 +27,13 @@ interface Props<T extends string> {
 	error?: string;
 	loading?: boolean;
 	renderOverlay?: (item: UploadImageFileInput, index: number) => React.ReactNode;
+	renderTrigger?: (props: {isPicking: boolean; isDragOver: boolean}) => React.ReactNode;
+	buttonText?: string;
+	buttonStyle?: StyleProp<ViewStyle>;
+	buttonTextStyle?: StyleProp<TextStyle>;
+	containerStyle?: StyleProp<ViewStyle>;
+	icon?: keyof typeof Ionicons.glyphMap;
+	iconSize?: number;
 }
 
 export function ImageUpload<T extends string>({
@@ -26,6 +46,13 @@ export function ImageUpload<T extends string>({
 	error,
 	loading = false,
 	renderOverlay,
+	renderTrigger,
+	buttonText,
+	buttonStyle,
+	buttonTextStyle,
+	containerStyle,
+	icon,
+	iconSize,
 }: Props<T>) {
 	const [isPicking, setIsPicking] = useState(false);
 	const [isDragOver, setIsDragOver] = useState(false);
@@ -153,7 +180,7 @@ export function ImageUpload<T extends string>({
 		<View style={styles.field}>
 			{label ? <Text style={styles.label}>{label}</Text> : null}
 
-			<View style={[styles.container, loading && styles.disabledContainer]}>
+			<View style={[styles.container, containerStyle, loading && styles.disabledContainer]}>
 				{value.length > 0 && (
 					<FlatList
 						data={value}
@@ -182,7 +209,12 @@ export function ImageUpload<T extends string>({
 
 				{showPickButton && (
 					<TouchableOpacity
-						style={[styles.uploadButton, value.length > 0 && styles.uploadButtonCompact, isDragOver && styles.uploadButtonActive]}
+						style={[
+							styles.uploadButton,
+							value.length > 0 && styles.uploadButtonCompact,
+							isDragOver && styles.uploadButtonActive,
+							buttonStyle,
+						]}
 						onPress={Platform.OS === 'web' ? undefined : handlePickImages}
 						disabled={loading || isPicking}
 						activeOpacity={0.7}
@@ -202,17 +234,27 @@ export function ImageUpload<T extends string>({
 							/>
 						)}
 
-						{isPicking ? (
-							<ActivityIndicator color="#0284c7" />
+						{renderTrigger ? (
+							renderTrigger({isPicking, isDragOver})
+						) : isPicking ? (
+							<ActivityIndicator color="#0284c7" size="small" />
 						) : (
 							<>
 								<Ionicons
-									name={isDragOver ? 'arrow-down-circle-outline' : 'cloud-upload-outline'}
-									size={24}
-									color={isDragOver ? '#0284c7' : '#64748b'}
+									name={isDragOver ? 'arrow-down-circle-outline' : icon || 'cloud-upload-outline'}
+									size={iconSize || (buttonStyle ? 18 : 24)}
+									color={isDragOver ? '#0284c7' : buttonStyle ? '#0284c7' : '#64748b'}
 								/>
-								<Text style={[styles.uploadText, isDragOver && styles.uploadTextActive]}>
-									{isDragOver ? 'Drop images here' : multiple ? (value.length > 0 ? 'Add More' : 'Select Images') : 'Select Image'}
+								<Text style={[styles.uploadText, isDragOver && styles.uploadTextActive, buttonTextStyle]}>
+									{isDragOver
+										? 'Drop images here'
+										: buttonText
+											? buttonText
+											: multiple
+												? value.length > 0
+													? 'Add More'
+													: 'Select Images'
+												: 'Select Image'}
 								</Text>
 							</>
 						)}

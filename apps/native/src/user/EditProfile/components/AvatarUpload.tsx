@@ -109,6 +109,10 @@ export function AvatarUpload({username, initialAvatar, onAvatarChange}: Props) {
 					</View>
 				)}
 
+				<View style={styles.cameraBadge}>
+					<Ionicons name="camera" size={16} color="#ffffff" />
+				</View>
+
 				{(isUploading || isRemoving) && (
 					<View style={styles.loadingOverlay}>
 						<ActivityIndicator size="small" color="#ffffff" />
@@ -125,6 +129,12 @@ export function AvatarUpload({username, initialAvatar, onAvatarChange}: Props) {
 					multiple={false}
 					maxImages={1}
 					loading={isUploading || isRemoving}
+					buttonText={avatar ? 'Change Image' : 'Select Image'}
+					icon="camera-outline"
+					iconSize={16}
+					buttonStyle={styles.selectImageButton}
+					buttonTextStyle={styles.selectImageText}
+					containerStyle={styles.imageUploadContainer}
 				/>
 
 				{avatar && (
@@ -133,11 +143,13 @@ export function AvatarUpload({username, initialAvatar, onAvatarChange}: Props) {
 						onPress={handleRemoveAvatar}
 						disabled={isUploading || isRemoving}
 					>
-						<Ionicons name="trash-outline" size={18} color="#ef4444" style={styles.buttonIcon} />
+						<Ionicons name="trash-outline" size={16} color="#ef4444" />
 						<Text style={styles.removeButtonText}>{isRemoving ? 'Removing...' : 'Remove Avatar'}</Text>
 					</Pressable>
 				)}
 			</View>
+
+			<Text style={styles.helpText}>JPG, PNG or GIF up to 10 MB</Text>
 		</View>
 	);
 }
@@ -145,68 +157,121 @@ export function AvatarUpload({username, initialAvatar, onAvatarChange}: Props) {
 const styles = StyleSheet.create({
 	container: {
 		alignItems: 'center',
-		marginVertical: 16,
+		marginVertical: 18,
 		gap: 12,
 	},
 	avatarPreviewWrapper: {
 		position: 'relative',
-		width: 96,
-		height: 96,
-		borderRadius: 48,
-		overflow: 'hidden',
-		backgroundColor: '#e2e8f0',
+		width: 104,
+		height: 104,
+		borderRadius: 52,
+		backgroundColor: '#f1f5f9',
 		alignItems: 'center',
 		justifyContent: 'center',
-		borderWidth: 2,
-		borderColor: '#cbd5e1',
+		borderWidth: 3,
+		borderColor: '#ffffff',
+		shadowColor: '#0f172a',
+		shadowOffset: {width: 0, height: 3},
+		shadowOpacity: 0.1,
+		shadowRadius: 6,
+		elevation: 4,
 	},
 	avatarImage: {
-		width: 96,
-		height: 96,
-		borderRadius: 48,
+		width: 98,
+		height: 98,
+		borderRadius: 49,
 	},
 	avatarPlaceholder: {
-		width: 96,
-		height: 96,
-		borderRadius: 48,
-		backgroundColor: '#0088cc',
+		width: 98,
+		height: 98,
+		borderRadius: 49,
+		backgroundColor: '#0284c7',
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
 	placeholderText: {
-		fontSize: 36,
+		fontSize: 38,
 		fontWeight: '700',
 		color: '#ffffff',
 	},
-	loadingOverlay: {
-		...StyleSheet.absoluteFill,
-		backgroundColor: 'rgba(0, 0, 0, 0.4)',
+	cameraBadge: {
+		position: 'absolute',
+		bottom: 0,
+		right: 0,
+		width: 32,
+		height: 32,
+		borderRadius: 16,
+		backgroundColor: '#0284c7',
+		borderWidth: 2,
+		borderColor: '#ffffff',
 		alignItems: 'center',
 		justifyContent: 'center',
+		shadowColor: '#000000',
+		shadowOffset: {width: 0, height: 1},
+		shadowOpacity: 0.2,
+		shadowRadius: 2,
+		elevation: 3,
+	},
+	loadingOverlay: {
+		...StyleSheet.absoluteFill,
+		borderRadius: 52,
+		backgroundColor: 'rgba(15, 23, 42, 0.5)',
+		alignItems: 'center',
+		justifyContent: 'center',
+		zIndex: 10,
 	},
 	buttonsContainer: {
-		flexDirection: 'column',
-		gap: 8,
+		flexDirection: 'row',
 		alignItems: 'center',
-		width: '100%',
+		justifyContent: 'center',
+		flexWrap: 'wrap',
+		gap: 10,
+	},
+	imageUploadContainer: {
+		backgroundColor: 'transparent',
+	},
+	selectImageButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: '#f0f9ff',
+		borderWidth: 1,
+		borderStyle: 'solid',
+		borderColor: '#bae6fd',
+		borderRadius: 20,
+		height: 38,
+		paddingHorizontal: 16,
+		gap: 6,
+	},
+	selectImageText: {
+		color: '#0284c7',
+		fontSize: 13,
+		fontWeight: '600',
 	},
 	removeButton: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		backgroundColor: '#fee2e2',
-		paddingVertical: 8,
-		paddingHorizontal: 14,
-		borderRadius: 8,
+		justifyContent: 'center',
+		backgroundColor: '#fef2f2',
+		borderWidth: 1,
+		borderStyle: 'solid',
+		borderColor: '#fecaca',
+		borderRadius: 20,
+		height: 38,
+		paddingHorizontal: 16,
+		gap: 6,
 	},
 	removeButtonText: {
 		color: '#ef4444',
 		fontWeight: '600',
-		fontSize: 14,
-	},
-	buttonIcon: {
-		marginRight: 6,
+		fontSize: 13,
 	},
 	disabledButton: {
-		opacity: 0.6,
+		opacity: 0.5,
+	},
+	helpText: {
+		fontSize: 12,
+		color: '#94a3b8',
+		marginTop: -4,
 	},
 });
