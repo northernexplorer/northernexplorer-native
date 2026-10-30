@@ -1,7 +1,6 @@
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {useRouter} from 'expo-router';
 import {useApiFetch} from '~/core/useApiFetch';
 
 const AVATAR_COLORS = [
@@ -81,7 +80,6 @@ interface Props {
 
 export function UserAvatar(props: Props) {
 	const {size = 36, username, onPress, disabled = false} = props;
-	const router = useRouter();
 
 	const {data} = useApiFetch('user', 'UserController', 'getAvatarDetails', {username});
 
@@ -98,15 +96,8 @@ export function UserAvatar(props: Props) {
 	const iconSize = Math.max(12, Math.round(size * 0.42));
 	const badgeWrapperSize = iconSize + 2;
 
-	const handlePress = () => {
-		if (onPress) {
-			onPress();
-		}
-		router.push(`/user/${username}`);
-	};
-
-	return (
-		<TouchableOpacity onPress={handlePress} disabled={disabled} activeOpacity={0.8} style={[styles.container, {width: size, height: size}]}>
+	const avatarContent = (
+		<View style={[styles.container, {width: size, height: size}]}>
 			<View
 				style={[
 					styles.avatarCircle,
@@ -136,8 +127,18 @@ export function UserAvatar(props: Props) {
 					<MaterialCommunityIcons name="star" size={iconSize} color={tierColor} />
 				</View>
 			)}
-		</TouchableOpacity>
+		</View>
 	);
+
+	if (onPress && !disabled) {
+		return (
+			<TouchableOpacity onPress={onPress} activeOpacity={0.8} style={{width: size, height: size}}>
+				{avatarContent}
+			</TouchableOpacity>
+		);
+	}
+
+	return avatarContent;
 }
 
 const styles = StyleSheet.create({
