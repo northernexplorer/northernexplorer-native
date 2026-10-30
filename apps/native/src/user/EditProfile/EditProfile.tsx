@@ -3,6 +3,7 @@ import {Pressable, ScrollView, Text} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import {DateField, DropdownField, FormField, Spinner} from '@northernexplorer/tools-web';
 import {GenderEnum} from '@northernexplorer/types';
+import {AvatarUpload} from './components/AvatarUpload';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiMutation} from '~/core/useApiMutation';
@@ -112,6 +113,8 @@ export function EditProfile() {
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
 			{submissionError && <Text style={[styles.errorText, {textAlign: 'center', marginVertical: 10}]}>{submissionError}</Text>}
+
+			<AvatarUpload username={username} initialAvatar={data.avatar} />
 
 			<FormField
 				fieldName="firstName"

@@ -25,6 +25,8 @@ import {
 	ImageLike,
 } from '../location';
 import {
+	Avatar,
+	AvatarRepository,
 	Session,
 	SessionRepository,
 	Subscription,
@@ -42,6 +44,7 @@ export type Repositories = ReturnType<typeof repositories>;
 
 export function repositories(em: EntityManager) {
 	return {
+		avatar: new AvatarRepository(em, Avatar),
 		city: new CityRepository(em, CityCache),
 		country: new CountryRepository(em, Country),
 		image: new ImageRepository(em, Image),

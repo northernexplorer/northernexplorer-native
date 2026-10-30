@@ -450,6 +450,8 @@ const styles = StyleSheet.create({
 		backgroundColor: '#e0f2fe',
 		alignItems: 'center',
 		justifyContent: 'center',
+		borderWidth: 2,
+		borderColor: '#d9d9d9',
 	},
 	avatarText: {
 		fontSize: 16,
