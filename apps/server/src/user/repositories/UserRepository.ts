@@ -31,10 +31,10 @@ export class UserRepository extends BaseRepository<User> {
 		return compare(userInput, storedHash);
 	}
 	async getById(id: string) {
-		return this.findOneOrFail({id});
+		return this.findOneOrFail({id}, {populate: ['avatar', 'subscription', 'subscription.subscriptionLevel']});
 	}
 	async getByUsername(username: string) {
-		return this.findOneOrFail({username});
+		return this.findOneOrFail({username}, {populate: ['avatar', 'subscription', 'subscription.subscriptionLevel']});
 	}
 
 	async passwordValidation({
@@ -72,7 +72,7 @@ export class UserRepository extends BaseRepository<User> {
 
 	async getAll({limit, offset}: {limit?: number; offset?: number}): Promise<UserType[]> {
 		const users = await this.findAll({
-			populate: ['subscription', 'subscription.subscriptionLevel'],
+			populate: ['avatar', 'subscription', 'subscription.subscriptionLevel'],
 			orderBy: {firstName: 'asc'},
 			limit,
 			offset,

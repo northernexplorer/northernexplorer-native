@@ -1,3 +1,5 @@
+import {createHash} from 'crypto';
+import {SpacesManagementService} from '@northernexplorer/tools-server';
 import {Params, Response, RouteDefinition, ROUTES} from '@northernexplorer/types';
 import {wrap} from '@mikro-orm/core';
 import {Repositories} from '../../core/repositories';
@@ -11,6 +13,7 @@ import {BaseController} from '../../core/BaseController';
 import {Subscription} from '../entities/Subscription';
 import {User} from '../entities/User';
 import {Session} from '../entities/Session';
+import {Avatar} from '../entities/Avatar';
 
 type Route<M extends keyof ROUTES['user']['UserController']> = RouteDefinition<'user', 'UserController'>[M];
 
@@ -23,6 +26,12 @@ export class UserController extends BaseController {
 	private permissionService = new PermissionService();
 	private emailSendService = new EmailSendService();
 	private captchaService = new CaptchaService();
+	private spacesManagementService = new SpacesManagementService({
+		region: config.SPACES_REGION,
+		defaultBucket: config.SPACES_BUCKET,
+		spacesSecretKey: config.SPACES_SECRET_KEY,
+		spacesAccessKey: config.SPACES_ACCESS_KEY,
+	});
 
 	async getCaptcha(): Promise<Response<Route<'getCaptcha'>>> {
 		return Promise.resolve(this.captchaService.generateCaptcha());
@@ -205,7 +214,98 @@ export class UserController extends BaseController {
 		const subscription = await this.repos.subscription.getById(user.subscription.id);
 		const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
 
-		return {firstName: user.firstName, subscriptionLevelName: subscriptionLevel.name, username: user.username};
+		return {
+			firstName: user.firstName,
+			subscriptionLevelName: subscriptionLevel.name,
+			username: user.username,
+			avatar: user.avatar
+				? {
+						id: user.avatar.id,
+						version: user.avatar.version,
+						url: user.avatar.url,
+						fileExtension: user.avatar.fileExtension,
+						filename: user.avatar.filename,
+						mimeType: user.avatar.mimeType,
+						processed: user.avatar.processed,
+					}
+				: undefined,
+		};
+	}
+
+	async uploadAvatar(params: Params<Route<'uploadAvatar'>>, auth?: AuthContext): Promise<Response<Route<'uploadAvatar'>>> {
+		const {userId} = this.permissionService.isLoggedIn(auth);
+
+		const maxImageSizeBytes = 10 * 1024 * 1024;
+		if (params.file.size > maxImageSizeBytes) {
+			throw new Error(`File "${params.file.filename}" exceeds the maximum individual limit of 10 MB.`);
+		}
+
+		const user = await this.repos.user.getById(userId);
+
+		const fileBuffer = Buffer.from(params.file.base64, 'base64');
+		const hash = createHash('sha256').update(fileBuffer).digest('hex');
+
+		const url = this.repos.avatar.generateNewUrl({fileExtension: params.file.fileExtension});
+
+		await this.spacesManagementService.upload({
+			key: url,
+			body: fileBuffer,
+			contentType: params.file.mimeType,
+		});
+
+		const avatar = new Avatar({
+			fileExtension: params.file.fileExtension,
+			filename: params.file.filename,
+			mimeType: params.file.mimeType,
+			size: params.file.size,
+			url,
+			user,
+			hash,
+		});
+
+		this.persist(avatar);
+		user.avatar = avatar;
+
+		await this.flush();
+
+		return {
+			success: true,
+			avatar: {
+				id: avatar.id,
+				version: avatar.version,
+				url: avatar.url,
+				fileExtension: avatar.fileExtension,
+				filename: avatar.filename,
+				mimeType: avatar.mimeType,
+				processed: avatar.processed,
+			},
+		};
+	}
+
+	async removeAvatar(_params: Params<Route<'removeAvatar'>>, auth?: AuthContext): Promise<Response<Route<'removeAvatar'>>> {
+		const {userId} = this.permissionService.isLoggedIn(auth);
+		const user = await this.repos.user.getById(userId);
+
+		if (user.avatar) {
+			const originalKey = user.avatar.url.replace(/^\/+/, '');
+			const dotIndex = originalKey.lastIndexOf('.');
+			const basePath = dotIndex !== -1 ? originalKey.substring(0, dotIndex) : originalKey;
+			const largeKey = `${basePath}_large.jpg`;
+			const thumbnailKey = `${basePath}_thumbnail.jpg`;
+
+			await Promise.all([
+				this.spacesManagementService.remove(originalKey).catch(() => null),
+				user.avatar.processed ? this.spacesManagementService.remove(largeKey).catch(() => null) : Promise.resolve(),
+				user.avatar.processed ? this.spacesManagementService.remove(thumbnailKey).catch(() => null) : Promise.resolve(),
+			]);
+
+			user.avatar = undefined;
+			await this.flush();
+		}
+
+		return {
+			success: true,
+		};
 	}
 
 	async getByUsername(params: Params<Route<'getByUsername'>>, auth?: AuthContext): Promise<Response<Route<'getByUsername'>>> {

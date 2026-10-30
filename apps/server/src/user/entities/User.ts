@@ -1,7 +1,8 @@
-import {Entity, Property, PrimaryKey, OneToOne, Enum} from '@mikro-orm/decorators/legacy';
+import {Entity, Property, PrimaryKey, OneToOne, ManyToOne, Enum} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
 import {GenderEnum, RolesEnum} from '@northernexplorer/types';
 import {Subscription} from './Subscription';
+import {Avatar} from './Avatar';
 
 type UserInput = {
 	firstName: string;
@@ -14,6 +15,7 @@ type UserInput = {
 	birthday: Date;
 	gender: GenderEnum;
 	roles?: RolesEnum[];
+	avatar?: Avatar;
 };
 
 @Entity()
@@ -51,6 +53,9 @@ export class User {
 	@OneToOne(() => Subscription)
 	subscription: Subscription;
 
+	@ManyToOne(() => Avatar, {nullable: true})
+	avatar?: Avatar;
+
 	@Enum({items: () => RolesEnum, array: true, nullable: true, type: 'enumArray'})
 	roles?: RolesEnum[];
 
@@ -71,5 +76,6 @@ export class User {
 		this.birthday = data.birthday;
 		this.gender = data.gender;
 		this.roles = data.roles;
+		this.avatar = data.avatar;
 	}
 }

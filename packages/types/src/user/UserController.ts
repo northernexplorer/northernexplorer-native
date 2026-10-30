@@ -1,5 +1,5 @@
 import {GenericResponseType} from '../GenericResponseType';
-import {ImageType, PointOfInterestSummary} from '../location';
+import {FileUpload, ImageType, PointOfInterestSummary} from '../location';
 
 export enum RolesEnum {
 	Admin = 'Admin',
@@ -87,6 +87,16 @@ type ResetPasswordParams = {
 type GetByUsernameParams = {
 	username: string;
 };
+export type AvatarHeaderType = {
+	id: string;
+	version: number;
+	url: string;
+	fileExtension: string;
+	filename: string;
+	mimeType: string;
+	processed: boolean;
+};
+
 export type UserType = {
 	id: string;
 	version: number;
@@ -103,6 +113,7 @@ export type UserType = {
 	lastActive?: Date | null;
 	subscriptionStatus?: string;
 	subscriptionTier?: string;
+	avatar?: AvatarHeaderType;
 	subscription?: {
 		id: string;
 		version?: number;
@@ -122,6 +133,7 @@ export type AvatarDetails = {
 	subscriptionLevelName: string;
 	firstName: string;
 	username: string;
+	avatar?: AvatarHeaderType;
 };
 
 export type UserSummary = {
@@ -130,6 +142,7 @@ export type UserSummary = {
 	firstName: string;
 	lastName: string;
 	score: number;
+	avatar?: AvatarHeaderType;
 };
 type RefreshParams = {
 	refreshToken: string;
@@ -205,5 +218,20 @@ export const UserController = {
 	getTimeline: {
 		params: {} as {username: string; limit?: number; offset?: number},
 		response: {} as UserEvents[],
+	},
+	uploadAvatar: {
+		params: {} as {
+			file: FileUpload;
+		},
+		response: null as unknown as {
+			success: boolean;
+			avatar: AvatarHeaderType;
+		},
+	},
+	removeAvatar: {
+		params: {} as Record<string, never>,
+		response: null as unknown as {
+			success: boolean;
+		},
 	},
 };
