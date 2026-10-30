@@ -126,6 +126,8 @@ export function UserAvatar(props: Props) {
 						width: size,
 						height: size,
 						borderRadius: size / 2,
+						borderWidth: size >= 60 ? 3 : 2,
+						borderColor: '#d9d9d9',
 					},
 				]}
 			>
@@ -169,6 +171,9 @@ const styles = StyleSheet.create({
 	avatarCircle: {
 		alignItems: 'center',
 		justifyContent: 'center',
+		borderColor: '#d9d9d9',
+		borderWidth: 2,
+		overflow: 'hidden',
 	},
 	avatarText: {
 		color: '#ffffff',
