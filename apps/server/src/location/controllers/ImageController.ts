@@ -80,7 +80,7 @@ export class ImageController extends BaseController {
 			throw new Error(`File "${params.file.filename}" exceeds the maximum individual limit of 10 MB.`);
 		}
 
-		const pointOfInterest = await this.repos.pointOfInterest.findOneOrFail({id: params.pointOfInterestId});
+		const pointOfInterest = await this.repos.pointOfInterest.findOneOrFail({id: params.pointOfInterestId}, {populate: ['image']});
 		const user = await this.repos.user.getById(userId);
 
 		const fileBuffer = Buffer.from(params.file.base64, 'base64');
@@ -117,6 +117,10 @@ export class ImageController extends BaseController {
 		});
 
 		this.repos.image.persist(image);
+
+		if (pointOfInterest.image.url.toLowerCase().includes('default')) {
+			pointOfInterest.image = image;
+		}
 
 		if (status === ImageStatusEnum.Approved) {
 			user.score += 10;
