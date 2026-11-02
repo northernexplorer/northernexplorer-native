@@ -13,9 +13,10 @@ import {
 } from '../location';
 import {Migration, Report, Support} from '../system';
 import {WeatherCache, WeatherWarningCache} from '../environment';
-import {Session, Subscription, SubscriptionLevel, User} from '../user';
+import {Avatar, Session, Subscription, SubscriptionLevel, User} from '../user';
 
 export const entities = [
+	Avatar,
 	CityCache,
 	Country,
 	Image,

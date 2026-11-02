@@ -3,11 +3,13 @@ export {SubscriptionController} from './controllers/SubscriptionController';
 export {SubscriptionLevelController} from './controllers/SubscriptionLevelController';
 export {UserController} from './controllers/UserController';
 
+export {Avatar} from './entities/Avatar';
 export {Session} from './entities/Session';
 export {Subscription} from './entities/Subscription';
 export {SubscriptionLevel} from './entities/SubscriptionLevel';
 export {User} from './entities/User';
 
+export {AvatarRepository} from './repositories/AvatarRepository';
 export {SessionRepository} from './repositories/SessionRepository';
 export {SubscriptionRepository} from './repositories/SubscriptionRepository';
 export {SubscriptionFeatureRepository} from './repositories/SubscriptionFeatureRepository';

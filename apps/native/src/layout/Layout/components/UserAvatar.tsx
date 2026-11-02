@@ -1,7 +1,9 @@
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import React from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {getImageUrl} from '@northernexplorer/tools-web';
 import {useApiFetch} from '~/core/useApiFetch';
+import {config} from '~/config';
 
 const AVATAR_COLORS = [
 	'#F03C3C',
@@ -93,6 +95,15 @@ export function UserAvatar(props: Props) {
 	const backgroundColor = generateBackgroundColor(data?.username || username);
 	const initial = (data?.firstName ? data.firstName.charAt(0) : username.charAt(0)).toUpperCase();
 
+	const avatarUrl = data?.avatar?.url
+		? getImageUrl({
+				path: data.avatar.url,
+				cdn: config.CONTENT_DELIVERY_NETWORK || '',
+				size: 'thumbnail',
+				processed: data.avatar.processed,
+			})
+		: undefined;
+
 	const iconSize = Math.max(12, Math.round(size * 0.42));
 	const badgeWrapperSize = iconSize + 2;
 
@@ -102,14 +113,27 @@ export function UserAvatar(props: Props) {
 				style={[
 					styles.avatarCircle,
 					{
-						backgroundColor,
+						backgroundColor: avatarUrl ? '#e2e8f0' : backgroundColor,
 						width: size,
 						height: size,
 						borderRadius: size / 2,
+						borderWidth: size >= 60 ? 3 : 2,
+						borderColor: '#d9d9d9',
 					},
 				]}
 			>
-				<Text style={[styles.avatarText, {fontSize: Math.round(size * 0.4)}]}>{initial}</Text>
+				{avatarUrl ? (
+					<Image
+						source={{uri: avatarUrl}}
+						style={{
+							width: size,
+							height: size,
+							borderRadius: size / 2,
+						}}
+					/>
+				) : (
+					<Text style={[styles.avatarText, {fontSize: Math.round(size * 0.4)}]}>{initial}</Text>
+				)}
 			</View>
 
 			{tierColor && (
@@ -148,6 +172,9 @@ const styles = StyleSheet.create({
 	avatarCircle: {
 		alignItems: 'center',
 		justifyContent: 'center',
+		borderColor: '#d9d9d9',
+		borderWidth: 2,
+		overflow: 'hidden',
 	},
 	avatarText: {
 		color: '#ffffff',
