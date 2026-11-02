@@ -17,6 +17,7 @@ import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
 import {User} from '../../user';
 import {Image} from '../entities/Image';
+import {ImageRepository} from './ImageRepository';
 
 interface PointOfInterestRawRow {
 	id: string;
@@ -479,12 +480,47 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		const currentLikesCount = pointOfInterest.image.likes.length;
 		const candidateLikesCount = image.likes.length;
 
-		console.log(image.pointOfInterest.id);
-		console.log(currentLikesCount);
-		console.log(candidateLikesCount);
-		if (candidateLikesCount > currentLikesCount) {
+		if (pointOfInterest.image.url.toLowerCase().includes('default') || candidateLikesCount > currentLikesCount) {
 			// @ts-expect-error errors due to a mikro-orm type definition
 			pointOfInterest.image = image;
+		}
+	}
+
+	async updateCoverImageOnDelete(image: Image) {
+		const pointOfInterest = await this.findOneOrFail(image.pointOfInterest.id, {
+			populate: ['image', 'images', 'images.likes', 'image.likes'],
+		});
+
+		if (pointOfInterest.image.id !== image.id) {
+			return;
+		}
+
+		const remainingCandidates = pointOfInterest.images.getItems().filter(img => img.id !== image.id);
+
+		if (remainingCandidates.length > 0) {
+			remainingCandidates.sort((a, b) => {
+				const aApproved = a.status === ImageStatusEnum.Approved ? 1 : 0;
+				const bApproved = b.status === ImageStatusEnum.Approved ? 1 : 0;
+				if (aApproved !== bApproved) {
+					return bApproved - aApproved;
+				}
+				const aLikes = a.likes.length;
+				const bLikes = b.likes.length;
+				if (aLikes !== bLikes) {
+					return bLikes - aLikes;
+				}
+				return b.createdAt.getTime() - a.createdAt.getTime();
+			});
+
+			// @ts-expect-error errors due to a mikro-orm type definition
+			pointOfInterest.image = remainingCandidates[0];
+		} else {
+			const imageRepo = new ImageRepository(this.getEntityManager(), Image);
+			const defaultImage = await imageRepo.getDefault(pointOfInterest.type.at(0) || PointOfInterestTypeEnum.HistoricSite);
+			if (defaultImage) {
+				// @ts-expect-error errors due to a mikro-orm type definition
+				pointOfInterest.image = defaultImage;
+			}
 		}
 	}
 

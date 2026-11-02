@@ -147,6 +147,8 @@ export class ImageController extends BaseController {
 		}
 		image.user.score = image.user.score - image.likes.length;
 
+		await this.repos.pointOfInterest.updateCoverImageOnDelete(image);
+
 		this.repos.image.remove(image);
 
 		await this.flush();
@@ -244,6 +246,8 @@ export class ImageController extends BaseController {
 		const image = await this.repos.image.getById(id);
 
 		await this.removeWithVariants(image);
+
+		await this.repos.pointOfInterest.updateCoverImageOnDelete(image);
 
 		this.repos.image.remove(image);
 		await this.flush();
