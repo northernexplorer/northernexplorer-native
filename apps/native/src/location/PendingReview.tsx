@@ -170,6 +170,8 @@ const pendingStyles = StyleSheet.create({
 		backgroundColor: '#64748b',
 		alignItems: 'center',
 		justifyContent: 'center',
+		borderWidth: 2,
+		borderColor: '#d9d9d9',
 	},
 	avatarText: {
 		color: '#ffffff',
