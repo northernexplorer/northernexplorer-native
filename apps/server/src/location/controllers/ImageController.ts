@@ -129,7 +129,20 @@ export class ImageController extends BaseController {
 	async getById(params: Params<Route<'getById'>>): Promise<Response<Route<'getById'>>> {
 		const image = await this.repos.image.getById(params.id);
 
-		return {...image, likes: image.likes.length, pointOfInterest: undefined};
+		return {
+			...image,
+			likes: image.likes.length,
+			pointOfInterest: {
+				id: image.pointOfInterest.id,
+				name: image.pointOfInterest.name,
+				description: image.pointOfInterest.description,
+				image: image.pointOfInterest.image,
+				lat: image.pointOfInterest.lat,
+				lon: image.pointOfInterest.lon,
+				country: image.pointOfInterest.country,
+				region: image.pointOfInterest.region,
+			},
+		};
 	}
 
 	async deleteById(params: Params<Route<'deleteById'>>, auth?: AuthContext): Promise<Response<Route<'deleteById'>>> {

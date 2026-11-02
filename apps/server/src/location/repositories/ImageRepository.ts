@@ -8,7 +8,7 @@ import {User} from '../../user';
 
 export class ImageRepository extends BaseRepository<Image> {
 	async getById(id: string) {
-		return this.findOneOrFail({id}, {populate: ['user', 'likes']});
+		return this.findOneOrFail({id}, {populate: ['user', 'likes', 'pointOfInterest', 'pointOfInterest.country', 'pointOfInterest.region']});
 	}
 
 	async getByUsername(user: User) {
@@ -58,7 +58,7 @@ export class ImageRepository extends BaseRepository<Image> {
 
 		const entities = await this.find({id: {$in: ids}});
 
-		await this.getEntityManager().populate(entities, ['user', 'pointOfInterest', 'likes']);
+		await this.getEntityManager().populate(entities, ['user', 'pointOfInterest', 'pointOfInterest.country', 'pointOfInterest.region', 'likes']);
 
 		return ids.map(id => entities.find(e => e.id === id)).filter((e): e is Image => e !== undefined);
 	}
