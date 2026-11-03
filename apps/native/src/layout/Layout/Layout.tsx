@@ -1,5 +1,5 @@
-import {ComponentType, useEffect, useState} from 'react';
-import {ImageBackground, Pressable, ScrollView, Text, useWindowDimensions, View} from 'react-native';
+import {ComponentType, useCallback, useEffect, useState} from 'react';
+import {ImageBackground, Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {usePathname} from 'expo-router';
@@ -21,15 +21,34 @@ interface Props {
 	home?: boolean;
 	showOffline?: boolean;
 	disableScroll?: boolean;
+	onRefresh?: () => Promise<void> | void;
 }
 
-export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline, disableScroll}: Props) {
+export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline, disableScroll, onRefresh}: Props) {
 	const currentPath = usePathname();
 	const {width} = useWindowDimensions();
 	const insets = useSafeAreaInsets();
 	const {isOffline, isRequiredAppUpdate} = useIsOffline();
 	const isMobileView = width < 1000;
 	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+	const [refreshing, setRefreshing] = useState(false);
+	const [refreshKey, setRefreshKey] = useState(0);
+
+	const handleRefresh = useCallback(async () => {
+		setRefreshing(true);
+		try {
+			if (onRefresh) {
+				await onRefresh();
+			}
+			setRefreshKey(prev => prev + 1);
+		} catch (error) {
+			console.error('Failed to refresh page:', error);
+		} finally {
+			setTimeout(() => {
+				setRefreshing(false);
+			}, 500);
+		}
+	}, [onRefresh]);
 
 	useEffect(() => {
 		if (currentPath) {
@@ -60,6 +79,15 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 							minHeight: '100%',
 						}}
 						keyboardShouldPersistTaps="handled"
+						refreshControl={
+							<RefreshControl
+								refreshing={refreshing}
+								onRefresh={handleRefresh}
+								tintColor="#38bdf8"
+								colors={['#38bdf8']}
+								progressBackgroundColor="#1a1a1a"
+							/>
+						}
 					>
 						{/* Master Wrapper Row */}
 						<View
@@ -99,7 +127,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 											)}
 
 											<View style={{flex: 1, width: '100%'}}>
-												<Content />
+												<Content key={refreshKey} />
 											</View>
 										</View>
 
@@ -113,7 +141,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 							{/* Standard Sidebar Column */}
 							{!isMobileFullPage && (
 								<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : styles.sidebarDesktop]}>
-									<Sidebar components={sidebar} />
+									<Sidebar key={refreshKey} components={sidebar} />
 								</View>
 							)}
 
@@ -147,7 +175,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 									}}
 								>
 									<ScrollView nestedScrollEnabled style={{maxHeight: '100%'}}>
-										<Sidebar components={sidebar} />
+										<Sidebar key={refreshKey} components={sidebar} />
 									</ScrollView>
 								</View>
 							)}
