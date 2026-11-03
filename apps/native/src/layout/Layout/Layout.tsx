@@ -1,5 +1,5 @@
 import {ComponentType, useCallback, useEffect, useState} from 'react';
-import {ImageBackground, Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View} from 'react-native';
+import {Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {usePathname} from 'expo-router';
@@ -102,13 +102,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 							{/* Main Left Content Area */}
 							<View style={{flex: 1, minWidth: 0, flexDirection: 'column'}}>
 								{online && (
-									<ImageBackground
-										style={[styles.background, {flex: 1, width: '100%'}]}
-										imageStyle={{
-											width: '100%',
-											height: '100%',
-										}}
-									>
+									<View style={[styles.background, {flex: 1, width: '100%'}]}>
 										{home && <View style={styles.darkOverlay} />}
 
 										{/* Padded Content Wrapper */}
@@ -133,7 +127,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 
 										{/* Desktop Footer */}
 										{(!fullPage || home) && !isMobileView && <Footer />}
-									</ImageBackground>
+									</View>
 								)}
 								{!online && <Offline />}
 							</View>
