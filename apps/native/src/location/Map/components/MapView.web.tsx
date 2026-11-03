@@ -1,5 +1,5 @@
 import React, {useRef, useCallback} from 'react';
-import MapGL, {Marker} from 'react-map-gl/maplibre';
+import MapGL, {Marker, ScaleControl} from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {Link} from 'expo-router';
@@ -26,6 +26,7 @@ export function MapView({
 	initialZoom,
 	canAccessOffTrailDifficulty,
 	canAccessExpeditionDifficulty,
+	canUseDistanceScale,
 	isSelectedLocked,
 	updateMapCenterAndBounds,
 }: MapViewProps) {
@@ -239,6 +240,8 @@ export function MapView({
 						)}
 					</>
 				)}
+
+				{canUseDistanceScale && <ScaleControl />}
 			</MapGL>
 		</div>
 	);
