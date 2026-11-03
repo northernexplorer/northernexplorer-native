@@ -15,7 +15,7 @@ export function SeeMoreCard({href = '/destinations', title = 'See More'}: Props)
 			<Pressable style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
 				<View style={[globalStyles.tile, styles.card]}>
 					<View style={styles.iconCircle}>
-						<Ionicons name="compass-outline" size={28} color="#38bdf8" />
+						<Ionicons name="arrow-forward" size={28} color="#38bdf8" />
 					</View>
 					<View style={styles.actionPill}>
 						<Text style={styles.actionText}>{title}</Text>
