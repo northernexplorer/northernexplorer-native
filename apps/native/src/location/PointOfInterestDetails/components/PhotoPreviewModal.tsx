@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {Ionicons} from '@expo/vector-icons';
+import {Feather, Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl, getUrlSafeString, ImageView} from '@northernexplorer/tools-web';
 import {ReportTypeEnum} from '@northernexplorer/types';
 import {useRouter} from 'expo-router';
@@ -408,7 +408,7 @@ export function PhotoPreviewModal({
 									hitSlop={8}
 									accessibilityLabel="Zoom in"
 								>
-									<Ionicons name="add" size={16} color="#ffffff" />
+									<Feather name="zoom-in" size={16} color="#ffffff" />
 								</Pressable>
 
 								{isZoomed && (
@@ -422,7 +422,7 @@ export function PhotoPreviewModal({
 											hitSlop={8}
 											accessibilityLabel="Zoom out"
 										>
-											<Ionicons name="remove" size={16} color="#ffffff" />
+											<Feather name="zoom-out" size={16} color="#ffffff" />
 										</Pressable>
 
 										<View style={styles.zoomDivider} />
