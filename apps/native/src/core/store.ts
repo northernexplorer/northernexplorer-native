@@ -30,7 +30,7 @@ const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: U
 const persistConfig = {
 	key: 'root',
 	storage: AsyncStorage,
-	whitelist: ['location', 'city', 'weather', 'authentication', 'subscription'],
+	whitelist: ['location', 'city', 'weather', 'lunar', 'authentication', 'subscription'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
