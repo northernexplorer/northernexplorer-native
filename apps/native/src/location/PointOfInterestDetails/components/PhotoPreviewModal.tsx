@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Feather, Ionicons} from '@expo/vector-icons';
-import {formatName, getImageUrl, ImageView} from '@northernexplorer/tools-web';
+import {formatName, getImageUrl, getUrlSafeString, ImageView} from '@northernexplorer/tools-web';
 import {ReportTypeEnum} from '@northernexplorer/types';
 import {useRouter} from 'expo-router';
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated';
@@ -291,6 +291,21 @@ export function PhotoPreviewModal({
 		router.push(`/user/${imageData.user.username}`);
 	};
 
+	const handlePoiNavigation = () => {
+		if (!imageData.pointOfInterest) return;
+		onClose();
+		const poi = imageData.pointOfInterest;
+		router.push({
+			pathname: '/[country]/[region]/[name]/[id]',
+			params: {
+				country: getUrlSafeString(poi.country.name),
+				region: getUrlSafeString(poi.region.name),
+				name: getUrlSafeString(poi.name),
+				id: poi.id,
+			},
+		});
+	};
+
 	const handleLikeToggle = async (e: GestureResponderEvent) => {
 		e.stopPropagation();
 		if (!currentUserId) return;
@@ -497,6 +512,20 @@ export function PhotoPreviewModal({
 							</Pressable>
 						</View>
 
+						{imageData.pointOfInterest?.name ? (
+							<Pressable
+								style={({pressed}) => [styles.poiButton, pressed && styles.poiButtonPressed]}
+								onPress={handlePoiNavigation}
+								accessibilityRole="button"
+								accessibilityLabel={`Navigate to ${imageData.pointOfInterest.name}`}
+							>
+								<Ionicons name="location-sharp" size={14} color="#38bdf8" />
+								<Text style={styles.poiName} numberOfLines={1}>
+									{imageData.pointOfInterest.name}
+								</Text>
+							</Pressable>
+						) : null}
+
 						<View style={styles.modalActions}>
 							{/* Admin Moderation Actions */}
 							{isAdmin && onApprove && (
@@ -682,6 +711,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 10,
+		flex: 1,
 		flexShrink: 1,
 	},
 	userDetails: {
@@ -696,10 +726,31 @@ const styles = StyleSheet.create({
 		color: '#94a3b8',
 		fontSize: 12,
 	},
+	poiButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'rgba(255, 255, 255, 0.12)',
+		paddingHorizontal: 12,
+		paddingVertical: 6,
+		borderRadius: 16,
+		gap: 6,
+		maxWidth: '40%',
+	},
+	poiButtonPressed: {
+		backgroundColor: 'rgba(255, 255, 255, 0.2)',
+	},
+	poiName: {
+		color: '#ffffff',
+		fontSize: 13,
+		fontWeight: '600',
+	},
 	modalActions: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		justifyContent: 'flex-end',
 		gap: 8,
+		flex: 1,
 	},
 	actionButton: {
 		flexDirection: 'row',
