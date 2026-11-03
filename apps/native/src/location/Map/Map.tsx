@@ -36,6 +36,7 @@ export interface MapViewProps {
 	initialZoom: number;
 	canAccessOffTrailDifficulty: boolean;
 	canAccessExpeditionDifficulty: boolean;
+	canUseDistanceScale: boolean;
 	isSelectedLocked: boolean;
 	updateMapCenterAndBounds: (bounds: BBox, zoom: number, center: {lat: number; lon: number}) => void;
 }
@@ -49,6 +50,7 @@ export function Map() {
 	// Permissions
 	const canAccessOffTrailDifficulty = permissions?.navigation.useOffTrailDifficulty ?? false;
 	const canAccessExpeditionDifficulty = permissions?.navigation.useExpeditionDifficulty ?? false;
+	const canUseDistanceScale = permissions?.navigation.useDistanceScale ?? false;
 
 	// Center resolution logic
 	const paramLat = params.lat ? parseFloat(params.lat) : undefined;
@@ -177,6 +179,7 @@ export function Map() {
 			initialZoom={initialZoom}
 			canAccessOffTrailDifficulty={canAccessOffTrailDifficulty}
 			canAccessExpeditionDifficulty={canAccessExpeditionDifficulty}
+			canUseDistanceScale={canUseDistanceScale}
 			isSelectedLocked={isSelectedLocked}
 			updateMapCenterAndBounds={updateMapCenterAndBounds}
 		/>

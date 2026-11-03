@@ -9,6 +9,7 @@ export type PermissionResponse = {
 		changeMapStyle: boolean;
 		useOffTrailDifficulty: boolean;
 		useExpeditionDifficulty: boolean;
+		useDistanceScale: boolean;
 	};
 };
 

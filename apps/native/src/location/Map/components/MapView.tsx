@@ -26,6 +26,7 @@ export function MapView({
 	initialZoom,
 	canAccessOffTrailDifficulty,
 	canAccessExpeditionDifficulty,
+	canUseDistanceScale,
 	isSelectedLocked,
 	updateMapCenterAndBounds,
 }: MapViewProps) {
@@ -85,6 +86,7 @@ export function MapView({
 			<NativeMap
 				style={{width: '100%', height: '100%'}}
 				mapStyle={baseLayer}
+				scaleBar={canUseDistanceScale}
 				onRegionDidChange={onRegionDidChange}
 				onPress={() => {
 					if (selectedSite) setSelectedSite(null);
