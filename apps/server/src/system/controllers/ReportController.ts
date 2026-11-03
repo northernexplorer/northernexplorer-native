@@ -183,6 +183,7 @@ export class ReportController extends BaseController {
 					image.user.score = Math.max(0, image.user.score - 10);
 				}
 				image.user.score = Math.max(0, image.user.score - image.likes.length);
+				await this.repos.pointOfInterest.updateCoverImageOnDelete(image);
 				this.repos.image.remove(image);
 			}
 		}
