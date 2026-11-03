@@ -131,7 +131,12 @@ export class PointOfInterest {
 		if (data.lon !== undefined) this.lon = data.lon;
 		if (data.country !== undefined) this.country = data.country;
 		if (data.region !== undefined) this.region = data.region;
-		if (data.status !== undefined) this.status = data.status;
+		if (data.status !== undefined) {
+			if (this.status === PublishStatusEnum.Draft && data.status === PublishStatusEnum.Published) {
+				this.createdAt = new Date();
+			}
+			this.status = data.status;
+		}
 		if (data.startDate !== undefined) this.startDate = data.startDate;
 		if (data.endDate !== undefined) this.endDate = data.endDate;
 		if (data.type !== undefined) this.type = data.type;
