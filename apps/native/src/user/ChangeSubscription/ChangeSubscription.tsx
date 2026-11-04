@@ -8,6 +8,7 @@ import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 import {alertStore} from '~/core/alertStore';
 import {config} from '~/config';
+import {getRevenueCatApiKey} from '~/user/ChangeSubscription/getRevenueCatApiKey';
 
 type RouteParams = {
 	username: string;
@@ -38,7 +39,10 @@ export function ChangeSubscription() {
 	const configureRevenueCatIfNeeded = async () => {
 		const isConfigured = await Purchases.isConfigured();
 		if (!isConfigured) {
-			const apiKey = Platform.OS === 'android' ? config.REVENUE_CAT_GOOGLE_KEY : undefined;
+			const apiKey = getRevenueCatApiKey(Platform.OS, {
+				ios: config.REVENUE_IOS_KEY,
+				android: config.REVENUE_ANDROID_KEY,
+			});
 
 			if (apiKey) {
 				Purchases.configure({apiKey});

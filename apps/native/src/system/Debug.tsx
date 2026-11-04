@@ -12,7 +12,6 @@ const webEnvironmentVariables = [
 	{name: 'EXPO_PUBLIC_SERVER_URL_APP', value: process.env.EXPO_PUBLIC_SERVER_URL_APP},
 	{name: 'EXPO_PUBLIC_REVENUE_IOS_KEY', value: process.env.EXPO_PUBLIC_REVENUE_IOS_KEY},
 	{name: 'EXPO_PUBLIC_REVENUE_ANDROID_KEY', value: process.env.EXPO_PUBLIC_REVENUE_ANDROID_KEY},
-	{name: 'EXPO_PUBLIC_REVENUE_CAT_GOOGLE_KEY', value: process.env.EXPO_PUBLIC_REVENUE_CAT_GOOGLE_KEY},
 	{name: 'EXPO_PUBLIC_ARCGIS_API_KEY', value: process.env.EXPO_PUBLIC_ARCGIS_API_KEY},
 	{name: 'EXPO_PUBLIC_CONTENT_DELIVERY_NETWORK', value: process.env.EXPO_PUBLIC_CONTENT_DELIVERY_NETWORK},
 	{name: 'EXPO_PUBLIC_APTABASE_KEY', value: process.env.EXPO_PUBLIC_APTABASE_KEY},
@@ -110,7 +109,6 @@ const styles = StyleSheet.create({
 		color: '#212529',
 		fontSize: 14,
 		fontWeight: '500',
-		selectable: true,
 	},
 	unavailableText: {
 		color: '#b45309',
