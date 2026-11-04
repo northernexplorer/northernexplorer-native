@@ -4,6 +4,7 @@ import MapGL, {Marker, NavigationControl, MapRef, ViewStateChangeEvent} from 're
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {Ionicons} from '@expo/vector-icons';
+import {CoordinateMapStyleSelector} from '~/layout/Layout/components/CoordinateMapStyleSelector';
 import {useMap} from '~/location/state/map/useMap';
 import {useLocation} from '~/location/state/location/useLocation';
 
@@ -63,6 +64,7 @@ export function CoordinateMap({lat, lon, onSelectCoordinates, disabled}: Props) 
 
 	return (
 		<View style={styles.container}>
+			<CoordinateMapStyleSelector disabled={disabled} />
 			<View style={styles.mapWrapper}>
 				<MapGL
 					ref={mapRef}
