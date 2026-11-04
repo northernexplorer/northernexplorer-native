@@ -149,6 +149,13 @@ export function Admin() {
 					<Text style={styles.statValue}>{data?.organizations ?? 0}</Text>
 					<Text style={styles.statLabel}>Organizations</Text>
 				</Pressable>
+
+				<Pressable style={({pressed}) => [styles.card, pressed && styles.cardPressed]} onPress={() => router.push('/admin/debug')}>
+					<View style={[styles.iconBadge, {backgroundColor: '#e8eaf6'}]}>
+						<Ionicons name="bug-outline" size={24} color="#3949ab" />
+					</View>
+					<Text style={styles.statLabel}>Debug Information</Text>
+				</Pressable>
 			</View>
 		</View>
 	);

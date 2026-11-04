@@ -19,4 +19,14 @@ export const StatusController = {
 			organizations?: number;
 		},
 	},
+	getDebugInfo: {
+		params: {} as Record<string, never>,
+		response: {} as {
+			nodeVersion: string;
+			platform: string;
+			uptimeSeconds: number;
+			memoryUsageBytes: number;
+			checkedAt: string;
+		},
+	},
 };
