@@ -149,14 +149,6 @@ export function WeatherWarningsWidget({warnings}: WeatherWarningsWidgetProps) {
 										<MaterialCommunityIcons name="clock-outline" size={13} color={colors.text} />
 										<Text style={[styles.metaText, {color: colors.text}]}>Expires: {formatExpiryTime(warning.expires)}</Text>
 									</View>
-									{warning.areas ? (
-										<View style={styles.metaItem}>
-											<MaterialCommunityIcons name="map-marker-outline" size={13} color="rgba(255, 255, 255, 0.7)" />
-											<Text style={styles.metaText} numberOfLines={1}>
-												{warning.areas}
-											</Text>
-										</View>
-									) : null}
 								</View>
 							</View>
 
@@ -168,16 +160,14 @@ export function WeatherWarningsWidget({warnings}: WeatherWarningsWidgetProps) {
 											{warning.desc ? (
 												<View style={styles.detailSection}>
 													<Text style={styles.detailLabel}>Description</Text>
-													<Text style={styles.detailBody}>{warning.desc.replace(/\bin affect\b/gi, 'in effect')}</Text>
+													<Text style={styles.detailBody}>{warning.desc}</Text>
 												</View>
 											) : null}
 
 											{warning.instruction ? (
 												<View style={styles.detailSection}>
 													<Text style={styles.detailLabel}>Instructions / Action Required</Text>
-													<Text style={styles.detailBody}>
-														{warning.instruction.replace(/\bin affect\b/gi, 'in effect')}
-													</Text>
+													<Text style={styles.detailBody}>{warning.instruction}</Text>
 												</View>
 											) : null}
 										</View>
