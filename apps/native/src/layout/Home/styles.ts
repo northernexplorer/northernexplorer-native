@@ -166,6 +166,22 @@ export const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: 'rgba(255, 255, 255, 0.08)',
 	},
+	emptyCard: {
+		height: 160,
+		width: '100%',
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'rgba(255, 255, 255, 0.04)',
+		borderRadius: 12,
+		borderWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.08)',
+		padding: 16,
+	},
+	emptyText: {
+		color: 'rgba(255, 255, 255, 0.6)',
+		fontSize: 12,
+		textAlign: 'center',
+	},
 
 	// Dashboard Grid Layouts
 	environmentGrid: {

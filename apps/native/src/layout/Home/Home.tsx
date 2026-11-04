@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, ActivityIndicator, Text, ScrollView, useWindowDimensions} from 'react-native';
 import {WeatherWidget} from './components/WeatherWidget';
 import {WeatherWarningsWidget} from './components/WeatherWarningsWidget';
@@ -16,6 +16,9 @@ import {useLunar} from '~/environment/state/lunar/useLunar';
 import {useLocation} from '~/location/state/location/useLocation';
 import {usePermissions} from '~/user/state/subscription';
 import {useApiFetch} from '~/core/useApiFetch';
+import {useAppDispatch, useAppSelector} from '~/core/storeHooks';
+import {setNearbyLocations, setNewestLocations, setTopImages, selectHomeData} from '~/layout/Home/homeSlice';
+import {useIsOffline} from '~/core/ConnectivityProvider';
 import {styles} from '~/layout/Home/styles';
 
 export function Home() {
@@ -27,25 +30,52 @@ export function Home() {
 	const lunar = useLunar();
 	const coords = useLocation();
 	const permissions = usePermissions();
+	const dispatch = useAppDispatch();
+	const cachedHomeData = useAppSelector(state => state.home);
+	const {isOffline} = useIsOffline();
 
 	const {data: warningsData} = useApiFetch('environment', 'WeatherController', 'getWarnings', coords ? {lat: coords.lat, lon: coords.lon} : null);
 
-	const warnings = warningsData && warningsData.length > 0 ? warningsData : reduxWarnings;
+	const warnings = warningsData ?? reduxWarnings;
 
-	const {data: pointOfInterestData} = useApiFetch(
+	const {data: fetchedNearbyLocations, loading: nearbyLocationsLoading} = useApiFetch(
 		'location',
 		'PointOfInterestController',
 		'getNearby',
 		coords ? {lat: coords.lat, lon: coords.lon, limit: 5} : null,
 	);
 
-	const {data: newestLocationsData} = useApiFetch('location', 'PointOfInterestController', 'getNewest', {limit: 5});
+	const {data: fetchedNewestLocations, loading: newestLocationsLoading} = useApiFetch('location', 'PointOfInterestController', 'getNewest', {
+		limit: 5,
+	});
 
-	const {data: topImagesData} = useApiFetch('location', 'ImageController', 'topImages', {});
+	const {data: fetchedTopImages, loading: topImagesLoading} = useApiFetch('location', 'ImageController', 'topImages', {});
+
+	useEffect(() => {
+		if (fetchedNearbyLocations !== null) {
+			dispatch(setNearbyLocations(fetchedNearbyLocations));
+		}
+	}, [dispatch, fetchedNearbyLocations]);
+
+	useEffect(() => {
+		if (fetchedNewestLocations !== null) {
+			dispatch(setNewestLocations(fetchedNewestLocations));
+		}
+	}, [dispatch, fetchedNewestLocations]);
+
+	useEffect(() => {
+		if (fetchedTopImages !== null) {
+			dispatch(setTopImages(fetchedTopImages));
+		}
+	}, [dispatch, fetchedTopImages]);
+
+	const pointOfInterestData = selectHomeData(fetchedNearbyLocations, cachedHomeData.nearbyLocations);
+	const newestLocationsData = selectHomeData(fetchedNewestLocations, cachedHomeData.newestLocations);
+	const topImagesData = selectHomeData(fetchedTopImages, cachedHomeData.topImages);
 
 	const isCoreReady = !!weather && !!lunar;
 
-	if (!isCoreReady) {
+	if (!isCoreReady && !isOffline) {
 		return (
 			<View style={styles.loadingContainer}>
 				<ActivityIndicator size="large" color="#ffffff" />
@@ -106,10 +136,22 @@ export function Home() {
 								</View>
 							</View>
 							<View style={styles.pointOfInterestsSection}>
-								{!pointOfInterestData ? (
-									<View style={styles.loadingCard}>
-										<ActivityIndicator size="small" color="#ffffff" />
-									</View>
+								{pointOfInterestData === null ? (
+									nearbyLocationsLoading && !isOffline ? (
+										<View style={styles.loadingCard}>
+											<ActivityIndicator size="small" color="#ffffff" />
+										</View>
+									) : (
+										<View style={styles.emptyCard}>
+											<Text style={styles.emptyText}>
+												{isOffline
+													? 'No cached nearby destinations are available offline.'
+													: coords
+														? 'Nearby destinations are unavailable.'
+														: 'Location is unavailable.'}
+											</Text>
+										</View>
+									)
 								) : (
 									<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12}}>
 										{pointOfInterestData.map(site => (
@@ -147,10 +189,18 @@ export function Home() {
 								</View>
 							</View>
 							<View style={styles.pointOfInterestsSection}>
-								{!newestLocationsData ? (
-									<View style={styles.loadingCard}>
-										<ActivityIndicator size="small" color="#ffffff" />
-									</View>
+								{newestLocationsData === null ? (
+									newestLocationsLoading && !isOffline ? (
+										<View style={styles.loadingCard}>
+											<ActivityIndicator size="small" color="#ffffff" />
+										</View>
+									) : (
+										<View style={styles.emptyCard}>
+											<Text style={styles.emptyText}>
+												{isOffline ? 'No cached locations are available offline.' : 'Locations are unavailable.'}
+											</Text>
+										</View>
+									)
 								) : (
 									<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 12}}>
 										{newestLocationsData.map(site => (
@@ -178,7 +228,7 @@ export function Home() {
 				</View>
 
 				{/* Top Captures Container Card */}
-				{topImagesData && topImagesData.length > 0 && (
+				{(topImagesData === null || topImagesData.length > 0) && (
 					<View style={styles.sectionContainer}>
 						<View style={styles.tile}>
 							<View style={{padding: 16}}>
@@ -186,7 +236,21 @@ export function Home() {
 									<Text style={[styles.headerSubtitle, {fontSize: 10, letterSpacing: 1}]}>COMMUNITY</Text>
 									<Text style={{color: '#ffffff', fontSize: 16, fontWeight: '600'}}>Top Captures</Text>
 								</View>
-								<TopImagesWidget data={topImagesData} />
+								{topImagesData === null ? (
+									topImagesLoading && !isOffline ? (
+										<View style={styles.loadingCard}>
+											<ActivityIndicator size="small" color="#ffffff" />
+										</View>
+									) : (
+										<View style={styles.emptyCard}>
+											<Text style={styles.emptyText}>
+												{isOffline ? 'No cached captures are available offline.' : 'Captures are unavailable.'}
+											</Text>
+										</View>
+									)
+								) : (
+									<TopImagesWidget data={topImagesData} />
+								)}
 							</View>
 						</View>
 					</View>
@@ -197,10 +261,22 @@ export function Home() {
 					<View style={styles.environmentGrid}>
 						<View style={styles.gridRow}>
 							<View style={styles.weatherSection}>
-								<WeatherWidget data={weather} />
+								{weather ? (
+									<WeatherWidget data={weather} />
+								) : (
+									<View style={styles.emptyCard}>
+										<Text style={styles.emptyText}>Weather is unavailable offline.</Text>
+									</View>
+								)}
 							</View>
 							<View style={styles.lunarSection}>
-								<LunarWidget data={lunar} />
+								{lunar ? (
+									<LunarWidget data={lunar} />
+								) : (
+									<View style={styles.emptyCard}>
+										<Text style={styles.emptyText}>Lunar data is unavailable offline.</Text>
+									</View>
+								)}
 							</View>
 						</View>
 					</View>
