@@ -3,6 +3,7 @@ import {BaseRepository} from '../../core/BaseRepository';
 import {WeatherCache} from '../entities/WeatherCache';
 import {WeatherWarningCache} from '../entities/WeatherWarningCache';
 import {config} from '../../config';
+import {filterWeatherWarnings} from './filterWeatherWarnings';
 
 interface RawInternalWeatherRow {
 	weatherData: string | Record<string, unknown>;
@@ -83,7 +84,7 @@ export class WeatherRepository extends BaseRepository<WeatherCache> {
 		if (cachedRecord) {
 			const parsed = typeof cachedRecord.warningData === 'string' ? JSON.parse(cachedRecord.warningData) : cachedRecord.warningData;
 			const warnings = Array.isArray(parsed) ? parsed : [];
-			return warnings.filter((w: WeatherWarningType) => !w.expires || new Date(w.expires).getTime() > Date.now());
+			return filterWeatherWarnings(warnings);
 		}
 
 		const apiUrl = `https://api.weatherapi.com/v1/alerts.json?key=${config.WEATHER_API_KEY}&q=${encodeURIComponent(`${lat},${lon}`)}`;
@@ -131,7 +132,7 @@ export class WeatherRepository extends BaseRepository<WeatherCache> {
 			instruction: String(a.instruction || ''),
 		}));
 
-		const activeWarnings = warnings.filter(w => !w.expires || new Date(w.expires).getTime() > Date.now());
+		const activeWarnings = filterWeatherWarnings(warnings);
 
 		let expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 		const futureExpiries = activeWarnings.map(w => (w.expires ? new Date(w.expires).getTime() : NaN)).filter(t => !isNaN(t) && t > Date.now());
