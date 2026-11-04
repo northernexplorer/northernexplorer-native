@@ -287,7 +287,7 @@ export class PointOfInterestController extends BaseController {
 		const country = await this.repos.country.getById(countryId);
 		const region = await this.repos.region.getById(regionId);
 		const organization = await this.repos.organization.getById(organizationId);
-		const image = await this.repos.image.getById(params.imageId);
+		const image = await this.repos.image.findOneOrFail({id: params.imageId});
 
 		pointOfInterest.edit({
 			...updates,
