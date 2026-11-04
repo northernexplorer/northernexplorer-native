@@ -2,6 +2,7 @@ import React, {useRef} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {Map as NativeMap, Camera, Marker, CameraRef} from '@maplibre/maplibre-react-native';
 import {Ionicons} from '@expo/vector-icons';
+import {CoordinateMapStyleSelector} from '~/layout/Layout/components/CoordinateMapStyleSelector';
 import {useMap} from '~/location/state/map/useMap';
 import {useLocation} from '~/location/state/location/useLocation';
 
@@ -46,6 +47,7 @@ export function CoordinateMap({lat, lon, onSelectCoordinates, disabled}: Props) 
 
 	return (
 		<View style={styles.container}>
+			<CoordinateMapStyleSelector disabled={disabled} />
 			<View style={styles.mapWrapper}>
 				<NativeMap style={styles.map} mapStyle={baseLayer} onPress={handlePress} attribution={false} logo={false}>
 					<Camera ref={cameraRef} zoom={initialZoom} center={isValidCoord ? [lon, lat] : [initialLon, initialLat]} />
