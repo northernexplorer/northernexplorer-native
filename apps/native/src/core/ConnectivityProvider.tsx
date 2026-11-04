@@ -54,7 +54,7 @@ export function ConnectivityProvider({children}: {children: React.ReactNode}) {
 
 		const unsubscribe = NetInfo.addEventListener(state => {
 			const connected = state.isConnected ?? true;
-			setIsDeviceConnected(connected);
+			setIsDeviceConnected(connected && state.isInternetReachable !== false);
 			if (connected) {
 				checkServerStatus();
 			}
