@@ -70,4 +70,16 @@ export class StatusController extends BaseController {
 			organizations,
 		};
 	}
+
+	getDebugInfo(params: Params<Route<'getDebugInfo'>>, auth?: AuthContext): Response<Route<'getDebugInfo'>> {
+		this.permissionService.canAccessAdmin(auth);
+
+		return {
+			nodeVersion: process.version,
+			platform: process.platform,
+			uptimeSeconds: Math.floor(process.uptime()),
+			memoryUsageBytes: process.memoryUsage().rss,
+			checkedAt: new Date().toISOString(),
+		};
+	}
 }
