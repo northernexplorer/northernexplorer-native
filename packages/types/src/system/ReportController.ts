@@ -13,6 +13,7 @@ export enum ReportReasonEnum {
 	Inappropriate = 'Inappropriate',
 	NotRelevant = 'NotRelevant',
 	AIGeneratedImage = 'AIGeneratedImage',
+	LowQuality = 'LowQuality',
 	Other = 'Other',
 }
 

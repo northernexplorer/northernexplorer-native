@@ -17,6 +17,7 @@ const REASON_LABELS: Record<ReportReasonEnum, string> = {
 	[ReportReasonEnum.Inappropriate]: 'Inappropriate Content',
 	[ReportReasonEnum.NotRelevant]: 'Not Relevant / Off-topic',
 	[ReportReasonEnum.AIGeneratedImage]: 'AI Generated Image',
+	[ReportReasonEnum.LowQuality]: 'Low Quality',
 	[ReportReasonEnum.Other]: 'Other Issues',
 };
 
