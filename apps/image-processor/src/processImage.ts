@@ -5,6 +5,7 @@ import {SpacesManagementService} from '@northernexplorer/tools-server';
 import {ReportReasonEnum, ReportTypeEnum} from '@northernexplorer/types';
 import {streamToBuffer} from './lib/streamToBuffer';
 import {detectImageFileType} from './lib/detectImageFileType';
+import {detectAIGeneratedImage} from './lib/detectAIGeneratedImage';
 import {createJpgVariants} from './lib/createJpgVariants';
 import {getVariantKeys} from './lib/getVariantKeys';
 import {formatMb} from './lib/formatMb';
@@ -66,12 +67,30 @@ export async function processImage(
 			console.log(` └─ Cover: ${coverKey} (${formatMb(cover.length)})`);
 		}
 
+		let isAIGenerated = false;
+		try {
+			isAIGenerated = await detectAIGeneratedImage(originalBuffer, detected?.mime);
+		} catch (err) {
+			console.error(`[Image ID: ${image.id}] C2PA metadata inspection failed:`, err);
+		}
+
 		if (originalWidth !== undefined && originalHeight !== undefined && (originalWidth < 250 || originalHeight < 250)) {
 			em.persist(
 				new Report({
 					type: ReportTypeEnum.Image,
 					reason: ReportReasonEnum.LowQuality,
 					description: `Automatically reported because the original image is ${originalWidth}×${originalHeight} pixels (under 250 pixels in at least one dimension).`,
+					userId: SYSTEM_USER_ID,
+					image,
+				}),
+			);
+		}
+		if (isAIGenerated) {
+			em.persist(
+				new Report({
+					type: ReportTypeEnum.Image,
+					reason: ReportReasonEnum.AIGeneratedImage,
+					description: 'C2PA provenance declares this image was AI-generated; signer trust may not be verified.',
 					userId: SYSTEM_USER_ID,
 					image,
 				}),
