@@ -8,6 +8,7 @@ export const config = {
 	ACCESS_SECRET: process.env.ACCESS_SECRET || 'TEMP_ACCESS_SECRET',
 	REFRESH_SECRET: process.env.REFRESH_SECRET || 'TEMP_REFRESH_SECRET',
 	EMAIL_API_KEY: process.env.EMAIL_API_KEY,
+	EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@northernexplorer.org',
 	ACTIVATION_SECRET: process.env.ACTIVATION_SECRET || 'TEMP_ACTIVATION_SECRET',
 	WEB_URL: process.env.WEB_URL || 'http://localhost:7001',
 	CORS: process.env.CORS || 'http://localhost:7001,https://northernexplorer.org',
