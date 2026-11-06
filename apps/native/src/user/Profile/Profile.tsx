@@ -1,7 +1,8 @@
 import {Spinner} from '@northernexplorer/tools-web';
-import {View, Text, TouchableOpacity, ScrollView, StyleSheet} from 'react-native';
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import React from 'react';
+import {RolesEnum} from '@northernexplorer/types';
 import {FavoritePointsOfInterest} from './components/FavoritesPointsOfInterest';
 import styles from '~/user/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -23,6 +24,10 @@ export function Profile() {
 	const router = useRouter();
 	const {username, tab = 'timeline'} = useLocalSearchParams<RouteParams>();
 	const {data, loading} = useApiFetch('user', 'UserController', 'getAvatarDetails', {username});
+	const isOwner = authentication?.username === username;
+	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin) ?? false;
+	const canViewSubscription = isOwner || isAdmin;
+	const activeTab = !isOwner && (tab === 'security' || tab === 'other' || (tab === 'subscription' && !canViewSubscription)) ? 'timeline' : tab;
 
 	const switchTab = (newTab: 'timeline' | 'details' | 'favorite' | 'subscription' | 'security' | 'other') => {
 		router.setParams({username, tab: newTab});
@@ -53,55 +58,60 @@ export function Profile() {
 			</View>
 
 			{/* Navigation Tabs */}
-			{authentication?.username === username && (
+			{(isOwner || isAdmin) && (
 				<View style={styles.tabBarContainer}>
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabBarContent}>
 						<TouchableOpacity
-							style={[styles.tabButton, tab === 'timeline' && styles.activeTabButton]}
+							style={[styles.tabButton, activeTab === 'timeline' && styles.activeTabButton]}
 							onPress={() => switchTab('timeline')}
 						>
-							<Text style={tab === 'timeline' ? styles.activeTabText : styles.tabText}>Timeline</Text>
+							<Text style={activeTab === 'timeline' ? styles.activeTabText : styles.tabText}>Timeline</Text>
 						</TouchableOpacity>
 						<TouchableOpacity
-							style={[styles.tabButton, tab === 'favorite' && styles.activeTabButton]}
-							onPress={() => switchTab('favorite')}
-						>
-							<Text style={tab === 'favorite' ? styles.activeTabText : styles.tabText}>Favorites</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.tabButton, tab === 'details' && styles.activeTabButton]}
-							onPress={() => switchTab('details')}
-						>
-							<Text style={tab === 'details' ? styles.activeTabText : styles.tabText}>Details</Text>
-						</TouchableOpacity>
-
-						<TouchableOpacity
-							style={[styles.tabButton, tab === 'subscription' && styles.activeTabButton]}
+							style={[styles.tabButton, activeTab === 'subscription' && styles.activeTabButton]}
 							onPress={() => switchTab('subscription')}
 						>
-							<Text style={tab === 'subscription' ? styles.activeTabText : styles.tabText}>Subscription</Text>
+							<Text style={activeTab === 'subscription' ? styles.activeTabText : styles.tabText}>Subscription</Text>
 						</TouchableOpacity>
 
-						<TouchableOpacity
-							style={[styles.tabButton, tab === 'security' && styles.activeTabButton]}
-							onPress={() => switchTab('security')}
-						>
-							<Text style={tab === 'security' ? styles.activeTabText : styles.tabText}>Security</Text>
-						</TouchableOpacity>
-
-						<TouchableOpacity style={[styles.tabButton, tab === 'other' && styles.activeTabButton]} onPress={() => switchTab('other')}>
-							<Text style={tab === 'other' ? styles.activeTabText : styles.tabText}>Other</Text>
-						</TouchableOpacity>
+						{isOwner && (
+							<>
+								<TouchableOpacity
+									style={[styles.tabButton, activeTab === 'favorite' && styles.activeTabButton]}
+									onPress={() => switchTab('favorite')}
+								>
+									<Text style={activeTab === 'favorite' ? styles.activeTabText : styles.tabText}>Favorites</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={[styles.tabButton, activeTab === 'details' && styles.activeTabButton]}
+									onPress={() => switchTab('details')}
+								>
+									<Text style={activeTab === 'details' ? styles.activeTabText : styles.tabText}>Details</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={[styles.tabButton, activeTab === 'security' && styles.activeTabButton]}
+									onPress={() => switchTab('security')}
+								>
+									<Text style={activeTab === 'security' ? styles.activeTabText : styles.tabText}>Security</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={[styles.tabButton, activeTab === 'other' && styles.activeTabButton]}
+									onPress={() => switchTab('other')}
+								>
+									<Text style={activeTab === 'other' ? styles.activeTabText : styles.tabText}>Other</Text>
+								</TouchableOpacity>
+							</>
+						)}
 					</ScrollView>
 				</View>
 			)}
 
-			{tab === 'timeline' && <ProfileTimeline username={username} />}
-			{tab === 'details' && <ProfileDetails username={username} />}
-			{tab === 'favorite' && <FavoritePointsOfInterest />}
-			{tab === 'subscription' && <Subscription username={username} />}
-			{tab === 'security' && <Security username={username} />}
-			{tab === 'other' && <Other username={username} />}
+			{activeTab === 'timeline' && <ProfileTimeline username={username} />}
+			{activeTab === 'details' && <ProfileDetails username={username} />}
+			{activeTab === 'favorite' && <FavoritePointsOfInterest />}
+			{activeTab === 'subscription' && canViewSubscription && <Subscription username={username} />}
+			{activeTab === 'security' && isOwner && <Security username={username} />}
+			{activeTab === 'other' && isOwner && <Other username={username} />}
 		</View>
 	);
 }
