@@ -16,7 +16,7 @@ export class EmailSendService {
 	async send({to, subject, html, replyTo}: Send) {
 		try {
 			const data = await this.resend.emails.send({
-				from: 'noreply@northernexplorer.org',
+				from: config.EMAIL_FROM,
 				to,
 				replyTo,
 				subject,
