@@ -3,6 +3,9 @@ RewriteEngine On
 RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# Serve app association files with the required JSON content type.
+AddType application/json .json apple-app-site-association
+
 # Block sensitive files
 <Files .env>
     Order allow,deny
