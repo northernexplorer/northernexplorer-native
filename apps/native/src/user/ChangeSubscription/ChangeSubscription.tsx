@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Pressable, Text, ScrollView, StyleSheet, View, Linking, Platform} from 'react-native';
+import {Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Link, Redirect, router, useLocalSearchParams} from 'expo-router';
 import Purchases from 'react-native-purchases';
 import {formatMoney, Spinner} from '@northernexplorer/tools-web';
@@ -17,13 +17,20 @@ type RouteParams = {
 export function ChangeSubscription() {
 	const authentication = useAuthentication();
 	const {username} = useLocalSearchParams<RouteParams>();
+	const isOwner = authentication?.username === username;
 	const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<string>('');
 	const [isPurchasing, setIsPurchasing] = useState<boolean>(false);
 
 	const isNativePlatform = Platform.OS === 'android' || Platform.OS === 'ios';
 
-	const {data, loading} = useApiFetch('user', 'SubscriptionLevelController', 'getSubscriptionLevels', {});
-	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {username});
+	const {data, loading} = useApiFetch('user', 'SubscriptionLevelController', 'getSubscriptionLevels', {}, {skip: !isOwner});
+	const {data: subscriptionData, loading: subscriptionLoading} = useApiFetch(
+		'user',
+		'SubscriptionController',
+		'getByUsername',
+		{username},
+		{skip: !isOwner},
+	);
 
 	useEffect(() => {
 		if (subscriptionData?.subscriptionLevel.id) {
@@ -32,6 +39,7 @@ export function ChangeSubscription() {
 	}, [subscriptionData]);
 
 	if (!authentication) return <Redirect href="/user/login" />;
+	if (!isOwner) return <Redirect href={`/user/${username}`} />;
 	if (loading || !data || subscriptionLoading || !subscriptionData) return <Spinner />;
 
 	const currentPlanId = subscriptionData.subscriptionLevel.id;
