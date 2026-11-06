@@ -319,12 +319,18 @@ export class UserController extends BaseController {
 	}
 
 	async refresh(params: Params<Route<'refresh'>>): Promise<Response<Route<'refresh'>>> {
-		const payload = this.tokenService.verifyRefreshToken(params.refreshToken);
-		if (!payload.userId) throw new Error('Your session has expired. Please log in again.');
+		const payload = (() => {
+			try {
+				return this.tokenService.verifyRefreshToken(params.refreshToken);
+			} catch {
+				throw new Error('Unauthorized: Session Expired');
+			}
+		})();
+		if (!payload.userId) throw new Error('Unauthorized: Session Expired');
 
 		const refreshHash = this.repos.session.hashToken(params.refreshToken);
 		const session = await this.repos.session.getByRefreshHash(refreshHash);
-		if (!session) throw new Error('Your session has expired.');
+		if (!session) throw new Error('Unauthorized: Session Expired');
 
 		const user = await this.repos.user.getById(payload.userId);
 
