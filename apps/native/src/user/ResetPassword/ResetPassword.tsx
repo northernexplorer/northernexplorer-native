@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Pressable, Text, ScrollView} from 'react-native';
+import {Pressable, ScrollView, Text} from 'react-native';
 import {Link, router, useLocalSearchParams} from 'expo-router';
 import {FormField} from '@northernexplorer/tools-web';
 import styles from '~/user/styles';
@@ -15,12 +15,12 @@ type FormKeys = keyof FormData;
 
 type RouteParams = {
 	username: string;
+	token?: string | string[];
 };
 
 export function ResetPassword() {
-	const params = new URLSearchParams(window.location.search);
-	const token = params.get('token');
-	const {username} = useLocalSearchParams<RouteParams>();
+	const {username, token: routeToken} = useLocalSearchParams<RouteParams>();
+	const token = Array.isArray(routeToken) ? routeToken[0] : routeToken;
 
 	const [formData, setFormData] = useState<FormData>(initialFormData);
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
