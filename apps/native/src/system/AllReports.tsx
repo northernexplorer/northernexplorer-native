@@ -21,6 +21,8 @@ const REASON_LABELS: Record<ReportReasonEnum, string> = {
 	[ReportReasonEnum.HateSpeech]: 'Hate Speech',
 	[ReportReasonEnum.Inappropriate]: 'Inappropriate',
 	[ReportReasonEnum.NotRelevant]: 'Not Relevant',
+	[ReportReasonEnum.AIGeneratedImage]: 'AI Generated Image',
+	[ReportReasonEnum.LowQuality]: 'Low Quality',
 	[ReportReasonEnum.Other]: 'Other',
 };
 
