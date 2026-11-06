@@ -12,6 +12,8 @@ export enum ReportReasonEnum {
 	HateSpeech = 'HateSpeech',
 	Inappropriate = 'Inappropriate',
 	NotRelevant = 'NotRelevant',
+	AIGeneratedImage = 'AIGeneratedImage',
+	LowQuality = 'LowQuality',
 	Other = 'Other',
 }
 

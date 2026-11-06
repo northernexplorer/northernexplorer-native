@@ -4,6 +4,8 @@ export interface ImageVariants {
 	large: Buffer;
 	thumbnail: Buffer;
 	cover?: Buffer;
+	originalWidth?: number;
+	originalHeight?: number;
 }
 
 /**
@@ -31,5 +33,7 @@ export async function createJpgVariants(fileBuffer: Buffer): Promise<ImageVarian
 		large,
 		thumbnail,
 		...(cover && {cover}),
+		originalWidth: metadata.width,
+		originalHeight: metadata.height,
 	};
 }

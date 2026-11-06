@@ -38,10 +38,10 @@ export class Report {
 	@ManyToOne(() => User)
 	user: User;
 
-	@ManyToOne(() => Review, {nullable: true})
+	@ManyToOne(() => Review, {nullable: true, deleteRule: 'set null'})
 	review?: Review;
 
-	@ManyToOne(() => Image, {nullable: true})
+	@ManyToOne(() => Image, {nullable: true, deleteRule: 'set null'})
 	image?: Image;
 
 	@Property({type: 'Date', onCreate: () => new Date()})
