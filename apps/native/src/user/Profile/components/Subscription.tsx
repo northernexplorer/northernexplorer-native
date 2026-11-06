@@ -1,13 +1,16 @@
-import {View, Text, Pressable} from 'react-native';
+import {Pressable, Text, View} from 'react-native';
 import {formatMoney, Spinner} from '@northernexplorer/tools-web';
 import {Link} from 'expo-router';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 type Props = {
 	username: string;
 };
 export function Subscription({username}: Props) {
+	const authentication = useAuthentication();
+	const isOwner = authentication?.username === username;
 	const {data, loading} = useApiFetch('user', 'SubscriptionController', 'getByUsername', {
 		username,
 	});
@@ -29,11 +32,13 @@ export function Subscription({username}: Props) {
 			/>
 			<ProfileField label="Cost" value={formatMoney(data.subscriptionLevel.cost)} />
 			<ProfileField label="Description" value={data.subscriptionLevel.description} />
-			<Link href={`/user/${username}/change-subscription`} asChild>
-				<Pressable style={styles.button}>
-					<Text style={styles.buttonText}>Change Subscription</Text>
-				</Pressable>
-			</Link>
+			{isOwner && (
+				<Link href={`/user/${username}/change-subscription`} asChild>
+					<Pressable style={styles.button}>
+						<Text style={styles.buttonText}>Change Subscription</Text>
+					</Pressable>
+				</Link>
+			)}
 		</View>
 	);
 }
