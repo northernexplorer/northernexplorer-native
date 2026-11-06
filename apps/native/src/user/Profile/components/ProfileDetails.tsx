@@ -4,12 +4,15 @@ import React from 'react';
 import {formatDate, Spinner} from '@northernexplorer/tools-web';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 type Props = {
 	username: string;
 };
 
 export function ProfileDetails({username}: Props) {
+	const authentication = useAuthentication();
+	const isOwner = authentication?.username === username;
 	const {data, loading} = useApiFetch('user', 'UserController', 'getByUsername', {
 		username,
 	});
@@ -34,11 +37,13 @@ export function ProfileDetails({username}: Props) {
 			<ProfileField label="Status" value={data.isActive ? 'Active' : 'Inactive'} />
 
 			<ProfileField label="Registered On" value={formatDate(data.createdAt)} />
-			<Link href={`/user/${username}/edit-profile`} asChild>
-				<Pressable style={styles.button}>
-					<Text style={styles.buttonText}>Edit Profile</Text>
-				</Pressable>
-			</Link>
+			{isOwner && (
+				<Link href={`/user/${username}/edit-profile`} asChild>
+					<Pressable style={styles.button}>
+						<Text style={styles.buttonText}>Edit Profile</Text>
+					</Pressable>
+				</Link>
+			)}
 		</View>
 	);
 }

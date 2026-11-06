@@ -27,7 +27,12 @@ export function Profile() {
 	const isOwner = authentication?.username === username;
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin) ?? false;
 	const canViewSubscription = isOwner || isAdmin;
-	const activeTab = !isOwner && (tab === 'security' || tab === 'other' || (tab === 'subscription' && !canViewSubscription)) ? 'timeline' : tab;
+	const canViewDetails = isOwner || isAdmin;
+	const activeTab =
+		!isOwner &&
+		(tab === 'security' || tab === 'other' || (tab === 'details' && !canViewDetails) || (tab === 'subscription' && !canViewSubscription))
+			? 'timeline'
+			: tab;
 
 	const switchTab = (newTab: 'timeline' | 'details' | 'favorite' | 'subscription' | 'security' | 'other') => {
 		router.setParams({username, tab: newTab});
@@ -73,6 +78,12 @@ export function Profile() {
 						>
 							<Text style={activeTab === 'subscription' ? styles.activeTabText : styles.tabText}>Subscription</Text>
 						</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.tabButton, activeTab === 'details' && styles.activeTabButton]}
+							onPress={() => switchTab('details')}
+						>
+							<Text style={activeTab === 'details' ? styles.activeTabText : styles.tabText}>Details</Text>
+						</TouchableOpacity>
 
 						{isOwner && (
 							<>
@@ -81,12 +92,6 @@ export function Profile() {
 									onPress={() => switchTab('favorite')}
 								>
 									<Text style={activeTab === 'favorite' ? styles.activeTabText : styles.tabText}>Favorites</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									style={[styles.tabButton, activeTab === 'details' && styles.activeTabButton]}
-									onPress={() => switchTab('details')}
-								>
-									<Text style={activeTab === 'details' ? styles.activeTabText : styles.tabText}>Details</Text>
 								</TouchableOpacity>
 								<TouchableOpacity
 									style={[styles.tabButton, activeTab === 'security' && styles.activeTabButton]}
@@ -107,7 +112,7 @@ export function Profile() {
 			)}
 
 			{activeTab === 'timeline' && <ProfileTimeline username={username} />}
-			{activeTab === 'details' && <ProfileDetails username={username} />}
+			{activeTab === 'details' && canViewDetails && <ProfileDetails username={username} />}
 			{activeTab === 'favorite' && <FavoritePointsOfInterest />}
 			{activeTab === 'subscription' && canViewSubscription && <Subscription username={username} />}
 			{activeTab === 'security' && isOwner && <Security username={username} />}
