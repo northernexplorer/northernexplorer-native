@@ -39,6 +39,7 @@
 		"test:expo": "yarn workspace northernexplorer-native exec expo-doctor",
 		"test:format": "prettier . --check",
 		"test:lint": "eslint .",
+		"test:api-client": "tsx --test apps/native/test/apiClientCore.test.mjs",
 		"test:types": "tsc --build --force"
 	},
 	"devDependencies": {
