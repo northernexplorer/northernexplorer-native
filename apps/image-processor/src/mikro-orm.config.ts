@@ -3,6 +3,7 @@ import {defineConfig} from '@mikro-orm/postgresql';
 import dotenv from 'dotenv';
 import {Image} from './Image';
 import {Avatar} from './Avatar';
+import {Report} from './Report';
 
 dotenv.config();
 
@@ -12,6 +13,6 @@ export default defineConfig({
 	dbName: process.env.DB_NAME || 'northernexplorer',
 	user: process.env.DB_USER || 'postgres',
 	password: process.env.DB_PASS || 'password',
-	entities: [Image, Avatar],
+	entities: [Image, Avatar, Report],
 	debug: process.env.NODE_ENV !== 'production',
 });

@@ -53,7 +53,7 @@ export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTE
 				msg.includes('failed to connect') || // "failed to connect to /..."
 				msg.includes('connection refused') || // Socket refusal
 				msg.includes('networkerror') || // Firefox / general
-				msg.includes('load failed'); // Safari
+				msg.includes('load failed'); // Safari Browser
 
 			if (!isNetworkError) {
 				const alertType = e.message.includes('Session Expired') ? 'warning' : 'error';

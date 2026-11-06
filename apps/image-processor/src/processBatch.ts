@@ -4,17 +4,14 @@ import {PostgreSqlDriver} from '@mikro-orm/postgresql';
 import {SpacesManagementService} from '@northernexplorer/tools-server';
 import {streamToBuffer} from './lib/streamToBuffer';
 import {detectImageFileType} from './lib/detectImageFileType';
-import {createJpgVariants} from './lib/createJpgVariants';
 import {createAvatarJpgVariants} from './lib/createAvatarJpgVariants';
 import {getVariantKeys} from './lib/getVariantKeys';
+import {formatMb} from './lib/formatMb';
 import {Image} from './Image';
 import {Avatar} from './Avatar';
+import {processImage} from './processImage';
 
 const BATCH_SIZE = 50;
-
-function formatMb(bytes: number): string {
-	return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-}
 
 export async function processBatch(orm: MikroORM<PostgreSqlDriver>, spacesService: SpacesManagementService): Promise<void> {
 	await RequestContext.create(orm.em, async () => {
@@ -32,62 +29,7 @@ export async function processBatch(orm: MikroORM<PostgreSqlDriver>, spacesServic
 			console.log(`[${new Date().toISOString()}] Starting processing for ${unprocessedImages.length} image(s)...`);
 
 			for (const image of unprocessedImages) {
-				try {
-					// Get original object key without leading slash
-					const originalKey = image.url.replace(/^\/+/, '');
-
-					console.log(`\n[Image ID: ${image.id}] Fetching key: ${originalKey}`);
-
-					// Fetch original file stream from Spaces (UNMODIFIED)
-					const {body, contentType} = await spacesService.getObject(originalKey);
-					if (!body) throw new Error(`Empty object body returned for key: ${originalKey}`);
-
-					// Convert stream to buffer & verify file type
-					const originalBuffer = await streamToBuffer(body as Readable);
-					const detected = detectImageFileType(originalBuffer);
-
-					console.log(`[Image ID: ${image.id}] Original size: ${formatMb(originalBuffer.length)} | Type: ${detected?.mime || contentType}`);
-
-					// Generate _large.jpg, _thumbnail.jpg, and optional _cover.jpg variants
-					const {large, thumbnail, cover} = await createJpgVariants(originalBuffer);
-					const {largeKey, thumbnailKey, coverKey} = getVariantKeys(originalKey);
-
-					// Upload _large.jpg to Spaces
-					await spacesService.upload({
-						key: largeKey,
-						body: large,
-						contentType: 'image/jpeg',
-					});
-
-					// Upload _thumbnail.jpg to Spaces
-					await spacesService.upload({
-						key: thumbnailKey,
-						body: thumbnail,
-						contentType: 'image/jpeg',
-					});
-
-					console.log(`[Image ID: ${image.id}] Uploaded variants:`);
-					console.log(` ├─ Large: ${largeKey} (${formatMb(large.length)})`);
-					console.log(` ├─ Thumbnail: ${thumbnailKey} (${formatMb(thumbnail.length)})`);
-
-					// Upload _cover.jpg if generated (landscape images)
-					if (cover) {
-						await spacesService.upload({
-							key: coverKey,
-							body: cover,
-							contentType: 'image/jpeg',
-						});
-						image.canBeCover = true;
-						console.log(` └─ Cover: ${coverKey} (${formatMb(cover.length)})`);
-					}
-
-					image.size = originalBuffer.length;
-					image.mimeType = detected?.mime || contentType || 'application/octet-stream';
-					image.fileExtension = detected?.ext || image.fileExtension;
-					image.processed = true;
-				} catch (err) {
-					console.error(`[Image ID: ${image.id}] Processing failed:`, err);
-				}
+				await processImage(image, em, spacesService);
 			}
 		}
 

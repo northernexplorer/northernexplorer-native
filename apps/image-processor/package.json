@@ -12,6 +12,7 @@
 		"test:deps": "depcheck --specials=typescript --ignores=\"@mikro-orm/cli\""
 	},
 	"dependencies": {
+		"@contentauth/c2pa-node": "^0.10.0",
 		"@mikro-orm/core": "^7.1.15",
 		"@mikro-orm/decorators": "^7.1.15",
 		"@mikro-orm/postgresql": "^7.1.15",
