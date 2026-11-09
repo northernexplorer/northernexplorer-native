@@ -29,6 +29,7 @@ export function ConnectivityProvider({children}: {children: React.ReactNode}) {
 						androidVersion: Platform.OS === 'android' ? getBuildNumber() : '',
 					},
 					'GET',
+					{anonymous: true},
 				);
 				const isOnline = String(response.online).toLowerCase() === 'true';
 				setIsRequiredAppUpdate(String(response.upgradeRequired).toLowerCase() === 'true');
