@@ -9,9 +9,18 @@
 		"userInterfaceStyle": "light",
 		"ios": {
 			"supportsTablet": true,
-			"bundleIdentifier": "org.northernexplorer.app"
+			"bundleIdentifier": "org.northernexplorer.app",
+			"associatedDomains": ["applinks:northernexplorer.org"]
 		},
 		"android": {
+			"intentFilters": [
+				{
+					"action": "VIEW",
+					"autoVerify": true,
+					"data": [{"scheme": "https", "host": "northernexplorer.org", "pathPrefix": "/"}],
+					"category": ["BROWSABLE", "DEFAULT"]
+				}
+			],
 			"adaptiveIcon": {
 				"backgroundColor": "#1a1a1a",
 				"foregroundImage": "./assets/android-icon-foreground.png",
