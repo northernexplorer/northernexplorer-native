@@ -4,6 +4,7 @@ import cors from 'cors';
 import {MikroORM, RequestContext} from '@mikro-orm/core';
 import ormConfig from './mikro-orm.config';
 import {config} from './config';
+import {getCorsOptions} from './core/cors';
 import {globalLimiter} from './core/rateLimiters';
 import {setupBackgroundJobs} from './core/jobs';
 import {registerRoutes} from './core/router';
@@ -12,9 +13,7 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = config.PORT;
 
-const corsOrigin = config.CORS.split(',').map(origin => origin.toLowerCase().trim());
-
-app.use(cors({origin: corsOrigin}));
+app.use(cors(getCorsOptions()));
 app.use(express.json({limit: '20mb'}));
 app.use('/api/', globalLimiter);
 

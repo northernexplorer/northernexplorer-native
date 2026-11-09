@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+export const defaultCorsOrigins = 'http://localhost:7001,https://northernexplorer.org,https://www.northernexplorer.org';
+
 export const config = {
 	PORT: process.env.PORT ? parseInt(process.env.PORT, 10) : 5001,
 	WEATHER_API_KEY: process.env.WEATHER_API_KEY,
@@ -11,7 +13,7 @@ export const config = {
 	EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@northernexplorer.org',
 	ACTIVATION_SECRET: process.env.ACTIVATION_SECRET || 'TEMP_ACTIVATION_SECRET',
 	WEB_URL: process.env.WEB_URL || 'http://localhost:7001',
-	CORS: process.env.CORS || 'http://localhost:7001,https://northernexplorer.org',
+	CORS: process.env.CORS || defaultCorsOrigins,
 	REVENUE_CAT_ACCESS_CODE: process.env.REVENUE_CAT_ACCESS_CODE || 'TEMP_REVENUE_CAT_ACCESS_CODE',
 	REQUIRED_ANDROID_VERSION: process.env.REQUIRED_ANDROID_VERSION || '1',
 	REQUIRED_IOS_VERSION: process.env.REQUIRED_IOS_VERSION || '1',

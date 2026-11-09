@@ -18,4 +18,7 @@ Northern Explorer is a data and mapping platform built for modern explorers. Com
 - Web: Start the web frontend with `yarn start:web` (port 7001).
 - Android: Start the android native app with `yarn start:android` (port 7002).
 
+## API CORS
+The server allows `http://localhost:7001`, `https://northernexplorer.org`, and `https://www.northernexplorer.org` by default. Set the server's `CORS` environment variable to a comma-separated list to replace these defaults; only include trusted origins. If you configure `CORS` in production, include `https://www.northernexplorer.org` and redeploy or restart the API for the change to take effect.
+
 For more detailed documentation, check out the docs directory.
