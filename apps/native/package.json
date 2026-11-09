@@ -9,7 +9,6 @@
 		"build:web": "expo export --platform web",
 		"clean": "rm -rf dist node_modules/.cache .expo ios android",
 		"ios": "expo run:ios --port 7001",
-		"start": "expo start --dev-client --port 7001",
 		"test:deps": "depcheck --specials=typescript --ignores=\"~,expo-splash-screen,expo-build-properties,react-native-worklets,expo-dev-client\"",
 		"web": "expo start --web --port 7001"
 	},

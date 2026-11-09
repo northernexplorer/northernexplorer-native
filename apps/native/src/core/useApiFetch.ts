@@ -1,10 +1,8 @@
 import {useState, useCallback, useEffect, useRef} from 'react';
 import {ROUTES, GetParams, GetResponse, NonEmptyCategory} from '@northernexplorer/types';
-import {useDispatch} from 'react-redux';
 import {useFocusEffect} from 'expo-router';
 import {apiClient} from '~/core/apiClient';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
-import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {alertStore} from '~/core/alertStore';
 import {useIsOffline} from '~/core/ConnectivityProvider';
 
@@ -49,7 +47,6 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const [loading, setLoading] = useState<boolean>(() => !isSkipped && !getCachedData(cacheKey));
 	const [error, setError] = useState<Error | null>(null);
 
-	const dispatch = useDispatch();
 	const authentication = useAuthentication();
 
 	// Sync state when cacheKey or skip status changes
@@ -103,20 +100,7 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 		setError(null);
 
 		try {
-			const result = await apiClient(
-				category,
-				controller,
-				method,
-				currentParams,
-				'GET',
-				authentication?.accessToken,
-				authentication?.refreshToken,
-				response => {
-					if (authentication) {
-						dispatch(setAuthentication(response));
-					}
-				},
-			);
+			const result = await apiClient(category, controller, method, currentParams, 'GET');
 
 			if (currentCacheKey) {
 				apiCache.set(currentCacheKey, result);
@@ -156,7 +140,6 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 		isOffline,
 		authentication?.accessToken,
 		authentication?.refreshToken,
-		dispatch,
 		authentication,
 		getCachedData,
 	]);

@@ -1,9 +1,6 @@
 import {useState} from 'react';
 import {ROUTES, GetParams, NonEmptyCategory} from '@northernexplorer/types';
-import {useDispatch} from 'react-redux';
 import {apiClient} from '~/core/apiClient';
-import {useAuthentication} from '~/user/state/authentication/useAuthentication';
-import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {alertStore} from '~/core/alertStore';
 import {useIsOffline} from '~/core/ConnectivityProvider';
 
@@ -15,9 +12,6 @@ export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTE
 	const {isOffline} = useIsOffline();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
-	const dispatch = useDispatch();
-	const authentication = useAuthentication();
-
 	const mutate = async (params: GetParams<C, K, M>) => {
 		if (isOffline) {
 			return;
@@ -25,20 +19,7 @@ export function useApiMutation<C extends NonEmptyCategory, K extends keyof ROUTE
 		setLoading(true);
 		setError(null);
 		try {
-			return await apiClient(
-				category,
-				controller,
-				method,
-				params,
-				'POST',
-				authentication?.accessToken,
-				authentication?.refreshToken,
-				response => {
-					if (authentication) {
-						dispatch(setAuthentication(response));
-					}
-				},
-			);
+			return await apiClient(category, controller, method, params, 'POST');
 		} catch (err) {
 			const e = err instanceof Error ? err : new Error(typeof err === 'string' ? err : 'Network request failed');
 			setError(e);
