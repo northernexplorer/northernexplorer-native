@@ -17,7 +17,10 @@
 				{
 					"action": "VIEW",
 					"autoVerify": true,
-					"data": [{"scheme": "https", "host": "northernexplorer.org", "pathPrefix": "/"}],
+					"data": [
+						{"scheme": "https", "host": "northernexplorer.org", "path": "/user/activate"},
+						{"scheme": "https", "host": "northernexplorer.org", "path": "/user/reset-password"}
+					],
 					"category": ["BROWSABLE", "DEFAULT"]
 				}
 			],

@@ -81,7 +81,7 @@ export function createAssociationFiles({androidFingerprint, appleAppIdPrefix, an
 						details: [
 							{
 								appID: `${appIdPrefix}.${iosBundleIdentifier}`,
-								paths: ['*'],
+								paths: ['/user/activate', '/user/reset-password'],
 							},
 						],
 					},
