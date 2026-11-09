@@ -1,22 +1,32 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
+import {useLocalSearchParams} from 'expo-router';
 import {useDispatch} from 'react-redux';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useDeviceInfo} from '~/user/Login/useDeviceInfo';
 
+type RouteParams = {
+	token?: string | string[];
+};
+
 export function Activate() {
 	const [accountRegistered, setAccountRegistered] = useState(false);
+	const {token: routeToken} = useLocalSearchParams<RouteParams>();
+	const token = Array.isArray(routeToken) ? routeToken[0] : routeToken;
 	const {mutate} = useApiMutation('user', 'UserController', 'activate');
 	const dispatch = useDispatch();
 	const device = useDeviceInfo();
 
 	useEffect(() => {
 		const activateAccount = async () => {
+			if (!token) {
+				return;
+			}
+
 			try {
-				const params = new URLSearchParams(window.location.search);
-				const response = await mutate({activationToken: params.get('token') || '', device});
+				const response = await mutate({activationToken: token, device});
 
 				if (response?.accessToken) {
 					dispatch(setAuthentication(response));
@@ -27,7 +37,7 @@ export function Activate() {
 			}
 		};
 
-		activateAccount();
+		void activateAccount();
 	}, []);
 
 	if (accountRegistered) {
