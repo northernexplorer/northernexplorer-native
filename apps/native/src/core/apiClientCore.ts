@@ -20,6 +20,7 @@ function toError(error: unknown): Error {
 }
 
 export function createApiClient(dependencies: ApiClientDependencies) {
+	const fetch = dependencies.fetch.bind(globalThis);
 	const refreshPromises = new Map<string, Promise<RefreshResult>>();
 	const logoutRequestedFor = new WeakSet<UserAuthenticationType>();
 
@@ -30,7 +31,7 @@ export function createApiClient(dependencies: ApiClientDependencies) {
 		const refreshPromise = (async (): Promise<RefreshResult> => {
 			try {
 				const refreshUrl = new URL(`${dependencies.baseUrl}/api/UserController/refresh`);
-				const refreshResponse = await dependencies.fetch(refreshUrl.toString(), {
+				const refreshResponse = await fetch(refreshUrl.toString(), {
 					method: 'POST',
 					headers: {'Content-Type': 'application/json'},
 					body: JSON.stringify({refreshToken}),
@@ -98,12 +99,12 @@ export function createApiClient(dependencies: ApiClientDependencies) {
 			});
 		}
 
-		let response = await dependencies.fetch(url.toString(), requestOptions);
+		let response = await fetch(url.toString(), requestOptions);
 
 		if (response.status === 401 && authenticationAtRequest && tokenToUse) {
 			const latestAuthentication = dependencies.getAuthentication();
 			if (latestAuthentication?.userId === authenticationAtRequest.userId && latestAuthentication.accessToken !== tokenToUse) {
-				response = await retryWithToken(dependencies.fetch, url, requestOptions, headers, latestAuthentication.accessToken);
+				response = await retryWithToken(fetch, url, requestOptions, headers, latestAuthentication.accessToken);
 			} else if (latestAuthentication?.refreshToken === authenticationAtRequest.refreshToken) {
 				const refreshResult = await refreshTokens(authenticationAtRequest.refreshToken, authenticationAtRequest);
 				if (refreshResult.status === 'failed') throw refreshResult.error;
@@ -121,7 +122,7 @@ export function createApiClient(dependencies: ApiClientDependencies) {
 					) {
 						throw new Error('Authentication changed while the request was in progress.');
 					}
-					response = await retryWithToken(dependencies.fetch, url, requestOptions, headers, refreshResult.authentication.accessToken);
+					response = await retryWithToken(fetch, url, requestOptions, headers, refreshResult.authentication.accessToken);
 				}
 			}
 		}
