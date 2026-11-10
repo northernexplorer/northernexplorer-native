@@ -10,18 +10,25 @@ export function Support() {
 	const {data, loading} = useApiFetch('system', 'SupportController', 'getHeadings', {});
 
 	const groupedData = useMemo(() => {
-		if (!data) return {};
-		return data.reduce(
-			(acc, item) => {
-				const subcategory = item.subcategory ?? 'General';
-				if (!(subcategory in acc)) {
-					acc[subcategory] = [];
-				}
-				acc[subcategory].push(item);
-				return acc;
-			},
-			{} as Record<string, ArticleHeadingType[]>,
-		);
+		if (!data) return [];
+		const groups = new Map<string, {key: string; label: string; items: ArticleHeadingType[]}>();
+
+		for (const article of data) {
+			const path = article.categoryPath;
+			const key = path.map(category => category.id).join('/');
+			const label =
+				path.length > 1
+					? path
+							.slice(1)
+							.map(category => category.name)
+							.join(' › ')
+					: 'General';
+			const group = groups.get(key) ?? {key, label, items: []};
+			group.items.push(article);
+			groups.set(key, group);
+		}
+
+		return [...groups.values()];
 	}, [data]);
 
 	if (loading) return <Spinner />;
@@ -37,9 +44,9 @@ export function Support() {
 
 			<View style={styles.categorySection}>
 				<Text style={styles.categoryHeader}>Support</Text>
-				{Object.entries(groupedData).map(([subcategory, items]) => (
-					<View key={subcategory}>
-						<Text style={styles.categoryHeader}>{subcategory}</Text>
+				{groupedData.map(({key, label, items}) => (
+					<View key={key}>
+						<Text style={styles.categoryHeader}>{label}</Text>
 						{items.map(article => (
 							<Link href={`/support/${article.url}`} key={article.id}>
 								<Text style={styles.linkText}>{article.title}</Text>

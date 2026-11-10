@@ -4,11 +4,6 @@ export enum ArticleCategoryName {
 	Support = 'Support',
 }
 
-export enum ArticleSubcategory {
-	Legal = 'Legal',
-	Help = 'Help',
-}
-
 export type ArticleType = {
 	id: string;
 	version: number;
@@ -19,7 +14,7 @@ export type ArticleType = {
 	updatedAt: Date;
 	author: UserType;
 	category: ArticleCategoryType;
-	subcategory: ArticleSubcategory | null;
+	categoryPath: ArticleCategoryType[];
 };
 
 export type ArticleCategoryType = {
@@ -32,7 +27,7 @@ export type ArticleHeadingType = {
 	title: string;
 	url: string;
 	category: ArticleCategoryType;
-	subcategory: ArticleSubcategory | null;
+	categoryPath: ArticleCategoryType[];
 };
 
 export type ContactParams = {
