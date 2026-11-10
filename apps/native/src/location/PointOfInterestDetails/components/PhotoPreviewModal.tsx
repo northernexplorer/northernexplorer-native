@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, GestureResponderEvent, Modal, Pressable, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
+import {ActivityIndicator, GestureResponderEvent, Modal, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Feather, Ionicons} from '@expo/vector-icons';
 import {formatName, getImageUrl, getUrlSafeString, ImageView} from '@northernexplorer/tools-web';
@@ -15,6 +15,7 @@ import {
 	useSimultaneousGestures,
 	useTapGesture,
 } from 'react-native-gesture-handler';
+import {getWheelZoomScale, MAX_SCALE, MIN_SCALE} from './photoPreviewZoom';
 import {config} from '~/config';
 import {useApiMutation} from '~/core/useApiMutation';
 import {useApiFetch} from '~/core/useApiFetch';
@@ -37,9 +38,6 @@ type PhotoPreviewModalProps = {
 	onApprove?: (imageId: string) => void;
 	onReject?: (imageId: string) => void;
 };
-
-const MIN_SCALE = 1;
-const MAX_SCALE = 5;
 
 const SPRING_CONFIG = {
 	damping: 18,
@@ -82,6 +80,8 @@ export function PhotoPreviewModal({
 
 	const navRef = useRef({selectedIndex, totalImages, onPrevious, onNext});
 	navRef.current = {selectedIndex, totalImages, onPrevious, onNext};
+	const imageWrapperRef = useRef<HTMLElement | null>(null);
+	const wheelHandlerRef = useRef<(event: WheelEvent) => void>(() => undefined);
 
 	// Shared values for transformation state
 	const scale = useSharedValue(1);
@@ -267,6 +267,33 @@ export function PhotoPreviewModal({
 			clampAndApplyBoundaries();
 		}
 	};
+
+	wheelHandlerRef.current = event => {
+		event.preventDefault();
+		const nextScale = getWheelZoomScale(scale.value, event.deltaY, event.deltaMode, windowHeight);
+
+		if (nextScale <= MIN_SCALE) {
+			resetZoom(true);
+			setIsZoomed(false);
+			return;
+		}
+
+		scale.value = withSpring(nextScale, SPRING_CONFIG);
+		savedScale.value = nextScale;
+		clampAndApplyBoundaries();
+		setIsZoomed(true);
+	};
+
+	useEffect(() => {
+		if (Platform.OS !== 'web') return;
+
+		const imageWrapper = imageWrapperRef.current;
+		if (!imageWrapper) return;
+
+		const handleWheel = (event: WheelEvent) => wheelHandlerRef.current(event);
+		imageWrapper.addEventListener('wheel', handleWheel, {passive: false});
+		return () => imageWrapper.removeEventListener('wheel', handleWheel);
+	}, [imageData?.id, selectedImageId]);
 
 	const animatedImageStyle = useAnimatedStyle(() => ({
 		transform: [{translateX: translateX.value}, {translateY: translateY.value}, {scale: scale.value}],
@@ -472,7 +499,12 @@ export function PhotoPreviewModal({
 						)}
 
 						<GestureDetector gesture={composedGesture}>
-							<Animated.View style={[styles.modalImageWrapper, animatedImageStyle]}>
+							<Animated.View
+								ref={(node: View | null) => {
+									imageWrapperRef.current = node as unknown as HTMLElement | null;
+								}}
+								style={[styles.modalImageWrapper, animatedImageStyle]}
+							>
 								<ImageView
 									source={{
 										uri: getImageUrl({
