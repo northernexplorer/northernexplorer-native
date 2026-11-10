@@ -33,7 +33,7 @@ all () {
 core () {
   local tid
 
-  tid=$(newTabWithNamePath "Northern Explorer - Expo" "$DIR/apps/native")
+  tid=$(newTabWithNamePath "Northern Explorer - Web" "$DIR/apps/native")
   runCommand "$tid" "nvm use && yarn web"
 
   tid=$(newTabWithNamePath "Northern Explorer - Server" "$DIR/apps/domain")
