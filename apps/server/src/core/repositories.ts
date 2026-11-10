@@ -3,26 +3,26 @@ import {WeatherCache, WeatherRepository} from '../environment';
 import {
 	CityCache,
 	CityRepository,
+	Country,
+	CountryRepository,
+	Image,
+	ImageLike,
+	ImageLikeRepository,
+	ImageRepository,
+	Organization,
+	OrganizationRepository,
 	PointOfInterest,
+	PointOfInterestFavorite,
+	PointOfInterestFavoriteRepository,
 	PointOfInterestRepository,
 	PointOfInterestSuggestion,
 	PointOfInterestSuggestionRepository,
-	PointOfInterestFavorite,
-	PointOfInterestFavoriteRepository,
-	CountryRepository,
-	Country,
 	Region,
 	RegionRepository,
 	Review,
-	ReviewLikeRepository,
 	ReviewLike,
+	ReviewLikeRepository,
 	ReviewRepository,
-	OrganizationRepository,
-	Organization,
-	Image,
-	ImageRepository,
-	ImageLikeRepository,
-	ImageLike,
 } from '../location';
 import {
 	Avatar,
@@ -37,7 +37,7 @@ import {
 	User,
 	UserRepository,
 } from '../user';
-import {Support, SupportRepository, Report, ReportRepository} from '../system';
+import {Article, ArticleRepository, Report, ReportRepository} from '../system';
 import {SubscriptionFeature} from '../user/entities/SubscriptionFeature';
 
 export type Repositories = ReturnType<typeof repositories>;
@@ -61,7 +61,7 @@ export function repositories(em: EntityManager) {
 		subscription: new SubscriptionRepository(em, Subscription),
 		subscriptionFeature: new SubscriptionFeatureRepository(em, SubscriptionFeature),
 		subscriptionLevel: new SubscriptionLevelRepository(em, SubscriptionLevel),
-		support: new SupportRepository(em, Support),
+		article: new ArticleRepository(em, Article),
 		user: new UserRepository(em, User),
 		weather: new WeatherRepository(em, WeatherCache),
 	};

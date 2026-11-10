@@ -1,11 +1,15 @@
 import {CaptchaResponseType, UserType} from '../user';
 
-export enum SupportCategory {
+export enum ArticleCategory {
+	Support = 'Support',
+}
+
+export enum ArticleSubcategory {
 	Legal = 'Legal',
 	Help = 'Help',
 }
 
-export type SupportType = {
+export type ArticleType = {
 	id: string;
 	version: number;
 	content: string;
@@ -14,14 +18,16 @@ export type SupportType = {
 	createdAt: Date;
 	updatedAt: Date;
 	author: UserType;
-	category: SupportCategory;
+	category: ArticleCategory;
+	subcategory: ArticleSubcategory | null;
 };
 
-export type SupportHeadingType = {
+export type ArticleHeadingType = {
 	id: string;
 	title: string;
 	url: string;
-	category: SupportCategory;
+	category: ArticleCategory;
+	subcategory: ArticleSubcategory | null;
 };
 
 export type ContactParams = {
@@ -37,11 +43,11 @@ export type ContactParams = {
 export const SupportController = {
 	getByUrl: {
 		params: {} as {url: string},
-		response: null as unknown as SupportType,
+		response: null as unknown as ArticleType,
 	},
 	getHeadings: {
 		params: {} as Record<string, never>,
-		response: null as unknown as SupportHeadingType[],
+		response: null as unknown as ArticleHeadingType[],
 	},
 	getCaptcha: {
 		params: {} as Record<string, never>,

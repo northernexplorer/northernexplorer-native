@@ -1,17 +1,17 @@
 import {
 	CityCache,
-	PointOfInterest,
-	PointOfInterestSuggestion,
 	Country,
+	Image,
+	ImageLike,
+	Organization,
+	PointOfInterest,
+	PointOfInterestFavorite,
+	PointOfInterestSuggestion,
 	Region,
 	Review,
 	ReviewLike,
-	Organization,
-	Image,
-	ImageLike,
-	PointOfInterestFavorite,
 } from '../location';
-import {Migration, Report, Support} from '../system';
+import {Article, Migration, Report} from '../system';
 import {WeatherCache, WeatherWarningCache} from '../environment';
 import {Avatar, Session, Subscription, SubscriptionLevel, User} from '../user';
 
@@ -33,7 +33,7 @@ export const entities = [
 	Session,
 	Subscription,
 	SubscriptionLevel,
-	Support,
+	Article,
 	User,
 	WeatherCache,
 	WeatherWarningCache,

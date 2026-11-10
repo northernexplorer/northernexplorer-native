@@ -1,8 +1,8 @@
 import React, {useMemo} from 'react';
-import {View, Text} from 'react-native';
+import {Text, View} from 'react-native';
 import {Link} from 'expo-router';
 import {Spinner} from '@northernexplorer/tools-web';
-import {SupportHeadingType} from '@northernexplorer/types';
+import {ArticleHeadingType} from '@northernexplorer/types';
 import styles from '~/user/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 
@@ -13,14 +13,14 @@ export function Support() {
 		if (!data) return {};
 		return data.reduce(
 			(acc, item) => {
-				const category = item.category;
-				if (!(category in acc)) {
-					acc[category] = [];
+				const subcategory = item.subcategory ?? 'General';
+				if (!(subcategory in acc)) {
+					acc[subcategory] = [];
 				}
-				acc[category].push(item);
+				acc[subcategory].push(item);
 				return acc;
 			},
-			{} as Record<string, SupportHeadingType[]>,
+			{} as Record<string, ArticleHeadingType[]>,
 		);
 	}, [data]);
 
@@ -35,16 +35,19 @@ export function Support() {
 				</Link>
 			</View>
 
-			{Object.entries(groupedData).map(([category, items]) => (
-				<View key={category} style={styles.categorySection}>
-					<Text style={styles.categoryHeader}>{category}</Text>
-					{items.map(support => (
-						<Link href={`/support/${support.url}`} key={support.id}>
-							<Text style={styles.linkText}>{support.title}</Text>
-						</Link>
-					))}
-				</View>
-			))}
+			<View style={styles.categorySection}>
+				<Text style={styles.categoryHeader}>Support</Text>
+				{Object.entries(groupedData).map(([subcategory, items]) => (
+					<View key={subcategory}>
+						<Text style={styles.categoryHeader}>{subcategory}</Text>
+						{items.map(article => (
+							<Link href={`/support/${article.url}`} key={article.id}>
+								<Text style={styles.linkText}>{article.title}</Text>
+							</Link>
+						))}
+					</View>
+				))}
+			</View>
 		</View>
 	);
 }

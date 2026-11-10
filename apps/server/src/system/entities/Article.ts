@@ -1,18 +1,19 @@
-import {Entity, PrimaryKey, Property, ManyToOne, Enum} from '@mikro-orm/decorators/legacy';
+import {Entity, ManyToOne, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
-import {SupportCategory} from '@northernexplorer/types';
+import {ArticleCategory, ArticleSubcategory} from '@northernexplorer/types';
 import {User} from '../../user';
 
-export type SupportInput = {
+export type ArticleInput = {
 	content: string;
 	title: string;
 	url: string;
 	author: User;
-	category: SupportCategory;
+	category: ArticleCategory;
+	subcategory?: ArticleSubcategory | null;
 };
 
 @Entity()
-export class Support {
+export class Article {
 	@PrimaryKey({type: 'uuid'})
 	id = v4();
 
@@ -28,8 +29,11 @@ export class Support {
 	@Property({type: 'text'})
 	url: string;
 
-	@Enum(() => SupportCategory)
-	category: SupportCategory;
+	@Property({type: 'text'})
+	category: ArticleCategory;
+
+	@Property({type: 'text', nullable: true})
+	subcategory: ArticleSubcategory | null = null;
 
 	@ManyToOne(() => User)
 	author: User;
@@ -40,11 +44,12 @@ export class Support {
 	@Property({type: 'Date', onUpdate: () => new Date()})
 	updatedAt: Date = new Date();
 
-	constructor(data: SupportInput) {
+	constructor(data: ArticleInput) {
 		this.content = data.content;
 		this.title = data.title;
 		this.url = data.url;
 		this.author = data.author;
 		this.category = data.category;
+		this.subcategory = data.subcategory ?? null;
 	}
 }

@@ -20,11 +20,11 @@ export class SupportController extends BaseController {
 
 	public async getByUrl(params: Params<Route<'getByUrl'>>): Promise<Response<Route<'getByUrl'>>> {
 		const {url} = params;
-		return this.repos.support.getByUrl(url);
+		return this.repos.article.getByUrl(url);
 	}
 
 	getHeadings(): Promise<Response<Route<'getHeadings'>>> {
-		return this.repos.support.getHeadings();
+		return this.repos.article.getHeadings();
 	}
 
 	async contact(params: Params<Route<'contact'>>): Promise<Response<Route<'contact'>>> {

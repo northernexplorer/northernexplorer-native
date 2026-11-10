@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {Text, View} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
 import {formatDate, Spinner} from '@northernexplorer/tools-web';
 import {Markdown} from '~/layout/Layout';
@@ -16,7 +16,7 @@ export function SupportDetails() {
 		<View>
 			<View style={styles.content}>
 				<View style={styles.headerRow}>
-					<Text style={styles.breadcrumbs}>Support › {data.category}</Text>
+					<Text style={styles.breadcrumbs}>Support › {data.subcategory ?? 'General'}</Text>
 				</View>
 				<Text style={styles.title}>{data.title}</Text>
 
@@ -24,6 +24,7 @@ export function SupportDetails() {
 					<Text style={styles.metaLabel}>Created At: {formatDate(data.createdAt)}</Text>
 					<Text style={styles.metaLabel}>Updated At: {formatDate(data.updatedAt)}</Text>
 					<Text style={styles.metaLabel}>Category: {data.category}</Text>
+					<Text style={styles.metaLabel}>Subcategory: {data.subcategory ?? 'General'}</Text>
 				</View>
 
 				<View style={styles.divider} />
