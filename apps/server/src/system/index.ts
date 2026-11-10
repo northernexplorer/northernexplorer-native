@@ -4,6 +4,7 @@ export {ReportController} from './controllers/ReportController';
 
 export {Migration} from './entities/Migration';
 export {Article} from './entities/Article';
+export {ArticleCategory} from './entities/ArticleCategory';
 export {Report} from './entities/Report';
 
 export {ArticleRepository} from './repositories/ArticleRepository';

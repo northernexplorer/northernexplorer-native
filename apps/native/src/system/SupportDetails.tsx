@@ -23,7 +23,7 @@ export function SupportDetails() {
 				<View style={styles.metaContainer}>
 					<Text style={styles.metaLabel}>Created At: {formatDate(data.createdAt)}</Text>
 					<Text style={styles.metaLabel}>Updated At: {formatDate(data.updatedAt)}</Text>
-					<Text style={styles.metaLabel}>Category: {data.category}</Text>
+					<Text style={styles.metaLabel}>Category: {data.category.name}</Text>
 					<Text style={styles.metaLabel}>Subcategory: {data.subcategory ?? 'General'}</Text>
 				</View>
 

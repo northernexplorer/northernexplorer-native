@@ -1,6 +1,6 @@
 import {CaptchaResponseType, UserType} from '../user';
 
-export enum ArticleCategory {
+export enum ArticleCategoryName {
 	Support = 'Support',
 }
 
@@ -18,15 +18,20 @@ export type ArticleType = {
 	createdAt: Date;
 	updatedAt: Date;
 	author: UserType;
-	category: ArticleCategory;
+	category: ArticleCategoryType;
 	subcategory: ArticleSubcategory | null;
+};
+
+export type ArticleCategoryType = {
+	id: string;
+	name: string;
 };
 
 export type ArticleHeadingType = {
 	id: string;
 	title: string;
 	url: string;
-	category: ArticleCategory;
+	category: ArticleCategoryType;
 	subcategory: ArticleSubcategory | null;
 };
 

@@ -1,7 +1,8 @@
 import {Entity, ManyToOne, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
-import {ArticleCategory, ArticleSubcategory} from '@northernexplorer/types';
+import {ArticleSubcategory} from '@northernexplorer/types';
 import {User} from '../../user';
+import {ArticleCategory} from './ArticleCategory';
 
 export type ArticleInput = {
 	content: string;
@@ -29,7 +30,7 @@ export class Article {
 	@Property({type: 'text'})
 	url: string;
 
-	@Property({type: 'text'})
+	@ManyToOne(() => ArticleCategory)
 	category: ArticleCategory;
 
 	@Property({type: 'text', nullable: true})

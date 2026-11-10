@@ -1,18 +1,19 @@
-import {ArticleCategory} from '@northernexplorer/types';
+import {ArticleCategoryName} from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {Article} from '../entities/Article';
 
 export class ArticleRepository extends BaseRepository<Article> {
 	async getByUrl(url: string) {
-		return this.findOneOrFail({url, category: ArticleCategory.Support});
+		return this.findOneOrFail({url, category: {name: ArticleCategoryName.Support}}, {populate: ['category']});
 	}
 
 	async getHeadings() {
 		return this.find(
-			{category: ArticleCategory.Support},
+			{category: {name: ArticleCategoryName.Support}},
 			{
-				fields: ['id', 'title', 'url', 'category', 'subcategory'],
+				fields: ['id', 'title', 'url', 'category.id', 'category.name', 'subcategory'],
 				orderBy: {title: 'asc'},
+				populate: ['category'],
 			},
 		);
 	}
