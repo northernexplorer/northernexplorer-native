@@ -177,11 +177,6 @@ export const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 10,
 	},
-	darkOverlay: {
-		...StyleSheet.absoluteFill,
-		backgroundColor: 'rgba(0,0,0,0.35)',
-		pointerEvents: 'none',
-	},
 	page: {
 		flexGrow: 1,
 		alignItems: 'stretch',
