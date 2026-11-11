@@ -2,6 +2,7 @@ import {CaptchaResponseType, UserType} from '../user';
 
 export enum ArticleCategoryName {
 	Support = 'Support',
+	News = 'News',
 }
 
 export type ArticleType = {
@@ -26,6 +27,7 @@ export type ArticleHeadingType = {
 	id: string;
 	title: string;
 	url: string;
+	createdAt: Date;
 	category: ArticleCategoryType;
 	categoryPath: ArticleCategoryType[];
 };
@@ -46,6 +48,14 @@ export const SupportController = {
 		response: null as unknown as ArticleType,
 	},
 	getHeadings: {
+		params: {} as Record<string, never>,
+		response: null as unknown as ArticleHeadingType[],
+	},
+	getNewsByUrl: {
+		params: {} as {url: string},
+		response: null as unknown as ArticleType,
+	},
+	getNewsHeadings: {
 		params: {} as Record<string, never>,
 		response: null as unknown as ArticleHeadingType[],
 	},
