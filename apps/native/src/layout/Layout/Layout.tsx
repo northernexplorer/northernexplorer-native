@@ -52,7 +52,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 
 	useEffect(() => {
 		if (currentPath) {
-			const label = title || (home ? 'Dashboard' : currentPath);
+			const label = title || currentPath;
 			trackEvent('screen_view', {path: currentPath, label});
 		}
 	}, [currentPath, title, home]);
@@ -103,8 +103,6 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 							<View style={{flex: 1, minWidth: 0, flexDirection: 'column'}}>
 								{online && (
 									<View style={[styles.background, {flex: 1, width: '100%'}]}>
-										{home && <View style={styles.darkOverlay} />}
-
 										{/* Padded Content Wrapper */}
 										<View
 											style={{
@@ -133,7 +131,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 							</View>
 
 							{/* Standard Sidebar Column */}
-							{!isMobileFullPage && (
+							{(!isMobileFullPage || home) && (
 								<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : styles.sidebarDesktop]}>
 									<Sidebar key={refreshKey} components={sidebar} />
 								</View>
