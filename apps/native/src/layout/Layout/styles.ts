@@ -46,6 +46,9 @@ export const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: '#333333',
 	},
+	developmentNavbarBorder: {
+		borderBottomColor: '#ff9800',
+	},
 	navbar: {
 		paddingHorizontal: 12,
 		zIndex: 100,
@@ -68,6 +71,15 @@ export const styles = StyleSheet.create({
 		color: '#d9d9d9',
 		fontSize: 20,
 		fontWeight: '600',
+	},
+	brandTextContainer: {
+		flexDirection: 'column',
+	},
+	developmentText: {
+		color: '#ff9800',
+		fontSize: 11,
+		fontWeight: '600',
+		lineHeight: 14,
 	},
 	hamburger: {
 		padding: 4,
