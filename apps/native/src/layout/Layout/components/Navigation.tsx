@@ -52,8 +52,8 @@ export function Navigation() {
 	);
 
 	return (
-		<View style={styles.navbarContainer}>
-			<View style={[styles.navbar, isMobile ? styles.mobileNavbar : styles.desktopNavbar]}>
+		<View style={[styles.navbarContainer, __DEV__ && styles.developmentNavbarBorder]}>
+			<View style={[styles.navbar, __DEV__ && styles.developmentNavbarBorder, isMobile ? styles.mobileNavbar : styles.desktopNavbar]}>
 				{isMobile ? (
 					<>
 						{/* --- MOBILE NAVBAR --- */}
