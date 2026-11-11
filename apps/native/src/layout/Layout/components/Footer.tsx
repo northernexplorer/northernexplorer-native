@@ -1,6 +1,7 @@
 import {Text, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Link} from 'expo-router';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {styles} from '~/layout/Layout/styles';
 
 interface MenuItem {
@@ -36,6 +37,10 @@ export function Footer({items}: FooterProps) {
 					</Link>
 				))}
 			</View>
+
+			<Link href="https://www.instagram.com/northernexplorerinc/">
+				<MaterialCommunityIcons name="instagram" size={24} color="rgba(255,255,255,0.72)" />
+			</Link>
 
 			{/* Copyright Note */}
 			<Text style={styles.subtitle}>© {new Date().getFullYear()} Northern Explorer. All rights reserved.</Text>
