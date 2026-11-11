@@ -26,7 +26,7 @@ Designed for seamless exploration both online and off-grid, the Northern Explore
 
 ## Availability
 
-The Northern Explorer App is available starting today across mobile platforms and on the web at northernexplorer.org.
+The Northern Explorer App is available starting today on Android and web at northernexplorer.org. Release for IOS is coming within the next few weeks.
 
 ## About Northern Explorer Inc.
 
