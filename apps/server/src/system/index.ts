@@ -3,8 +3,9 @@ export {SupportController} from './controllers/SupportController';
 export {ReportController} from './controllers/ReportController';
 
 export {Migration} from './entities/Migration';
-export {Support} from './entities/Support';
+export {Article} from './entities/Article';
+export {ArticleCategory} from './entities/ArticleCategory';
 export {Report} from './entities/Report';
 
-export {SupportRepository} from './repositories/SupportRepository';
+export {ArticleRepository} from './repositories/ArticleRepository';
 export {ReportRepository} from './repositories/ReportRepository';

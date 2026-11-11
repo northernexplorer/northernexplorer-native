@@ -1,18 +1,18 @@
-import {Entity, PrimaryKey, Property, ManyToOne, Enum} from '@mikro-orm/decorators/legacy';
+import {Entity, ManyToOne, PrimaryKey, Property} from '@mikro-orm/decorators/legacy';
 import {v4} from 'uuid';
-import {SupportCategory} from '@northernexplorer/types';
 import {User} from '../../user';
+import {ArticleCategory} from './ArticleCategory';
 
-export type SupportInput = {
+export type ArticleInput = {
 	content: string;
 	title: string;
 	url: string;
 	author: User;
-	category: SupportCategory;
+	category: ArticleCategory;
 };
 
 @Entity()
-export class Support {
+export class Article {
 	@PrimaryKey({type: 'uuid'})
 	id = v4();
 
@@ -28,8 +28,8 @@ export class Support {
 	@Property({type: 'text'})
 	url: string;
 
-	@Enum(() => SupportCategory)
-	category: SupportCategory;
+	@ManyToOne(() => ArticleCategory)
+	category: ArticleCategory;
 
 	@ManyToOne(() => User)
 	author: User;
@@ -40,7 +40,7 @@ export class Support {
 	@Property({type: 'Date', onUpdate: () => new Date()})
 	updatedAt: Date = new Date();
 
-	constructor(data: SupportInput) {
+	constructor(data: ArticleInput) {
 		this.content = data.content;
 		this.title = data.title;
 		this.url = data.url;
