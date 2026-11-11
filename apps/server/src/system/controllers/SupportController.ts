@@ -23,8 +23,17 @@ export class SupportController extends BaseController {
 		return this.repos.article.getByUrl(url);
 	}
 
+	public async getNewsByUrl(params: Params<Route<'getNewsByUrl'>>): Promise<Response<Route<'getNewsByUrl'>>> {
+		const {url} = params;
+		return this.repos.article.getNewsByUrl(url);
+	}
+
 	getHeadings(): Promise<Response<Route<'getHeadings'>>> {
 		return this.repos.article.getHeadings();
+	}
+
+	getNewsHeadings(): Promise<Response<Route<'getNewsHeadings'>>> {
+		return this.repos.article.getNewsHeadings();
 	}
 
 	async contact(params: Params<Route<'contact'>>): Promise<Response<Route<'contact'>>> {
