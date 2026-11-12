@@ -35,7 +35,7 @@ export function PointOfInterestDetails() {
 	const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 
 	const {data, loading, refetch} = useApiFetch('location', 'PointOfInterestController', 'getById', {id});
-	const canAccessRemoteDifficulty = !!permissions?.navigation.useOffTrailDifficulty;
+	const canAccessRemoteDifficulty = !!permissions?.navigation.useRemoteDifficulty;
 
 	const distance = useMemo(() => {
 		if (!coords?.lat || !data?.lon) return null;

@@ -1,6 +1,5 @@
 import {BaseRepository} from '../../core/BaseRepository';
 import {SubscriptionLevel} from '../entities/SubscriptionLevel';
-import {getSubscriptionPermissions} from '../lib/subscriptionPermissions';
 
 export class SubscriptionLevelRepository extends BaseRepository<SubscriptionLevel> {
 	async getById(id: string) {
@@ -24,6 +23,15 @@ export class SubscriptionLevelRepository extends BaseRepository<SubscriptionLeve
 	}
 
 	getPermissions(subscriptionLevel: SubscriptionLevel) {
-		return getSubscriptionPermissions(subscriptionLevel.name);
+		return {
+			navigation: {
+				useCompass: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				useFlashlight: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				useSignal: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				changeMapStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				useRemoteDifficulty: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				useDistanceScale: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+			},
+		};
 	}
 }

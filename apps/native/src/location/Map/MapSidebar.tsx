@@ -59,7 +59,7 @@ export function MapSidebar() {
 
 	const isLoggedIn = !!authentication?.username;
 	const canChangeMapStyle = !!permissions?.navigation.changeMapStyle;
-	const canAccessRemoteDifficulty = !!permissions?.navigation.useOffTrailDifficulty;
+	const canAccessRemoteDifficulty = !!permissions?.navigation.useRemoteDifficulty;
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
 
 	const maxAllowedDifficultyIndex = getMaxSiteDifficultyIndex(canAccessRemoteDifficulty);

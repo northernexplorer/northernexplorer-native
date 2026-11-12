@@ -137,7 +137,7 @@ export class PointOfInterestController extends BaseController {
 			const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
 			const permissions = this.repos.subscriptionLevel.getPermissions(subscriptionLevel);
 
-			if (permissions.navigation.useExpeditionDifficulty && permissions.navigation.useOffTrailDifficulty) {
+			if (permissions.navigation.useRemoteDifficulty) {
 				hasAdvancedAccess = true;
 			}
 

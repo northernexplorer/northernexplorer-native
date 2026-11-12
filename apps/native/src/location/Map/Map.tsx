@@ -48,7 +48,7 @@ export function Map() {
 	const permissions = usePermissions();
 
 	// Permissions
-	const canAccessRemoteDifficulty = permissions?.navigation.useOffTrailDifficulty ?? false;
+	const canAccessRemoteDifficulty = permissions?.navigation.useRemoteDifficulty ?? false;
 	const canUseDistanceScale = permissions?.navigation.useDistanceScale ?? false;
 
 	// Center resolution logic
