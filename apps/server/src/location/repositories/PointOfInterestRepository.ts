@@ -6,17 +6,17 @@ import {
 	PointOfInterestType,
 	PointOfInterestTypeEnum,
 	PublishStatusEnum,
-	RejectionReasonEnum,
 	RegionType,
+	RejectionReasonEnum,
 	ReviewStatusEnum,
 	SiteConditionEnum,
-	SiteDifficultyEnum,
 	VisitedFilterEnum,
 } from '@northernexplorer/types';
 import {BaseRepository} from '../../core/BaseRepository';
 import {PointOfInterest} from '../entities/PointOfInterest';
 import {User} from '../../user';
 import {Image} from '../entities/Image';
+import {buildSiteDifficultyFilter} from '../lib/siteDifficultyFilter';
 import {ImageRepository} from './ImageRepository';
 
 interface PointOfInterestRawRow {
@@ -183,22 +183,8 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			params.push(...selectedPoiTypes);
 		}
 
-		let difficultyFilterSql = '';
-		if (maxDifficultyIndex !== undefined) {
-			const orderedDifficulties = [
-				SiteDifficultyEnum.DEVELOPED,
-				SiteDifficultyEnum.LIGHT_HIKE,
-				SiteDifficultyEnum.MODERATE_TRAIL,
-				SiteDifficultyEnum.OFF_TRAIL_REMOTE,
-				SiteDifficultyEnum.EXPEDITION_ONLY,
-			];
-			const allowedDifficulties = orderedDifficulties.slice(0, maxDifficultyIndex + 1);
-			if (allowedDifficulties.length > 0) {
-				const diffPlaceholders = allowedDifficulties.map(() => '?').join(', ');
-				difficultyFilterSql = `AND (h.difficulty IN (${diffPlaceholders}) OR h.difficulty IS NULL)`;
-				params.push(...allowedDifficulties);
-			}
-		}
+		const {sql: difficultyFilterSql, params: difficultyParams} = buildSiteDifficultyFilter(maxDifficultyIndex);
+		params.push(...difficultyParams);
 
 		let costFilterSql = '';
 		if (maxCostIndex !== undefined) {

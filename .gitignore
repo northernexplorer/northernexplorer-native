@@ -45,6 +45,7 @@ yarn-error.*
 
 # dev
 .idea
+.junie
 tmp/
 
 # build

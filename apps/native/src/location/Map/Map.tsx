@@ -4,13 +4,14 @@ import {BBox, Point, Feature} from 'geojson';
 import Supercluster, {AnyProps} from 'supercluster';
 import useSupercluster from 'use-supercluster';
 import {Spinner} from '@northernexplorer/tools-web';
-import {PointOfInterestType, SiteDifficultyEnum} from '@northernexplorer/types';
+import {PointOfInterestType} from '@northernexplorer/types';
 import {MapView} from './components/MapView';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
 import {usePermissions} from '~/user/state/subscription';
 import {MapStyleObject} from '~/location/state/map/mapSlice';
+import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
 
 export interface PointOfInterestProperties {
 	cluster?: boolean;
@@ -34,8 +35,7 @@ export interface MapViewProps {
 	initialLat: number;
 	initialLon: number;
 	initialZoom: number;
-	canAccessOffTrailDifficulty: boolean;
-	canAccessExpeditionDifficulty: boolean;
+	canAccessRemoteDifficulty: boolean;
 	canUseDistanceScale: boolean;
 	isSelectedLocked: boolean;
 	updateMapCenterAndBounds: (bounds: BBox, zoom: number, center: {lat: number; lon: number}) => void;
@@ -48,8 +48,7 @@ export function Map() {
 	const permissions = usePermissions();
 
 	// Permissions
-	const canAccessOffTrailDifficulty = permissions?.navigation.useOffTrailDifficulty ?? false;
-	const canAccessExpeditionDifficulty = permissions?.navigation.useExpeditionDifficulty ?? false;
+	const canAccessRemoteDifficulty = permissions?.navigation.useRemoteDifficulty ?? false;
 	const canUseDistanceScale = permissions?.navigation.useDistanceScale ?? false;
 
 	// Center resolution logic
@@ -156,9 +155,7 @@ export function Map() {
 	};
 
 	// Lock condition evaluation
-	const selectedIsOffTrail = selectedSite?.difficulty === SiteDifficultyEnum.OFF_TRAIL_REMOTE;
-	const selectedIsExpedition = selectedSite?.difficulty === SiteDifficultyEnum.EXPEDITION_ONLY;
-	const isSelectedLocked = (selectedIsOffTrail && !canAccessOffTrailDifficulty) || (selectedIsExpedition && !canAccessExpeditionDifficulty);
+	const isSelectedLocked = selectedSite ? !hasSiteDifficultyAccess(selectedSite.difficulty, canAccessRemoteDifficulty) : false;
 
 	if (initialLat === undefined || initialLon === undefined) {
 		return <Spinner />;
@@ -177,8 +174,7 @@ export function Map() {
 			initialLat={initialLat}
 			initialLon={initialLon}
 			initialZoom={initialZoom}
-			canAccessOffTrailDifficulty={canAccessOffTrailDifficulty}
-			canAccessExpeditionDifficulty={canAccessExpeditionDifficulty}
+			canAccessRemoteDifficulty={canAccessRemoteDifficulty}
 			canUseDistanceScale={canUseDistanceScale}
 			isSelectedLocked={isSelectedLocked}
 			updateMapCenterAndBounds={updateMapCenterAndBounds}

@@ -45,11 +45,14 @@ export enum ReviewRatingEnum {
 }
 
 export enum SiteDifficultyEnum {
-	DEVELOPED = 'DEVELOPED', // Level 1: Roadside, paved walkways, maintained amenities
-	LIGHT_HIKE = 'LIGHT_HIKE', // Level 2: Short footpaths under 5 km, mild terrain
-	MODERATE_TRAIL = 'MODERATE_TRAIL', // Level 3: Backcountry trails 5+ km, sustained inclines
-	OFF_TRAIL_REMOTE = 'OFF_TRAIL_REMOTE', // Level 4: Bushwhacking, GPS route-finding, watercraft required
-	EXPEDITION_ONLY = 'EXPEDITION_ONLY', // Level 5: Multi-day backcountry travel, floatplane/charter required
+	DEVELOPED_EASY = 'DEVELOPED_EASY', // Level 1: Roadside, paved walkways, maintained amenities
+	DEVELOPED_MEDIUM = 'DEVELOPED_MEDIUM', // Level 2: Short footpaths under 5 km, mild terrain with basic maintenance
+	DEVELOPED_HARD = 'DEVELOPED_HARD', // Level 3: Backcountry trails 5+ km, sustained inclines near developed zones
+	DEVELOPED_MULTI_DAY = 'DEVELOPED_MULTI_DAY', // Level 4: Extended stays or multi-day camping within developed park facilities
+	REMOTE_EASY = 'REMOTE_EASY', // Level 2-3: Short off-trail or lightly marked routes requiring basic navigation
+	REMOTE_MEDIUM = 'REMOTE_MEDIUM', // Level 3: Backcountry travel, bushwhacking, or watercraft access required
+	REMOTE_HARD = 'REMOTE_HARD', // Level 4: Remote wilderness, GPS route-finding, challenging terrain
+	REMOTE_MULTI_DAY = 'REMOTE_MULTI_DAY', // Level 5: Multi-day backcountry expedition, floatplane/charter or deep wilderness access
 }
 
 export enum EntranceCostEnum {

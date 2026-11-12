@@ -3,6 +3,7 @@ import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import Head from 'expo-router/head';
+import Constants from 'expo-constants';
 import {init} from '@aptabase/react-native';
 import {store, persistor} from '~/core/store';
 import {AppBootstrap} from '~/layout/Layout/components/Boostrap';
@@ -13,7 +14,7 @@ import {config} from '~/config';
 if (config.APTABASE_KEY) {
 	init(config.APTABASE_KEY, {
 		enableWeb: true,
-		appVersion: '1.0.0',
+		appVersion: Constants.expoConfig?.version ?? 'unknown',
 	});
 }
 

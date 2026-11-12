@@ -29,8 +29,7 @@ export class SubscriptionLevelRepository extends BaseRepository<SubscriptionLeve
 				useFlashlight: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 				useSignal: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 				changeMapStyle: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
-				useOffTrailDifficulty: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
-				useExpeditionDifficulty: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
+				useRemoteDifficulty: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 				useDistanceScale: ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name),
 			},
 		};
