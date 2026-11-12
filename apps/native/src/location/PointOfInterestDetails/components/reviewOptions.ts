@@ -20,35 +20,53 @@ export const RATING_MAPPING = [
 ];
 
 export const DIFFICULTY_CONFIG: Record<SiteDifficultyEnum, {label: string; color: string; bgColor: string; borderColor: string}> = {
-	[SiteDifficultyEnum.DEVELOPED]: {
-		label: 'Easy (Developed)',
+	[SiteDifficultyEnum.DEVELOPED_EASY]: {
+		label: 'Developed Easy',
 		color: '#ffffff',
 		bgColor: '#22c55e',
 		borderColor: '#16a34a',
 	},
-	[SiteDifficultyEnum.LIGHT_HIKE]: {
-		label: 'Mild (Light Hike)',
+	[SiteDifficultyEnum.DEVELOPED_MEDIUM]: {
+		label: 'Developed Medium',
 		color: '#ffffff',
 		bgColor: '#0ea5e9',
 		borderColor: '#0284c7',
 	},
-	[SiteDifficultyEnum.MODERATE_TRAIL]: {
-		label: 'Moderate (Long Trail)',
+	[SiteDifficultyEnum.DEVELOPED_HARD]: {
+		label: 'Developed Hard',
 		color: '#ffffff',
 		bgColor: '#eab308',
 		borderColor: '#ca8a04',
 	},
-	[SiteDifficultyEnum.OFF_TRAIL_REMOTE]: {
-		label: 'Hard (Off-Trail & Remote)',
+	[SiteDifficultyEnum.DEVELOPED_MULTI_DAY]: {
+		label: 'Developed Multi-Day',
+		color: '#ffffff',
+		bgColor: '#a855f7',
+		borderColor: '#9333ea',
+	},
+	[SiteDifficultyEnum.REMOTE_EASY]: {
+		label: 'Remote Easy',
 		color: '#ffffff',
 		bgColor: '#f97316',
 		borderColor: '#ea580c',
 	},
-	[SiteDifficultyEnum.EXPEDITION_ONLY]: {
-		label: 'Extreme (Expedition Only)',
+	[SiteDifficultyEnum.REMOTE_MEDIUM]: {
+		label: 'Remote Medium',
 		color: '#ffffff',
 		bgColor: '#ef4444',
 		borderColor: '#dc2626',
+	},
+	[SiteDifficultyEnum.REMOTE_HARD]: {
+		label: 'Remote Hard',
+		color: '#ffffff',
+		bgColor: '#dc2626',
+		borderColor: '#b91c1c',
+	},
+	[SiteDifficultyEnum.REMOTE_MULTI_DAY]: {
+		label: 'Remote Multi-Day',
+		color: '#ffffff',
+		bgColor: '#991b1b',
+		borderColor: '#7f1d1d',
 	},
 };
 
