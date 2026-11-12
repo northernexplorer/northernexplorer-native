@@ -102,11 +102,6 @@ export const styles = StyleSheet.create({
 		fontWeight: '600',
 		color: '#0f172a',
 	},
-	score: {
-		fontSize: 14,
-		fontWeight: '600',
-		color: '#0088cc',
-	},
 	description: {
 		marginTop: 10,
 		fontSize: 15,
@@ -143,46 +138,14 @@ export const styles = StyleSheet.create({
 		fontWeight: '600',
 		fontSize: 13,
 	},
-	metaDirectionsButton: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		marginTop: 6,
-		paddingHorizontal: 8,
-		paddingVertical: 4,
-		backgroundColor: '#ecfdf5',
-		borderRadius: 6,
-		borderWidth: 1,
-		borderColor: '#a7f3d0',
-	},
-	metaDirectionsText: {
-		color: '#059669',
-		fontWeight: '600',
-		fontSize: 12,
-	},
 
 	// --- MODERNIZED REVIEW FORM ---
-	reviewFormContainer: {
-		backgroundColor: '#ffffff',
-		borderRadius: 20,
-		padding: 24,
-		marginTop: 24,
-		borderWidth: 1,
-		borderColor: '#f1f5f9',
-		shadowColor: '#0f172a',
-		shadowOffset: {width: 0, height: 8},
-		shadowOpacity: 0.04,
-		shadowRadius: 16,
-		elevation: 3,
-	},
 	reviewTitle: {
 		fontSize: 18,
 		fontWeight: '700',
 		color: '#0f172a',
 		textAlign: 'center',
 		marginBottom: 4,
-	},
-	fieldWrapper: {
-		marginVertical: 12,
 	},
 	submitButton: {
 		backgroundColor: '#0088cc',
@@ -221,13 +184,6 @@ export const styles = StyleSheet.create({
 		color: '#ef4444',
 		fontSize: 13,
 		fontWeight: '500',
-		textAlign: 'center',
-	},
-	errorText: {
-		color: '#ef4444',
-		fontSize: 12,
-		fontWeight: '500',
-		marginTop: 6,
 		textAlign: 'center',
 	},
 });

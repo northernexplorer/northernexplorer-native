@@ -681,11 +681,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 4,
 		paddingVertical: 2,
 	},
-	zoomResetText: {
-		color: '#94a3b8',
-		fontSize: 12,
-		fontWeight: '500',
-	},
 	zoomDivider: {
 		width: 1,
 		height: 12,
