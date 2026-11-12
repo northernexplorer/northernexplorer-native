@@ -108,6 +108,25 @@ export const DIFFICULTY_OPTIONS = Object.values(SiteDifficultyEnum).map(val => (
 	borderColor: DIFFICULTY_CONFIG[val].borderColor,
 }));
 
+const DEVELOPED_DIFFICULTIES: SiteDifficultyEnum[] = [
+	SiteDifficultyEnum.DEVELOPED_EASY,
+	SiteDifficultyEnum.DEVELOPED_MEDIUM,
+	SiteDifficultyEnum.DEVELOPED_HARD,
+	SiteDifficultyEnum.DEVELOPED_MULTI_DAY,
+];
+
+const REMOTE_DIFFICULTIES: SiteDifficultyEnum[] = [
+	SiteDifficultyEnum.REMOTE_EASY,
+	SiteDifficultyEnum.REMOTE_MEDIUM,
+	SiteDifficultyEnum.REMOTE_HARD,
+	SiteDifficultyEnum.REMOTE_MULTI_DAY,
+];
+
+export const DIFFICULTY_GROUPS = [
+	{label: 'Developed', options: DIFFICULTY_OPTIONS.filter(({value}) => DEVELOPED_DIFFICULTIES.includes(value))},
+	{label: 'Remote', options: DIFFICULTY_OPTIONS.filter(({value}) => REMOTE_DIFFICULTIES.includes(value))},
+];
+
 export const COST_OPTIONS = Object.values(EntranceCostEnum).map(val => ({
 	value: val,
 	label: COST_LABEL_MAP[val].short,

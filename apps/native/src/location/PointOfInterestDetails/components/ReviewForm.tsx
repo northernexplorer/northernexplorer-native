@@ -4,7 +4,7 @@ import {Ionicons} from '@expo/vector-icons';
 import {FormField} from '@northernexplorer/tools-web';
 import {EntranceCostEnum, ReviewRatingEnum, ReviewSummary, ReviewType, SiteConditionEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {Link, useLocalSearchParams} from 'expo-router';
-import {CONDITION_OPTIONS, COST_OPTIONS, DIFFICULTY_OPTIONS, RATING_MAPPING} from './reviewOptions';
+import {CONDITION_OPTIONS, COST_OPTIONS, DIFFICULTY_GROUPS, RATING_MAPPING} from './reviewOptions';
 import {useApiMutation} from '~/core/useApiMutation';
 import {styles as globalStyles} from '~/location/PointOfInterestDetails/styles';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
@@ -199,25 +199,40 @@ export function ReviewForm({refetch, initialData, onCancel, pointOfInterestId: p
 					<Text style={cardStyles.sectionLabel}>Difficulty to Access</Text>
 					{errors.difficulty && <Text style={cardStyles.errorText}>{errors.difficulty}</Text>}
 				</View>
-				<View style={cardStyles.chipGroup}>
-					{DIFFICULTY_OPTIONS.map(opt => {
-						const selected = formData.difficulty === opt.value;
-						return (
-							<Pressable
-								key={opt.value}
-								onPress={() => updateField('difficulty', opt.value)}
-								style={[
-									cardStyles.chip,
-									selected && {
-										backgroundColor: opt.bgColor,
-										borderColor: opt.borderColor,
-									},
-								]}
-							>
-								<Text style={[cardStyles.chipText, selected && cardStyles.chipTextSelected]}>{opt.label}</Text>
-							</Pressable>
-						);
-					})}
+				<Text style={cardStyles.difficultyHint}>Select one option across both groups.</Text>
+				<View>
+					{DIFFICULTY_GROUPS.map(group => (
+						<View key={group.label} style={cardStyles.difficultyGroup}>
+							<Text style={cardStyles.difficultyGroupLabel}>{group.label}</Text>
+							<View style={cardStyles.chipGroup}>
+								{group.options.map(opt => {
+									const selected = formData.difficulty === opt.value;
+									return (
+										<Pressable
+											key={opt.value}
+											accessibilityRole="radio"
+											accessibilityLabel={opt.label}
+											accessibilityHint="Selects this as the only difficulty option."
+											accessibilityState={{checked: selected}}
+											onPress={() => updateField('difficulty', opt.value)}
+											style={[
+												cardStyles.chip,
+												selected && {
+													backgroundColor: opt.bgColor,
+													borderColor: opt.borderColor,
+												},
+											]}
+										>
+											<View style={cardStyles.difficultyChipContent}>
+												{selected && <Ionicons name="checkmark" size={14} color="#ffffff" />}
+												<Text style={[cardStyles.chipText, selected && cardStyles.chipTextSelected]}>{opt.label}</Text>
+											</View>
+										</Pressable>
+									);
+								})}
+							</View>
+						</View>
+					))}
 				</View>
 			</View>
 
@@ -392,6 +407,20 @@ const cardStyles = StyleSheet.create({
 		alignItems: 'center',
 		marginBottom: 6,
 	},
+	difficultyHint: {
+		fontSize: 12,
+		color: '#64748b',
+		marginBottom: 8,
+	},
+	difficultyGroup: {
+		marginBottom: 8,
+	},
+	difficultyGroupLabel: {
+		fontSize: 12,
+		fontWeight: '600',
+		color: '#475569',
+		marginBottom: 4,
+	},
 	sectionLabel: {
 		fontSize: 13,
 		fontWeight: '600',
@@ -410,6 +439,11 @@ const cardStyles = StyleSheet.create({
 		borderRadius: 16,
 		paddingVertical: 6,
 		paddingHorizontal: 10,
+	},
+	difficultyChipContent: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
 	},
 	iconChip: {
 		flexDirection: 'row',
