@@ -96,6 +96,7 @@ export function PointOfInterestAdd() {
 		if (!form.description.trim()) newErrors.description = 'Description is required';
 		if (!form.countryId) newErrors.countryId = 'Country is required';
 		if (!form.regionId) newErrors.regionId = 'Region is required';
+		if (!form.organizationId.trim()) newErrors.organizationId = 'Organization is required';
 		if (form.type.length === 0) newErrors.type = 'At least one type must be selected';
 
 		const parsedLat = parseFloat(form.lat);

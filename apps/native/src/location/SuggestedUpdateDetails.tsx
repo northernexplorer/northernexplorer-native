@@ -213,13 +213,11 @@ export function SuggestedUpdateDetails() {
 				<View style={styles.compareRow}>
 					<View style={styles.compareCol}>
 						<Text style={styles.compareLabel}>Current</Text>
-						<Text style={styles.currentValue}>{poi.organization.name || 'None'}</Text>
+						<Text style={styles.currentValue}>{poi.organization.name}</Text>
 					</View>
 					<View style={styles.compareCol}>
 						<Text style={styles.compareLabel}>Suggested</Text>
-						<Text style={[styles.suggestedValue, isOrgChanged && styles.changedValueHighlight]}>
-							{suggestion.organization.name || 'None'}
-						</Text>
+						<Text style={[styles.suggestedValue, isOrgChanged && styles.changedValueHighlight]}>{suggestion.organization.name}</Text>
 					</View>
 				</View>
 			</View>
