@@ -24,8 +24,7 @@ export function MapView({
 	initialLat,
 	initialLon,
 	initialZoom,
-	canAccessOffTrailDifficulty,
-	canAccessExpeditionDifficulty,
+	canAccessRemoteDifficulty,
 	canUseDistanceScale,
 	isSelectedLocked,
 	updateMapCenterAndBounds,
@@ -139,8 +138,7 @@ export function MapView({
 							setSelectedSite={setSelectedSite}
 							image={site.image}
 							difficulty={site.difficulty}
-							canAccessOffTrailDifficulty={canAccessOffTrailDifficulty}
-							canAccessExpeditionDifficulty={canAccessExpeditionDifficulty}
+							canAccessRemoteDifficulty={canAccessRemoteDifficulty}
 						/>
 					);
 				})}

@@ -3,7 +3,7 @@ import {StyleSheet, Text, TouchableOpacity, View, ScrollView} from 'react-native
 import {useDispatch} from 'react-redux';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Link} from 'expo-router';
-import {PointOfInterestTypeEnum, VisitedFilterEnum, SiteDifficultyEnum, EntranceCostEnum, RolesEnum} from '@northernexplorer/types';
+import {PointOfInterestTypeEnum, VisitedFilterEnum, EntranceCostEnum, RolesEnum, SiteDifficultyEnum} from '@northernexplorer/types';
 import {SliderField, SwitchField} from '@northernexplorer/tools-web';
 import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
 import {baseLayers} from '~/location/Map/baseLayers';
@@ -20,6 +20,7 @@ import {useMap} from '~/location/state/map/useMap';
 import {usePermissions} from '~/user/state/subscription';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {DIFFICULTY_CONFIG, COST_OPTIONS} from '~/location/PointOfInterestDetails/components/reviewOptions';
+import {getMaxSiteDifficultyIndex} from '~/location/lib/siteDifficulty';
 
 const LAYER_TILES = [
 	{key: 'standard', label: 'Standard', layer: baseLayers.standard, icon: 'map-outline'},
@@ -40,7 +41,6 @@ const RATING_OPTIONS = [
 	{label: '5', value: 5},
 ];
 
-const DIFFICULTY_KEYS = Object.keys(DIFFICULTY_CONFIG) as SiteDifficultyEnum[];
 const COST_KEYS = COST_OPTIONS.map(c => c.value as EntranceCostEnum);
 
 export function MapSidebar() {
@@ -59,26 +59,12 @@ export function MapSidebar() {
 
 	const isLoggedIn = !!authentication?.username;
 	const canChangeMapStyle = !!permissions?.navigation.changeMapStyle;
-	const canAccessExpeditionDifficulty = !!permissions?.navigation.useExpeditionDifficulty;
-	const canAccessOffTrailDifficulty = !!permissions?.navigation.useOffTrailDifficulty;
+	const canAccessRemoteDifficulty = !!permissions?.navigation.useRemoteDifficulty;
 	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
 
-	// Determine max allowed difficulty index based on user permissions
-	let maxAllowedDifficultyIndex = DIFFICULTY_KEYS.length - 1;
-	if (!canAccessOffTrailDifficulty) {
-		const offTrailIndex = DIFFICULTY_KEYS.findIndex(k => DIFFICULTY_CONFIG[k].label.toLowerCase().includes('off-trail'));
-		if (offTrailIndex !== -1) {
-			maxAllowedDifficultyIndex = offTrailIndex - 1;
-		}
-	}
-	if (!canAccessExpeditionDifficulty) {
-		const expeditionIndex = DIFFICULTY_KEYS.findIndex(k => DIFFICULTY_CONFIG[k].label.toLowerCase().includes('expedition'));
-		if (expeditionIndex !== -1 && expeditionIndex - 1 < maxAllowedDifficultyIndex) {
-			maxAllowedDifficultyIndex = expeditionIndex - 1;
-		}
-	}
+	const maxAllowedDifficultyIndex = getMaxSiteDifficultyIndex(canAccessRemoteDifficulty);
 
-	// Default to maximum permitted index (e.g. 4 if full access, 2 if no higher difficulty permissions) when untouched in Redux
+	// Default to the maximum permitted index when untouched in Redux
 	const effectiveDifficultyIndex = maxDifficultyIndex ?? maxAllowedDifficultyIndex;
 
 	const bannerHref = isLoggedIn ? `/user/${authentication.username}/change-subscription` : '/user/login';
@@ -169,7 +155,7 @@ export function MapSidebar() {
 				<SliderField
 					label="Max Difficulty"
 					minimumValue={0}
-					maximumValue={DIFFICULTY_KEYS.length - 1}
+					maximumValue={Object.values(SiteDifficultyEnum).length - 1}
 					step={1}
 					value={effectiveDifficultyIndex}
 					maxInteractiveValue={maxAllowedDifficultyIndex}
@@ -177,7 +163,9 @@ export function MapSidebar() {
 					onValueChange={val => {
 						dispatch(setDifficultyLevel(val));
 					}}
-					getDisplayLabel={val => DIFFICULTY_CONFIG[DIFFICULTY_KEYS[val]].label.split(' ')[0]}
+					getDisplayLabel={val =>
+						DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[val as number] as SiteDifficultyEnum].label.split(' ')[0]
+					}
 				/>
 			</View>
 

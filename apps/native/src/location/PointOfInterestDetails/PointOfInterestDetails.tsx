@@ -3,7 +3,7 @@ import {View, Text, TouchableOpacity, StyleSheet, Pressable} from 'react-native'
 import {Link, useLocalSearchParams} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView, openDirections, Spinner} from '@northernexplorer/tools-web';
-import {SiteDifficultyEnum, RolesEnum, PublishStatusEnum, RejectionReasonEnum} from '@northernexplorer/types';
+import {RolesEnum, PublishStatusEnum, RejectionReasonEnum} from '@northernexplorer/types';
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
 import {AddNewPointOfInterestFavorite} from './components/AddPointOfInterestFavorite';
@@ -17,6 +17,7 @@ import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {usePermissions} from '~/user/state/subscription';
 import {Map} from '~/location/PointOfInterestDetails/components/Map';
 import {useLocation} from '~/location/state/location/useLocation';
+import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
 
 const REJECTION_REASON_LABELS: Record<RejectionReasonEnum, string> = {
 	[RejectionReasonEnum.TRESPASSING_REQUIRED]: 'Trespassing Required',
@@ -34,8 +35,7 @@ export function PointOfInterestDetails() {
 	const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 
 	const {data, loading, refetch} = useApiFetch('location', 'PointOfInterestController', 'getById', {id});
-	const canAccessExpeditionDifficulty = !!permissions?.navigation.useExpeditionDifficulty;
-	const canAccessOffTrailDifficulty = !!permissions?.navigation.useOffTrailDifficulty;
+	const canAccessRemoteDifficulty = !!permissions?.navigation.useRemoteDifficulty;
 
 	const distance = useMemo(() => {
 		if (!coords?.lat || !data?.lon) return null;
@@ -60,10 +60,7 @@ export function PointOfInterestDetails() {
 	if (loading || !data) return <Spinner />;
 
 	// Gate access based on POI difficulty and user permissions
-	const isOffTrail = data.difficulty === SiteDifficultyEnum.OFF_TRAIL_REMOTE;
-	const isExpedition = data.difficulty === SiteDifficultyEnum.EXPEDITION_ONLY;
-
-	const hasPermission = (!isOffTrail || canAccessOffTrailDifficulty) && (!isExpedition || canAccessExpeditionDifficulty);
+	const hasPermission = hasSiteDifficultyAccess(data.difficulty, canAccessRemoteDifficulty);
 
 	const reviewCount = data.reviews?.length ?? 0;
 	const photoCount = data.images?.length ?? 0;
