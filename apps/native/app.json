@@ -3,7 +3,7 @@
 		"name": "Northern Explorer",
 		"slug": "northernexplorer-native",
 		"scheme": "northernexplorer-native",
-		"version": "1.0.0",
+		"version": "2026.11.12",
 		"orientation": "default",
 		"icon": "./assets/icon.png",
 		"userInterfaceStyle": "light",
@@ -18,8 +18,16 @@
 					"action": "VIEW",
 					"autoVerify": true,
 					"data": [
-						{"scheme": "https", "host": "northernexplorer.org", "path": "/user/activate"},
-						{"scheme": "https", "host": "northernexplorer.org", "path": "/user/reset-password"}
+						{
+							"scheme": "https",
+							"host": "northernexplorer.org",
+							"path": "/user/activate"
+						},
+						{
+							"scheme": "https",
+							"host": "northernexplorer.org",
+							"path": "/user/reset-password"
+						}
 					],
 					"category": ["BROWSABLE", "DEFAULT"]
 				}
@@ -33,7 +41,7 @@
 			"predictiveBackGestureEnabled": false,
 			"package": "org.northernexplorer.app",
 			"permissions": ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION", "android.permission.INTERNET"],
-			"versionCode": 28
+			"versionCode": 29
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"

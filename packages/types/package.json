@@ -1,6 +1,6 @@
 {
 	"name": "@northernexplorer/types",
-	"version": "1.0.0",
+	"version": "2026.11.12",
 	"private": true,
 	"exports": {
 		".": "./src/index.ts"
