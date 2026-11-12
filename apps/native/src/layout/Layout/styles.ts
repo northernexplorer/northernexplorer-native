@@ -1,28 +1,6 @@
 import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
-	content: {
-		padding: 20,
-		gap: 12,
-	},
-	text: {
-		color: 'rgba(255,255,255,0.85)',
-		fontSize: 16,
-		lineHeight: 22,
-	},
-	paragraph: {
-		marginBottom: 14,
-		color: 'rgba(255,255,255,0.78)',
-		fontSize: 16,
-		lineHeight: 28,
-	},
-	heading: {
-		color: 'white',
-		fontSize: 18,
-		fontWeight: '600',
-		marginTop: 16,
-		marginBottom: 8,
-	},
 	background: {
 		flex: 1,
 		minHeight: '100%',
@@ -176,10 +154,6 @@ export const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 10,
-	},
-	page: {
-		flexGrow: 1,
-		alignItems: 'stretch',
 	},
 	sidebar: {
 		paddingLeft: 24,

@@ -128,9 +128,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 16,
 	},
-	buttonDisabled: {
-		opacity: 0.5,
-	},
 	linkText: {
 		color: '#0088cc',
 		textDecorationLine: 'underline',
@@ -146,17 +143,6 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: '#e5e7eb',
 		paddingBottom: 6,
-	},
-	underline: {
-		height: 2,
-		width: '60%',
-		marginTop: 3,
-		borderRadius: 2,
-		backgroundColor: '#a1c4e6',
-	},
-	banner: {
-		width: '100%',
-		height: '100%',
 	},
 });
 
