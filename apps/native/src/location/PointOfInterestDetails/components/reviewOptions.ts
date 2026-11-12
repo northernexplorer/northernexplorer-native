@@ -101,12 +101,26 @@ export const CONDITION_ICON_MAP: Record<SiteConditionEnum, IoniconsName> = {
 	[SiteConditionEnum.BRIDGE_OUT]: 'close-circle-outline',
 };
 
+const DIFFICULTY_LEVEL_LABELS: Record<SiteDifficultyEnum, string> = {
+	[SiteDifficultyEnum.DEVELOPED_EASY]: 'Easy',
+	[SiteDifficultyEnum.DEVELOPED_MEDIUM]: 'Medium',
+	[SiteDifficultyEnum.DEVELOPED_HARD]: 'Hard',
+	[SiteDifficultyEnum.DEVELOPED_MULTI_DAY]: 'Multi-Day',
+	[SiteDifficultyEnum.REMOTE_EASY]: 'Easy',
+	[SiteDifficultyEnum.REMOTE_MEDIUM]: 'Medium',
+	[SiteDifficultyEnum.REMOTE_HARD]: 'Hard',
+	[SiteDifficultyEnum.REMOTE_MULTI_DAY]: 'Multi-Day',
+};
+
 export const DIFFICULTY_OPTIONS = Object.values(SiteDifficultyEnum).map(val => ({
 	value: val,
 	label: DIFFICULTY_CONFIG[val].label,
+	levelLabel: DIFFICULTY_LEVEL_LABELS[val],
 	bgColor: DIFFICULTY_CONFIG[val].bgColor,
 	borderColor: DIFFICULTY_CONFIG[val].borderColor,
 }));
+
+export type DifficultyCategory = 'developed' | 'remote';
 
 const DEVELOPED_DIFFICULTIES: SiteDifficultyEnum[] = [
 	SiteDifficultyEnum.DEVELOPED_EASY,
@@ -122,9 +136,9 @@ const REMOTE_DIFFICULTIES: SiteDifficultyEnum[] = [
 	SiteDifficultyEnum.REMOTE_MULTI_DAY,
 ];
 
-export const DIFFICULTY_GROUPS = [
-	{label: 'Developed', options: DIFFICULTY_OPTIONS.filter(({value}) => DEVELOPED_DIFFICULTIES.includes(value))},
-	{label: 'Remote', options: DIFFICULTY_OPTIONS.filter(({value}) => REMOTE_DIFFICULTIES.includes(value))},
+export const DIFFICULTY_GROUPS: {id: DifficultyCategory; label: string; options: typeof DIFFICULTY_OPTIONS}[] = [
+	{id: 'developed', label: 'Developed', options: DIFFICULTY_OPTIONS.filter(({value}) => DEVELOPED_DIFFICULTIES.includes(value))},
+	{id: 'remote', label: 'Remote', options: DIFFICULTY_OPTIONS.filter(({value}) => REMOTE_DIFFICULTIES.includes(value))},
 ];
 
 export const COST_OPTIONS = Object.values(EntranceCostEnum).map(val => ({
