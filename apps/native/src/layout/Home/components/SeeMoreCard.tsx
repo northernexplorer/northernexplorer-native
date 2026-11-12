@@ -47,20 +47,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		marginBottom: 14,
 	},
-	title: {
-		color: '#ffffff',
-		fontSize: 16,
-		fontWeight: '700',
-		textAlign: 'center',
-		marginBottom: 4,
-	},
-	subtitle: {
-		color: '#94a3b8',
-		fontSize: 12,
-		textAlign: 'center',
-		marginBottom: 16,
-		lineHeight: 16,
-	},
 	actionPill: {
 		flexDirection: 'row',
 		alignItems: 'center',

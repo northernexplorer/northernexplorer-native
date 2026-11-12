@@ -212,12 +212,6 @@ const cardStyles = StyleSheet.create({
 		padding: 16,
 		paddingBottom: 32,
 	},
-	title: {
-		fontSize: 22,
-		fontWeight: 'bold',
-		textAlign: 'center',
-		marginTop: 8,
-	},
 	subtitle: {
 		fontSize: 14,
 		color: '#666',
