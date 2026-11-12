@@ -33,17 +33,17 @@ all () {
 core () {
   local tid
 
-  tid=$(newTabWithNamePath "Northern Explorer - Web")
+  tid=$(newTabWithNamePath "Northern Explorer - Web" "$DIR")
   runCommand "$tid" "nvm use && yarn start:web"
 
-  tid=$(newTabWithNamePath "Northern Explorer - Server")
+  tid=$(newTabWithNamePath "Northern Explorer - Server" "$DIR")
   runCommand "$tid" "nvm use && yarn start:server"
 }
 
 app () {
   local tid
 
-  tid=$(newTabWithNamePath "Northern Explorer - Android")
+  tid=$(newTabWithNamePath "Northern Explorer - Android" "$DIR")
   runCommand "$tid" "nvm use && EXPO_NO_METRO=true yarn start:android"
 }
 

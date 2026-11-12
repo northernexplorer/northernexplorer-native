@@ -26,13 +26,6 @@ export const styles = StyleSheet.create({
 		paddingVertical: 5,
 		paddingHorizontal: 16,
 	},
-	topBarLabel: {
-		color: 'rgba(255,255,255,0.45)',
-		fontSize: 10,
-		fontWeight: '800',
-		letterSpacing: 1.5,
-		marginBottom: 8,
-	},
 	topBarTools: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -56,13 +49,6 @@ export const styles = StyleSheet.create({
 		paddingVertical: 16,
 		paddingHorizontal: 6,
 		alignItems: 'center',
-	},
-	sidebarLabel: {
-		color: 'rgba(255,255,255,0.45)',
-		fontSize: 10,
-		fontWeight: '800',
-		letterSpacing: 1.5,
-		marginBottom: 16,
 	},
 	sidebarTools: {
 		width: '100%',
@@ -89,45 +75,11 @@ export const styles = StyleSheet.create({
 	},
 
 	// Header Components
-	headerRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'flex-end',
-		marginBottom: 0,
-	},
 	headerSubtitle: {
 		color: 'rgba(255, 255, 255, 0.6)',
 		fontSize: 10,
 		fontWeight: '800',
 		letterSpacing: 1.2,
-	},
-	headerTitle: {
-		color: '#ffffff',
-		fontSize: 24,
-		fontWeight: '700',
-		letterSpacing: -0.5,
-	},
-	locationBadge: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 4,
-		backgroundColor: 'rgba(255, 255, 255, 0.08)',
-		paddingHorizontal: 10,
-		paddingVertical: 4,
-		borderRadius: 20,
-		borderWidth: 1,
-		borderColor: 'rgba(255, 255, 255, 0.12)',
-	},
-	dotIndicator: {
-		width: 6,
-		height: 6,
-		borderRadius: 3,
-		backgroundColor: '#34D399',
-	},
-	locationText: {
-		color: 'rgba(255, 255, 255, 0.85)',
-		fontSize: 11,
-		fontWeight: '600',
 	},
 
 	// Section Titles and Controls
@@ -139,17 +91,6 @@ export const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		marginBottom: 8,
-	},
-	sectionTitle: {
-		color: '#ffffff',
-		fontSize: 16,
-		fontWeight: '600',
-		marginBottom: 8,
-	},
-	sectionAction: {
-		color: 'rgba(255, 255, 255, 0.72)',
-		fontSize: 12,
-		fontWeight: '600',
 	},
 
 	// Point of Interest Sections
@@ -208,11 +149,6 @@ export const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: 'rgba(255, 255, 255, 0.08)',
 		overflow: 'hidden',
-	},
-
-	// Tile inner content padding helper
-	tilePadding: {
-		padding: 12,
 	},
 
 	// Weather & Metric Utility Styles
