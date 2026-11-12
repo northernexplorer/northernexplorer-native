@@ -220,7 +220,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		}
 
 		const query = `
-			SELECT id, name, description, image, lat, lon, country, region, status, rejection_reason as "rejectionReason", type,
+			SELECT id, name, description, image, lat, lon, country, region, organization, status, rejection_reason as "rejectionReason", type,
 				   difficulty, entrance_cost as "entranceCost", rating, reviews,
 				   start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
 			FROM (
@@ -260,6 +260,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 									'name', c.name
 										   )
 							) AS region,
+							(SELECT json_build_object('id', org.id, 'name', org.name) FROM organization org WHERE org.id = h.organization_id) AS organization,
 							h.start_date, h.end_date,
 							(6371000 * acos(
 								LEAST(1.0, GREATEST(-1.0,
@@ -279,7 +280,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 						 ${visitedFilterSql}
 						 ${difficultyFilterSql}
 						 ${costFilterSql}
-					 GROUP BY h.id, h.status, h.rejection_reason, c.id, r.id, img.id
+					 GROUP BY h.id, h.status, h.rejection_reason, h.organization_id, c.id, r.id, img.id
 						 ${minRatingSql}
 				 ) AS spatial_search
 			ORDER BY distanceMeters ASC
