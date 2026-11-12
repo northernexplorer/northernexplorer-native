@@ -1,0 +1,16 @@
+export const m20261112: string[] = [
+	`alter table "point_of_interest" drop constraint if exists "point_of_interest_difficulty_check"`,
+	`alter table "review" drop constraint if exists "review_difficulty_check"`,
+	`update "point_of_interest" set "difficulty" = 'DEVELOPED_EASY' where "difficulty" = 'DEVELOPED'`,
+	`update "point_of_interest" set "difficulty" = 'DEVELOPED_MEDIUM' where "difficulty" = 'LIGHT_HIKE'`,
+	`update "point_of_interest" set "difficulty" = 'DEVELOPED_HARD' where "difficulty" = 'MODERATE_TRAIL'`,
+	`update "point_of_interest" set "difficulty" = 'REMOTE_EASY' where "difficulty" = 'OFF_TRAIL_REMOTE'`,
+	`update "point_of_interest" set "difficulty" = 'REMOTE_MEDIUM' where "difficulty" = 'EXPEDITION_ONLY'`,
+	`update "review" set "difficulty" = 'DEVELOPED_EASY' where "difficulty" = 'DEVELOPED'`,
+	`update "review" set "difficulty" = 'DEVELOPED_MEDIUM' where "difficulty" = 'LIGHT_HIKE'`,
+	`update "review" set "difficulty" = 'DEVELOPED_HARD' where "difficulty" = 'MODERATE_TRAIL'`,
+	`update "review" set "difficulty" = 'REMOTE_EASY' where "difficulty" = 'OFF_TRAIL_REMOTE'`,
+	`update "review" set "difficulty" = 'REMOTE_MEDIUM' where "difficulty" = 'EXPEDITION_ONLY'`,
+	`alter table "point_of_interest" add constraint "point_of_interest_difficulty_check" check ("difficulty" in ('DEVELOPED_EASY', 'DEVELOPED_MEDIUM', 'DEVELOPED_HARD', 'DEVELOPED_MULTI_DAY', 'REMOTE_EASY', 'REMOTE_MEDIUM', 'REMOTE_HARD', 'REMOTE_MULTI_DAY'))`,
+	`alter table "review" add constraint "review_difficulty_check" check ("difficulty" in ('DEVELOPED_EASY', 'DEVELOPED_MEDIUM', 'DEVELOPED_HARD', 'DEVELOPED_MULTI_DAY', 'REMOTE_EASY', 'REMOTE_MEDIUM', 'REMOTE_HARD', 'REMOTE_MULTI_DAY'))`,
+];
