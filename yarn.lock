@@ -9302,6 +9302,7 @@ __metadata:
     expo: "npm:~58.0.24"
     expo-build-properties: "npm:~58.0.12"
     expo-camera: "npm:~58.0.14"
+    expo-constants: "npm:~58.0.16"
     expo-dev-client: "npm:~58.0.19"
     expo-device: "npm:~58.0.5"
     expo-linking: "npm:~58.0.17"
