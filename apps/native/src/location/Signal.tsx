@@ -296,21 +296,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 24,
 		paddingVertical: 32,
 	},
-	header: {
-		marginBottom: 20,
-	},
-	headerTitle: {
-		color: '#0f172a',
-		fontSize: 28,
-		fontWeight: '800',
-		letterSpacing: -0.5,
-	},
-	headerSub: {
-		color: '#475569',
-		fontSize: 14,
-		marginTop: 2,
-		fontWeight: '500',
-	},
 	centerContainer: {
 		flex: 1,
 		alignItems: 'center',

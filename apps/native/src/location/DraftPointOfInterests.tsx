@@ -113,7 +113,6 @@ export function DraftPointOfInterests() {
 const styles = StyleSheet.create({
 	container: {flex: 1},
 	thumbnail: {width: 38, height: 38, borderRadius: 8},
-	placeholderThumbnail: {backgroundColor: '#e9ecef', alignItems: 'center', justifyContent: 'center'},
 	siteName: {fontSize: 14, fontWeight: '600', color: '#212529'},
 	siteDescription: {fontSize: 12, color: '#6c757d', marginTop: 2},
 	cellText: {fontSize: 13, fontWeight: '500', color: '#343a40'},
