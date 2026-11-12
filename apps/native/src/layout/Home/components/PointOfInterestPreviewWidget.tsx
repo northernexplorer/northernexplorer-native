@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {View, Text, Image, Pressable, StyleSheet} from 'react-native';
+import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Link} from 'expo-router';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
 import {Ionicons} from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import {styles as globalStyles} from '~/layout/Home/styles';
 import {config} from '~/config';
 import {useLocation} from '~/location/state/location/useLocation';
 import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
+import {useIsOffline} from '~/core/ConnectivityProvider';
 
 type Props = {
 	id: string;
@@ -37,6 +38,7 @@ export function PointOfInterestPreviewWidget({
 	reviews,
 }: Props) {
 	const coords = useLocation();
+	const {isOffline} = useIsOffline();
 
 	const distance = useMemo(() => {
 		if (!coords?.lat) return null;
@@ -67,6 +69,73 @@ export function PointOfInterestPreviewWidget({
 	const reviewCount = reviews?.length ?? 0;
 	const difficultyInfo = difficulty ? DIFFICULTY_CONFIG[difficulty] : null;
 
+	const card = (
+		<Pressable disabled={isOffline} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
+			<View style={[globalStyles.tile, widgetStyles.card]}>
+				<Image
+					source={{
+						uri: getImageUrl({
+							path: image.url,
+							cdn: config.CONTENT_DELIVERY_NETWORK,
+							processed: image.processed,
+							size: 'thumbnail',
+						}),
+					}}
+					style={widgetStyles.image}
+					resizeMode="cover"
+				/>
+				<View style={widgetStyles.content}>
+					<View>
+						<Text style={widgetStyles.title} numberOfLines={1}>
+							{name}
+						</Text>
+
+						{/* Rating and Difficulty Row */}
+						<View style={widgetStyles.metaRow}>
+							{averageRating > 0 ? (
+								<View style={widgetStyles.ratingRow}>
+									<Ionicons name="star" size={12} color="#f59e0b" />
+									<Text style={widgetStyles.ratingText}>{averageRating.toFixed(1)}</Text>
+									<Text style={widgetStyles.countText}>({reviewCount})</Text>
+								</View>
+							) : (
+								<Text style={widgetStyles.noReviewsText}>No reviews</Text>
+							)}
+
+							{difficultyInfo && (
+								<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
+									<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>
+										{difficultyInfo.label.split(' ')[0]}
+									</Text>
+								</View>
+							)}
+						</View>
+
+						<Text style={widgetStyles.description} numberOfLines={2}>
+							{description}
+						</Text>
+					</View>
+
+					<View style={widgetStyles.footer}>
+						{region ? (
+							<Text style={widgetStyles.regionText} numberOfLines={1}>
+								{region}
+							</Text>
+						) : (
+							<View />
+						)}
+
+						{distance ? <Text style={widgetStyles.distanceText}>{distance}</Text> : null}
+					</View>
+				</View>
+			</View>
+		</Pressable>
+	);
+
+	if (isOffline) {
+		return card;
+	}
+
 	return (
 		<Link
 			href={{
@@ -80,66 +149,7 @@ export function PointOfInterestPreviewWidget({
 			}}
 			asChild
 		>
-			<Pressable style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
-				<View style={[globalStyles.tile, widgetStyles.card]}>
-					<Image
-						source={{
-							uri: getImageUrl({
-								path: image.url,
-								cdn: config.CONTENT_DELIVERY_NETWORK,
-								processed: image.processed,
-								size: 'thumbnail',
-							}),
-						}}
-						style={widgetStyles.image}
-						resizeMode="cover"
-					/>
-					<View style={widgetStyles.content}>
-						<View>
-							<Text style={widgetStyles.title} numberOfLines={1}>
-								{name}
-							</Text>
-
-							{/* Rating and Difficulty Row */}
-							<View style={widgetStyles.metaRow}>
-								{averageRating > 0 ? (
-									<View style={widgetStyles.ratingRow}>
-										<Ionicons name="star" size={12} color="#f59e0b" />
-										<Text style={widgetStyles.ratingText}>{averageRating.toFixed(1)}</Text>
-										<Text style={widgetStyles.countText}>({reviewCount})</Text>
-									</View>
-								) : (
-									<Text style={widgetStyles.noReviewsText}>No reviews</Text>
-								)}
-
-								{difficultyInfo && (
-									<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
-										<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>
-											{difficultyInfo.label.split(' ')[0]}
-										</Text>
-									</View>
-								)}
-							</View>
-
-							<Text style={widgetStyles.description} numberOfLines={2}>
-								{description}
-							</Text>
-						</View>
-
-						<View style={widgetStyles.footer}>
-							{region ? (
-								<Text style={widgetStyles.regionText} numberOfLines={1}>
-									{region}
-								</Text>
-							) : (
-								<View />
-							)}
-
-							{distance ? <Text style={widgetStyles.distanceText}>{distance}</Text> : null}
-						</View>
-					</View>
-				</View>
-			</Pressable>
+			{card}
 		</Link>
 	);
 }
