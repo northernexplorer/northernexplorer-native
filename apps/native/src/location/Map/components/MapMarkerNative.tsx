@@ -5,6 +5,7 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {ImageHeaderType, PointOfInterestType, SiteDifficultyEnum} from '@northernexplorer/types';
 import {getImageUrl} from '@northernexplorer/tools-web';
 import {config} from '~/config';
+import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
 
 interface Props {
 	site: PointOfInterestType;
@@ -15,8 +16,7 @@ interface Props {
 	size?: number;
 	image: ImageHeaderType;
 	difficulty?: SiteDifficultyEnum;
-	canAccessOffTrailDifficulty?: boolean;
-	canAccessExpeditionDifficulty?: boolean;
+	canAccessRemoteDifficulty?: boolean;
 }
 
 export function MapMarkerNative({
@@ -28,16 +28,12 @@ export function MapMarkerNative({
 	size,
 	image,
 	difficulty,
-	canAccessOffTrailDifficulty = false,
-	canAccessExpeditionDifficulty = false,
+	canAccessRemoteDifficulty = false,
 }: Props) {
 	const isDraft = site.status === 'Draft';
 	const markerSize = size || 48;
 
-	const isOffTrail = difficulty === SiteDifficultyEnum.OFF_TRAIL_REMOTE;
-	const isExpedition = difficulty === SiteDifficultyEnum.EXPEDITION_ONLY;
-
-	const isLocked = (isOffTrail && !canAccessOffTrailDifficulty) || (isExpedition && !canAccessExpeditionDifficulty);
+	const isLocked = !hasSiteDifficultyAccess(difficulty, canAccessRemoteDifficulty);
 
 	return (
 		<Marker
