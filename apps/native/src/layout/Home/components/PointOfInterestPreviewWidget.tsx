@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {GestureResponderEvent, Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Link} from 'expo-router';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
 import {Ionicons} from '@expo/vector-icons';
@@ -22,6 +22,7 @@ type Props = {
 	rating?: number | string;
 	difficulty?: keyof typeof DIFFICULTY_CONFIG;
 	reviews?: {id: string; rating: number}[];
+	onPress?: (event: GestureResponderEvent) => void;
 };
 
 export function PointOfInterestPreviewWidget({
@@ -36,6 +37,7 @@ export function PointOfInterestPreviewWidget({
 	rating,
 	difficulty,
 	reviews,
+	onPress,
 }: Props) {
 	const coords = useLocation();
 	const {isOffline} = useIsOffline();
@@ -70,7 +72,7 @@ export function PointOfInterestPreviewWidget({
 	const difficultyInfo = difficulty ? DIFFICULTY_CONFIG[difficulty] : null;
 
 	const card = (
-		<Pressable disabled={isOffline} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
+		<Pressable disabled={isOffline} onPress={onPress} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
 			<View style={[globalStyles.tile, widgetStyles.card]}>
 				<Image
 					source={{
@@ -130,7 +132,7 @@ export function PointOfInterestPreviewWidget({
 		</Pressable>
 	);
 
-	if (isOffline) {
+	if (isOffline || onPress) {
 		return card;
 	}
 

@@ -1,16 +1,15 @@
-import React, {useRef, useCallback} from 'react';
+import React, {useCallback, useRef} from 'react';
 import MapGL, {Marker, ScaleControl} from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import {Link} from 'expo-router';
-import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
+import {useRouter} from 'expo-router';
+import {getUrlSafeString} from '@northernexplorer/tools-web';
 import {BBox} from 'geojson';
 import {MapRef} from 'react-map-gl/mapbox-legacy';
 import Supercluster from 'supercluster';
 import {MapViewProps} from '../Map';
-import {config} from '~/config';
 import {MapMarkerWeb} from '~/location/Map/components/MapMarkerWeb';
-import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
+import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
 
 export function MapView({
 	baseLayer,
@@ -30,6 +29,7 @@ export function MapView({
 	updateMapCenterAndBounds,
 }: MapViewProps) {
 	const mapRef = useRef<MapRef>(null);
+	const router = useRouter();
 
 	const updateMapState = useCallback(() => {
 		if (mapRef.current) {
@@ -43,15 +43,6 @@ export function MapView({
 			});
 		}
 	}, [updateMapCenterAndBounds]);
-
-	const rawRating = selectedSite?.rating
-		? typeof selectedSite.rating === 'number'
-			? selectedSite.rating
-			: parseFloat(String(selectedSite.rating))
-		: 0;
-	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
-	const reviewCount = selectedSite?.reviews?.length ?? 0;
-	const difficultyInfo = selectedSite?.difficulty ? DIFFICULTY_CONFIG[selectedSite.difficulty] : null;
 
 	return (
 		<div style={{width: '100%', height: '100%', minHeight: '400px'}}>
@@ -134,9 +125,21 @@ export function MapView({
 								<div style={styles.popupArrow} />
 							</div>
 						) : (
-							<div style={styles.popupContainer}>
-								<Link
-									href={{
+							<PointOfInterestPreviewWidget
+								id={selectedSite.id}
+								name={selectedSite.name}
+								description={selectedSite.description}
+								image={selectedSite.image}
+								country={selectedSite.country.name}
+								region={selectedSite.region.name}
+								latitude={selectedSite.lat}
+								longitude={selectedSite.lon}
+								rating={selectedSite.rating}
+								difficulty={selectedSite.difficulty}
+								reviews={selectedSite.reviews}
+								onPress={event => {
+									event.stopPropagation();
+									router.push({
 										pathname: '/[country]/[region]/[name]/[id]',
 										params: {
 											country: getUrlSafeString(selectedSite.country.name),
@@ -144,65 +147,9 @@ export function MapView({
 											id: getUrlSafeString(selectedSite.id),
 											name: getUrlSafeString(selectedSite.name),
 										},
-									}}
-								>
-									<img
-										alt={selectedSite.name}
-										src={getImageUrl({
-											path: selectedSite.image.url,
-											cdn: config.CONTENT_DELIVERY_NETWORK,
-											processed: selectedSite.image.processed,
-											size: 'thumbnail',
-										})}
-										style={{
-											width: '100%',
-											height: 110,
-											objectFit: 'cover',
-											marginBottom: 6,
-										}}
-									/>
-
-									<h3 style={styles.popupTitle}>{selectedSite.name}</h3>
-
-									<div style={styles.metaRow}>
-										{averageRating > 0 ? (
-											<div style={styles.ratingRow}>
-												<span style={{color: '#f59e0b', fontSize: 12}}>★</span>
-												<span style={styles.ratingText}>{averageRating.toFixed(1)}</span>
-												<span style={styles.countText}>({reviewCount})</span>
-											</div>
-										) : (
-											<span style={styles.noReviewsText}>No reviews</span>
-										)}
-
-										{difficultyInfo && (
-											<span
-												style={{
-													...styles.difficultyBadge,
-													backgroundColor: difficultyInfo.bgColor,
-													color: difficultyInfo.color,
-												}}
-											>
-												{difficultyInfo.label}
-											</span>
-										)}
-									</div>
-
-									<p
-										style={{
-											...styles.popupDescription,
-											display: '-webkit-box',
-											WebkitLineClamp: 3,
-											WebkitBoxOrient: 'vertical',
-											overflow: 'hidden',
-										}}
-									>
-										{selectedSite.description}
-									</p>
-								</Link>
-
-								<div style={styles.popupArrow} />
-							</div>
+									});
+								}}
+							/>
 						)}
 					</Marker>
 				)}
@@ -290,39 +237,6 @@ const styles = {
 		margin: 0,
 		fontSize: 11,
 		color: '#666',
-	},
-	metaRow: {
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		flexWrap: 'wrap' as const,
-		marginBottom: 6,
-		gap: 4,
-	},
-	ratingRow: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: 3,
-	},
-	ratingText: {
-		fontSize: 11,
-		fontWeight: 700,
-		color: '#0f172a',
-	},
-	countText: {
-		fontSize: 10,
-		color: '#64748b',
-	},
-	noReviewsText: {
-		fontSize: 10,
-		color: '#94a3b8',
-		fontStyle: 'italic' as const,
-	},
-	difficultyBadge: {
-		padding: '2px 6px',
-		borderRadius: 4,
-		fontSize: 9,
-		fontWeight: 700,
 	},
 	popupArrow: {
 		position: 'absolute' as const,
