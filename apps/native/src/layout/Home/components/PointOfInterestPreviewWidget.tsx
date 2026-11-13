@@ -12,6 +12,7 @@ import {useIsOffline} from '~/core/ConnectivityProvider';
 import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
 import {usePermissions} from '~/user/state/subscription';
 import {SubscriptionRequiredNotice} from '~/location/components/SubscriptionRequiredNotice';
+import {DifficultyLabel} from '~/location/components/DifficultyLabel';
 
 type PreviewProps = {
 	name: string;
@@ -136,7 +137,11 @@ export function PointOfInterestPreview({name, description, image, region, latitu
 
 							{difficultyInfo && (
 								<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
-									<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>{difficultyInfo.label}</Text>
+									<DifficultyLabel
+										difficulty={difficulty as keyof typeof DIFFICULTY_CONFIG}
+										iconSize={10}
+										textStyle={widgetStyles.difficultyText}
+									/>
 								</View>
 							)}
 						</View>
@@ -214,6 +219,8 @@ const widgetStyles = StyleSheet.create({
 		fontStyle: 'italic',
 	},
 	difficultyBadge: {
+		flexDirection: 'row',
+		alignItems: 'center',
 		paddingHorizontal: 6,
 		paddingVertical: 2,
 		borderRadius: 4,

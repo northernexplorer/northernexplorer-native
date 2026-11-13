@@ -9,6 +9,7 @@ import {CONDITION_ICON_MAP, COST_LABEL_MAP, DIFFICULTY_CONFIG, formatEnumLabel} 
 import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
 import {usePermissions} from '~/user/state/subscription';
 import {SubscriptionRequiredNotice} from '~/location/components/SubscriptionRequiredNotice';
+import {DifficultyLabel} from '~/location/components/DifficultyLabel';
 
 type Props = {
 	site: PointOfInterestType;
@@ -97,7 +98,7 @@ export function DestinationCard({site, userCoords}: Props) {
 									{backgroundColor: difficultyInfo.bgColor, borderColor: difficultyInfo.borderColor},
 								]}
 							>
-								<Text style={[styles.imageDifficultyText, {color: difficultyInfo.color}]}>{difficultyInfo.label}</Text>
+								<DifficultyLabel difficulty={site.difficulty!} iconSize={12} textStyle={styles.imageDifficultyText} />
 							</View>
 						)}
 					</View>
@@ -170,7 +171,11 @@ export function DestinationCard({site, userCoords}: Props) {
 													{backgroundColor: difficultyInfo.bgColor, borderColor: difficultyInfo.borderColor},
 												]}
 											>
-												<Text style={[styles.badgeText, {color: difficultyInfo.color}]}>{difficultyInfo.label}</Text>
+												<DifficultyLabel
+													difficulty={site.difficulty!}
+													iconSize={12}
+													textStyle={[styles.badgeText, {color: difficultyInfo.color}]}
+												/>
 											</View>
 										)}
 
@@ -261,6 +266,9 @@ const styles = StyleSheet.create({
 		height: '100%',
 	},
 	imageDifficultyBadge: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
 		position: 'absolute',
 		top: 10,
 		left: 10,
@@ -385,6 +393,9 @@ const styles = StyleSheet.create({
 		gap: 6,
 	},
 	badge: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
 		paddingHorizontal: 8,
 		paddingVertical: 3,
 		borderRadius: 6,
