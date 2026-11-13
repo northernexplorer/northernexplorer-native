@@ -26,7 +26,6 @@ export function MapView({
 	initialZoom,
 	canAccessRemoteDifficulty,
 	canUseDistanceScale,
-	isSelectedLocked,
 	updateMapCenterAndBounds,
 }: MapViewProps) {
 	const router = useRouter();
@@ -143,7 +142,7 @@ export function MapView({
 						offset={[0, -65]}
 						onPress={event => {
 							event.stopPropagation();
-							if (!isOffline && !isSelectedLocked) handleNavigateToSite(selectedSite);
+							if (!isOffline) handleNavigateToSite(selectedSite);
 						}}
 					>
 						<PointOfInterestPreview

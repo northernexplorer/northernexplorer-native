@@ -32,16 +32,13 @@ type Props = PreviewProps & {
 
 export function PointOfInterestPreviewWidget({id, country, onPress, ...previewProps}: Props) {
 	const {isOffline} = useIsOffline();
-	const permissions = usePermissions();
-	const canAccessRemoteDifficulty = permissions?.navigation.useRemoteDifficulty ?? false;
-	const isRestricted = !hasSiteDifficultyAccess(previewProps.difficulty, canAccessRemoteDifficulty);
 	const card = (
-		<Pressable disabled={isOffline || isRestricted} onPress={onPress} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
+		<Pressable disabled={isOffline} onPress={onPress} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
 			<PointOfInterestPreview {...previewProps} />
 		</Pressable>
 	);
 
-	if (isOffline || isRestricted || onPress) {
+	if (isOffline || onPress) {
 		return card;
 	}
 
