@@ -132,8 +132,10 @@ export const PointOfInterestController = {
 			selectedPoiTypes?: PointOfInterestTypeEnum[];
 			visitedFilter?: VisitedFilterEnum;
 			minRating?: number | null;
+			minDifficultyIndex?: number | null;
 			maxDifficultyIndex?: number | null;
-			maxCostIndex?: number;
+			minCostIndex?: number | null;
+			maxCostIndex?: number | null;
 			showDrafts?: boolean;
 		},
 		response: null as unknown as PointOfInterestType[],
@@ -146,8 +148,10 @@ export const PointOfInterestController = {
 			selectedPoiTypes?: PointOfInterestTypeEnum[];
 			visitedFilter?: VisitedFilterEnum;
 			minRating?: number | null;
+			minDifficultyIndex?: number | null;
 			maxDifficultyIndex?: number | null;
-			maxCostIndex?: number;
+			minCostIndex?: number | null;
+			maxCostIndex?: number | null;
 			showDrafts?: boolean;
 		},
 		response: null as unknown as PointOfInterestType[],

@@ -31,7 +31,9 @@ export interface MapState {
 	selectedPoiTypes: PointOfInterestTypeEnum[];
 	visitedFilter: VisitedFilterEnum;
 	minRating: number | null;
+	minDifficultyIndex: number;
 	maxDifficultyIndex: number | null;
+	minCostIndex: number;
 	maxCostIndex: number;
 	showDrafts: boolean;
 }
@@ -41,7 +43,9 @@ const initialState: MapState = {
 	selectedPoiTypes: [],
 	visitedFilter: VisitedFilterEnum.All,
 	minRating: null,
+	minDifficultyIndex: 0,
 	maxDifficultyIndex: null,
+	minCostIndex: 0,
 	maxCostIndex: COST_OPTIONS.length - 1,
 	showDrafts: false,
 };
@@ -62,8 +66,20 @@ export const mapSlice = createSlice({
 		setMinRating: (state, action: PayloadAction<number | null>) => {
 			state.minRating = action.payload;
 		},
+		setMinDifficultyLevel: (state, action: PayloadAction<number>) => {
+			state.minDifficultyIndex = action.payload;
+		},
+		setMaxDifficultyLevel: (state, action: PayloadAction<number>) => {
+			state.maxDifficultyIndex = action.payload;
+		},
 		setDifficultyLevel: (state, action: PayloadAction<number>) => {
 			state.maxDifficultyIndex = action.payload;
+		},
+		setMinCostLevel: (state, action: PayloadAction<number>) => {
+			state.minCostIndex = action.payload;
+		},
+		setMaxCostLevel: (state, action: PayloadAction<number>) => {
+			state.maxCostIndex = action.payload;
 		},
 		setCostLevel: (state, action: PayloadAction<number>) => {
 			state.maxCostIndex = action.payload;
@@ -74,6 +90,18 @@ export const mapSlice = createSlice({
 	},
 });
 
-export const {setBaseLayer, setPoiTypes, setVisitedFilter, setMinRating, setDifficultyLevel, setCostLevel, setShowDrafts} = mapSlice.actions;
+export const {
+	setBaseLayer,
+	setPoiTypes,
+	setVisitedFilter,
+	setMinRating,
+	setMinDifficultyLevel,
+	setMaxDifficultyLevel,
+	setDifficultyLevel,
+	setMinCostLevel,
+	setMaxCostLevel,
+	setCostLevel,
+	setShowDrafts,
+} = mapSlice.actions;
 
 export default mapSlice.reducer;

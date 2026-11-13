@@ -12,8 +12,10 @@ import {
 	setPoiTypes,
 	setVisitedFilter,
 	setMinRating,
-	setDifficultyLevel,
-	setCostLevel,
+	setMinDifficultyLevel,
+	setMaxDifficultyLevel,
+	setMinCostLevel,
+	setMaxCostLevel,
 	setShowDrafts,
 } from '~/location/state/map/mapSlice';
 import {useMap} from '~/location/state/map/useMap';
@@ -52,7 +54,9 @@ export function MapSidebar() {
 		selectedPoiTypes = [],
 		visitedFilter = VisitedFilterEnum.All,
 		minRating = null,
+		minDifficultyIndex = 0,
 		maxDifficultyIndex,
+		minCostIndex = 0,
 		maxCostIndex = COST_KEYS.length - 1,
 		showDrafts = false,
 	} = useMap();
@@ -65,7 +69,8 @@ export function MapSidebar() {
 	const maxAllowedDifficultyIndex = getMaxSiteDifficultyIndex(canAccessRemoteDifficulty);
 
 	// Default to the maximum permitted index when untouched in Redux
-	const effectiveDifficultyIndex = maxDifficultyIndex ?? maxAllowedDifficultyIndex;
+	const effectiveMaxDifficultyIndex = maxDifficultyIndex ?? maxAllowedDifficultyIndex;
+	const effectiveMinDifficultyIndex = minDifficultyIndex;
 
 	const bannerHref = isLoggedIn ? `/user/${authentication.username}/change-subscription` : '/user/login';
 	const bannerTitle = 'Upgrade Required to Access All Map Styles';
@@ -153,32 +158,42 @@ export function MapSidebar() {
 			{/* Difficulty Slider */}
 			<View style={styles.section}>
 				<SliderField
-					label="Max Difficulty"
+					label="Difficulty"
 					minimumValue={0}
 					maximumValue={Object.values(SiteDifficultyEnum).length - 1}
 					step={1}
-					value={effectiveDifficultyIndex}
+					values={[effectiveMinDifficultyIndex, effectiveMaxDifficultyIndex]}
 					maxInteractiveValue={maxAllowedDifficultyIndex}
 					warningLabel="Upgrade subscription to include harder difficulty tiers."
-					onValueChange={val => {
-						dispatch(setDifficultyLevel(val));
+					onValuesChange={([minVal, maxVal]) => {
+						dispatch(setMinDifficultyLevel(minVal));
+						dispatch(setMaxDifficultyLevel(maxVal));
 					}}
-					getDisplayLabel={val => DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[val as number] as SiteDifficultyEnum].label}
+					getRangeDisplayLabel={([minVal, maxVal]) => {
+						const minLabel = DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[minVal] as SiteDifficultyEnum].label;
+						const maxLabel = DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[maxVal] as SiteDifficultyEnum].label;
+						return minVal === maxVal ? minLabel : `${minLabel} – ${maxLabel}`;
+					}}
 				/>
 			</View>
 
 			{/* Cost Slider */}
 			<View style={styles.section}>
 				<SliderField
-					label="Max Cost"
+					label="Cost"
 					minimumValue={0}
 					maximumValue={COST_KEYS.length - 1}
 					step={1}
-					value={maxCostIndex}
-					onValueChange={val => {
-						dispatch(setCostLevel(val));
+					values={[minCostIndex, maxCostIndex]}
+					onValuesChange={([minVal, maxVal]) => {
+						dispatch(setMinCostLevel(minVal));
+						dispatch(setMaxCostLevel(maxVal));
 					}}
-					getDisplayLabel={val => COST_OPTIONS.find(o => o.value === COST_KEYS[val])?.label ?? 'Any'}
+					getRangeDisplayLabel={([minVal, maxVal]) => {
+						const minLabel = COST_OPTIONS.find(o => o.value === COST_KEYS[minVal])?.label ?? 'Free';
+						const maxLabel = COST_OPTIONS.find(o => o.value === COST_KEYS[maxVal])?.label ?? 'Any';
+						return minVal === maxVal ? minLabel : `${minLabel} – ${maxLabel}`;
+					}}
 				/>
 			</View>
 

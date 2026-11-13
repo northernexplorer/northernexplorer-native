@@ -1,4 +1,13 @@
-import {Params, PointOfInterestTypeEnum, PublishStatusEnum, Response, RolesEnum, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {
+	Params,
+	PointOfInterestTypeEnum,
+	PublishStatusEnum,
+	Response,
+	RolesEnum,
+	RouteDefinition,
+	ROUTES,
+	SiteDifficultyEnum,
+} from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
 import {AuthContext} from '../../core/types';
@@ -15,12 +24,20 @@ export class PointOfInterestController extends BaseController {
 	private permissionService = new PermissionService();
 
 	public async getNearby(params: Params<Route<'getNearby'>>, auth?: AuthContext): Promise<Response<Route<'getNearby'>>> {
-		const {lat, lon, limit, offset, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = params;
-
-		let parsedDifficultyIndex = maxDifficultyIndex !== undefined ? Number(maxDifficultyIndex) : undefined;
-		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
-
-		const MAX_FREE_DIFFICULTY_INDEX = 2;
+		const {
+			lat,
+			lon,
+			limit,
+			offset,
+			selectedPoiTypes,
+			visitedFilter,
+			minRating,
+			minDifficultyIndex,
+			maxDifficultyIndex,
+			minCostIndex,
+			maxCostIndex,
+			showDrafts,
+		} = params;
 
 		let hasAdvancedAccess = false;
 		let showDraftsParsed = showDrafts === true || (showDrafts as unknown) === 'true';
@@ -29,8 +46,9 @@ export class PointOfInterestController extends BaseController {
 			const user = await this.repos.user.getById(auth.userId);
 			const subscription = await this.repos.subscription.getById(user.subscription.id);
 			const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
+			const permissions = this.repos.subscriptionLevel.getPermissions(subscriptionLevel);
 
-			if (['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name)) {
+			if (permissions.navigation.useRemoteDifficulty || ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name)) {
 				hasAdvancedAccess = true;
 			}
 
@@ -39,10 +57,19 @@ export class PointOfInterestController extends BaseController {
 			}
 		}
 
+		const maxAllowedDifficultyIndex = hasAdvancedAccess ? Object.values(SiteDifficultyEnum).length - 1 : 3;
+		let parsedMinDifficultyIndex = minDifficultyIndex !== undefined && minDifficultyIndex !== null ? Number(minDifficultyIndex) : undefined;
+		let parsedMaxDifficultyIndex = maxDifficultyIndex !== undefined && maxDifficultyIndex !== null ? Number(maxDifficultyIndex) : undefined;
+		const parsedMinCostIndex = minCostIndex !== undefined && minCostIndex !== null ? Number(minCostIndex) : undefined;
+		const parsedMaxCostIndex = maxCostIndex !== undefined && maxCostIndex !== null ? Number(maxCostIndex) : undefined;
+
 		// Apply the restriction if the user lacks advanced access or is unauthenticated
 		if (!hasAdvancedAccess) {
-			if (parsedDifficultyIndex === undefined || parsedDifficultyIndex > MAX_FREE_DIFFICULTY_INDEX) {
-				parsedDifficultyIndex = MAX_FREE_DIFFICULTY_INDEX;
+			if (parsedMaxDifficultyIndex === undefined || parsedMaxDifficultyIndex > maxAllowedDifficultyIndex) {
+				parsedMaxDifficultyIndex = maxAllowedDifficultyIndex;
+			}
+			if (parsedMinDifficultyIndex !== undefined && parsedMinDifficultyIndex > maxAllowedDifficultyIndex) {
+				parsedMinDifficultyIndex = maxAllowedDifficultyIndex;
 			}
 		}
 
@@ -56,8 +83,10 @@ export class PointOfInterestController extends BaseController {
 			selectedPoiTypes,
 			visitedFilter,
 			minRating,
-			maxDifficultyIndex: parsedDifficultyIndex,
-			maxCostIndex: parsedCostIndex,
+			minDifficultyIndex: parsedMinDifficultyIndex,
+			maxDifficultyIndex: parsedMaxDifficultyIndex,
+			minCostIndex: parsedMinCostIndex,
+			maxCostIndex: parsedMaxCostIndex,
 		});
 	}
 
@@ -126,7 +155,19 @@ export class PointOfInterestController extends BaseController {
 		return {Favorited: Boolean(favorite)};
 	}
 	public async getForMap(params: Params<Route<'getForMap'>>, auth?: AuthContext): Promise<Response<Route<'getForMap'>>> {
-		const {lat, lon, limit, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = params;
+		const {
+			lat,
+			lon,
+			limit,
+			selectedPoiTypes,
+			visitedFilter,
+			minRating,
+			minDifficultyIndex,
+			maxDifficultyIndex,
+			minCostIndex,
+			maxCostIndex,
+			showDrafts,
+		} = params;
 
 		let hasAdvancedAccess = false;
 		let showDraftsParsed = showDrafts === true || (showDrafts as unknown) === 'true';
@@ -146,10 +187,21 @@ export class PointOfInterestController extends BaseController {
 			}
 		}
 
-		const defaultDifficultyIndex = hasAdvancedAccess ? 4 : 2;
-		const parsedDifficultyIndex =
-			maxDifficultyIndex !== undefined && maxDifficultyIndex !== null ? Number(maxDifficultyIndex) : defaultDifficultyIndex;
-		const parsedCostIndex = maxCostIndex !== undefined ? Number(maxCostIndex) : undefined;
+		const maxAllowedDifficultyIndex = hasAdvancedAccess ? Object.values(SiteDifficultyEnum).length - 1 : 3;
+		let parsedMinDifficultyIndex = minDifficultyIndex !== undefined && minDifficultyIndex !== null ? Number(minDifficultyIndex) : undefined;
+		let parsedMaxDifficultyIndex =
+			maxDifficultyIndex !== undefined && maxDifficultyIndex !== null ? Number(maxDifficultyIndex) : maxAllowedDifficultyIndex;
+		const parsedMinCostIndex = minCostIndex !== undefined && minCostIndex !== null ? Number(minCostIndex) : undefined;
+		const parsedMaxCostIndex = maxCostIndex !== undefined && maxCostIndex !== null ? Number(maxCostIndex) : undefined;
+
+		if (!hasAdvancedAccess) {
+			if (parsedMaxDifficultyIndex > maxAllowedDifficultyIndex) {
+				parsedMaxDifficultyIndex = maxAllowedDifficultyIndex;
+			}
+			if (parsedMinDifficultyIndex !== undefined && parsedMinDifficultyIndex > maxAllowedDifficultyIndex) {
+				parsedMinDifficultyIndex = maxAllowedDifficultyIndex;
+			}
+		}
 
 		return this.repos.pointOfInterest.getClosest({
 			lat,
@@ -160,8 +212,10 @@ export class PointOfInterestController extends BaseController {
 			selectedPoiTypes,
 			visitedFilter,
 			minRating,
-			maxDifficultyIndex: parsedDifficultyIndex,
-			maxCostIndex: parsedCostIndex,
+			minDifficultyIndex: parsedMinDifficultyIndex,
+			maxDifficultyIndex: parsedMaxDifficultyIndex,
+			minCostIndex: parsedMinCostIndex,
+			maxCostIndex: parsedMaxCostIndex,
 		});
 	}
 
