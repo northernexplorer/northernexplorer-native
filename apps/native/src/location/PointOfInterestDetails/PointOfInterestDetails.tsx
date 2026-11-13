@@ -7,7 +7,6 @@ import {RolesEnum, PublishStatusEnum, RejectionReasonEnum} from '@northernexplor
 import {Reviews} from './components/Reviews';
 import {Photos} from './components/Photos';
 import {AddNewPointOfInterestFavorite} from './components/AddPointOfInterestFavorite';
-import {PhotoPreviewModal} from './components/PhotoPreviewModal';
 import {ReviewMetadataBadges} from './components/ReviewMetadataBadges';
 import {styles} from '~/location/PointOfInterestDetails/styles';
 import {Markdown} from '~/layout/Layout';
@@ -18,6 +17,7 @@ import {usePermissions} from '~/user/state/subscription';
 import {Map} from '~/location/PointOfInterestDetails/components/Map';
 import {useLocation} from '~/location/state/location/useLocation';
 import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
+import {SubscriptionRequiredNotice} from '~/location/components/SubscriptionRequiredNotice';
 
 const REJECTION_REASON_LABELS: Record<RejectionReasonEnum, string> = {
 	[RejectionReasonEnum.TRESPASSING_REQUIRED]: 'Trespassing Required',
@@ -71,6 +71,7 @@ export function PointOfInterestDetails() {
 		<View>
 			<View style={styles.bannerContainer}>
 				<Pressable
+					disabled={!hasPermission}
 					onPress={() => {
 						if (data.image.id) {
 							setSelectedImageId(data.image.id);
@@ -90,6 +91,7 @@ export function PointOfInterestDetails() {
 							}),
 						}}
 						style={styles.banner}
+						blurRadius={hasPermission ? 0 : 10}
 					/>
 				</Pressable>
 				<View style={styles.mapCard}>
@@ -242,28 +244,10 @@ export function PointOfInterestDetails() {
 				) : (
 					<Link href={auth?.username ? `/user/${auth.username}/change-subscription` : '/user/login'} asChild>
 						<TouchableOpacity style={restrictedStyles.container}>
-							<Ionicons name="lock-closed-outline" size={24} color="#64748b" />
-							<Text style={restrictedStyles.title}>Subscriber Access Required</Text>
-							<Text style={restrictedStyles.text}>
-								You must be an active subscriber to unlock coordinates, community photos, reviews, and detailed expedition info for
-								this site.
-							</Text>
+							<SubscriptionRequiredNotice />
 							<Text style={restrictedStyles.linkText}>Tap to view subscription options</Text>
 						</TouchableOpacity>
 					</Link>
-				)}
-
-				{!hasPermission && selectedImageId && (
-					<PhotoPreviewModal
-						selectedImageId={selectedImageId}
-						selectedIndex={0}
-						totalImages={1}
-						currentUserId={auth?.userId}
-						isAdmin={auth?.roles?.includes(RolesEnum.Admin)}
-						onClose={() => setSelectedImageId(null)}
-						onPrevious={() => {}}
-						onNext={() => {}}
-					/>
 				)}
 			</View>
 		</View>
@@ -317,28 +301,16 @@ const sectionStyles = StyleSheet.create({
 const restrictedStyles = StyleSheet.create({
 	container: {
 		padding: 16,
-		backgroundColor: '#f8fafc',
+		backgroundColor: '#232323',
 		borderRadius: 8,
-		borderWidth: 1,
-		borderColor: '#e2e8f0',
 		alignItems: 'center',
 		gap: 8,
 		marginVertical: 12,
 	},
-	title: {
-		fontSize: 16,
-		fontWeight: '600',
-		color: '#334155',
-	},
-	text: {
-		fontSize: 14,
-		color: '#64748b',
-		textAlign: 'center',
-	},
 	linkText: {
 		fontSize: 14,
 		fontWeight: '600',
-		color: '#0284c7',
+		color: '#38bdf8',
 		marginTop: 4,
 	},
 });

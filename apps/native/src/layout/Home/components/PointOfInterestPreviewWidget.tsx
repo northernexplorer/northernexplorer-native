@@ -11,6 +11,7 @@ import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/re
 import {useIsOffline} from '~/core/ConnectivityProvider';
 import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
 import {usePermissions} from '~/user/state/subscription';
+import {SubscriptionRequiredNotice} from '~/location/components/SubscriptionRequiredNotice';
 
 type PreviewProps = {
 	name: string;
@@ -112,9 +113,7 @@ export function PointOfInterestPreview({name, description, image, region, latitu
 			/>
 			{isRestricted ? (
 				<View style={[widgetStyles.content, widgetStyles.restrictedContent]}>
-					<Ionicons name="lock-closed" size={22} color="#e67e22" />
-					<Text style={widgetStyles.restrictedTitle}>Subscription Required</Text>
-					<Text style={widgetStyles.restrictedMessage}>Sign in or upgrade your account to view details for this location.</Text>
+					<SubscriptionRequiredNotice />
 				</View>
 			) : (
 				<View style={widgetStyles.content}>
@@ -251,18 +250,5 @@ const widgetStyles = StyleSheet.create({
 	restrictedContent: {
 		alignItems: 'center',
 		justifyContent: 'center',
-	},
-	restrictedTitle: {
-		color: '#ffffff',
-		fontSize: 13,
-		fontWeight: '700',
-		marginTop: 6,
-	},
-	restrictedMessage: {
-		color: '#94a3b8',
-		fontSize: 11,
-		lineHeight: 15,
-		marginTop: 4,
-		textAlign: 'center',
 	},
 });
