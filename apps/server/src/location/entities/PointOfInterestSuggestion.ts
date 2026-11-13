@@ -19,8 +19,7 @@ export type PointOfInterestSuggestionInput = {
 	region: Region;
 	organization: Organization;
 	type: PointOfInterestTypeEnum[];
-	startDate?: number;
-	endDate?: number;
+	establishedYear?: number;
 	image?: Image;
 	status?: SuggestionStatusEnum;
 };
@@ -64,10 +63,7 @@ export class PointOfInterestSuggestion {
 	image?: Image;
 
 	@Property({type: 'double', nullable: true})
-	startDate?: number;
-
-	@Property({type: 'double', nullable: true})
-	endDate?: number;
+	establishedYear?: number;
 
 	@Enum({type: () => PointOfInterestTypeEnum, items: () => PointOfInterestTypeEnum, array: true})
 	type: PointOfInterestTypeEnum[];
@@ -92,8 +88,7 @@ export class PointOfInterestSuggestion {
 		this.region = data.region;
 		this.organization = data.organization;
 		this.type = data.type;
-		this.startDate = data.startDate;
-		this.endDate = data.endDate;
+		this.establishedYear = data.establishedYear;
 		this.image = data.image;
 		if (data.status) {
 			this.status = data.status;

@@ -210,8 +210,7 @@ export class PointOfInterestController extends BaseController {
 			image: site.image,
 			lat: site.lat,
 			lon: site.lon,
-			startDate: site.startDate,
-			endDate: site.endDate,
+			establishedYear: site.establishedYear,
 			status: site.status,
 			rejectionReason: site.rejectionReason,
 			region: site.region,
@@ -239,8 +238,7 @@ export class PointOfInterestController extends BaseController {
 			image: site.image,
 			lat: site.lat,
 			lon: site.lon,
-			startDate: site.startDate,
-			endDate: site.endDate,
+			establishedYear: site.establishedYear,
 			status: site.status,
 			rejectionReason: site.rejectionReason,
 			region: site.region,
@@ -264,8 +262,7 @@ export class PointOfInterestController extends BaseController {
 			image: site.image,
 			lat: site.lat,
 			lon: site.lon,
-			startDate: site.startDate,
-			endDate: site.endDate,
+			establishedYear: site.establishedYear,
 			status: site.status,
 			rejectionReason: site.rejectionReason,
 			region: site.region,
@@ -281,7 +278,7 @@ export class PointOfInterestController extends BaseController {
 	async edit(params: Params<Route<'edit'>>, auth?: AuthContext): Promise<Response<Route<'edit'>>> {
 		this.permissionService.canAccessAdmin(auth);
 
-		const {id, countryId, regionId, startDate, endDate, organizationId, ...updates} = params;
+		const {id, countryId, regionId, establishedYear, organizationId, ...updates} = params;
 
 		const pointOfInterest = await this.repos.pointOfInterest.getById(id);
 		const country = await this.repos.country.getById(countryId);
@@ -293,8 +290,7 @@ export class PointOfInterestController extends BaseController {
 			...updates,
 			country,
 			region,
-			startDate,
-			endDate,
+			establishedYear,
 			organization,
 			image,
 		});
@@ -309,7 +305,7 @@ export class PointOfInterestController extends BaseController {
 		const user = await this.repos.user.getById(userId);
 		const isAdmin = user.roles?.includes(RolesEnum.Admin);
 
-		const {countryId, regionId, startDate, endDate, organizationId, ...data} = params;
+		const {countryId, regionId, establishedYear, organizationId, ...data} = params;
 
 		const country = await this.repos.country.getById(countryId);
 		const region = await this.repos.region.getById(regionId);
@@ -324,8 +320,7 @@ export class PointOfInterestController extends BaseController {
 			status,
 			country,
 			region,
-			startDate,
-			endDate,
+			establishedYear,
 			organization,
 			image,
 		});
