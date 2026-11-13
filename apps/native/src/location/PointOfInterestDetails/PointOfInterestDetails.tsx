@@ -94,108 +94,110 @@ export function PointOfInterestDetails() {
 						blurRadius={hasPermission ? 0 : 10}
 					/>
 				</Pressable>
-				<View style={styles.mapCard}>
-					<Map site={data} />
-				</View>
-			</View>
-			<View style={styles.content}>
-				<View style={styles.headerRow}>
-					<Text style={styles.breadcrumbs}>
-						{data.country.name} › {data.region.name}
-					</Text>
-					<View style={styles.headerActions}>
-						{hasPermission && !isNaN(data.lat) && !isNaN(data.lon) && (
-							<TouchableOpacity
-								style={styles.directionsButton}
-								onPress={() => openDirections(data.lat, data.lon, data.name)}
-								accessibilityRole="button"
-								accessibilityLabel="Get directions"
-							>
-								<Ionicons name="navigate-outline" size={16} color="#059669" style={{marginRight: 4}} />
-								<Text style={styles.directionsButtonText}>Directions</Text>
-							</TouchableOpacity>
-						)}
-						{auth && (
-							<Link
-								href={{
-									pathname: '/[country]/[region]/[name]/[id]/edit',
-									params: {
-										country: getUrlSafeString(data.country.name),
-										region: getUrlSafeString(data.region.name),
-										id: getUrlSafeString(data.id),
-										name: getUrlSafeString(data.name),
-									},
-								}}
-								asChild
-							>
-								<TouchableOpacity style={styles.editButton}>
-									<Ionicons
-										name={auth.roles?.includes(RolesEnum.Admin) ? 'create-outline' : 'bulb-outline'}
-										size={16}
-										color="#0088cc"
-										style={{marginRight: 4}}
-									/>
-									<Text style={styles.editButtonText}>{auth.roles?.includes(RolesEnum.Admin) ? 'Edit' : 'Suggest Edit'}</Text>
-								</TouchableOpacity>
-							</Link>
-						)}
-						<AddNewPointOfInterestFavorite pointOfInterestId={data.id} />
-					</View>
-				</View>
-
-				<Text style={styles.title}>{data.name}</Text>
-
-				{auth?.roles?.includes(RolesEnum.Admin) && data.status === PublishStatusEnum.Rejected && (
-					<View style={statusBannerStyles.rejectedContainer}>
-						<Text style={statusBannerStyles.rejectedTitle}>Status: Rejected</Text>
-						{data.rejectionReason && (
-							<Text style={statusBannerStyles.rejectedReason}>
-								Reason: {REJECTION_REASON_LABELS[data.rejectionReason] || data.rejectionReason}
-							</Text>
-						)}
-					</View>
-				)}
-				{auth?.roles?.includes(RolesEnum.Admin) && data.status === PublishStatusEnum.Draft && (
-					<View style={statusBannerStyles.draftContainer}>
-						<Text style={statusBannerStyles.draftTitle}>Status: Draft</Text>
-					</View>
-				)}
-
-				{/* 5-Star Rating Summary Row */}
-				<View style={ratingStyles.ratingBadge}>
-					<View style={ratingStyles.starRow}>
-						{[1, 2, 3, 4, 5].map(starIndex => {
-							let iconName: 'star' | 'star-half' | 'star-outline' = 'star-outline';
-
-							if (averageRating >= starIndex) {
-								iconName = 'star';
-							} else if (averageRating >= starIndex - 0.5) {
-								iconName = 'star-half';
-							}
-
-							const isFilled = iconName !== 'star-outline';
-
-							return <Ionicons key={starIndex} name={iconName} size={18} color={isFilled ? '#f59e0b' : '#cbd5e1'} />;
-						})}
-					</View>
-
-					{averageRating > 0 ? (
-						<>
-							<Text style={ratingStyles.ratingScore}>{averageRating.toFixed(1)}</Text>
-							<Text style={ratingStyles.ratingCount}>
-								({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})
-							</Text>
-						</>
-					) : (
-						<Text style={ratingStyles.noReviewsText}>No reviews yet</Text>
-					)}
-				</View>
-
-				{/* Shared System-Generated Metadata Badges & Conditions */}
-				<ReviewMetadataBadges difficulty={data.difficulty} entranceCost={data.entranceCost} conditions={data.conditions} />
-
-				{/* Restricted Metadata (Coordinates, Distance, Dates, Organization) */}
 				{hasPermission && (
+					<View style={styles.mapCard}>
+						<Map site={data} />
+					</View>
+				)}
+			</View>
+			{hasPermission ? (
+				<View style={styles.content}>
+					<View style={styles.headerRow}>
+						<Text style={styles.breadcrumbs}>
+							{data.country.name} › {data.region.name}
+						</Text>
+						<View style={styles.headerActions}>
+							{!isNaN(data.lat) && !isNaN(data.lon) && (
+								<TouchableOpacity
+									style={styles.directionsButton}
+									onPress={() => openDirections(data.lat, data.lon, data.name)}
+									accessibilityRole="button"
+									accessibilityLabel="Get directions"
+								>
+									<Ionicons name="navigate-outline" size={16} color="#059669" style={{marginRight: 4}} />
+									<Text style={styles.directionsButtonText}>Directions</Text>
+								</TouchableOpacity>
+							)}
+							{auth && (
+								<Link
+									href={{
+										pathname: '/[country]/[region]/[name]/[id]/edit',
+										params: {
+											country: getUrlSafeString(data.country.name),
+											region: getUrlSafeString(data.region.name),
+											id: getUrlSafeString(data.id),
+											name: getUrlSafeString(data.name),
+										},
+									}}
+									asChild
+								>
+									<TouchableOpacity style={styles.editButton}>
+										<Ionicons
+											name={auth.roles?.includes(RolesEnum.Admin) ? 'create-outline' : 'bulb-outline'}
+											size={16}
+											color="#0088cc"
+											style={{marginRight: 4}}
+										/>
+										<Text style={styles.editButtonText}>{auth.roles?.includes(RolesEnum.Admin) ? 'Edit' : 'Suggest Edit'}</Text>
+									</TouchableOpacity>
+								</Link>
+							)}
+							<AddNewPointOfInterestFavorite pointOfInterestId={data.id} />
+						</View>
+					</View>
+
+					<Text style={styles.title}>{data.name}</Text>
+
+					{auth?.roles?.includes(RolesEnum.Admin) && data.status === PublishStatusEnum.Rejected && (
+						<View style={statusBannerStyles.rejectedContainer}>
+							<Text style={statusBannerStyles.rejectedTitle}>Status: Rejected</Text>
+							{data.rejectionReason && (
+								<Text style={statusBannerStyles.rejectedReason}>
+									Reason: {REJECTION_REASON_LABELS[data.rejectionReason] || data.rejectionReason}
+								</Text>
+							)}
+						</View>
+					)}
+					{auth?.roles?.includes(RolesEnum.Admin) && data.status === PublishStatusEnum.Draft && (
+						<View style={statusBannerStyles.draftContainer}>
+							<Text style={statusBannerStyles.draftTitle}>Status: Draft</Text>
+						</View>
+					)}
+
+					{/* 5-Star Rating Summary Row */}
+					<View style={ratingStyles.ratingBadge}>
+						<View style={ratingStyles.starRow}>
+							{[1, 2, 3, 4, 5].map(starIndex => {
+								let iconName: 'star' | 'star-half' | 'star-outline' = 'star-outline';
+
+								if (averageRating >= starIndex) {
+									iconName = 'star';
+								} else if (averageRating >= starIndex - 0.5) {
+									iconName = 'star-half';
+								}
+
+								const isFilled = iconName !== 'star-outline';
+
+								return <Ionicons key={starIndex} name={iconName} size={18} color={isFilled ? '#f59e0b' : '#cbd5e1'} />;
+							})}
+						</View>
+
+						{averageRating > 0 ? (
+							<>
+								<Text style={ratingStyles.ratingScore}>{averageRating.toFixed(1)}</Text>
+								<Text style={ratingStyles.ratingCount}>
+									({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})
+								</Text>
+							</>
+						) : (
+							<Text style={ratingStyles.noReviewsText}>No reviews yet</Text>
+						)}
+					</View>
+
+					{/* Shared System-Generated Metadata Badges & Conditions */}
+					<ReviewMetadataBadges difficulty={data.difficulty} entranceCost={data.entranceCost} conditions={data.conditions} />
+
+					{/* Restricted Metadata (Coordinates, Distance, Dates, Organization) */}
 					<View style={styles.metaContainer}>
 						<Text style={styles.metaLabel}>
 							Coordinates: {data.lat}°, {data.lon}°
@@ -208,48 +210,39 @@ export function PointOfInterestDetails() {
 						)}
 						<Text style={styles.metaLabel}>Organization: {data.organization.name}</Text>
 					</View>
-				)}
 
-				<View style={styles.divider} />
+					<View style={styles.divider} />
 
-				{hasPermission ? (
 					<Markdown content={data.description} />
-				) : (
-					<Text style={styles.body} numberOfLines={3} ellipsizeMode="tail">
-						{data.description}
-					</Text>
-				)}
 
-				<View style={styles.divider} />
+					<View style={styles.divider} />
 
-				{/* Restricted Media & Reviews Sections */}
-				{hasPermission ? (
-					<>
-						{/* Photos Section */}
-						<View style={sectionStyles.header}>
-							<Ionicons name="images-outline" size={20} color="#0f172a" />
-							<Text style={sectionStyles.title}>Photos ({photoCount})</Text>
-						</View>
-						<Photos data={data} refetch={refetch} selectedImageId={selectedImageId} setSelectedImageId={setSelectedImageId} />
+					{/* Photos Section */}
+					<View style={sectionStyles.header}>
+						<Ionicons name="images-outline" size={20} color="#0f172a" />
+						<Text style={sectionStyles.title}>Photos ({photoCount})</Text>
+					</View>
+					<Photos data={data} refetch={refetch} selectedImageId={selectedImageId} setSelectedImageId={setSelectedImageId} />
 
-						<View style={styles.divider} />
+					<View style={styles.divider} />
 
-						{/* Reviews Section */}
-						<View style={sectionStyles.header}>
-							<Ionicons name="chatbox-ellipses-outline" size={20} color="#0f172a" />
-							<Text style={sectionStyles.title}>Reviews ({reviewCount})</Text>
-						</View>
-						<Reviews data={data} refetch={refetch} />
-					</>
-				) : (
+					{/* Reviews Section */}
+					<View style={sectionStyles.header}>
+						<Ionicons name="chatbox-ellipses-outline" size={20} color="#0f172a" />
+						<Text style={sectionStyles.title}>Reviews ({reviewCount})</Text>
+					</View>
+					<Reviews data={data} refetch={refetch} />
+				</View>
+			) : (
+				<View style={styles.content}>
 					<Link href={auth?.username ? `/user/${auth.username}/change-subscription` : '/user/login'} asChild>
 						<TouchableOpacity style={restrictedStyles.container}>
 							<SubscriptionRequiredNotice />
 							<Text style={restrictedStyles.linkText}>Tap to view subscription options</Text>
 						</TouchableOpacity>
 					</Link>
-				)}
-			</View>
+				</View>
+			)}
 		</View>
 	);
 }
