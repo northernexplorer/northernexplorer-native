@@ -25,8 +25,7 @@ type PointOfInterestInput = {
 	lon: number;
 	country: Country;
 	region: Region;
-	startDate?: number;
-	endDate?: number;
+	establishedYear?: number;
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 	organization: Organization;
@@ -57,10 +56,7 @@ export class PointOfInterest {
 	lon: number;
 
 	@Property({type: 'double', nullable: true})
-	startDate?: number;
-
-	@Property({type: 'double', nullable: true})
-	endDate?: number;
+	establishedYear?: number;
 
 	@ManyToOne(() => Country)
 	country: Country;
@@ -116,8 +112,7 @@ export class PointOfInterest {
 		this.country = data.country;
 		this.region = data.region;
 		this.status = data.status;
-		this.startDate = data.startDate;
-		this.endDate = data.endDate;
+		this.establishedYear = data.establishedYear;
 		this.type = data.type;
 		this.organization = data.organization;
 		this.rejectionReason = data.rejectionReason;
@@ -137,8 +132,7 @@ export class PointOfInterest {
 			}
 			this.status = data.status;
 		}
-		if (data.startDate !== undefined) this.startDate = data.startDate;
-		if (data.endDate !== undefined) this.endDate = data.endDate;
+		if (data.establishedYear !== undefined) this.establishedYear = data.establishedYear;
 		if (data.type !== undefined) this.type = data.type;
 		if (data.organization !== undefined) this.organization = data.organization;
 		if (data.rejectionReason !== undefined) this.rejectionReason = data.rejectionReason;
