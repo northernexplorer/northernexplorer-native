@@ -24,8 +24,7 @@ type FormState = {
 	countryId: string;
 	regionId: string;
 	type: PointOfInterestTypeEnum[];
-	startDate: string;
-	endDate: string;
+	establishedYear: string;
 	status: PublishStatusEnum;
 	organizationId: string;
 };
@@ -63,8 +62,7 @@ export function PointOfInterestAdd() {
 		countryId: '',
 		regionId: '',
 		type: [PointOfInterestTypeEnum.HistoricSite],
-		startDate: '',
-		endDate: '',
+		establishedYear: '',
 		status: PublishStatusEnum.Draft,
 		organizationId: '',
 	});
@@ -125,8 +123,7 @@ export function PointOfInterestAdd() {
 			countryId: form.countryId,
 			regionId: form.regionId,
 			type: form.type,
-			startDate: form.startDate.trim() ? Number(form.startDate) : undefined,
-			endDate: form.endDate.trim() ? Number(form.endDate) : undefined,
+			establishedYear: form.establishedYear.trim() ? Number(form.establishedYear) : undefined,
 			status: isAdmin ? form.status : PublishStatusEnum.Draft,
 			organizationId: form.organizationId,
 		};
@@ -259,30 +256,15 @@ export function PointOfInterestAdd() {
 								mapComponent={CoordinateMap}
 							/>
 
-							<View style={formStyles.row}>
-								<View style={formStyles.halfWidth}>
-									<FormField
-										fieldName="startDate"
-										label="Start Year"
-										placeholder="e.g. 1784"
-										value={form.startDate}
-										updateField={updateField}
-										error={errors.startDate}
-										loading={mutationLoading}
-									/>
-								</View>
-								<View style={formStyles.halfWidth}>
-									<FormField
-										fieldName="endDate"
-										label="End Year"
-										placeholder="e.g. 1821"
-										value={form.endDate}
-										updateField={updateField}
-										error={errors.endDate}
-										loading={mutationLoading}
-									/>
-								</View>
-							</View>
+							<FormField
+								fieldName="establishedYear"
+								label="Established Year"
+								placeholder="e.g. 1784"
+								value={form.establishedYear}
+								updateField={updateField}
+								error={errors.establishedYear}
+								loading={mutationLoading}
+							/>
 
 							<FormattedTextAreaField
 								fieldName="description"
