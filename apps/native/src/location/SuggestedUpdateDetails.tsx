@@ -90,7 +90,7 @@ export function SuggestedUpdateDetails() {
 	const isCountryChanged = suggestion.country.id !== poi.country.id;
 	const isRegionChanged = suggestion.region.id !== poi.region.id;
 	const isOrgChanged = suggestion.organization.id !== poi.organization.id;
-	const isDatesChanged = suggestion.startDate !== poi.startDate || suggestion.endDate !== poi.endDate;
+	const isEstablishedYearChanged = suggestion.establishedYear !== poi.establishedYear;
 	const isTypeChanged = JSON.stringify(suggestion.type) !== JSON.stringify(poi.type);
 
 	return (
@@ -276,11 +276,11 @@ export function SuggestedUpdateDetails() {
 				</View>
 			</View>
 
-			{/* Dates Field Comparison */}
-			<View style={[styles.fieldCard, isDatesChanged && styles.fieldCardChanged]}>
+			{/* Established Year Field Comparison */}
+			<View style={[styles.fieldCard, isEstablishedYearChanged && styles.fieldCardChanged]}>
 				<View style={styles.fieldHeader}>
-					<Text style={styles.fieldLabel}>Active Years</Text>
-					{isDatesChanged ? (
+					<Text style={styles.fieldLabel}>Established Year</Text>
+					{isEstablishedYearChanged ? (
 						<View style={styles.changedBadge}>
 							<Text style={styles.changedBadgeText}>Modified</Text>
 						</View>
@@ -291,14 +291,12 @@ export function SuggestedUpdateDetails() {
 				<View style={styles.compareRow}>
 					<View style={styles.compareCol}>
 						<Text style={styles.compareLabel}>Current</Text>
-						<Text style={styles.currentValue}>
-							{poi.startDate || 'Unknown'} - {poi.endDate || 'Unknown'}
-						</Text>
+						<Text style={styles.currentValue}>{poi.establishedYear ?? 'Unknown'}</Text>
 					</View>
 					<View style={styles.compareCol}>
 						<Text style={styles.compareLabel}>Suggested</Text>
-						<Text style={[styles.suggestedValue, isDatesChanged && styles.changedValueHighlight]}>
-							{suggestion.startDate || 'Unknown'} - {suggestion.endDate || 'Unknown'}
+						<Text style={[styles.suggestedValue, isEstablishedYearChanged && styles.changedValueHighlight]}>
+							{suggestion.establishedYear ?? 'Unknown'}
 						</Text>
 					</View>
 				</View>

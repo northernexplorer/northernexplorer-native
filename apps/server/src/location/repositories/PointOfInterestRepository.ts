@@ -26,8 +26,7 @@ interface PointOfInterestRawRow {
 	image: PointOfInterestType['image'];
 	lat: string | number;
 	lon: string | number;
-	startDate: string | number;
-	endDate: string | number;
+	establishedYear: string | number | null;
 	country: CountryType;
 	region: RegionType;
 	distanceMeters: number;
@@ -74,8 +73,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			image: site.image,
 			lat: site.lat,
 			lon: site.lon,
-			startDate: site.startDate,
-			endDate: site.endDate,
+			establishedYear: site.establishedYear,
 			rating: site.rating,
 			difficulty: site.difficulty,
 			entranceCost: site.entranceCost,
@@ -222,7 +220,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		const query = `
 			SELECT id, name, description, image, lat, lon, country, region, organization, status, rejection_reason as "rejectionReason", type,
 				   difficulty, entrance_cost as "entranceCost", rating, reviews,
-				   start_date as "startDate", end_date as "endDate", distance_meters as distanceMeters
+				   established_year as "establishedYear", distance_meters as distanceMeters
 			FROM (
 					 SELECT h.id, h.name, h.description, h.lat, h.lon, h.status, h.rejection_reason, h.type,
 							h.difficulty, h.entrance_cost,
@@ -261,7 +259,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 										   )
 							) AS region,
 							(SELECT json_build_object('id', org.id, 'name', org.name) FROM organization org WHERE org.id = h.organization_id) AS organization,
-							h.start_date, h.end_date,
+							h.established_year,
 							(6371000 * acos(
 								LEAST(1.0, GREATEST(-1.0,
 													cos(radians(?)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(?)) +
@@ -303,8 +301,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			reviews: site.reviews ?? [],
 			lat: Number(site.lat),
 			lon: Number(site.lon),
-			startDate: site.startDate ? Number(site.startDate) : undefined,
-			endDate: site.endDate ? Number(site.endDate) : undefined,
+			establishedYear: site.establishedYear == null ? undefined : Number(site.establishedYear),
 			status: site.status,
 			rejectionReason: site.rejectionReason,
 			type: site.type,
@@ -370,8 +367,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			image: site.image,
 			lat: site.lat,
 			lon: site.lon,
-			startDate: site.startDate,
-			endDate: site.endDate,
+			establishedYear: site.establishedYear,
 			status: site.status,
 			rejectionReason: site.rejectionReason,
 			region: site.region,

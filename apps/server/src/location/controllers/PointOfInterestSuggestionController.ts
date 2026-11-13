@@ -26,8 +26,7 @@ export class PointOfInterestSuggestionController extends BaseController {
 				description: suggestion.pointOfInterest.description,
 				lat: suggestion.pointOfInterest.lat,
 				lon: suggestion.pointOfInterest.lon,
-				startDate: suggestion.pointOfInterest.startDate,
-				endDate: suggestion.pointOfInterest.endDate,
+				establishedYear: suggestion.pointOfInterest.establishedYear,
 				type: suggestion.pointOfInterest.type,
 				country: {
 					id: suggestion.pointOfInterest.country.id,
@@ -87,8 +86,7 @@ export class PointOfInterestSuggestionController extends BaseController {
 						status: suggestion.image.status,
 					}
 				: undefined,
-			startDate: suggestion.startDate,
-			endDate: suggestion.endDate,
+			establishedYear: suggestion.establishedYear,
 			type: suggestion.type,
 			status: suggestion.status,
 			createdAt: suggestion.createdAt,
@@ -115,8 +113,7 @@ export class PointOfInterestSuggestionController extends BaseController {
 			region,
 			organization,
 			image: pointOfInterest.image,
-			startDate: params.startDate,
-			endDate: params.endDate,
+			establishedYear: params.establishedYear,
 			type: params.type,
 			status: SuggestionStatusEnum.Pending,
 		});
@@ -167,8 +164,7 @@ export class PointOfInterestSuggestionController extends BaseController {
 			region: suggestion.region,
 			organization: suggestion.organization,
 			type: suggestion.type,
-			startDate: suggestion.startDate,
-			endDate: suggestion.endDate,
+			establishedYear: suggestion.establishedYear,
 			image: suggestion.image || pointOfInterest.image,
 		});
 
