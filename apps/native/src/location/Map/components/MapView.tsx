@@ -9,7 +9,8 @@ import {BBox} from 'geojson';
 import Supercluster from 'supercluster';
 import {MapViewProps} from '../Map';
 import {MapMarkerNative} from '~/location/Map/components/MapMarkerNative';
-import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
+import {PointOfInterestPreview} from '~/layout/Home/components/PointOfInterestPreviewWidget';
+import {useIsOffline} from '~/core/ConnectivityProvider';
 
 export function MapView({
 	baseLayer,
@@ -29,6 +30,7 @@ export function MapView({
 	updateMapCenterAndBounds,
 }: MapViewProps) {
 	const router = useRouter();
+	const {isOffline} = useIsOffline();
 	const cameraRef = useRef<CameraRef>(null);
 
 	const onRegionDidChange = useCallback(
@@ -134,7 +136,16 @@ export function MapView({
 				})}
 
 				{selectedSite && (
-					<Marker key={`popup-${selectedSite.id}`} lngLat={[selectedSite.lon, selectedSite.lat]} anchor="bottom" offset={[0, -65]}>
+					<Marker
+						key={`popup-${selectedSite.id}`}
+						lngLat={[selectedSite.lon, selectedSite.lat]}
+						anchor="bottom"
+						offset={[0, -65]}
+						onPress={event => {
+							event.stopPropagation();
+							if (!isOffline && !isSelectedLocked) handleNavigateToSite(selectedSite);
+						}}
+					>
 						{isSelectedLocked ? (
 							<View style={styles.lockedPopupContainer}>
 								<MaterialCommunityIcons name="lock" size={24} color="#e67e22" />
@@ -143,22 +154,16 @@ export function MapView({
 								<View style={styles.popupArrow} />
 							</View>
 						) : (
-							<PointOfInterestPreviewWidget
-								id={selectedSite.id}
+							<PointOfInterestPreview
 								name={selectedSite.name}
 								description={selectedSite.description}
 								image={selectedSite.image}
-								country={selectedSite.country.name}
 								region={selectedSite.region.name}
 								latitude={selectedSite.lat}
 								longitude={selectedSite.lon}
 								rating={selectedSite.rating}
 								difficulty={selectedSite.difficulty}
 								reviews={selectedSite.reviews}
-								onPress={event => {
-									event.stopPropagation();
-									handleNavigateToSite(selectedSite);
-								}}
 							/>
 						)}
 					</Marker>

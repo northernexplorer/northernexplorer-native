@@ -10,37 +10,56 @@ import {useLocation} from '~/location/state/location/useLocation';
 import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
 import {useIsOffline} from '~/core/ConnectivityProvider';
 
-type Props = {
-	id: string;
+type PreviewProps = {
 	name: string;
 	description: string;
 	image: ImageHeaderType;
-	country?: string | null;
 	region?: string | null;
 	latitude: number | string;
 	longitude: number | string;
 	rating?: number | string;
 	difficulty?: keyof typeof DIFFICULTY_CONFIG;
 	reviews?: {id: string; rating: number}[];
+};
+
+type Props = PreviewProps & {
+	id: string;
+	country?: string | null;
 	onPress?: (event: GestureResponderEvent) => void;
 };
 
-export function PointOfInterestPreviewWidget({
-	id,
-	name,
-	description,
-	image,
-	country,
-	region,
-	latitude,
-	longitude,
-	rating,
-	difficulty,
-	reviews,
-	onPress,
-}: Props) {
-	const coords = useLocation();
+export function PointOfInterestPreviewWidget({id, country, onPress, ...previewProps}: Props) {
 	const {isOffline} = useIsOffline();
+	const card = (
+		<Pressable disabled={isOffline} onPress={onPress} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
+			<PointOfInterestPreview {...previewProps} />
+		</Pressable>
+	);
+
+	if (isOffline || onPress) {
+		return card;
+	}
+
+	return (
+		<Link
+			href={{
+				pathname: '/[country]/[region]/[name]/[id]',
+				params: {
+					country: getUrlSafeString(country),
+					region: getUrlSafeString(previewProps.region),
+					id: getUrlSafeString(id),
+					name: getUrlSafeString(previewProps.name),
+				},
+			}}
+			asChild
+		>
+			{card}
+		</Link>
+	);
+}
+
+export function PointOfInterestPreview({name, description, image, region, latitude, longitude, rating, difficulty, reviews}: PreviewProps) {
+	const coords = useLocation();
 
 	const distance = useMemo(() => {
 		if (!coords?.lat) return null;
@@ -71,86 +90,63 @@ export function PointOfInterestPreviewWidget({
 	const reviewCount = reviews?.length ?? 0;
 	const difficultyInfo = difficulty ? DIFFICULTY_CONFIG[difficulty] : null;
 
-	const card = (
-		<Pressable disabled={isOffline} onPress={onPress} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
-			<View style={[globalStyles.tile, widgetStyles.card]}>
-				<Image
-					source={{
-						uri: getImageUrl({
-							path: image.url,
-							cdn: config.CONTENT_DELIVERY_NETWORK,
-							processed: image.processed,
-							size: 'thumbnail',
-						}),
-					}}
-					style={widgetStyles.image}
-					resizeMode="cover"
-				/>
-				<View style={widgetStyles.content}>
-					<View>
-						<Text style={widgetStyles.title} numberOfLines={1}>
-							{name}
-						</Text>
+	return (
+		<View style={[globalStyles.tile, widgetStyles.card]}>
+			<Image
+				source={{
+					uri: getImageUrl({
+						path: image.url,
+						cdn: config.CONTENT_DELIVERY_NETWORK,
+						processed: image.processed,
+						size: 'thumbnail',
+					}),
+				}}
+				style={widgetStyles.image}
+				resizeMode="cover"
+			/>
+			<View style={widgetStyles.content}>
+				<View>
+					<Text style={widgetStyles.title} numberOfLines={1}>
+						{name}
+					</Text>
 
-						{/* Rating and Difficulty Row */}
-						<View style={widgetStyles.metaRow}>
-							{averageRating > 0 ? (
-								<View style={widgetStyles.ratingRow}>
-									<Ionicons name="star" size={12} color="#f59e0b" />
-									<Text style={widgetStyles.ratingText}>{averageRating.toFixed(1)}</Text>
-									<Text style={widgetStyles.countText}>({reviewCount})</Text>
-								</View>
-							) : (
-								<Text style={widgetStyles.noReviewsText}>No reviews</Text>
-							)}
-
-							{difficultyInfo && (
-								<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
-									<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>{difficultyInfo.label}</Text>
-								</View>
-							)}
-						</View>
-
-						<Text style={widgetStyles.description} numberOfLines={2}>
-							{description}
-						</Text>
-					</View>
-
-					<View style={widgetStyles.footer}>
-						{region ? (
-							<Text style={widgetStyles.regionText} numberOfLines={1}>
-								{region}
-							</Text>
+					{/* Rating and Difficulty Row */}
+					<View style={widgetStyles.metaRow}>
+						{averageRating > 0 ? (
+							<View style={widgetStyles.ratingRow}>
+								<Ionicons name="star" size={12} color="#f59e0b" />
+								<Text style={widgetStyles.ratingText}>{averageRating.toFixed(1)}</Text>
+								<Text style={widgetStyles.countText}>({reviewCount})</Text>
+							</View>
 						) : (
-							<View />
+							<Text style={widgetStyles.noReviewsText}>No reviews</Text>
 						)}
 
-						{distance ? <Text style={widgetStyles.distanceText}>{distance}</Text> : null}
+						{difficultyInfo && (
+							<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
+								<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>{difficultyInfo.label}</Text>
+							</View>
+						)}
 					</View>
+
+					<Text style={widgetStyles.description} numberOfLines={2}>
+						{description}
+					</Text>
+				</View>
+
+				<View style={widgetStyles.footer}>
+					{region ? (
+						<Text style={widgetStyles.regionText} numberOfLines={1}>
+							{region}
+						</Text>
+					) : (
+						<View />
+					)}
+
+					{distance ? <Text style={widgetStyles.distanceText}>{distance}</Text> : null}
 				</View>
 			</View>
-		</Pressable>
-	);
-
-	if (isOffline || onPress) {
-		return card;
-	}
-
-	return (
-		<Link
-			href={{
-				pathname: '/[country]/[region]/[name]/[id]',
-				params: {
-					country: getUrlSafeString(country),
-					region: getUrlSafeString(region),
-					id: getUrlSafeString(id),
-					name: getUrlSafeString(name),
-				},
-			}}
-			asChild
-		>
-			{card}
-		</Link>
+		</View>
 	);
 }
 
