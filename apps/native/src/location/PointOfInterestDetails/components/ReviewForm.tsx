@@ -257,8 +257,8 @@ export function ReviewForm({refetch, initialData, onCancel, pointOfInterestId: p
 										]}
 									>
 										<View style={cardStyles.difficultyChipContent}>
-											{selected && <Ionicons name="checkmark" size={14} color="#ffffff" />}
-											<Text style={[cardStyles.chipText, selected && cardStyles.chipTextSelected]}>{opt.levelLabel}</Text>
+											{selected && <Ionicons name="checkmark" size={14} color={opt.color} />}
+											<Text style={[cardStyles.chipText, selected && {color: opt.color}]}>{opt.levelLabel}</Text>
 										</View>
 									</Pressable>
 								);

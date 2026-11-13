@@ -421,7 +421,6 @@ const styles = StyleSheet.create({
 		zIndex: 2,
 	},
 	difficultyText: {
-		color: '#ffffff',
 		fontSize: 11,
 		fontWeight: '700',
 		letterSpacing: 0.3,
