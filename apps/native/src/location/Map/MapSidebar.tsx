@@ -155,79 +155,45 @@ export function MapSidebar() {
 				</View>
 			</View>
 
-			{/* Difficulty Sliders */}
+			{/* Difficulty Slider */}
 			<View style={styles.section}>
 				<SliderField
-					label="Min Difficulty"
+					label="Difficulty"
 					minimumValue={0}
 					maximumValue={Object.values(SiteDifficultyEnum).length - 1}
 					step={1}
-					value={effectiveMinDifficultyIndex}
+					values={[effectiveMinDifficultyIndex, effectiveMaxDifficultyIndex]}
 					maxInteractiveValue={maxAllowedDifficultyIndex}
 					warningLabel="Upgrade subscription to include harder difficulty tiers."
-					onValueChange={val => {
-						const numVal = Number(val);
-						dispatch(setMinDifficultyLevel(numVal));
-						if (numVal > effectiveMaxDifficultyIndex) {
-							dispatch(setMaxDifficultyLevel(numVal));
-						}
+					onValuesChange={([minVal, maxVal]) => {
+						dispatch(setMinDifficultyLevel(minVal));
+						dispatch(setMaxDifficultyLevel(maxVal));
 					}}
-					getDisplayLabel={val => DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[val as number] as SiteDifficultyEnum].label}
-				/>
-			</View>
-			<View style={styles.section}>
-				<SliderField
-					label="Max Difficulty"
-					minimumValue={0}
-					maximumValue={Object.values(SiteDifficultyEnum).length - 1}
-					step={1}
-					value={effectiveMaxDifficultyIndex}
-					maxInteractiveValue={maxAllowedDifficultyIndex}
-					warningLabel="Upgrade subscription to include harder difficulty tiers."
-					onValueChange={val => {
-						const numVal = Number(val);
-						dispatch(setMaxDifficultyLevel(numVal));
-						if (numVal < effectiveMinDifficultyIndex) {
-							dispatch(setMinDifficultyLevel(numVal));
-						}
+					getRangeDisplayLabel={([minVal, maxVal]) => {
+						const minLabel = DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[minVal] as SiteDifficultyEnum].label;
+						const maxLabel = DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[maxVal] as SiteDifficultyEnum].label;
+						return minVal === maxVal ? minLabel : `${minLabel} – ${maxLabel}`;
 					}}
-					getDisplayLabel={val => DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[val as number] as SiteDifficultyEnum].label}
 				/>
 			</View>
 
-			{/* Cost Sliders */}
+			{/* Cost Slider */}
 			<View style={styles.section}>
 				<SliderField
-					label="Min Cost"
+					label="Cost"
 					minimumValue={0}
 					maximumValue={COST_KEYS.length - 1}
 					step={1}
-					value={minCostIndex}
-					onValueChange={val => {
-						const numVal = Number(val);
-						dispatch(setMinCostLevel(numVal));
-						if (numVal > maxCostIndex) {
-							dispatch(setMaxCostLevel(numVal));
-						}
+					values={[minCostIndex, maxCostIndex]}
+					onValuesChange={([minVal, maxVal]) => {
+						dispatch(setMinCostLevel(minVal));
+						dispatch(setMaxCostLevel(maxVal));
 					}}
-					getDisplayLabel={val => COST_OPTIONS.find(o => o.value === COST_KEYS[val])?.label ?? 'Free'}
-				/>
-			</View>
-			<View style={styles.section}>
-				<SliderField
-					label="Max Cost"
-					minimumValue={0}
-					maximumValue={COST_KEYS.length - 1}
-					step={1}
-					value={maxCostIndex}
-					onValueChange={val => {
-						const numVal = Number(val);
-						dispatch(setMaxCostLevel(numVal));
-						if (numVal < minCostIndex) {
-							dispatch(setMinCostLevel(numVal));
-						}
+					getRangeDisplayLabel={([minVal, maxVal]) => {
+						const minLabel = COST_OPTIONS.find(o => o.value === COST_KEYS[minVal])?.label ?? 'Free';
+						const maxLabel = COST_OPTIONS.find(o => o.value === COST_KEYS[maxVal])?.label ?? 'Any';
+						return minVal === maxVal ? minLabel : `${minLabel} – ${maxLabel}`;
 					}}
-					getDisplayLabel={val => COST_OPTIONS.find(o => o.value === COST_KEYS[val])?.label ?? 'Any'}
 				/>
 			</View>
 
