@@ -104,9 +104,7 @@ export function PointOfInterestPreviewWidget({
 
 							{difficultyInfo && (
 								<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
-									<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>
-										{difficultyInfo.label.split(' ')[0]}
-									</Text>
+									<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>{difficultyInfo.label}</Text>
 								</View>
 							)}
 						</View>
@@ -180,7 +178,9 @@ const widgetStyles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		flexWrap: 'wrap',
 		marginVertical: 4,
+		gap: 4,
 	},
 	ratingRow: {
 		flexDirection: 'row',

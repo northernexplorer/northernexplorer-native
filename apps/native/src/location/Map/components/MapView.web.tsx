@@ -183,7 +183,7 @@ export function MapView({
 													color: difficultyInfo.color,
 												}}
 											>
-												{difficultyInfo.label.split(' ')[0]}
+												{difficultyInfo.label}
 											</span>
 										)}
 									</div>
@@ -295,6 +295,7 @@ const styles = {
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		flexWrap: 'wrap' as const,
 		marginBottom: 6,
 		gap: 4,
 	},

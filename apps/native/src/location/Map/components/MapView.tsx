@@ -193,7 +193,7 @@ export function MapView({
 										{difficultyInfo && (
 											<View style={[popupMetaStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
 												<Text style={[popupMetaStyles.difficultyText, {color: difficultyInfo.color}]}>
-													{difficultyInfo.label.split(' ')[0]}
+													{difficultyInfo.label}
 												</Text>
 											</View>
 										)}
@@ -248,6 +248,7 @@ const popupMetaStyles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		flexWrap: 'wrap',
 		width: '100%',
 		marginVertical: 4,
 		gap: 4,

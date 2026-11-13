@@ -172,7 +172,7 @@ export function FavoritePointsOfInterest() {
 													},
 												]}
 											>
-												<Text style={styles.difficultyText}>{difficultyInfo.label.split(' ')[0]}</Text>
+												<Text style={styles.difficultyText}>{difficultyInfo.label}</Text>
 											</View>
 										)}
 

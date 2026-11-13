@@ -90,7 +90,7 @@ export function DestinationCard({site, userCoords}: Props) {
 									{backgroundColor: difficultyInfo.bgColor, borderColor: difficultyInfo.borderColor},
 								]}
 							>
-								<Text style={[styles.imageDifficultyText, {color: difficultyInfo.color}]}>{difficultyInfo.label.split(' ')[0]}</Text>
+								<Text style={[styles.imageDifficultyText, {color: difficultyInfo.color}]}>{difficultyInfo.label}</Text>
 							</View>
 						)}
 					</View>
