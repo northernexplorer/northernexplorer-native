@@ -105,7 +105,7 @@ export function DestinationCard({site, userCoords}: Props) {
 					{/* Right Summary Section */}
 					<View style={[styles.summaryContainer, isRestricted && styles.restrictedSummaryContainer]}>
 						{isRestricted ? (
-							<SubscriptionRequiredNotice />
+							<SubscriptionRequiredNotice theme="light" />
 						) : (
 							<>
 								<View>
@@ -243,7 +243,6 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 	},
 	restrictedSummaryContainer: {
-		backgroundColor: '#232323',
 		justifyContent: 'center',
 	},
 	imageWrapper: {

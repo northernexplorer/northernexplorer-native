@@ -237,7 +237,7 @@ export function PointOfInterestDetails() {
 				<View style={styles.content}>
 					<Link href={auth?.username ? `/user/${auth.username}/change-subscription` : '/user/login'} asChild>
 						<TouchableOpacity style={restrictedStyles.container}>
-							<SubscriptionRequiredNotice />
+							<SubscriptionRequiredNotice theme="light" />
 							<Text style={restrictedStyles.linkText}>Tap to view subscription options</Text>
 						</TouchableOpacity>
 					</Link>
@@ -294,8 +294,10 @@ const sectionStyles = StyleSheet.create({
 const restrictedStyles = StyleSheet.create({
 	container: {
 		padding: 16,
-		backgroundColor: '#232323',
+		backgroundColor: '#f8fafc',
 		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: '#e2e8f0',
 		alignItems: 'center',
 		gap: 8,
 		marginVertical: 12,
@@ -303,7 +305,7 @@ const restrictedStyles = StyleSheet.create({
 	linkText: {
 		fontSize: 14,
 		fontWeight: '600',
-		color: '#38bdf8',
+		color: '#0284c7',
 		marginTop: 4,
 	},
 });
