@@ -9,6 +9,8 @@ import {config} from '~/config';
 import {useLocation} from '~/location/state/location/useLocation';
 import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
 import {useIsOffline} from '~/core/ConnectivityProvider';
+import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
+import {usePermissions} from '~/user/state/subscription';
 
 type PreviewProps = {
 	name: string;
@@ -30,13 +32,16 @@ type Props = PreviewProps & {
 
 export function PointOfInterestPreviewWidget({id, country, onPress, ...previewProps}: Props) {
 	const {isOffline} = useIsOffline();
+	const permissions = usePermissions();
+	const canAccessRemoteDifficulty = permissions?.navigation.useRemoteDifficulty ?? false;
+	const isRestricted = !hasSiteDifficultyAccess(previewProps.difficulty, canAccessRemoteDifficulty);
 	const card = (
-		<Pressable disabled={isOffline} onPress={onPress} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
+		<Pressable disabled={isOffline || isRestricted} onPress={onPress} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
 			<PointOfInterestPreview {...previewProps} />
 		</Pressable>
 	);
 
-	if (isOffline || onPress) {
+	if (isOffline || isRestricted || onPress) {
 		return card;
 	}
 
@@ -60,6 +65,9 @@ export function PointOfInterestPreviewWidget({id, country, onPress, ...previewPr
 
 export function PointOfInterestPreview({name, description, image, region, latitude, longitude, rating, difficulty, reviews}: PreviewProps) {
 	const coords = useLocation();
+	const permissions = usePermissions();
+	const canAccessRemoteDifficulty = permissions?.navigation.useRemoteDifficulty ?? false;
+	const isRestricted = !hasSiteDifficultyAccess(difficulty, canAccessRemoteDifficulty);
 
 	const distance = useMemo(() => {
 		if (!coords?.lat) return null;
@@ -102,50 +110,59 @@ export function PointOfInterestPreview({name, description, image, region, latitu
 					}),
 				}}
 				style={widgetStyles.image}
+				blurRadius={isRestricted ? 10 : 0}
 				resizeMode="cover"
 			/>
-			<View style={widgetStyles.content}>
-				<View>
-					<Text style={widgetStyles.title} numberOfLines={1}>
-						{name}
-					</Text>
+			{isRestricted ? (
+				<View style={[widgetStyles.content, widgetStyles.restrictedContent]}>
+					<Ionicons name="lock-closed" size={22} color="#e67e22" />
+					<Text style={widgetStyles.restrictedTitle}>Restricted Access</Text>
+					<Text style={widgetStyles.restrictedMessage}>Sign in or upgrade your account to view details for this location.</Text>
+				</View>
+			) : (
+				<View style={widgetStyles.content}>
+					<View>
+						<Text style={widgetStyles.title} numberOfLines={1}>
+							{name}
+						</Text>
 
-					{/* Rating and Difficulty Row */}
-					<View style={widgetStyles.metaRow}>
-						{averageRating > 0 ? (
-							<View style={widgetStyles.ratingRow}>
-								<Ionicons name="star" size={12} color="#f59e0b" />
-								<Text style={widgetStyles.ratingText}>{averageRating.toFixed(1)}</Text>
-								<Text style={widgetStyles.countText}>({reviewCount})</Text>
-							</View>
-						) : (
-							<Text style={widgetStyles.noReviewsText}>No reviews</Text>
-						)}
+						{/* Rating and Difficulty Row */}
+						<View style={widgetStyles.metaRow}>
+							{averageRating > 0 ? (
+								<View style={widgetStyles.ratingRow}>
+									<Ionicons name="star" size={12} color="#f59e0b" />
+									<Text style={widgetStyles.ratingText}>{averageRating.toFixed(1)}</Text>
+									<Text style={widgetStyles.countText}>({reviewCount})</Text>
+								</View>
+							) : (
+								<Text style={widgetStyles.noReviewsText}>No reviews</Text>
+							)}
 
-						{difficultyInfo && (
-							<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
-								<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>{difficultyInfo.label}</Text>
-							</View>
-						)}
+							{difficultyInfo && (
+								<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
+									<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>{difficultyInfo.label}</Text>
+								</View>
+							)}
+						</View>
+
+						<Text style={widgetStyles.description} numberOfLines={2}>
+							{description}
+						</Text>
 					</View>
 
-					<Text style={widgetStyles.description} numberOfLines={2}>
-						{description}
-					</Text>
-				</View>
+					<View style={widgetStyles.footer}>
+						{region ? (
+							<Text style={widgetStyles.regionText} numberOfLines={1}>
+								{region}
+							</Text>
+						) : (
+							<View />
+						)}
 
-				<View style={widgetStyles.footer}>
-					{region ? (
-						<Text style={widgetStyles.regionText} numberOfLines={1}>
-							{region}
-						</Text>
-					) : (
-						<View />
-					)}
-
-					{distance ? <Text style={widgetStyles.distanceText}>{distance}</Text> : null}
+						{distance ? <Text style={widgetStyles.distanceText}>{distance}</Text> : null}
+					</View>
 				</View>
-			</View>
+			)}
 		</View>
 	);
 }
@@ -233,5 +250,22 @@ const widgetStyles = StyleSheet.create({
 		color: '#cbd5e1',
 		fontSize: 10,
 		fontWeight: '600',
+	},
+	restrictedContent: {
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	restrictedTitle: {
+		color: '#ffffff',
+		fontSize: 13,
+		fontWeight: '700',
+		marginTop: 6,
+	},
+	restrictedMessage: {
+		color: '#94a3b8',
+		fontSize: 11,
+		lineHeight: 15,
+		marginTop: 4,
+		textAlign: 'center',
 	},
 });

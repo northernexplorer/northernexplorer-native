@@ -25,7 +25,6 @@ export function MapView({
 	initialZoom,
 	canAccessRemoteDifficulty,
 	canUseDistanceScale,
-	isSelectedLocked,
 	updateMapCenterAndBounds,
 }: MapViewProps) {
 	const mapRef = useRef<MapRef>(null);
@@ -115,42 +114,31 @@ export function MapView({
 
 				{selectedSite && (
 					<Marker longitude={selectedSite.lon} latitude={selectedSite.lat} anchor="bottom" offset={[0, -60]}>
-						{isSelectedLocked ? (
-							<div style={styles.lockedPopupContainer}>
-								<svg width="24" height="24" viewBox="0 0 24 24" fill="#e67e22" style={{marginBottom: 4}}>
-									<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
-								</svg>
-								<h3 style={styles.lockedPopupTitle}>Restricted Access</h3>
-								<p style={styles.lockedPopupSubtext}>Sign in or upgrade your account to view details for this location.</p>
-								<div style={styles.popupArrow} />
-							</div>
-						) : (
-							<PointOfInterestPreviewWidget
-								id={selectedSite.id}
-								name={selectedSite.name}
-								description={selectedSite.description}
-								image={selectedSite.image}
-								country={selectedSite.country.name}
-								region={selectedSite.region.name}
-								latitude={selectedSite.lat}
-								longitude={selectedSite.lon}
-								rating={selectedSite.rating}
-								difficulty={selectedSite.difficulty}
-								reviews={selectedSite.reviews}
-								onPress={event => {
-									event.stopPropagation();
-									router.push({
-										pathname: '/[country]/[region]/[name]/[id]',
-										params: {
-											country: getUrlSafeString(selectedSite.country.name),
-											region: getUrlSafeString(selectedSite.region.name),
-											id: getUrlSafeString(selectedSite.id),
-											name: getUrlSafeString(selectedSite.name),
-										},
-									});
-								}}
-							/>
-						)}
+						<PointOfInterestPreviewWidget
+							id={selectedSite.id}
+							name={selectedSite.name}
+							description={selectedSite.description}
+							image={selectedSite.image}
+							country={selectedSite.country.name}
+							region={selectedSite.region.name}
+							latitude={selectedSite.lat}
+							longitude={selectedSite.lon}
+							rating={selectedSite.rating}
+							difficulty={selectedSite.difficulty}
+							reviews={selectedSite.reviews}
+							onPress={event => {
+								event.stopPropagation();
+								router.push({
+									pathname: '/[country]/[region]/[name]/[id]',
+									params: {
+										country: getUrlSafeString(selectedSite.country.name),
+										region: getUrlSafeString(selectedSite.region.name),
+										id: getUrlSafeString(selectedSite.id),
+										name: getUrlSafeString(selectedSite.name),
+									},
+								});
+							}}
+						/>
 					</Marker>
 				)}
 
@@ -201,31 +189,6 @@ const styles = {
 		textAlign: 'left' as const,
 		position: 'relative' as const,
 		cursor: 'pointer',
-	},
-	lockedPopupContainer: {
-		background: '#fff',
-		padding: 12,
-		boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
-		width: 210,
-		borderRadius: 8,
-		display: 'flex',
-		flexDirection: 'column' as const,
-		alignItems: 'center',
-		justifyContent: 'center',
-		textAlign: 'center' as const,
-		position: 'relative' as const,
-	},
-	lockedPopupTitle: {
-		margin: '0 0 4px',
-		fontSize: 13,
-		fontWeight: 700,
-		color: '#0f172a',
-	},
-	lockedPopupSubtext: {
-		margin: '0 0 8px',
-		fontSize: 11,
-		color: '#64748b',
-		lineHeight: 1.3,
 	},
 	popupTitle: {
 		margin: '0 0 4px',

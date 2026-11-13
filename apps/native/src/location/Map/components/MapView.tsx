@@ -4,7 +4,7 @@ import {Camera, CameraRef, Map as NativeMap, Marker, ViewStateChangeEvent} from 
 import {useRouter} from 'expo-router';
 import {getUrlSafeString} from '@northernexplorer/tools-web';
 import {PointOfInterestType} from '@northernexplorer/types';
-import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
+import {Ionicons} from '@expo/vector-icons';
 import {BBox} from 'geojson';
 import Supercluster from 'supercluster';
 import {MapViewProps} from '../Map';
@@ -146,26 +146,17 @@ export function MapView({
 							if (!isOffline && !isSelectedLocked) handleNavigateToSite(selectedSite);
 						}}
 					>
-						{isSelectedLocked ? (
-							<View style={styles.lockedPopupContainer}>
-								<MaterialCommunityIcons name="lock" size={24} color="#e67e22" />
-								<Text style={styles.lockedPopupTitle}>Restricted Access</Text>
-								<Text style={styles.lockedPopupSubtext}>Sign in or upgrade your account to view details for this location.</Text>
-								<View style={styles.popupArrow} />
-							</View>
-						) : (
-							<PointOfInterestPreview
-								name={selectedSite.name}
-								description={selectedSite.description}
-								image={selectedSite.image}
-								region={selectedSite.region.name}
-								latitude={selectedSite.lat}
-								longitude={selectedSite.lon}
-								rating={selectedSite.rating}
-								difficulty={selectedSite.difficulty}
-								reviews={selectedSite.reviews}
-							/>
-						)}
+						<PointOfInterestPreview
+							name={selectedSite.name}
+							description={selectedSite.description}
+							image={selectedSite.image}
+							region={selectedSite.region.name}
+							latitude={selectedSite.lat}
+							longitude={selectedSite.lon}
+							rating={selectedSite.rating}
+							difficulty={selectedSite.difficulty}
+							reviews={selectedSite.reviews}
+						/>
 					</Marker>
 				)}
 
@@ -214,33 +205,6 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.25,
 		shadowRadius: 10,
 		elevation: 5,
-	},
-	lockedPopupContainer: {
-		backgroundColor: '#fff',
-		padding: 12,
-		width: 220,
-		position: 'relative',
-		alignItems: 'center',
-		justifyContent: 'center',
-		shadowColor: '#000',
-		shadowOffset: {width: 0, height: 2},
-		shadowOpacity: 0.25,
-		shadowRadius: 10,
-		elevation: 5,
-		borderRadius: 8,
-	},
-	lockedPopupTitle: {
-		fontSize: 13,
-		fontWeight: '700',
-		color: '#0f172a',
-		marginTop: 6,
-		textAlign: 'center',
-	},
-	lockedPopupSubtext: {
-		fontSize: 11,
-		color: '#64748b',
-		textAlign: 'center',
-		marginVertical: 6,
 	},
 	popupTitle: {
 		fontSize: 13,
