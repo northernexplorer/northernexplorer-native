@@ -113,7 +113,7 @@ export function PointOfInterestPreview({name, description, image, region, latitu
 			{isRestricted ? (
 				<View style={[widgetStyles.content, widgetStyles.restrictedContent]}>
 					<Ionicons name="lock-closed" size={22} color="#e67e22" />
-					<Text style={widgetStyles.restrictedTitle}>Restricted Access</Text>
+					<Text style={widgetStyles.restrictedTitle}>Subscription Required</Text>
 					<Text style={widgetStyles.restrictedMessage}>Sign in or upgrade your account to view details for this location.</Text>
 				</View>
 			) : (
