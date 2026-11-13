@@ -74,16 +74,16 @@ export function AllUsers() {
 			),
 		},
 		{
-			key: 'lastActive',
-			title: 'Last Active',
-			flex: 2,
-			render: user => <Text style={styles.roleText}>{user.lastActive ? new Date(user.lastActive).toLocaleDateString() : 'Never'}</Text>,
-		},
-		{
 			key: 'registered',
 			title: 'Registered At',
 			flex: 2,
 			render: user => <Text style={styles.roleText}>{new Date(user.createdAt).toLocaleDateString()}</Text>,
+		},
+		{
+			key: 'lastActive',
+			title: 'Last Active',
+			flex: 2,
+			render: user => <Text style={styles.roleText}>{user.lastActive ? new Date(user.lastActive).toLocaleDateString() : 'Never'}</Text>,
 		},
 		{
 			key: 'action',
