@@ -13,19 +13,19 @@ Difficulty labels are broad guides to the kind of effort and access to expect. T
 
 Developed describes a site with more established access or infrastructure. It does not guarantee that services are available or that a route is maintained.
 
-- **Developed Easy (Level 1):** Roadside access, paved walkways, or maintained amenities.
-- **Developed Medium (Level 2):** Maintained short footpaths under 5 km, with mild terrain and basic maintenance.
-- **Developed Hard (Level 3):** Backcountry trails of 5 km or more, with sustained inclines near developed areas.
-- **Developed Multi-Day (Level 4):** Extended stays or multi-day camping at developed park facilities.
+- **Developed Easy:** Roadside access, paved walkways, or maintained amenities.
+- **Developed Medium:** Maintained short footpaths under 5 km, with mild terrain and basic maintenance.
+- **Developed Hard:** Backcountry trails of 5 km or more, with sustained inclines near developed areas.
+- **Developed Multi-Day:** Extended stays or multi-day camping at developed park facilities.
 
 ## Remote
 
 Remote describes a site where access is isolated and nearby services or infrastructure are limited. Even an easier-rated remote outing calls for independent preparation.
 
-- **Remote Easy (Level 2–3):** Short off-trail or lightly marked routes that require basic navigation.
-- **Remote Medium (Level 3):** Backcountry travel that may involve bushwhacking or require watercraft access.
-- **Remote Hard (Level 4):** Remote wilderness travel requiring GPS route-finding through challenging terrain.
-- **Remote Multi-Day (Level 5):** A multi-day backcountry expedition requiring floatplane or charter access, or travel into deep wilderness.
+- **Remote Easy:** Short off-trail or lightly marked routes that require basic navigation.
+- **Remote Medium:** Backcountry travel that may involve bushwhacking or require watercraft access.
+- **Remote Hard:** Remote wilderness travel requiring GPS route-finding through challenging terrain.
+- **Remote Multi-Day:** A multi-day backcountry expedition requiring floatplane or charter access, or travel into deep wilderness.
 
 Ratings are general and conditions can change with weather, season, access, and other factors. Check current site information and local guidance, bring appropriate equipment, and choose an outing that matches your experience and capabilities.$$,
 		'Understanding Difficulty Levels',
