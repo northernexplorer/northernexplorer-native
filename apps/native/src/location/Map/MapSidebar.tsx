@@ -12,8 +12,10 @@ import {
 	setPoiTypes,
 	setVisitedFilter,
 	setMinRating,
-	setDifficultyLevel,
-	setCostLevel,
+	setMinDifficultyLevel,
+	setMaxDifficultyLevel,
+	setMinCostLevel,
+	setMaxCostLevel,
 	setShowDrafts,
 } from '~/location/state/map/mapSlice';
 import {useMap} from '~/location/state/map/useMap';
@@ -52,7 +54,9 @@ export function MapSidebar() {
 		selectedPoiTypes = [],
 		visitedFilter = VisitedFilterEnum.All,
 		minRating = null,
+		minDifficultyIndex = 0,
 		maxDifficultyIndex,
+		minCostIndex = 0,
 		maxCostIndex = COST_KEYS.length - 1,
 		showDrafts = false,
 	} = useMap();
@@ -65,7 +69,8 @@ export function MapSidebar() {
 	const maxAllowedDifficultyIndex = getMaxSiteDifficultyIndex(canAccessRemoteDifficulty);
 
 	// Default to the maximum permitted index when untouched in Redux
-	const effectiveDifficultyIndex = maxDifficultyIndex ?? maxAllowedDifficultyIndex;
+	const effectiveMaxDifficultyIndex = maxDifficultyIndex ?? maxAllowedDifficultyIndex;
+	const effectiveMinDifficultyIndex = minDifficultyIndex;
 
 	const bannerHref = isLoggedIn ? `/user/${authentication.username}/change-subscription` : '/user/login';
 	const bannerTitle = 'Upgrade Required to Access All Map Styles';
@@ -150,24 +155,64 @@ export function MapSidebar() {
 				</View>
 			</View>
 
-			{/* Difficulty Slider */}
+			{/* Difficulty Sliders */}
+			<View style={styles.section}>
+				<SliderField
+					label="Min Difficulty"
+					minimumValue={0}
+					maximumValue={Object.values(SiteDifficultyEnum).length - 1}
+					step={1}
+					value={effectiveMinDifficultyIndex}
+					maxInteractiveValue={maxAllowedDifficultyIndex}
+					warningLabel="Upgrade subscription to include harder difficulty tiers."
+					onValueChange={val => {
+						const numVal = Number(val);
+						dispatch(setMinDifficultyLevel(numVal));
+						if (numVal > effectiveMaxDifficultyIndex) {
+							dispatch(setMaxDifficultyLevel(numVal));
+						}
+					}}
+					getDisplayLabel={val => DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[val as number] as SiteDifficultyEnum].label}
+				/>
+			</View>
 			<View style={styles.section}>
 				<SliderField
 					label="Max Difficulty"
 					minimumValue={0}
 					maximumValue={Object.values(SiteDifficultyEnum).length - 1}
 					step={1}
-					value={effectiveDifficultyIndex}
+					value={effectiveMaxDifficultyIndex}
 					maxInteractiveValue={maxAllowedDifficultyIndex}
 					warningLabel="Upgrade subscription to include harder difficulty tiers."
 					onValueChange={val => {
-						dispatch(setDifficultyLevel(val));
+						const numVal = Number(val);
+						dispatch(setMaxDifficultyLevel(numVal));
+						if (numVal < effectiveMinDifficultyIndex) {
+							dispatch(setMinDifficultyLevel(numVal));
+						}
 					}}
 					getDisplayLabel={val => DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[val as number] as SiteDifficultyEnum].label}
 				/>
 			</View>
 
-			{/* Cost Slider */}
+			{/* Cost Sliders */}
+			<View style={styles.section}>
+				<SliderField
+					label="Min Cost"
+					minimumValue={0}
+					maximumValue={COST_KEYS.length - 1}
+					step={1}
+					value={minCostIndex}
+					onValueChange={val => {
+						const numVal = Number(val);
+						dispatch(setMinCostLevel(numVal));
+						if (numVal > maxCostIndex) {
+							dispatch(setMaxCostLevel(numVal));
+						}
+					}}
+					getDisplayLabel={val => COST_OPTIONS.find(o => o.value === COST_KEYS[val])?.label ?? 'Free'}
+				/>
+			</View>
 			<View style={styles.section}>
 				<SliderField
 					label="Max Cost"
@@ -176,7 +221,11 @@ export function MapSidebar() {
 					step={1}
 					value={maxCostIndex}
 					onValueChange={val => {
-						dispatch(setCostLevel(val));
+						const numVal = Number(val);
+						dispatch(setMaxCostLevel(numVal));
+						if (numVal < minCostIndex) {
+							dispatch(setMinCostLevel(numVal));
+						}
 					}}
 					getDisplayLabel={val => COST_OPTIONS.find(o => o.value === COST_KEYS[val])?.label ?? 'Any'}
 				/>
