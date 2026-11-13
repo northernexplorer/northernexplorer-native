@@ -43,7 +43,6 @@ export function Support() {
 			</View>
 
 			<View style={styles.categorySection}>
-				<Text style={styles.categoryHeader}>Support</Text>
 				{groupedData.map(({key, label, items}) => (
 					<View key={key}>
 						<Text style={styles.categoryHeader}>{label}</Text>
