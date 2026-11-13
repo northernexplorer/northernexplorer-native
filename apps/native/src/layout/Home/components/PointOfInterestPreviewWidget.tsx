@@ -156,6 +156,7 @@ export function PointOfInterestPreviewWidget({
 
 const widgetStyles = StyleSheet.create({
 	card: {
+		backgroundColor: '#232323',
 		padding: 0,
 		overflow: 'hidden',
 		flexDirection: 'column',
