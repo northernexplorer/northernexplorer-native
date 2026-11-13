@@ -41,8 +41,7 @@ export type PointOfInterestType = {
 	country: CountryType;
 	reviews?: ReviewSummary[];
 	region: RegionType;
-	startDate?: number;
-	endDate?: number;
+	establishedYear?: number;
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 	organization: OrganizationType;
@@ -79,8 +78,7 @@ export type PointOfInterestEditType = {
 	countryId: string;
 	regionId: string;
 	organizationId: string;
-	startDate?: number;
-	endDate?: number;
+	establishedYear?: number;
 	status: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 	rejectionReason?: RejectionReasonEnum;
@@ -110,8 +108,7 @@ export type PointOfInterestCreateType = {
 	countryId: string;
 	regionId: string;
 	organizationId: string;
-	startDate?: number;
-	endDate?: number;
+	establishedYear?: number;
 	status?: PublishStatusEnum;
 	type: PointOfInterestTypeEnum[];
 	rejectionReason?: RejectionReasonEnum;

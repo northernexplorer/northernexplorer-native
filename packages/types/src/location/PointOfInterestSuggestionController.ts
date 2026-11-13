@@ -20,8 +20,7 @@ export type PointOfInterestSuggestionType = {
 		description: string;
 		lat: number;
 		lon: number;
-		startDate?: number;
-		endDate?: number;
+		establishedYear?: number;
 		type: PointOfInterestTypeEnum[];
 		country: CountryType;
 		region: RegionType;
@@ -37,8 +36,7 @@ export type PointOfInterestSuggestionType = {
 	region: RegionType;
 	organization: OrganizationType;
 	image?: ImageHeaderType;
-	startDate?: number;
-	endDate?: number;
+	establishedYear?: number;
 	type: PointOfInterestTypeEnum[];
 	status: SuggestionStatusEnum;
 	createdAt: string | Date;
@@ -55,8 +53,7 @@ export type PointOfInterestSuggestionCreateType = {
 	regionId: string;
 	organizationId: string;
 	type: PointOfInterestTypeEnum[];
-	startDate?: number;
-	endDate?: number;
+	establishedYear?: number;
 };
 
 export const PointOfInterestSuggestionController = {
