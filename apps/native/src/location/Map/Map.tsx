@@ -11,7 +11,6 @@ import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
 import {usePermissions} from '~/user/state/subscription';
 import {MapStyleObject} from '~/location/state/map/mapSlice';
-import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
 
 export interface PointOfInterestProperties {
 	cluster?: boolean;
@@ -37,7 +36,6 @@ export interface MapViewProps {
 	initialZoom: number;
 	canAccessRemoteDifficulty: boolean;
 	canUseDistanceScale: boolean;
-	isSelectedLocked: boolean;
 	updateMapCenterAndBounds: (bounds: BBox, zoom: number, center: {lat: number; lon: number}) => void;
 }
 
@@ -154,9 +152,6 @@ export function Map() {
 		setMapCenter(nextCenter);
 	};
 
-	// Lock condition evaluation
-	const isSelectedLocked = selectedSite ? !hasSiteDifficultyAccess(selectedSite.difficulty, canAccessRemoteDifficulty) : false;
-
 	if (initialLat === undefined || initialLon === undefined) {
 		return <Spinner />;
 	}
@@ -176,7 +171,6 @@ export function Map() {
 			initialZoom={initialZoom}
 			canAccessRemoteDifficulty={canAccessRemoteDifficulty}
 			canUseDistanceScale={canUseDistanceScale}
-			isSelectedLocked={isSelectedLocked}
 			updateMapCenterAndBounds={updateMapCenterAndBounds}
 		/>
 	);

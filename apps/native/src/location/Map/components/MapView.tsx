@@ -1,16 +1,16 @@
-import React, {useRef, useCallback} from 'react';
-import {View, Text, StyleSheet, Image, NativeSyntheticEvent} from 'react-native';
-import {Map as NativeMap, Camera, Marker, CameraRef, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
+import React, {useCallback, useRef} from 'react';
+import {NativeSyntheticEvent, StyleSheet, Text, View} from 'react-native';
+import {Camera, CameraRef, Map as NativeMap, Marker, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
 import {useRouter} from 'expo-router';
-import {getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
+import {getUrlSafeString} from '@northernexplorer/tools-web';
 import {PointOfInterestType} from '@northernexplorer/types';
-import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
+import {Ionicons} from '@expo/vector-icons';
 import {BBox} from 'geojson';
 import Supercluster from 'supercluster';
 import {MapViewProps} from '../Map';
-import {config} from '~/config';
 import {MapMarkerNative} from '~/location/Map/components/MapMarkerNative';
-import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
+import {PointOfInterestPreview} from '~/layout/Home/components/PointOfInterestPreviewWidget';
+import {useIsOffline} from '~/core/ConnectivityProvider';
 
 export function MapView({
 	baseLayer,
@@ -26,10 +26,10 @@ export function MapView({
 	initialZoom,
 	canAccessRemoteDifficulty,
 	canUseDistanceScale,
-	isSelectedLocked,
 	updateMapCenterAndBounds,
 }: MapViewProps) {
 	const router = useRouter();
+	const {isOffline} = useIsOffline();
 	const cameraRef = useRef<CameraRef>(null);
 
 	const onRegionDidChange = useCallback(
@@ -70,15 +70,6 @@ export function MapView({
 		},
 		[router],
 	);
-
-	const rawRating = selectedSite?.rating
-		? typeof selectedSite.rating === 'number'
-			? selectedSite.rating
-			: parseFloat(String(selectedSite.rating))
-		: 0;
-	const averageRating = !isNaN(rawRating) && rawRating > 0 ? rawRating : 0;
-	const reviewCount = selectedSite?.reviews?.length ?? 0;
-	const difficultyInfo = selectedSite?.difficulty ? DIFFICULTY_CONFIG[selectedSite.difficulty] : null;
 
 	return (
 		<View style={{flex: 1}}>
@@ -149,64 +140,22 @@ export function MapView({
 						lngLat={[selectedSite.lon, selectedSite.lat]}
 						anchor="bottom"
 						offset={[0, -65]}
-						onPress={() => {
-							if (!isSelectedLocked) {
-								handleNavigateToSite(selectedSite);
-							}
+						onPress={event => {
+							event.stopPropagation();
+							if (!isOffline) handleNavigateToSite(selectedSite);
 						}}
 					>
-						{isSelectedLocked ? (
-							<View style={styles.lockedPopupContainer}>
-								<MaterialCommunityIcons name="lock" size={24} color="#e67e22" />
-								<Text style={styles.lockedPopupTitle}>Restricted Access</Text>
-								<Text style={styles.lockedPopupSubtext}>Sign in or upgrade your account to view details for this location.</Text>
-								<View style={styles.popupArrow} />
-							</View>
-						) : (
-							<View style={styles.popupContainer}>
-								<Image
-									source={{
-										uri: getImageUrl({
-											path: selectedSite.image.url,
-											cdn: config.CONTENT_DELIVERY_NETWORK,
-											processed: selectedSite.image.processed,
-											size: 'thumbnail',
-										}),
-									}}
-									style={styles.popupImage}
-								/>
-
-								<View style={styles.popupContent}>
-									<Text style={styles.popupTitle}>{selectedSite.name}</Text>
-
-									<View style={popupMetaStyles.metaRow}>
-										{averageRating > 0 ? (
-											<View style={popupMetaStyles.ratingRow}>
-												<Ionicons name="star" size={12} color="#f59e0b" />
-												<Text style={popupMetaStyles.ratingText}>{averageRating.toFixed(1)}</Text>
-												<Text style={popupMetaStyles.countText}>({reviewCount})</Text>
-											</View>
-										) : (
-											<Text style={popupMetaStyles.noReviewsText}>No reviews</Text>
-										)}
-
-										{difficultyInfo && (
-											<View style={[popupMetaStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
-												<Text style={[popupMetaStyles.difficultyText, {color: difficultyInfo.color}]}>
-													{difficultyInfo.label.split(' ')[0]}
-												</Text>
-											</View>
-										)}
-									</View>
-
-									<Text style={styles.popupDescription} numberOfLines={4} ellipsizeMode="tail">
-										{selectedSite.description}
-									</Text>
-								</View>
-
-								<View style={styles.popupArrow} />
-							</View>
-						)}
+						<PointOfInterestPreview
+							name={selectedSite.name}
+							description={selectedSite.description}
+							image={selectedSite.image}
+							region={selectedSite.region.name}
+							latitude={selectedSite.lat}
+							longitude={selectedSite.lon}
+							rating={selectedSite.rating}
+							difficulty={selectedSite.difficulty}
+							reviews={selectedSite.reviews}
+						/>
 					</Marker>
 				)}
 
@@ -243,45 +192,6 @@ export function MapView({
 	);
 }
 
-const popupMetaStyles = StyleSheet.create({
-	metaRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		width: '100%',
-		marginVertical: 4,
-		gap: 4,
-	},
-	ratingRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 3,
-	},
-	ratingText: {
-		fontSize: 11,
-		fontWeight: '700',
-		color: '#0f172a',
-	},
-	countText: {
-		fontSize: 10,
-		color: '#64748b',
-	},
-	noReviewsText: {
-		fontSize: 10,
-		color: '#94a3b8',
-		fontStyle: 'italic',
-	},
-	difficultyBadge: {
-		paddingHorizontal: 6,
-		paddingVertical: 2,
-		borderRadius: 4,
-	},
-	difficultyText: {
-		fontSize: 9,
-		fontWeight: '700',
-	},
-});
-
 const styles = StyleSheet.create({
 	popupContainer: {
 		backgroundColor: '#fff',
@@ -294,33 +204,6 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.25,
 		shadowRadius: 10,
 		elevation: 5,
-	},
-	lockedPopupContainer: {
-		backgroundColor: '#fff',
-		padding: 12,
-		width: 220,
-		position: 'relative',
-		alignItems: 'center',
-		justifyContent: 'center',
-		shadowColor: '#000',
-		shadowOffset: {width: 0, height: 2},
-		shadowOpacity: 0.25,
-		shadowRadius: 10,
-		elevation: 5,
-		borderRadius: 8,
-	},
-	lockedPopupTitle: {
-		fontSize: 13,
-		fontWeight: '700',
-		color: '#0f172a',
-		marginTop: 6,
-		textAlign: 'center',
-	},
-	lockedPopupSubtext: {
-		fontSize: 11,
-		color: '#64748b',
-		textAlign: 'center',
-		marginVertical: 6,
 	},
 	popupTitle: {
 		fontSize: 13,
@@ -345,15 +228,6 @@ const styles = StyleSheet.create({
 		borderLeftColor: 'transparent',
 		borderRightColor: 'transparent',
 		borderTopColor: '#ffffff',
-	},
-	popupImage: {
-		width: '100%',
-		height: 100,
-		marginBottom: 6,
-	},
-	popupContent: {
-		flexDirection: 'column',
-		width: '100%',
 	},
 	clusterMarker: {
 		width: 44,

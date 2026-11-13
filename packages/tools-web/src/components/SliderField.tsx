@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import Slider from '@react-native-community/slider';
 
@@ -10,6 +10,7 @@ type SliderFieldProps = {
 	value: number;
 	onValueChange: (value: number) => void;
 	getDisplayLabel?: (value: number) => string;
+	getDisplayContent?: (value: number) => ReactNode;
 	maxInteractiveValue?: number;
 	warningLabel?: string;
 };
@@ -22,6 +23,7 @@ export function SliderField({
 	value,
 	onValueChange,
 	getDisplayLabel,
+	getDisplayContent,
 	maxInteractiveValue,
 	warningLabel,
 }: SliderFieldProps) {
@@ -32,9 +34,14 @@ export function SliderField({
 		<View style={styles.container}>
 			<View style={styles.headerRow}>
 				<Text style={styles.label}>{label}</Text>
-				<Text style={[styles.valueText, isRestricted && styles.restrictedValueText]}>
-					{displayVal} {isRestricted && '(Locked)'}
-				</Text>
+				<View style={styles.valueContainer}>
+					{getDisplayContent ? (
+						getDisplayContent(value)
+					) : (
+						<Text style={[styles.valueText, isRestricted && styles.restrictedValueText]}>{displayVal}</Text>
+					)}
+					{isRestricted && <Text style={[styles.valueText, styles.restrictedValueText]}>(Locked)</Text>}
+				</View>
 			</View>
 			<Slider
 				style={styles.slider}
@@ -60,6 +67,11 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		marginBottom: 2,
+	},
+	valueContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
 	},
 	label: {
 		fontSize: 15,

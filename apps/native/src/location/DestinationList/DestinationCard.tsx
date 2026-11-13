@@ -6,6 +6,10 @@ import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView} fr
 import {PointOfInterestType} from '@northernexplorer/types';
 import {config} from '~/config';
 import {CONDITION_ICON_MAP, COST_LABEL_MAP, DIFFICULTY_CONFIG, formatEnumLabel} from '~/location/PointOfInterestDetails/components/reviewOptions';
+import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
+import {usePermissions} from '~/user/state/subscription';
+import {SubscriptionRequiredNotice} from '~/location/components/SubscriptionRequiredNotice';
+import {DifficultyLabel} from '~/location/components/DifficultyLabel';
 
 type Props = {
 	site: PointOfInterestType;
@@ -24,6 +28,9 @@ const getRatingLabel = (rating: number): string | null => {
 export function DestinationCard({site, userCoords}: Props) {
 	const {width} = useWindowDimensions();
 	const isCompact = width < 600;
+	const permissions = usePermissions();
+	const canAccessRemoteDifficulty = permissions?.navigation.useRemoteDifficulty ?? false;
+	const isRestricted = !hasSiteDifficultyAccess(site.difficulty, canAccessRemoteDifficulty);
 
 	const distance = useMemo(() => {
 		if (!userCoords) return null;
@@ -82,115 +89,131 @@ export function DestinationCard({site, userCoords}: Props) {
 								}),
 							}}
 							style={styles.image}
+							blurRadius={isRestricted ? 10 : 0}
 						/>
-						{difficultyInfo && (
+						{!isRestricted && difficultyInfo && (
 							<View
 								style={[
 									styles.imageDifficultyBadge,
 									{backgroundColor: difficultyInfo.bgColor, borderColor: difficultyInfo.borderColor},
 								]}
 							>
-								<Text style={[styles.imageDifficultyText, {color: difficultyInfo.color}]}>{difficultyInfo.label.split(' ')[0]}</Text>
+								<DifficultyLabel difficulty={site.difficulty!} iconSize={12} textStyle={styles.imageDifficultyText} />
 							</View>
 						)}
 					</View>
 
 					{/* Right Summary Section */}
-					<View style={styles.summaryContainer}>
-						<View>
-							{/* Location & Distance Header */}
-							<View style={styles.locationHeaderRow}>
-								<View style={styles.locationBadge}>
-									<MaterialCommunityIcons name="map-marker" size={13} color="#0284c7" />
-									<Text style={styles.locationText} numberOfLines={1}>
-										{site.region.name}, {site.country.name}
-									</Text>
-								</View>
-								{distance && (
-									<View style={styles.distanceBadge}>
-										<MaterialCommunityIcons name="navigation-variant-outline" size={12} color="#0369a1" />
-										<Text style={styles.distanceText}>{distance}</Text>
-									</View>
-								)}
-							</View>
-
-							{/* Title */}
-							<Text style={styles.title} numberOfLines={1}>
-								{site.name}
-							</Text>
-
-							{/* Description */}
-							{site.description ? (
-								<Text style={styles.description} numberOfLines={2}>
-									{site.description}
-								</Text>
-							) : null}
-						</View>
-
-						{/* Review Details & Metadata Section */}
-						<View style={styles.reviewDetailsContainer}>
-							{/* Ratings Row */}
-							<View style={styles.ratingRow}>
-								{averageRating > 0 ? (
-									<>
-										<View style={styles.starsContainer}>
-											<Ionicons name="star" size={14} color="#f59e0b" />
-											<Text style={styles.ratingScore}>{averageRating.toFixed(1)}</Text>
+					<View style={[styles.summaryContainer, isRestricted && styles.restrictedSummaryContainer]}>
+						{isRestricted ? (
+							<SubscriptionRequiredNotice theme="light" />
+						) : (
+							<>
+								<View>
+									{/* Location & Distance Header */}
+									<View style={styles.locationHeaderRow}>
+										<View style={styles.locationBadge}>
+											<MaterialCommunityIcons name="map-marker" size={13} color="#0284c7" />
+											<Text style={styles.locationText} numberOfLines={1}>
+												{site.region.name}, {site.country.name}
+											</Text>
 										</View>
-										{ratingLabel && <Text style={styles.ratingLabel}>{ratingLabel}</Text>}
-										<Text style={styles.reviewCount}>
-											({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})
-										</Text>
-									</>
-								) : (
-									<View style={styles.noRatingContainer}>
-										<Ionicons name="star-outline" size={13} color="#94a3b8" />
-										<Text style={styles.noRatingText}>No reviews yet</Text>
+										{distance && (
+											<View style={styles.distanceBadge}>
+												<MaterialCommunityIcons name="navigation-variant-outline" size={12} color="#0369a1" />
+												<Text style={styles.distanceText}>{distance}</Text>
+											</View>
+										)}
 									</View>
-								)}
-							</View>
 
-							{/* Metadata Badges Row (Difficulty, Cost, Conditions) */}
-							<View style={styles.badgesRow}>
-								{difficultyInfo && (
-									<View style={[styles.badge, {backgroundColor: difficultyInfo.bgColor, borderColor: difficultyInfo.borderColor}]}>
-										<Text style={[styles.badgeText, {color: difficultyInfo.color}]}>{difficultyInfo.label}</Text>
-									</View>
-								)}
-
-								{costText && (
-									<View style={[styles.badge, styles.costBadge]}>
-										<Ionicons name="cash-outline" size={12} color="#047857" />
-										<Text style={[styles.badgeText, styles.costBadgeText]}>{costText}</Text>
-									</View>
-								)}
-
-								{conditionList.slice(0, 2).map(cond => (
-									<View key={cond} style={styles.conditionTag}>
-										<Ionicons name={CONDITION_ICON_MAP[cond]} size={11} color="#c2410c" />
-										<Text style={styles.conditionTagText}>{formatEnumLabel(cond)}</Text>
-									</View>
-								))}
-							</View>
-
-							{/* Review Quote Highlight if available */}
-							{latestReviewWithText && (
-								<View style={styles.reviewQuoteContainer}>
-									<Ionicons name="chatbox-ellipses-outline" size={12} color="#64748b" style={styles.quoteIcon} />
-									<Text style={styles.reviewQuoteText} numberOfLines={1}>
-										"{latestReviewWithText.description}"
+									{/* Title */}
+									<Text style={styles.title} numberOfLines={1}>
+										{site.name}
 									</Text>
-								</View>
-							)}
-						</View>
 
-						{/* Card Footer / Action */}
-						<View style={styles.footerRow}>
-							<View style={styles.viewDetailsContainer}>
-								<Text style={styles.viewDetailsText}>View Destination</Text>
-								<Ionicons name="arrow-forward" size={14} color="#0284c7" />
-							</View>
-						</View>
+									{/* Description */}
+									{site.description ? (
+										<Text style={styles.description} numberOfLines={2}>
+											{site.description}
+										</Text>
+									) : null}
+								</View>
+
+								{/* Review Details & Metadata Section */}
+								<View style={styles.reviewDetailsContainer}>
+									{/* Ratings Row */}
+									<View style={styles.ratingRow}>
+										{averageRating > 0 ? (
+											<>
+												<View style={styles.starsContainer}>
+													<Ionicons name="star" size={14} color="#f59e0b" />
+													<Text style={styles.ratingScore}>{averageRating.toFixed(1)}</Text>
+												</View>
+												{ratingLabel && <Text style={styles.ratingLabel}>{ratingLabel}</Text>}
+												<Text style={styles.reviewCount}>
+													({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})
+												</Text>
+											</>
+										) : (
+											<View style={styles.noRatingContainer}>
+												<Ionicons name="star-outline" size={13} color="#94a3b8" />
+												<Text style={styles.noRatingText}>No reviews yet</Text>
+											</View>
+										)}
+									</View>
+
+									{/* Metadata Badges Row (Difficulty, Cost, Conditions) */}
+									<View style={styles.badgesRow}>
+										{difficultyInfo && (
+											<View
+												style={[
+													styles.badge,
+													{backgroundColor: difficultyInfo.bgColor, borderColor: difficultyInfo.borderColor},
+												]}
+											>
+												<DifficultyLabel
+													difficulty={site.difficulty!}
+													iconSize={12}
+													textStyle={[styles.badgeText, {color: difficultyInfo.color}]}
+												/>
+											</View>
+										)}
+
+										{costText && (
+											<View style={[styles.badge, styles.costBadge]}>
+												<Ionicons name="cash-outline" size={12} color="#047857" />
+												<Text style={[styles.badgeText, styles.costBadgeText]}>{costText}</Text>
+											</View>
+										)}
+
+										{conditionList.slice(0, 2).map(cond => (
+											<View key={cond} style={styles.conditionTag}>
+												<Ionicons name={CONDITION_ICON_MAP[cond]} size={11} color="#c2410c" />
+												<Text style={styles.conditionTagText}>{formatEnumLabel(cond)}</Text>
+											</View>
+										))}
+									</View>
+
+									{/* Review Quote Highlight if available */}
+									{latestReviewWithText && (
+										<View style={styles.reviewQuoteContainer}>
+											<Ionicons name="chatbox-ellipses-outline" size={12} color="#64748b" style={styles.quoteIcon} />
+											<Text style={styles.reviewQuoteText} numberOfLines={1}>
+												"{latestReviewWithText.description}"
+											</Text>
+										</View>
+									)}
+								</View>
+
+								{/* Card Footer / Action */}
+								<View style={styles.footerRow}>
+									<View style={styles.viewDetailsContainer}>
+										<Text style={styles.viewDetailsText}>View Destination</Text>
+										<Ionicons name="arrow-forward" size={14} color="#0284c7" />
+									</View>
+								</View>
+							</>
+						)}
 					</View>
 				</View>
 			</Pressable>
@@ -224,6 +247,9 @@ const styles = StyleSheet.create({
 	cardCompact: {
 		flexDirection: 'column',
 	},
+	restrictedSummaryContainer: {
+		justifyContent: 'center',
+	},
 	imageWrapper: {
 		width: 220,
 		minHeight: 180,
@@ -240,6 +266,9 @@ const styles = StyleSheet.create({
 		height: '100%',
 	},
 	imageDifficultyBadge: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
 		position: 'absolute',
 		top: 10,
 		left: 10,
@@ -364,6 +393,9 @@ const styles = StyleSheet.create({
 		gap: 6,
 	},
 	badge: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
 		paddingHorizontal: 8,
 		paddingVertical: 3,
 		borderRadius: 6,

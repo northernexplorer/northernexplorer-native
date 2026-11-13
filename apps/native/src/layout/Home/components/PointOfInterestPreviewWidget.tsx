@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {GestureResponderEvent, Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Link} from 'expo-router';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString} from '@northernexplorer/tools-web';
 import {Ionicons} from '@expo/vector-icons';
@@ -9,13 +9,15 @@ import {config} from '~/config';
 import {useLocation} from '~/location/state/location/useLocation';
 import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
 import {useIsOffline} from '~/core/ConnectivityProvider';
+import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
+import {usePermissions} from '~/user/state/subscription';
+import {SubscriptionRequiredNotice} from '~/location/components/SubscriptionRequiredNotice';
+import {DifficultyLabel} from '~/location/components/DifficultyLabel';
 
-type Props = {
-	id: string;
+type PreviewProps = {
 	name: string;
 	description: string;
 	image: ImageHeaderType;
-	country?: string | null;
 	region?: string | null;
 	latitude: number | string;
 	longitude: number | string;
@@ -24,21 +26,47 @@ type Props = {
 	reviews?: {id: string; rating: number}[];
 };
 
-export function PointOfInterestPreviewWidget({
-	id,
-	name,
-	description,
-	image,
-	country,
-	region,
-	latitude,
-	longitude,
-	rating,
-	difficulty,
-	reviews,
-}: Props) {
-	const coords = useLocation();
+type Props = PreviewProps & {
+	id: string;
+	country?: string | null;
+	onPress?: (event: GestureResponderEvent) => void;
+};
+
+export function PointOfInterestPreviewWidget({id, country, onPress, ...previewProps}: Props) {
 	const {isOffline} = useIsOffline();
+	const card = (
+		<Pressable disabled={isOffline} onPress={onPress} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
+			<PointOfInterestPreview {...previewProps} />
+		</Pressable>
+	);
+
+	if (isOffline || onPress) {
+		return card;
+	}
+
+	return (
+		<Link
+			href={{
+				pathname: '/[country]/[region]/[name]/[id]',
+				params: {
+					country: getUrlSafeString(country),
+					region: getUrlSafeString(previewProps.region),
+					id: getUrlSafeString(id),
+					name: getUrlSafeString(previewProps.name),
+				},
+			}}
+			asChild
+		>
+			{card}
+		</Link>
+	);
+}
+
+export function PointOfInterestPreview({name, description, image, region, latitude, longitude, rating, difficulty, reviews}: PreviewProps) {
+	const coords = useLocation();
+	const permissions = usePermissions();
+	const canAccessRemoteDifficulty = permissions?.navigation.useRemoteDifficulty ?? false;
+	const isRestricted = !hasSiteDifficultyAccess(difficulty, canAccessRemoteDifficulty);
 
 	const distance = useMemo(() => {
 		if (!coords?.lat) return null;
@@ -69,21 +97,26 @@ export function PointOfInterestPreviewWidget({
 	const reviewCount = reviews?.length ?? 0;
 	const difficultyInfo = difficulty ? DIFFICULTY_CONFIG[difficulty] : null;
 
-	const card = (
-		<Pressable disabled={isOffline} style={({pressed}) => [{opacity: pressed ? 0.85 : 1}]}>
-			<View style={[globalStyles.tile, widgetStyles.card]}>
-				<Image
-					source={{
-						uri: getImageUrl({
-							path: image.url,
-							cdn: config.CONTENT_DELIVERY_NETWORK,
-							processed: image.processed,
-							size: 'thumbnail',
-						}),
-					}}
-					style={widgetStyles.image}
-					resizeMode="cover"
-				/>
+	return (
+		<View style={[globalStyles.tile, widgetStyles.card]}>
+			<Image
+				source={{
+					uri: getImageUrl({
+						path: image.url,
+						cdn: config.CONTENT_DELIVERY_NETWORK,
+						processed: image.processed,
+						size: 'thumbnail',
+					}),
+				}}
+				style={widgetStyles.image}
+				blurRadius={isRestricted ? 10 : 0}
+				resizeMode="cover"
+			/>
+			{isRestricted ? (
+				<View style={[widgetStyles.content, widgetStyles.restrictedContent]}>
+					<SubscriptionRequiredNotice />
+				</View>
+			) : (
 				<View style={widgetStyles.content}>
 					<View>
 						<Text style={widgetStyles.title} numberOfLines={1}>
@@ -104,9 +137,11 @@ export function PointOfInterestPreviewWidget({
 
 							{difficultyInfo && (
 								<View style={[widgetStyles.difficultyBadge, {backgroundColor: difficultyInfo.bgColor}]}>
-									<Text style={[widgetStyles.difficultyText, {color: difficultyInfo.color}]}>
-										{difficultyInfo.label.split(' ')[0]}
-									</Text>
+									<DifficultyLabel
+										difficulty={difficulty as keyof typeof DIFFICULTY_CONFIG}
+										iconSize={10}
+										textStyle={widgetStyles.difficultyText}
+									/>
 								</View>
 							)}
 						</View>
@@ -128,34 +163,14 @@ export function PointOfInterestPreviewWidget({
 						{distance ? <Text style={widgetStyles.distanceText}>{distance}</Text> : null}
 					</View>
 				</View>
-			</View>
-		</Pressable>
-	);
-
-	if (isOffline) {
-		return card;
-	}
-
-	return (
-		<Link
-			href={{
-				pathname: '/[country]/[region]/[name]/[id]',
-				params: {
-					country: getUrlSafeString(country),
-					region: getUrlSafeString(region),
-					id: getUrlSafeString(id),
-					name: getUrlSafeString(name),
-				},
-			}}
-			asChild
-		>
-			{card}
-		</Link>
+			)}
+		</View>
 	);
 }
 
 const widgetStyles = StyleSheet.create({
 	card: {
+		backgroundColor: '#232323',
 		padding: 0,
 		overflow: 'hidden',
 		flexDirection: 'column',
@@ -180,7 +195,9 @@ const widgetStyles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		flexWrap: 'wrap',
 		marginVertical: 4,
+		gap: 4,
 	},
 	ratingRow: {
 		flexDirection: 'row',
@@ -202,6 +219,8 @@ const widgetStyles = StyleSheet.create({
 		fontStyle: 'italic',
 	},
 	difficultyBadge: {
+		flexDirection: 'row',
+		alignItems: 'center',
 		paddingHorizontal: 6,
 		paddingVertical: 2,
 		borderRadius: 4,
@@ -234,5 +253,9 @@ const widgetStyles = StyleSheet.create({
 		color: '#cbd5e1',
 		fontSize: 10,
 		fontWeight: '600',
+	},
+	restrictedContent: {
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 });

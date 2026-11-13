@@ -10,6 +10,7 @@ import {useApiMutation} from '~/core/useApiMutation';
 import {useLocation} from '~/location/state/location/useLocation';
 import {DIFFICULTY_CONFIG} from '~/location/PointOfInterestDetails/components/reviewOptions';
 import {alertStore} from '~/core/alertStore';
+import {DifficultyLabel} from '~/location/components/DifficultyLabel';
 
 export function FavoritePointsOfInterest() {
 	const {width} = useWindowDimensions();
@@ -172,7 +173,11 @@ export function FavoritePointsOfInterest() {
 													},
 												]}
 											>
-												<Text style={styles.difficultyText}>{difficultyInfo.label.split(' ')[0]}</Text>
+												<DifficultyLabel
+													difficulty={poi.difficulty as SiteDifficultyEnum}
+													iconSize={12}
+													textStyle={styles.difficultyText}
+												/>
 											</View>
 										)}
 
@@ -410,10 +415,12 @@ const styles = StyleSheet.create({
 		paddingVertical: 3,
 		borderRadius: 6,
 		borderWidth: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
 		zIndex: 2,
 	},
 	difficultyText: {
-		color: '#ffffff',
 		fontSize: 11,
 		fontWeight: '700',
 		letterSpacing: 0.3,
