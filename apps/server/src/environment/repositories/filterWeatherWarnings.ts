@@ -72,12 +72,19 @@ function compareRecency(first: WeatherWarningType, second: WeatherWarningType): 
 	return 0;
 }
 
+function isSilverAlert(warning: WeatherWarningType): boolean {
+	const fields = [warning.event, warning.headline, warning.desc, warning.instruction, warning.note, warning.category];
+	return fields.some(field => normalizeText(field).includes('silver alert'));
+}
+
 export function filterWeatherWarnings(warnings: WeatherWarningType[], now = Date.now()): WeatherWarningType[] {
 	const activeWarnings: WeatherWarningType[] = [];
 
 	for (const warning of warnings) {
 		const expiresAt = warning.expires ? new Date(warning.expires).getTime() : null;
 		if (expiresAt !== null && !(expiresAt > now)) continue;
+
+		if (isSilverAlert(warning)) continue;
 
 		if (!normalizeText(warning.event) || !normalizeText(warning.headline) || !normalizeText(warning.severity)) {
 			activeWarnings.push(warning);
