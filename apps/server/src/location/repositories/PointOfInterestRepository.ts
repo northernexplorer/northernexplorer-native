@@ -50,8 +50,10 @@ export interface GetClosestPoisOptions {
 	selectedPoiTypes?: PointOfInterestTypeEnum[];
 	visitedFilter?: VisitedFilterEnum;
 	minRating?: number | null;
-	maxDifficultyIndex?: number;
-	maxCostIndex?: number;
+	minDifficultyIndex?: number | null;
+	maxDifficultyIndex?: number | null;
+	minCostIndex?: number | null;
+	maxCostIndex?: number | null;
 }
 
 export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
@@ -137,7 +139,9 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		selectedPoiTypes = [],
 		visitedFilter = VisitedFilterEnum.All,
 		minRating,
+		minDifficultyIndex,
 		maxDifficultyIndex,
+		minCostIndex,
 		maxCostIndex,
 	}: GetClosestPoisOptions): Promise<PointOfInterestType[]> {
 		const params: unknown[] = [];
@@ -181,11 +185,11 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			params.push(...selectedPoiTypes);
 		}
 
-		const {sql: difficultyFilterSql, params: difficultyParams} = buildSiteDifficultyFilter(maxDifficultyIndex);
+		const {sql: difficultyFilterSql, params: difficultyParams} = buildSiteDifficultyFilter(maxDifficultyIndex, minDifficultyIndex);
 		params.push(...difficultyParams);
 
 		let costFilterSql = '';
-		if (maxCostIndex !== undefined) {
+		if (minCostIndex !== undefined || maxCostIndex !== undefined) {
 			const orderedCosts = [
 				EntranceCostEnum.FREE,
 				EntranceCostEnum.TIER_1_10,
@@ -193,11 +197,19 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 				EntranceCostEnum.TIER_26_50,
 				EntranceCostEnum.TIER_50_PLUS,
 			];
-			const allowedCosts = orderedCosts.slice(0, maxCostIndex + 1);
-			if (allowedCosts.length > 0) {
-				const costPlaceholders = allowedCosts.map(() => '?').join(', ');
-				costFilterSql = `AND (h.entrance_cost IN (${costPlaceholders}) OR h.entrance_cost IS NULL)`;
-				params.push(...allowedCosts);
+			const min = minCostIndex !== undefined && minCostIndex !== null ? Math.max(0, minCostIndex) : 0;
+			const max =
+				maxCostIndex !== undefined && maxCostIndex !== null ? Math.min(orderedCosts.length - 1, maxCostIndex) : orderedCosts.length - 1;
+
+			if (min > max) {
+				costFilterSql = 'AND 1=0';
+			} else {
+				const allowedCosts = orderedCosts.slice(min, max + 1);
+				if (allowedCosts.length > 0) {
+					const costPlaceholders = allowedCosts.map(() => '?').join(', ');
+					costFilterSql = `AND (h.entrance_cost IN (${costPlaceholders}) OR h.entrance_cost IS NULL)`;
+					params.push(...allowedCosts);
+				}
 			}
 		}
 

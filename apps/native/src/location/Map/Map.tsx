@@ -40,7 +40,8 @@ export interface MapViewProps {
 }
 
 export function Map() {
-	const {baseLayer, selectedPoiTypes, visitedFilter, minRating, maxDifficultyIndex, maxCostIndex, showDrafts} = useMap();
+	const {baseLayer, selectedPoiTypes, visitedFilter, minRating, minDifficultyIndex, maxDifficultyIndex, minCostIndex, maxCostIndex, showDrafts} =
+		useMap();
 	const coords = useLocation();
 	const params = useLocalSearchParams<{lat?: string; lon?: string; zoom?: string; selectedId?: string}>();
 	const permissions = usePermissions();
@@ -125,7 +126,9 @@ export function Map() {
 		selectedPoiTypes,
 		visitedFilter,
 		minRating,
+		minDifficultyIndex,
 		maxDifficultyIndex,
+		minCostIndex,
 		maxCostIndex,
 		showDrafts,
 	});
