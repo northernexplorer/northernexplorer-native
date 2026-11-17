@@ -40,6 +40,14 @@ interface PointOfInterestRawRow {
 	reviews?: {id: string; rating: number}[];
 }
 
+const ORDERED_ENTRANCE_COSTS = [
+	EntranceCostEnum.FREE,
+	EntranceCostEnum.TIER_1_10,
+	EntranceCostEnum.TIER_11_25,
+	EntranceCostEnum.TIER_26_50,
+	EntranceCostEnum.TIER_50_PLUS,
+];
+
 export interface GetClosestPoisOptions {
 	lat: number;
 	lon: number;
@@ -54,6 +62,21 @@ export interface GetClosestPoisOptions {
 	maxDifficultyIndex?: number | null;
 	minCostIndex?: number | null;
 	maxCostIndex?: number | null;
+}
+
+export interface SearchPoisOptions {
+	query: string;
+	limit: number;
+	offset: number;
+	userId?: string;
+	selectedPoiTypes?: PointOfInterestTypeEnum[];
+	visitedFilter?: VisitedFilterEnum;
+	minRating?: number | null;
+	minDifficultyIndex?: number | null;
+	maxDifficultyIndex?: number | null;
+	minCostIndex?: number | null;
+	maxCostIndex?: number | null;
+	showDrafts?: boolean;
 }
 
 export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
@@ -193,21 +216,16 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 		let costFilterSql = '';
 		if (minCostIndex !== undefined || maxCostIndex !== undefined) {
-			const orderedCosts = [
-				EntranceCostEnum.FREE,
-				EntranceCostEnum.TIER_1_10,
-				EntranceCostEnum.TIER_11_25,
-				EntranceCostEnum.TIER_26_50,
-				EntranceCostEnum.TIER_50_PLUS,
-			];
 			const min = minCostIndex !== undefined && minCostIndex !== null ? Math.max(0, minCostIndex) : 0;
 			const max =
-				maxCostIndex !== undefined && maxCostIndex !== null ? Math.min(orderedCosts.length - 1, maxCostIndex) : orderedCosts.length - 1;
+				maxCostIndex !== undefined && maxCostIndex !== null
+					? Math.min(ORDERED_ENTRANCE_COSTS.length - 1, maxCostIndex)
+					: ORDERED_ENTRANCE_COSTS.length - 1;
 
 			if (min > max) {
 				costFilterSql = 'AND 1=0';
 			} else {
-				const allowedCosts = orderedCosts.slice(min, max + 1);
+				const allowedCosts = ORDERED_ENTRANCE_COSTS.slice(min, max + 1);
 				if (allowedCosts.length > 0) {
 					const costPlaceholders = allowedCosts.map(() => '?').join(', ');
 					costFilterSql = `AND (h.entrance_cost IN (${costPlaceholders}) OR h.entrance_cost IS NULL)`;
@@ -369,30 +387,92 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 		limit,
 		offset,
 		userId,
-	}: {
-		query: string;
-		limit: number;
-		offset: number;
-		userId?: string;
-	}): Promise<PointOfInterestType[]> {
+		selectedPoiTypes = [],
+		visitedFilter = VisitedFilterEnum.All,
+		minRating,
+		minDifficultyIndex,
+		maxDifficultyIndex,
+		minCostIndex,
+		maxCostIndex,
+		showDrafts = false,
+	}: SearchPoisOptions): Promise<PointOfInterestType[]> {
 		const normalizedQuery = query.trim();
-		if (!normalizedQuery) return [];
-
 		const escapedQuery = normalizedQuery.replace(/[\\%_]/g, '\\$&');
+		const params: unknown[] = [];
+		const allowedStatuses = showDrafts ? [PublishStatusEnum.Published, PublishStatusEnum.Draft] : [PublishStatusEnum.Published];
+		const statusPlaceholders = allowedStatuses.map(() => '?').join(', ');
+		params.push(...allowedStatuses, `%${escapedQuery}%`);
+		const filters = [`h.status IN (${statusPlaceholders})`, 'h.name ILIKE ?'];
+
+		if (selectedPoiTypes.length > 0) {
+			const typePlaceholders = selectedPoiTypes.map(() => '?').join(', ');
+			filters.push(`h.type && ARRAY[${typePlaceholders}]::text[]`);
+			params.push(...selectedPoiTypes);
+		}
+
+		if (userId && visitedFilter !== VisitedFilterEnum.All) {
+			const visitedCondition = visitedFilter === VisitedFilterEnum.Visited ? 'EXISTS' : 'NOT EXISTS';
+			filters.push(
+				`${visitedCondition} (SELECT 1 FROM review visit_filter WHERE visit_filter.point_of_interest_id = h.id AND visit_filter.user_id = ?)`,
+			);
+			params.push(userId);
+		}
+
+		const {sql: difficultyFilterSql, params: difficultyParams} = buildSiteDifficultyFilter(maxDifficultyIndex, minDifficultyIndex);
+		if (difficultyFilterSql) {
+			filters.push(difficultyFilterSql.replace(/^AND /, ''));
+			params.push(...difficultyParams);
+		}
+
+		if (minCostIndex !== undefined || maxCostIndex !== undefined) {
+			const min = minCostIndex !== undefined && minCostIndex !== null ? Math.max(0, minCostIndex) : 0;
+			const max =
+				maxCostIndex !== undefined && maxCostIndex !== null
+					? Math.min(ORDERED_ENTRANCE_COSTS.length - 1, maxCostIndex)
+					: ORDERED_ENTRANCE_COSTS.length - 1;
+
+			if (min > max) {
+				filters.push('1=0');
+			} else {
+				const allowedCosts = ORDERED_ENTRANCE_COSTS.slice(min, max + 1);
+				if (allowedCosts.length > 0) {
+					const costPlaceholders = allowedCosts.map(() => '?').join(', ');
+					filters.push(`(h.entrance_cost IN (${costPlaceholders}) OR h.entrance_cost IS NULL)`);
+					params.push(...allowedCosts);
+				}
+			}
+		}
+
+		const minRatingSql = minRating === undefined || minRating === null ? '' : 'HAVING COALESCE(AVG(rev.rating), 0) >= ?';
+		if (minRating !== undefined && minRating !== null) params.push(minRating);
+		params.push(limit, offset);
+
+		const querySql = `
+			SELECT h.id
+			FROM point_of_interest h
+			LEFT JOIN review rev ON rev.point_of_interest_id = h.id
+			WHERE ${filters.join('\n\t\t\t\tAND ')}
+			GROUP BY h.id, h.name
+			${minRatingSql}
+			ORDER BY h.name ASC, h.id ASC
+			LIMIT ? OFFSET ?
+		`;
+		const matchingRows = (await this.execute(querySql, params)) as {id: string}[];
+		const ids = matchingRows.map(row => row.id);
+		if (ids.length === 0) return [];
+
 		const sites = await this.find(
+			{id: {$in: ids}},
 			{
-				status: PublishStatusEnum.Published,
-				name: {$ilike: `%${escapedQuery}%`},
-			},
-			{
-				limit,
-				offset,
-				orderBy: {name: 'asc', id: 'asc'},
 				populate: ['country', 'region', 'reviews', 'reviews.user', 'organization', 'images', 'images.user', 'images.likes', 'image'],
 			},
 		);
+		const sitesById = new Map(sites.map(site => [site.id, site]));
 
-		return sites.map(site => this.serializePointOfInterest(site, userId));
+		return ids.flatMap(id => {
+			const site = sitesById.get(id);
+			return site ? [this.serializePointOfInterest(site, userId)] : [];
+		});
 	}
 
 	async getNewest({limit = 5, offset = 0}: {limit?: number; offset?: number} = {}): Promise<PointOfInterestType[]> {

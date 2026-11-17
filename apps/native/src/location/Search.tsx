@@ -1,28 +1,68 @@
-import React, {useState} from 'react';
-import {ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {PointOfInterestTypeEnum, RolesEnum, VisitedFilterEnum} from '@northernexplorer/types';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useIsOffline} from '~/core/ConnectivityProvider';
 import {DestinationCard} from '~/location/DestinationList/DestinationCard';
+import {useMap} from '~/location/state/map/useMap';
+import {usePermissions} from '~/user/state/subscription';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
+import {getMaxSiteDifficultyIndex} from '~/location/lib/siteDifficulty';
+
+export * from './SearchSidebar';
 
 const PAGE_SIZE = 20;
+
+type SearchFilters = {
+	selectedPoiTypes: PointOfInterestTypeEnum[];
+	visitedFilter: VisitedFilterEnum;
+	minRating: number | null;
+	minDifficultyIndex: number;
+	maxDifficultyIndex: number;
+	minCostIndex: number;
+	maxCostIndex: number;
+	showDrafts: boolean;
+};
 
 export function Search() {
 	const [searchText, setSearchText] = useState('');
 	const [query, setQuery] = useState('');
+	const [hasSubmitted, setHasSubmitted] = useState(false);
 	const [page, setPage] = useState(1);
 	const [searchVersion, setSearchVersion] = useState(0);
+	const mapState = useMap();
+	const permissions = usePermissions();
+	const authentication = useAuthentication();
+	const maxAllowedDifficultyIndex = getMaxSiteDifficultyIndex(!!permissions?.navigation.useRemoteDifficulty);
+	const isAdmin = !!authentication?.roles?.includes(RolesEnum.Admin);
+	const filters: SearchFilters = {
+		selectedPoiTypes: mapState.selectedPoiTypes,
+		visitedFilter: mapState.visitedFilter,
+		minRating: mapState.minRating,
+		minDifficultyIndex: mapState.minDifficultyIndex,
+		maxDifficultyIndex: mapState.maxDifficultyIndex ?? maxAllowedDifficultyIndex,
+		minCostIndex: mapState.minCostIndex,
+		maxCostIndex: mapState.maxCostIndex,
+		showDrafts: isAdmin && mapState.showDrafts,
+	};
+	const filtersKey = JSON.stringify(filters);
+
+	useEffect(() => {
+		setPage(1);
+	}, [filtersKey]);
 
 	const handleSearch = () => {
 		setPage(1);
 		setQuery(searchText.trim());
+		setHasSubmitted(true);
 		setSearchVersion(version => version + 1);
 	};
 
 	const retrySearch = () => setSearchVersion(version => version + 1);
 
 	return (
-		<View style={styles.container}>
+		<ScrollView style={styles.scrollView} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
 			<View style={styles.searchForm}>
 				<TextInput
 					accessibilityLabel="Search destinations"
@@ -40,31 +80,42 @@ export function Search() {
 				</Pressable>
 			</View>
 
-			{!query ? (
+			{!hasSubmitted ? (
 				<View style={styles.messageCard}>
 					<MaterialCommunityIcons name="map-search-outline" size={42} color="#94a3b8" />
 					<Text style={styles.messageTitle}>Find a destination</Text>
-					<Text style={styles.messageSubtitle}>Search published destinations by name.</Text>
+					<Text style={styles.messageSubtitle}>
+						Search by name or submit with an empty name to browse destinations using these filters.
+					</Text>
 				</View>
 			) : (
-				<SearchResults key={`${searchVersion}:${page}:${query}`} query={query} page={page} onPageChange={setPage} onRetry={retrySearch} />
+				<SearchResults
+					key={`${searchVersion}:${page}:${query}:${filtersKey}`}
+					query={query}
+					page={page}
+					filters={filters}
+					onPageChange={setPage}
+					onRetry={retrySearch}
+				/>
 			)}
-		</View>
+		</ScrollView>
 	);
 }
 
 type SearchResultsProps = {
 	query: string;
 	page: number;
+	filters: SearchFilters;
 	onPageChange: (page: number) => void;
 	onRetry: () => void;
 };
 
-function SearchResults({query, page, onPageChange, onRetry}: SearchResultsProps) {
+function SearchResults({query, page, filters, onPageChange, onRetry}: SearchResultsProps) {
 	const {data, loading, error} = useApiFetch('location', 'PointOfInterestController', 'search', {
 		query,
 		limit: PAGE_SIZE + 1,
 		offset: (page - 1) * PAGE_SIZE,
+		...filters,
 	});
 	const {isOffline} = useIsOffline();
 	const sites = data?.slice(0, PAGE_SIZE) ?? [];
@@ -120,8 +171,10 @@ function SearchResults({query, page, onPageChange, onRetry}: SearchResultsProps)
 }
 
 const styles = StyleSheet.create({
-	container: {
+	scrollView: {
 		flex: 1,
+	},
+	container: {
 		padding: 16,
 		gap: 16,
 	},

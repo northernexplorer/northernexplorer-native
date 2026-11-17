@@ -7,6 +7,7 @@ import {
 	RouteDefinition,
 	ROUTES,
 	SiteDifficultyEnum,
+	VisitedFilterEnum,
 } from '@northernexplorer/types';
 import {Repositories} from '../../core/repositories';
 import {BaseController} from '../../core/BaseController';
@@ -25,6 +26,18 @@ const normalizeInteger = (value: unknown, fallback: number, min: number, max: nu
 	const parsedValue = Number(value);
 	if (!Number.isFinite(parsedValue)) return fallback;
 	return Math.min(Math.max(Math.floor(parsedValue), min), max);
+};
+
+const normalizeOptionalInteger = (value: unknown, max: number) => {
+	if (value === undefined || value === null || value === '') return undefined;
+	return normalizeInteger(value, 0, 0, max);
+};
+
+const normalizeOptionalNumber = (value: unknown, min: number, max: number) => {
+	if (value === undefined || value === null || value === '') return undefined;
+	const parsedValue = Number(value);
+	if (!Number.isFinite(parsedValue)) return undefined;
+	return Math.min(Math.max(parsedValue, min), max);
 };
 
 export class PointOfInterestController extends BaseController {
@@ -289,12 +302,53 @@ export class PointOfInterestController extends BaseController {
 
 	async search(params: Params<Route<'search'>>, auth?: AuthContext): Promise<Response<Route<'search'>>> {
 		const query = typeof params.query === 'string' ? params.query.trim() : '';
-		if (!query) return [];
+		let isAdmin = false;
+		let hasAdvancedAccess = false;
+
+		if (auth?.userId) {
+			const user = await this.repos.user.getById(auth.userId);
+			isAdmin = user.roles?.includes(RolesEnum.Admin) ?? false;
+
+			const subscription = await this.repos.subscription.getById(user.subscription.id);
+			const subscriptionLevel = await this.repos.subscriptionLevel.getById(subscription.subscriptionLevel.id);
+			const permissions = this.repos.subscriptionLevel.getPermissions(subscriptionLevel);
+			hasAdvancedAccess =
+				permissions.navigation.useRemoteDifficulty || ['Pathfinder', 'Trailblazer', 'Pioneer', 'Legend'].includes(subscriptionLevel.name);
+		}
+
+		const difficultyMax = Object.values(SiteDifficultyEnum).length - 1;
+		let minDifficultyIndex = normalizeOptionalInteger(params.minDifficultyIndex, difficultyMax);
+		let maxDifficultyIndex = normalizeOptionalInteger(params.maxDifficultyIndex, difficultyMax);
+		const maxAllowedDifficultyIndex = hasAdvancedAccess ? difficultyMax : 3;
+
+		if (!hasAdvancedAccess) {
+			if (maxDifficultyIndex === undefined || maxDifficultyIndex > maxAllowedDifficultyIndex) {
+				maxDifficultyIndex = maxAllowedDifficultyIndex;
+			}
+			if (minDifficultyIndex !== undefined && minDifficultyIndex > maxAllowedDifficultyIndex) {
+				minDifficultyIndex = maxAllowedDifficultyIndex;
+			}
+		}
+
+		const selectedPoiTypes = Array.isArray(params.selectedPoiTypes)
+			? params.selectedPoiTypes.filter(type => Object.values(PointOfInterestTypeEnum).includes(type))
+			: [];
+		const visitedFilter = Object.values(VisitedFilterEnum).includes(params.visitedFilter as VisitedFilterEnum)
+			? params.visitedFilter
+			: VisitedFilterEnum.All;
 
 		return this.repos.pointOfInterest.searchByName({
 			query,
 			limit: normalizeInteger(params.limit, DEFAULT_SEARCH_LIMIT, 1, MAX_SEARCH_LIMIT),
 			offset: normalizeInteger(params.offset, 0, 0, MAX_SEARCH_OFFSET),
+			selectedPoiTypes,
+			visitedFilter,
+			minRating: normalizeOptionalNumber(params.minRating, 0, 5),
+			minDifficultyIndex,
+			maxDifficultyIndex,
+			minCostIndex: normalizeOptionalInteger(params.minCostIndex, 4),
+			maxCostIndex: normalizeOptionalInteger(params.maxCostIndex, 4),
+			showDrafts: isAdmin && (params.showDrafts === true || (params.showDrafts as unknown) === 'true'),
 			userId: auth?.userId,
 		});
 	}
