@@ -1,9 +1,9 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TextInput, Pressable, ScrollView} from 'react-native';
 import {FormField, TextAreaField, CaptchaField} from '@northernexplorer/tools-web';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
-import {apiClient} from '~/core/apiClient';
+import {useApiFetch} from '~/core/useApiFetch';
 import {isValidEmail} from '~/user/isValidEmail';
 import {alertStore} from '~/core/alertStore';
 
@@ -23,30 +23,20 @@ type FormKeys = keyof FormData;
 export function Contact() {
 	const [formData, setFormData] = useState<FormData>(initialFormData);
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
-	const [captcha, setCaptcha] = useState<{captchaId: string; image: string; svg: string} | null>(null);
-	const [captchaLoading, setCaptchaLoading] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
 
 	const {mutate, loading} = useApiMutation('system', 'SupportController', 'contact');
-
-	const fetchCaptcha = useCallback(async () => {
-		setCaptchaLoading(true);
-		try {
-			const res = await apiClient('system', 'SupportController', 'getCaptcha', {}, 'GET');
-			if (res.captchaId) {
-				setCaptcha(res);
-				setFormData(prev => ({...prev, captchaId: res.captchaId, captchaAnswer: ''}));
-			}
-		} catch {
-			// Failed to fetch captcha
-		} finally {
-			setCaptchaLoading(false);
-		}
-	}, []);
+	const {data: captcha, loading: captchaLoading, refetch: refetchCaptcha} = useApiFetch('system', 'SupportController', 'getCaptcha', {});
 
 	useEffect(() => {
-		fetchCaptcha();
-	}, [fetchCaptcha]);
+		if (captcha?.captchaId) {
+			setFormData(prev => ({...prev, captchaId: captcha.captchaId, captchaAnswer: ''}));
+		}
+	}, [captcha]);
+
+	const fetchCaptcha = () => {
+		void refetchCaptcha();
+	};
 
 	const updateField = (key: FormKeys, value: unknown) => {
 		setFormData(prev => ({...prev, [key]: value}));

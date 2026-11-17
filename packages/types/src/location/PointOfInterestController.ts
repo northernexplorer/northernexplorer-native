@@ -194,6 +194,22 @@ export const PointOfInterestController = {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},
+	search: {
+		params: {} as {
+			query: string;
+			limit?: number;
+			offset?: number;
+			selectedPoiTypes?: PointOfInterestTypeEnum[];
+			visitedFilter?: VisitedFilterEnum;
+			minRating?: number | null;
+			minDifficultyIndex?: number | null;
+			maxDifficultyIndex?: number | null;
+			minCostIndex?: number | null;
+			maxCostIndex?: number | null;
+			showDrafts?: boolean;
+		},
+		response: null as unknown as PointOfInterestType[],
+	},
 	getNewest: {
 		params: {} as {limit?: number; offset?: number},
 		response: null as unknown as PointOfInterestType[],

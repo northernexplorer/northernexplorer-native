@@ -20,6 +20,7 @@ type MenuItem = {
 
 const MENU_ITEMS: MenuItem[] = [
 	{label: 'Dashboard', route: '/', icon: 'grid-outline'},
+	{label: 'Search', route: '/search', icon: 'search-outline'},
 	{label: 'Map', route: '/map', icon: 'map'},
 	{label: 'Admin', route: '/admin', icon: 'shield-checkmark', role: RolesEnum.Admin},
 ];
