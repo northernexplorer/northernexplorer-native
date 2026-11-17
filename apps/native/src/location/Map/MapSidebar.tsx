@@ -170,9 +170,20 @@ export function MapSidebar() {
 						dispatch(setMaxDifficultyLevel(maxVal));
 					}}
 					getRangeDisplayLabel={([minVal, maxVal]) => {
-						const minLabel = DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[minVal] as SiteDifficultyEnum].label;
-						const maxLabel = DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[maxVal] as SiteDifficultyEnum].label;
-						return minVal === maxVal ? minLabel : `${minLabel} – ${maxLabel}`;
+						const minDiff = DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[minVal] as SiteDifficultyEnum];
+						const maxDiff = DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[maxVal] as SiteDifficultyEnum];
+						if (minVal === maxVal) {
+							return minDiff.label;
+						}
+						const minIsDev = minVal < 4;
+						const maxIsDev = maxVal < 4;
+						if (minIsDev && maxIsDev) {
+							return `Developed ${minDiff.levelLabel} – ${maxDiff.levelLabel}`;
+						}
+						if (!minIsDev && !maxIsDev) {
+							return `Remote ${minDiff.levelLabel} – ${maxDiff.levelLabel}`;
+						}
+						return `${minDiff.label} – ${maxDiff.label}`;
 					}}
 				/>
 			</View>

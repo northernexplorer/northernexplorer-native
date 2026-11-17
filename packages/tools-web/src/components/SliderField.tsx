@@ -116,29 +116,47 @@ export function SliderField<V = unknown>({
 
 					if (!sIsRange) {
 						const currentVal = sValue;
-						const startPos = ((currentVal - sMin) / range) * usableWidth;
-						dragRef.current = {
-							activeThumb: 'single',
-							startValues: [sMin, sMax],
-							startSingleValue: currentVal,
-							startPosMin: 0,
-							startPosMax: 0,
-							startPosSingle: startPos,
-						};
+						const posSingle = ((currentVal - sMin) / range) * usableWidth;
+						const dist = Math.abs(touchX - (posSingle + THUMB_SIZE / 2));
 
-						const ratio = Math.max(0, Math.min(1, (touchX - THUMB_SIZE / 2) / usableWidth));
-						const rawVal = sMin + ratio * range;
-						const steppedVal = Math.max(sMin, Math.min(sMax, Math.round((rawVal - sMin) / sStep) * sStep + sMin));
-						if (sOnVal && steppedVal !== currentVal) {
-							sOnVal(steppedVal);
+						if (dist <= THUMB_SIZE) {
+							dragRef.current = {
+								activeThumb: 'single',
+								startValues: [sMin, sMax],
+								startSingleValue: currentVal,
+								startPosMin: 0,
+								startPosMax: 0,
+								startPosSingle: posSingle,
+							};
+						} else {
+							const ratio = Math.max(0, Math.min(1, (touchX - THUMB_SIZE / 2) / usableWidth));
+							const rawVal = sMin + ratio * range;
+							const steppedVal = Math.max(sMin, Math.min(sMax, Math.round((rawVal - sMin) / sStep) * sStep + sMin));
+							const newPos = ((steppedVal - sMin) / range) * usableWidth;
+
+							dragRef.current = {
+								activeThumb: 'single',
+								startValues: [sMin, sMax],
+								startSingleValue: steppedVal,
+								startPosMin: 0,
+								startPosMax: 0,
+								startPosSingle: newPos,
+							};
+
+							if (sOnVal && steppedVal !== currentVal) {
+								sOnVal(steppedVal);
+							}
 						}
 					} else {
 						const [currMin, currMax] = sValues;
 						const posMin = ((currMin - sMin) / range) * usableWidth;
 						const posMax = ((currMax - sMin) / range) * usableWidth;
 
-						const distMin = Math.abs(touchX - (posMin + THUMB_SIZE / 2));
-						const distMax = Math.abs(touchX - (posMax + THUMB_SIZE / 2));
+						const centerMin = posMin + THUMB_SIZE / 2;
+						const centerMax = posMax + THUMB_SIZE / 2;
+
+						const distMin = Math.abs(touchX - centerMin);
+						const distMax = Math.abs(touchX - centerMax);
 
 						let active: 'min' | 'max' = 'min';
 						if (distMin < distMax) {
@@ -146,33 +164,50 @@ export function SliderField<V = unknown>({
 						} else if (distMax < distMin) {
 							active = 'max';
 						} else {
-							active = touchX < posMin + THUMB_SIZE / 2 ? 'min' : 'max';
+							active = touchX < centerMin ? 'min' : 'max';
 						}
 
-						dragRef.current = {
-							activeThumb: active,
-							startValues: [currMin, currMax],
-							startSingleValue: sMin,
-							startPosMin: posMin,
-							startPosMax: posMax,
-							startPosSingle: 0,
-						};
+						const isNearThumb = (active === 'min' && distMin <= THUMB_SIZE) || (active === 'max' && distMax <= THUMB_SIZE);
 
-						const ratio = Math.max(0, Math.min(1, (touchX - THUMB_SIZE / 2) / usableWidth));
-						const rawVal = sMin + ratio * range;
-						const steppedVal = Math.max(sMin, Math.min(sMax, Math.round((rawVal - sMin) / sStep) * sStep + sMin));
+						if (isNearThumb) {
+							dragRef.current = {
+								activeThumb: active,
+								startValues: [currMin, currMax],
+								startSingleValue: sMin,
+								startPosMin: posMin,
+								startPosMax: posMax,
+								startPosSingle: 0,
+							};
+						} else {
+							const ratio = Math.max(0, Math.min(1, (touchX - THUMB_SIZE / 2) / usableWidth));
+							const rawVal = sMin + ratio * range;
+							const steppedVal = Math.max(sMin, Math.min(sMax, Math.round((rawVal - sMin) / sStep) * sStep + sMin));
 
-						if (sOnVals) {
+							let newValues: [number, number] = [currMin, currMax];
+							let newPosMin = posMin;
+							let newPosMax = posMax;
+
 							if (active === 'min') {
 								const newMin = Math.min(steppedVal, currMax);
-								if (newMin !== currMin) {
-									sOnVals([newMin, currMax]);
-								}
+								newValues = [newMin, currMax];
+								newPosMin = ((newMin - sMin) / range) * usableWidth;
 							} else {
 								const newMax = Math.max(steppedVal, currMin);
-								if (newMax !== currMax) {
-									sOnVals([currMin, newMax]);
-								}
+								newValues = [currMin, newMax];
+								newPosMax = ((newMax - sMin) / range) * usableWidth;
+							}
+
+							dragRef.current = {
+								activeThumb: active,
+								startValues: newValues,
+								startSingleValue: sMin,
+								startPosMin: newPosMin,
+								startPosMax: newPosMax,
+								startPosSingle: 0,
+							};
+
+							if (sOnVals && (newValues[0] !== currMin || newValues[1] !== currMax)) {
+								sOnVals(newValues);
 							}
 						}
 					}
@@ -189,7 +224,8 @@ export function SliderField<V = unknown>({
 					} = stateRef.current;
 					const usableWidth = Math.max(1, sWidth - THUMB_SIZE);
 					const range = Math.max(1e-6, sMax - sMin);
-					const {activeThumb, startPosSingle, startPosMin, startPosMax, startValues} = dragRef.current;
+					let {activeThumb} = dragRef.current;
+					const {startPosSingle, startPosMin, startPosMax, startValues} = dragRef.current;
 
 					if (!sIsRange && activeThumb === 'single') {
 						const targetX = startPosSingle + gestureState.dx;
@@ -200,6 +236,14 @@ export function SliderField<V = unknown>({
 							sOnVal(steppedVal);
 						}
 					} else if (sIsRange && activeThumb) {
+						if (startValues[0] === startValues[1]) {
+							if (gestureState.dx > 0) {
+								activeThumb = 'max';
+							} else if (gestureState.dx < 0) {
+								activeThumb = 'min';
+							}
+						}
+
 						if (activeThumb === 'min') {
 							const targetX = startPosMin + gestureState.dx;
 							const ratio = Math.max(0, Math.min(1, targetX / usableWidth));
@@ -290,14 +334,6 @@ export function SliderField<V = unknown>({
 		<View style={styles.container}>
 			<View style={styles.headerRow}>
 				<Text style={styles.label}>{label}</Text>
-				<View style={styles.valueContainer}>
-					{getDisplayContent ? (
-						getDisplayContent(isRange ? (values ?? [min, max]) : (value ?? min))
-					) : (
-						<Text style={[styles.valueText, isRestricted && styles.restrictedValueText]}>{displayVal}</Text>
-					)}
-					{isRestricted && <Text style={[styles.valueText, styles.restrictedValueText]}>(Locked)</Text>}
-				</View>
 			</View>
 			<View style={styles.sliderWrapper} onLayout={handleLayout} {...panResponder.panHandlers}>
 				<View style={styles.trackBackground} />
@@ -332,6 +368,14 @@ export function SliderField<V = unknown>({
 					]}
 				/>
 			</View>
+			<View style={styles.valueRow}>
+				{getDisplayContent ? (
+					getDisplayContent(isRange ? (values ?? [min, max]) : (value ?? min))
+				) : (
+					<Text style={[styles.valueText, isRestricted && styles.restrictedValueText]}>{displayVal}</Text>
+				)}
+				{isRestricted && <Text style={[styles.valueText, styles.restrictedValueText]}>(Locked)</Text>}
+			</View>
 			{isRestricted && warningLabel && <Text style={styles.warningText}>{warningLabel}</Text>}
 		</View>
 	);
@@ -347,15 +391,17 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		marginBottom: 2,
 	},
-	valueContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 4,
-	},
 	label: {
 		fontSize: 15,
 		fontWeight: '600',
 		color: '#EEE',
+	},
+	valueRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		marginTop: 2,
+		gap: 6,
 	},
 	valueText: {
 		fontSize: 13,
@@ -368,7 +414,7 @@ const styles = StyleSheet.create({
 	warningText: {
 		fontSize: 11,
 		color: '#e67e22',
-		marginTop: -4,
+		marginTop: 2,
 		marginBottom: 4,
 	},
 	sliderWrapper: {
