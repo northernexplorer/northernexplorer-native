@@ -1,6 +1,6 @@
 {
 	"name": "@northernexplorer/tools-web",
-	"version": "2026.11.12",
+	"version": "2026.11.17",
 	"private": true,
 	"exports": {
 		".": "./src/index.ts"
