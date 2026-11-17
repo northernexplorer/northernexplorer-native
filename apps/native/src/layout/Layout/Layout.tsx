@@ -21,10 +21,11 @@ interface Props {
 	home?: boolean;
 	showOffline?: boolean;
 	disableScroll?: boolean;
+	disableDragToRefresh?: boolean;
 	onRefresh?: () => Promise<void> | void;
 }
 
-export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline, disableScroll, onRefresh}: Props) {
+export function Layout({Content, title, subtitle, sidebar, fullPage, home, showOffline, disableScroll, disableDragToRefresh, onRefresh}: Props) {
 	const currentPath = usePathname();
 	const {width} = useWindowDimensions();
 	const insets = useSafeAreaInsets();
@@ -80,13 +81,15 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 						}}
 						keyboardShouldPersistTaps="handled"
 						refreshControl={
-							<RefreshControl
-								refreshing={refreshing}
-								onRefresh={handleRefresh}
-								tintColor="#38bdf8"
-								colors={['#38bdf8']}
-								progressBackgroundColor="#1a1a1a"
-							/>
+							!disableDragToRefresh ? (
+								<RefreshControl
+									refreshing={refreshing}
+									onRefresh={handleRefresh}
+									tintColor="#38bdf8"
+									colors={['#38bdf8']}
+									progressBackgroundColor="#1a1a1a"
+								/>
+							) : undefined
 						}
 					>
 						{/* Master Wrapper Row */}
