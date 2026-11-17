@@ -200,7 +200,7 @@ export function PointOfInterestDetails() {
 					{/* Restricted Metadata (Coordinates, Distance, Dates, Organization) */}
 					<View style={styles.metaContainer}>
 						<Text style={styles.metaLabel}>
-							Coordinates: {data.lat}°, {data.lon}°
+							Coordinates: {Number(data.lat).toFixed(4)}°, {Number(data.lon).toFixed(4)}°
 						</Text>
 						{distance ? <Text style={styles.metaLabel}>Distance: {distance}</Text> : null}
 						{data.establishedYear != null && <Text style={styles.metaLabel}>Established: {data.establishedYear}</Text>}
