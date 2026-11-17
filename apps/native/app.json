@@ -3,7 +3,7 @@
 		"name": "Northern Explorer",
 		"slug": "northernexplorer-native",
 		"scheme": "northernexplorer-native",
-		"version": "2026.11.12",
+		"version": "2026.11.17",
 		"orientation": "default",
 		"icon": "./assets/icon.png",
 		"userInterfaceStyle": "light",
