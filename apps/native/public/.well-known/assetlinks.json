@@ -1,0 +1,10 @@
+[
+	{
+		"relation": ["delegate_permission/common.handle_all_urls", "delegate_permission/common.get_login_creds"],
+		"target": {
+			"namespace": "android_app",
+			"package_name": "org.northernexplorer.app",
+			"sha256_cert_fingerprints": ["64:14:1C:1E:8A:32:45:51:D2:9D:95:80:B4:11:FB:3B:BF:4E:59:18:3F:45:2B:02:26:15:69:4E:60:92:B1:1F"]
+		}
+	}
+]
