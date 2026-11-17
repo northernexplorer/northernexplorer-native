@@ -1,63 +1,17 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {PointOfInterestType} from '@northernexplorer/types';
-import {apiClient} from '~/core/apiClient';
+import {useApiFetch} from '~/core/useApiFetch';
+import {useIsOffline} from '~/core/ConnectivityProvider';
 import {DestinationCard} from '~/location/DestinationList/DestinationCard';
 
 const PAGE_SIZE = 20;
-
-type SearchStatus = {
-	requestKey: string;
-	loading: boolean;
-	error: boolean;
-	sites?: PointOfInterestType[];
-	hasNextPage?: boolean;
-};
 
 export function Search() {
 	const [searchText, setSearchText] = useState('');
 	const [query, setQuery] = useState('');
 	const [page, setPage] = useState(1);
 	const [searchVersion, setSearchVersion] = useState(0);
-	const [status, setStatus] = useState<SearchStatus | null>(null);
-	const requestId = useRef(0);
-
-	const requestKey = `${searchVersion}:${page}:${query}`;
-	const currentStatus = status?.requestKey === requestKey ? status : null;
-
-	useEffect(() => {
-		if (!query) {
-			setStatus(null);
-			return;
-		}
-
-		const currentRequestId = ++requestId.current;
-		let isCurrent = true;
-		setStatus({requestKey, loading: true, error: false});
-
-		apiClient('location', 'PointOfInterestController', 'search', {query, limit: PAGE_SIZE + 1, offset: (page - 1) * PAGE_SIZE}, 'GET')
-			.then(sites => {
-				if (isCurrent && requestId.current === currentRequestId) {
-					setStatus({
-						requestKey,
-						loading: false,
-						error: false,
-						sites: sites.slice(0, PAGE_SIZE),
-						hasNextPage: sites.length > PAGE_SIZE,
-					});
-				}
-			})
-			.catch(() => {
-				if (isCurrent && requestId.current === currentRequestId) {
-					setStatus({requestKey, loading: false, error: true});
-				}
-			});
-
-		return () => {
-			isCurrent = false;
-		};
-	}, [page, query, requestKey]);
 
 	const handleSearch = () => {
 		setPage(1);
@@ -66,8 +20,6 @@ export function Search() {
 	};
 
 	const retrySearch = () => setSearchVersion(version => version + 1);
-	const sites = currentStatus?.sites ?? [];
-	const isLoading = !!query && (!currentStatus || currentStatus.loading);
 
 	return (
 		<View style={styles.container}>
@@ -94,17 +46,44 @@ export function Search() {
 					<Text style={styles.messageTitle}>Find a destination</Text>
 					<Text style={styles.messageSubtitle}>Search published destinations by name.</Text>
 				</View>
-			) : isLoading ? (
+			) : (
+				<SearchResults key={`${searchVersion}:${page}:${query}`} query={query} page={page} onPageChange={setPage} onRetry={retrySearch} />
+			)}
+		</View>
+	);
+}
+
+type SearchResultsProps = {
+	query: string;
+	page: number;
+	onPageChange: (page: number) => void;
+	onRetry: () => void;
+};
+
+function SearchResults({query, page, onPageChange, onRetry}: SearchResultsProps) {
+	const {data, loading, error} = useApiFetch('location', 'PointOfInterestController', 'search', {
+		query,
+		limit: PAGE_SIZE + 1,
+		offset: (page - 1) * PAGE_SIZE,
+	});
+	const {isOffline} = useIsOffline();
+	const sites = data?.slice(0, PAGE_SIZE) ?? [];
+	const hasNextPage = (data?.length ?? 0) > PAGE_SIZE;
+	const hasError = !!error || (!loading && isOffline && data === null);
+
+	return (
+		<>
+			{loading ? (
 				<View style={styles.messageCard}>
 					<ActivityIndicator size="small" color="#0284c7" />
 					<Text style={styles.messageTitle}>Searching destinations</Text>
 				</View>
-			) : currentStatus?.error ? (
+			) : hasError ? (
 				<View style={styles.messageCard}>
 					<MaterialCommunityIcons name="alert-circle-outline" size={42} color="#dc2626" />
 					<Text style={styles.messageTitle}>Search failed</Text>
 					<Text style={styles.messageSubtitle}>We couldn’t load destinations. Check your connection and try again.</Text>
-					<Pressable accessibilityRole="button" onPress={retrySearch} style={styles.retryButton}>
+					<Pressable accessibilityRole="button" onPress={onRetry} style={styles.retryButton}>
 						<Text style={styles.retryButtonText}>Try again</Text>
 					</Pressable>
 				</View>
@@ -123,20 +102,20 @@ export function Search() {
 					</View>
 					<View style={styles.pagination}>
 						{page > 1 && (
-							<Pressable accessibilityRole="button" onPress={() => setPage(currentPage => currentPage - 1)} style={styles.pageButton}>
+							<Pressable accessibilityRole="button" onPress={() => onPageChange(page - 1)} style={styles.pageButton}>
 								<Text style={styles.pageButtonText}>Previous</Text>
 							</Pressable>
 						)}
 						<Text style={styles.pageLabel}>Page {page}</Text>
-						{currentStatus?.hasNextPage && (
-							<Pressable accessibilityRole="button" onPress={() => setPage(currentPage => currentPage + 1)} style={styles.pageButton}>
+						{hasNextPage && (
+							<Pressable accessibilityRole="button" onPress={() => onPageChange(page + 1)} style={styles.pageButton}>
 								<Text style={styles.pageButtonText}>Next</Text>
 							</Pressable>
 						)}
 					</View>
 				</>
 			)}
-		</View>
+		</>
 	);
 }
 

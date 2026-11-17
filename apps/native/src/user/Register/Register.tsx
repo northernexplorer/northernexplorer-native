@@ -1,11 +1,11 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TextInput, Pressable, Switch, ScrollView} from 'react-native';
 import {Link, router} from 'expo-router';
 import {DateField, DropdownField, FormField, CaptchaField} from '@northernexplorer/tools-web';
 import {GenderEnum} from '@northernexplorer/types';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
-import {apiClient} from '~/core/apiClient';
+import {useApiFetch} from '~/core/useApiFetch';
 import {isValidEmail} from '~/user/isValidEmail';
 
 const initialFormData = {
@@ -37,29 +37,19 @@ const genderOptions = [
 export function Register() {
 	const [formData, setFormData] = useState<FormData>(initialFormData);
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
-	const [captcha, setCaptcha] = useState<{captchaId: string; image: string; svg: string} | null>(null);
-	const [captchaLoading, setCaptchaLoading] = useState(false);
 
 	const {mutate, loading} = useApiMutation('user', 'UserController', 'register');
-
-	const fetchCaptcha = useCallback(async () => {
-		setCaptchaLoading(true);
-		try {
-			const res = await apiClient('user', 'UserController', 'getCaptcha', {}, 'GET');
-			if (res.captchaId) {
-				setCaptcha(res);
-				setFormData(prev => ({...prev, captchaId: res.captchaId, captchaAnswer: ''}));
-			}
-		} catch {
-			// Failed to fetch captcha
-		} finally {
-			setCaptchaLoading(false);
-		}
-	}, []);
+	const {data: captcha, loading: captchaLoading, refetch: refetchCaptcha} = useApiFetch('user', 'UserController', 'getCaptcha', {});
 
 	useEffect(() => {
-		fetchCaptcha();
-	}, [fetchCaptcha]);
+		if (captcha?.captchaId) {
+			setFormData(prev => ({...prev, captchaId: captcha.captchaId, captchaAnswer: ''}));
+		}
+	}, [captcha]);
+
+	const fetchCaptcha = () => {
+		void refetchCaptcha();
+	};
 
 	const updateField = (key: FormKeys, value: unknown) => {
 		setFormData(prev => ({...prev, [key]: value}));
