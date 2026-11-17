@@ -194,6 +194,10 @@ export const PointOfInterestController = {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},
+	search: {
+		params: {} as {query: string; limit?: number; offset?: number},
+		response: null as unknown as PointOfInterestType[],
+	},
 	getNewest: {
 		params: {} as {limit?: number; offset?: number},
 		response: null as unknown as PointOfInterestType[],

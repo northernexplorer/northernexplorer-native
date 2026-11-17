@@ -62,7 +62,10 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			{id},
 			{populate: ['country', 'region', 'reviews', 'reviews.user', 'organization', 'images', 'images.user', 'images.likes', 'image']},
 		);
+		return this.serializePointOfInterest(site, currentUserId);
+	}
 
+	private serializePointOfInterest(site: PointOfInterest, currentUserId?: string): PointOfInterestType {
 		// Filter reviews: show published reviews OR reviews belonging to the current user
 		const visibleReviews = site.reviews.filter(review => review.status === ReviewStatusEnum.Approved || review.user.id === currentUserId);
 		// Filter images: show published images OR images belonging to the current user
@@ -359,6 +362,37 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 				populate: ['region', 'country', 'image'],
 			},
 		);
+	}
+
+	async searchByName({
+		query,
+		limit,
+		offset,
+		userId,
+	}: {
+		query: string;
+		limit: number;
+		offset: number;
+		userId?: string;
+	}): Promise<PointOfInterestType[]> {
+		const normalizedQuery = query.trim();
+		if (!normalizedQuery) return [];
+
+		const escapedQuery = normalizedQuery.replace(/[\\%_]/g, '\\$&');
+		const sites = await this.find(
+			{
+				status: PublishStatusEnum.Published,
+				name: {$ilike: `%${escapedQuery}%`},
+			},
+			{
+				limit,
+				offset,
+				orderBy: {name: 'asc', id: 'asc'},
+				populate: ['country', 'region', 'reviews', 'reviews.user', 'organization', 'images', 'images.user', 'images.likes', 'image'],
+			},
+		);
+
+		return sites.map(site => this.serializePointOfInterest(site, userId));
 	}
 
 	async getNewest({limit = 5, offset = 0}: {limit?: number; offset?: number} = {}): Promise<PointOfInterestType[]> {

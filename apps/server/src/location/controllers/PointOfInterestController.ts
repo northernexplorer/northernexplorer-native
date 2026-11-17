@@ -17,6 +17,16 @@ import {PointOfInterest} from '../entities/PointOfInterest';
 
 type Route<M extends keyof ROUTES['location']['PointOfInterestController']> = RouteDefinition<'location', 'PointOfInterestController'>[M];
 
+const DEFAULT_SEARCH_LIMIT = 20;
+const MAX_SEARCH_LIMIT = 50;
+const MAX_SEARCH_OFFSET = 100_000;
+
+const normalizeInteger = (value: unknown, fallback: number, min: number, max: number) => {
+	const parsedValue = Number(value);
+	if (!Number.isFinite(parsedValue)) return fallback;
+	return Math.min(Math.max(Math.floor(parsedValue), min), max);
+};
+
 export class PointOfInterestController extends BaseController {
 	constructor(repos: Repositories) {
 		super(repos);
@@ -275,6 +285,18 @@ export class PointOfInterestController extends BaseController {
 				name: site.organization.name,
 			},
 		}));
+	}
+
+	async search(params: Params<Route<'search'>>, auth?: AuthContext): Promise<Response<Route<'search'>>> {
+		const query = typeof params.query === 'string' ? params.query.trim() : '';
+		if (!query) return [];
+
+		return this.repos.pointOfInterest.searchByName({
+			query,
+			limit: normalizeInteger(params.limit, DEFAULT_SEARCH_LIMIT, 1, MAX_SEARCH_LIMIT),
+			offset: normalizeInteger(params.offset, 0, 0, MAX_SEARCH_OFFSET),
+			userId: auth?.userId,
+		});
 	}
 
 	async getNewest(params: Params<Route<'getNewest'>>): Promise<Response<Route<'getNewest'>>> {
