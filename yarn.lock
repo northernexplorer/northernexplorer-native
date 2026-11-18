@@ -1143,12 +1143,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@contentauth/c2pa-node@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@contentauth/c2pa-node@npm:0.10.0"
+"@contentauth/c2pa-node@npm:^0.10.1":
+  version: 0.10.1
+  resolution: "@contentauth/c2pa-node@npm:0.10.1"
   dependencies:
     "@contentauth/c2pa-types": "npm:0.7.8"
-    "@contentauth/c2pa-utilities": "npm:0.4.0"
+    "@contentauth/c2pa-utilities": "npm:0.5.0"
     cargo-cp-artifact: "npm:^0.1.9"
     cli-progress: "npm:^3.12.0"
     debug: "npm:^4.4.3"
@@ -1158,7 +1158,7 @@ __metadata:
     pkg-dir: "npm:^8.0.0"
     pretty-bytes: "npm:^6.1.1"
     unzipper: "npm:^0.10.14"
-  checksum: 10c0/8b813a4a7fbe2f9e7765f9afff64eba01c79506d7989aec56ce7e9257f99a6aa9c173cf8ea5dbea35882074429d8c7291f9cd5cad259224273cc501ac7815be8
+  checksum: 10c0/93329caa3c3df518664322f7db256eab91e2492f8883df5e83878a88d080c87b6afa5a0607205276a98412c200cf8d914d7a1c6c94763fb51e2e387d1b1c4e4a
   languageName: node
   linkType: hard
 
@@ -1169,13 +1169,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@contentauth/c2pa-utilities@npm:0.4.0":
-  version: 0.4.0
-  resolution: "@contentauth/c2pa-utilities@npm:0.4.0"
+"@contentauth/c2pa-utilities@npm:0.5.0":
+  version: 0.5.0
+  resolution: "@contentauth/c2pa-utilities@npm:0.5.0"
   dependencies:
     "@contentauth/c2pa-types": "npm:0.7.8"
     ts-deepmerge: "npm:^8.0.0"
-  checksum: 10c0/8d8ba162b00fa660024b905c2d41b67c9fd664321f101d54e22d6a8de5f2e18c84567fabd08aa75e7b4b99f9d6f3d89fc469414541058f745719aac0e35546d9
+  checksum: 10c0/5d104446adb1c2535828d525384b6d88dbe163918f4c230b6f3169c68f99b3b2dcbbc86e6d714d0881e960c293b1ee7d21dda287c9abbcfcae473220efbf0e95
   languageName: node
   linkType: hard
 
@@ -9227,7 +9227,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "northernexplorer-image-processor@workspace:apps/image-processor"
   dependencies:
-    "@contentauth/c2pa-node": "npm:^0.10.0"
+    "@contentauth/c2pa-node": "npm:^0.10.1"
     "@mikro-orm/cli": "npm:^7.1.15"
     "@mikro-orm/core": "npm:^7.1.15"
     "@mikro-orm/decorators": "npm:^7.1.15"
