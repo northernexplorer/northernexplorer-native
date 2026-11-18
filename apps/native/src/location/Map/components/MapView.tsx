@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {NativeSyntheticEvent, Pressable, StyleSheet, Text, View} from 'react-native';
+import {NativeSyntheticEvent, Platform, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {Camera, CameraRef, GeoJSONSource, Layer, Map as NativeMap, Marker, ViewStateChangeEvent} from '@maplibre/maplibre-react-native';
 import {useRouter} from 'expo-router';
@@ -36,6 +36,7 @@ export function MapView({
 	const {isOffline} = useIsOffline();
 	const cameraRef = useRef<CameraRef>(null);
 	const dispatch = useDispatch();
+	const [mapHeight, setMapHeight] = useState(0);
 	const [measurementPoints, setMeasurementPoints] = useState<[number, number][]>([]);
 	useEffect(() => {
 		if (!measuring) setMeasurementPoints([]);
@@ -81,12 +82,12 @@ export function MapView({
 	);
 
 	return (
-		<View style={{flex: 1}}>
+		<View style={{flex: 1}} onLayout={event => setMapHeight(event.nativeEvent.layout.height)}>
 			<NativeMap
 				style={{width: '100%', height: '100%'}}
 				mapStyle={baseLayer}
-				scaleBar={canUseDistanceScale}
-				scaleBarPosition={{bottom: 12, left: 12}}
+				scaleBar={canUseDistanceScale && (Platform.OS !== 'android' || mapHeight > 0)}
+				scaleBarPosition={Platform.OS === 'android' ? {top: Math.max(0, Math.round(mapHeight - 48)), left: 12} : {bottom: 12, left: 12}}
 				onRegionDidChange={onRegionDidChange}
 				onPress={event => {
 					if (measuring) {

@@ -78,6 +78,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 						contentContainerStyle={{
 							flexGrow: 1,
 							minHeight: '100%',
+							...(disableScroll ? {height: '100%'} : {}),
 						}}
 						keyboardShouldPersistTaps="handled"
 						refreshControl={
@@ -98,6 +99,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 								flex: 1,
 								flexGrow: 1,
 								width: '100%',
+								minHeight: 0,
 								flexDirection: isMobileView ? 'column' : 'row',
 								alignItems: 'stretch',
 							}}
@@ -135,7 +137,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 
 							{/* Standard Sidebar Column */}
 							{(!isMobileFullPage || home) && (
-								<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : styles.sidebarDesktop]}>
+								<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : styles.sidebarDesktop, disableScroll && {minHeight: 0}]}>
 									<Sidebar key={refreshKey} components={sidebar} />
 								</View>
 							)}
