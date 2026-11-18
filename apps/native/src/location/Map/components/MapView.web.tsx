@@ -1,5 +1,6 @@
-import React, {useCallback, useRef} from 'react';
-import MapGL, {Marker, ScaleControl} from 'react-map-gl/maplibre';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {useDispatch} from 'react-redux';
+import MapGL, {Layer, Marker, ScaleControl, Source} from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {useRouter} from 'expo-router';
@@ -8,8 +9,11 @@ import {BBox} from 'geojson';
 import {MapRef} from 'react-map-gl/mapbox-legacy';
 import Supercluster from 'supercluster';
 import {MapViewProps} from '../Map';
+import {calculateDistance, formatDistance} from '../distance';
 import {MapMarkerWeb} from '~/location/Map/components/MapMarkerWeb';
 import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
+import {useMap} from '~/location/state/map/useMap';
+import {setMeasuring} from '~/location/state/map/mapSlice';
 
 export function MapView({
 	baseLayer,
@@ -29,6 +33,12 @@ export function MapView({
 }: MapViewProps) {
 	const mapRef = useRef<MapRef>(null);
 	const router = useRouter();
+	const dispatch = useDispatch();
+	const {measuring} = useMap();
+	const [measurePoints, setMeasurePoints] = useState<[number, number][]>([]);
+	useEffect(() => {
+		if (!measuring) setMeasurePoints([]);
+	}, [measuring]);
 
 	const updateMapState = useCallback(() => {
 		if (mapRef.current) {
@@ -44,7 +54,7 @@ export function MapView({
 	}, [updateMapCenterAndBounds]);
 
 	return (
-		<div style={{width: '100%', height: '100%', minHeight: '400px'}}>
+		<div style={{width: '100%', height: '100%', minHeight: '400px', position: 'relative'}}>
 			<MapGL
 				ref={mapRef}
 				mapLib={maplibregl}
@@ -54,65 +64,70 @@ export function MapView({
 					zoom: initialZoom,
 				}}
 				mapStyle={baseLayer}
-				onClick={() => {
+				onClick={(event: maplibregl.MapMouseEvent) => {
+					if (measuring) {
+						setMeasurePoints(points => [...points, [event.lngLat.lng, event.lngLat.lat]]);
+						return;
+					}
 					setSelectedSite(null);
 					setUserMarker(false);
 				}}
 				onLoad={updateMapState}
 				onMoveEnd={updateMapState}
 				interactiveLayerIds={['pointOfInterestsLayer']}
-				cursor={selectedSite ? 'pointer' : 'default'}
+				cursor={measuring ? 'crosshair' : selectedSite ? 'pointer' : 'default'}
 				minZoom={2}
 			>
-				{clusters.map(cluster => {
-					const [longitude, latitude] = cluster.geometry.coordinates;
-					const isCluster = 'cluster' in cluster.properties && cluster.properties.cluster;
+				{!measuring &&
+					clusters.map(cluster => {
+						const [longitude, latitude] = cluster.geometry.coordinates;
+						const isCluster = 'cluster' in cluster.properties && cluster.properties.cluster;
 
-					if (isCluster) {
-						const clusterFeature = cluster as Supercluster.ClusterFeature<Supercluster.AnyProps>;
-						const clusterId = clusterFeature.id as number | undefined;
-						const pointCount = clusterFeature.properties.point_count;
+						if (isCluster) {
+							const clusterFeature = cluster as Supercluster.ClusterFeature<Supercluster.AnyProps>;
+							const clusterId = clusterFeature.id as number | undefined;
+							const pointCount = clusterFeature.properties.point_count;
+
+							return (
+								<Marker key={`cluster-${clusterFeature.id}`} longitude={longitude} latitude={latitude} anchor="center">
+									<div
+										style={styles.clusterMarker}
+										onClick={e => {
+											e.stopPropagation();
+											if (!supercluster || clusterId === undefined) return;
+											const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(clusterId), 20);
+											mapRef.current?.flyTo({
+												center: [longitude, latitude],
+												zoom: expansionZoom,
+												speed: 1.2,
+											});
+										}}
+									>
+										{pointCount}
+									</div>
+								</Marker>
+							);
+						}
+
+						const site = cluster.properties.site;
+						if (!site) return null;
 
 						return (
-							<Marker key={`cluster-${clusterFeature.id}`} longitude={longitude} latitude={latitude} anchor="center">
-								<div
-									style={styles.clusterMarker}
-									onClick={e => {
-										e.stopPropagation();
-										if (!supercluster || clusterId === undefined) return;
-										const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(clusterId), 20);
-										mapRef.current?.flyTo({
-											center: [longitude, latitude],
-											zoom: expansionZoom,
-											speed: 1.2,
-										});
-									}}
-								>
-									{pointCount}
-								</div>
-							</Marker>
+							<MapMarkerWeb
+								key={site.id}
+								site={site}
+								longitude={longitude}
+								latitude={latitude}
+								selectedSite={selectedSite}
+								setSelectedSite={setSelectedSite}
+								image={site.image}
+								difficulty={site.difficulty}
+								canAccessRemoteDifficulty={canAccessRemoteDifficulty}
+							/>
 						);
-					}
+					})}
 
-					const site = cluster.properties.site;
-					if (!site) return null;
-
-					return (
-						<MapMarkerWeb
-							key={site.id}
-							site={site}
-							longitude={longitude}
-							latitude={latitude}
-							selectedSite={selectedSite}
-							setSelectedSite={setSelectedSite}
-							image={site.image}
-							difficulty={site.difficulty}
-							canAccessRemoteDifficulty={canAccessRemoteDifficulty}
-						/>
-					);
-				})}
-
-				{selectedSite && (
+				{!measuring && selectedSite && (
 					<Marker longitude={selectedSite.lon} latitude={selectedSite.lat} anchor="bottom" offset={[0, -60]}>
 						<PointOfInterestPreviewWidget
 							id={selectedSite.id}
@@ -142,7 +157,7 @@ export function MapView({
 					</Marker>
 				)}
 
-				{coords && (
+				{!measuring && coords && (
 					<>
 						<Marker
 							onClick={e => {
@@ -174,13 +189,80 @@ export function MapView({
 					</>
 				)}
 
+				{measuring && measurePoints.length >= 2 && (
+					<Source
+						id="measurement"
+						type="geojson"
+						data={{type: 'Feature', properties: {}, geometry: {type: 'LineString', coordinates: measurePoints}}}
+					>
+						<Layer id="measurement-line" type="line" paint={{'line-color': '#0088cc', 'line-width': 3}} />
+					</Source>
+				)}
+				{measuring &&
+					measurePoints.map(([longitude, latitude], index) => (
+						<Marker key={index} longitude={longitude} latitude={latitude} anchor="center">
+							<div
+								style={{
+									width: 10,
+									height: 10,
+									borderRadius: '50%',
+									background: '#0088cc',
+									border: '2px solid white',
+									pointerEvents: 'none',
+								}}
+							/>
+						</Marker>
+					))}
 				{canUseDistanceScale && <ScaleControl />}
 			</MapGL>
+			{measuring && (
+				<div
+					style={{
+						position: 'absolute',
+						top: 10,
+						left: 10,
+						zIndex: 1,
+						background: '#1e1e1e',
+						color: '#ffffff',
+						fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+						fontSize: 14,
+						padding: 12,
+						borderRadius: 10,
+						boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+					}}
+				>
+					<div>
+						<div style={{fontWeight: 700}} aria-live="polite">
+							Distance: {formatDistance(calculateDistance(measurePoints))}
+						</div>
+						<div style={{color: 'rgba(255,255,255,0.72)', fontSize: 12, marginTop: 4}}>Click the map to add points</div>
+						<div style={{display: 'flex', gap: 8, marginTop: 8}}>
+							<button type="button" style={styles.measurementButton} onClick={() => setMeasurePoints([])}>
+								Clear
+							</button>
+							<button type="button" style={styles.measurementButton} onClick={() => dispatch(setMeasuring(false))}>
+								Finish
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }
 
 const styles = {
+	measurementButton: {
+		background: '#0088cc',
+		border: 0,
+		borderRadius: 8,
+		color: '#ffffff',
+		cursor: 'pointer',
+		fontFamily: 'inherit',
+		fontSize: 'inherit',
+		fontWeight: 700,
+		padding: '8px 12px',
+	},
 	popupContainer: {
 		background: '#fff',
 		padding: 10,

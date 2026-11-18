@@ -36,6 +36,7 @@ export interface MapState {
 	minCostIndex: number;
 	maxCostIndex: number;
 	showDrafts: boolean;
+	measuring: boolean;
 }
 
 const initialState: MapState = {
@@ -48,6 +49,7 @@ const initialState: MapState = {
 	minCostIndex: 0,
 	maxCostIndex: COST_OPTIONS.length - 1,
 	showDrafts: false,
+	measuring: false,
 };
 
 export const mapSlice = createSlice({
@@ -87,6 +89,9 @@ export const mapSlice = createSlice({
 		setShowDrafts: (state, action: PayloadAction<boolean>) => {
 			state.showDrafts = action.payload;
 		},
+		setMeasuring: (state, action: PayloadAction<boolean>) => {
+			state.measuring = action.payload;
+		},
 	},
 });
 
@@ -102,6 +107,7 @@ export const {
 	setMaxCostLevel,
 	setCostLevel,
 	setShowDrafts,
+	setMeasuring,
 } = mapSlice.actions;
 
 export default mapSlice.reducer;

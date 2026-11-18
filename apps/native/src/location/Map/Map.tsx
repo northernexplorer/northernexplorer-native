@@ -40,8 +40,18 @@ export interface MapViewProps {
 }
 
 export function Map() {
-	const {baseLayer, selectedPoiTypes, visitedFilter, minRating, minDifficultyIndex, maxDifficultyIndex, minCostIndex, maxCostIndex, showDrafts} =
-		useMap();
+	const {
+		baseLayer,
+		selectedPoiTypes,
+		visitedFilter,
+		minRating,
+		minDifficultyIndex,
+		maxDifficultyIndex,
+		minCostIndex,
+		maxCostIndex,
+		showDrafts,
+		measuring,
+	} = useMap();
 	const coords = useLocation();
 	const params = useLocalSearchParams<{lat?: string; lon?: string; zoom?: string; selectedId?: string}>();
 	const permissions = usePermissions();
@@ -86,6 +96,13 @@ export function Map() {
 	const [zoom, setZoom] = useState<number>(initialZoom);
 	const [selectedSite, setSelectedSite] = useState<PointOfInterestType | null>(null);
 	const [userMarker, setUserMarker] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (measuring) {
+			setSelectedSite(null);
+			setUserMarker(false);
+		}
+	}, [measuring]);
 
 	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number}>({
 		lat: initialLat ?? 0,
