@@ -12,7 +12,6 @@ import {MapViewProps} from '../Map';
 import {calculateDistance, formatDistance} from '../distance';
 import {MapMarkerWeb} from '~/location/Map/components/MapMarkerWeb';
 import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
-import {useMap} from '~/location/state/map/useMap';
 import {setMeasuring} from '~/location/state/map/mapSlice';
 
 export function MapView({
@@ -29,12 +28,12 @@ export function MapView({
 	initialZoom,
 	canAccessRemoteDifficulty,
 	canUseDistanceScale,
+	measuring,
 	updateMapCenterAndBounds,
 }: MapViewProps) {
 	const mapRef = useRef<MapRef>(null);
 	const router = useRouter();
 	const dispatch = useDispatch();
-	const {measuring} = useMap();
 	const [measurePoints, setMeasurePoints] = useState<[number, number][]>([]);
 	useEffect(() => {
 		if (!measuring) setMeasurePoints([]);
@@ -213,7 +212,7 @@ export function MapView({
 							/>
 						</Marker>
 					))}
-				{canUseDistanceScale && <ScaleControl />}
+				{canUseDistanceScale && <ScaleControl position="bottom-left" />}
 			</MapGL>
 			{measuring && (
 				<div

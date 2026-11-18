@@ -1,4 +1,5 @@
 import React, {useState, useMemo, useRef, useEffect} from 'react';
+import {useDispatch} from 'react-redux';
 import {useLocalSearchParams} from 'expo-router';
 import {BBox, Point, Feature} from 'geojson';
 import Supercluster, {AnyProps} from 'supercluster';
@@ -10,7 +11,7 @@ import {useApiFetch} from '~/core/useApiFetch';
 import {useLocation} from '~/location/state/location/useLocation';
 import {useMap} from '~/location/state/map/useMap';
 import {usePermissions} from '~/user/state/subscription';
-import {MapStyleObject} from '~/location/state/map/mapSlice';
+import {MapStyleObject, setMeasuring} from '~/location/state/map/mapSlice';
 
 export interface PointOfInterestProperties {
 	cluster?: boolean;
@@ -36,10 +37,12 @@ export interface MapViewProps {
 	initialZoom: number;
 	canAccessRemoteDifficulty: boolean;
 	canUseDistanceScale: boolean;
+	measuring: boolean;
 	updateMapCenterAndBounds: (bounds: BBox, zoom: number, center: {lat: number; lon: number}) => void;
 }
 
 export function Map() {
+	const dispatch = useDispatch();
 	const {
 		baseLayer,
 		selectedPoiTypes,
@@ -59,6 +62,11 @@ export function Map() {
 	// Permissions
 	const canAccessRemoteDifficulty = permissions?.navigation.useRemoteDifficulty ?? false;
 	const canUseDistanceScale = permissions?.navigation.useDistanceScale ?? false;
+	const canChangeMapStyle = permissions?.navigation.changeMapStyle ?? false;
+	const isMeasuring = canChangeMapStyle && measuring;
+	useEffect(() => {
+		if (!canChangeMapStyle && measuring) dispatch(setMeasuring(false));
+	}, [canChangeMapStyle, measuring, dispatch]);
 
 	// Center resolution logic
 	const paramLat = params.lat ? parseFloat(params.lat) : undefined;
@@ -98,11 +106,11 @@ export function Map() {
 	const [userMarker, setUserMarker] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (measuring) {
+		if (isMeasuring) {
 			setSelectedSite(null);
 			setUserMarker(false);
 		}
-	}, [measuring]);
+	}, [isMeasuring]);
 
 	const [mapCenter, setMapCenter] = useState<{lat: number; lon: number}>({
 		lat: initialLat ?? 0,
@@ -191,6 +199,7 @@ export function Map() {
 			initialZoom={initialZoom}
 			canAccessRemoteDifficulty={canAccessRemoteDifficulty}
 			canUseDistanceScale={canUseDistanceScale}
+			measuring={isMeasuring}
 			updateMapCenterAndBounds={updateMapCenterAndBounds}
 		/>
 	);

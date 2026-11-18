@@ -13,7 +13,6 @@ import {calculateDistance, formatDistance} from '../distance';
 import {MapMarkerNative} from '~/location/Map/components/MapMarkerNative';
 import {PointOfInterestPreview} from '~/layout/Home/components/PointOfInterestPreviewWidget';
 import {useIsOffline} from '~/core/ConnectivityProvider';
-import {useMap} from '~/location/state/map/useMap';
 import {setMeasuring} from '~/location/state/map/mapSlice';
 
 export function MapView({
@@ -30,13 +29,13 @@ export function MapView({
 	initialZoom,
 	canAccessRemoteDifficulty,
 	canUseDistanceScale,
+	measuring,
 	updateMapCenterAndBounds,
 }: MapViewProps) {
 	const router = useRouter();
 	const {isOffline} = useIsOffline();
 	const cameraRef = useRef<CameraRef>(null);
 	const dispatch = useDispatch();
-	const {measuring} = useMap();
 	const [measurementPoints, setMeasurementPoints] = useState<[number, number][]>([]);
 	useEffect(() => {
 		if (!measuring) setMeasurementPoints([]);
@@ -87,6 +86,7 @@ export function MapView({
 				style={{width: '100%', height: '100%'}}
 				mapStyle={baseLayer}
 				scaleBar={canUseDistanceScale}
+				scaleBarPosition={{bottom: 12, left: 12}}
 				onRegionDidChange={onRegionDidChange}
 				onPress={event => {
 					if (measuring) {
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
 	measurementControls: {
 		position: 'absolute',
 		top: 12,
-		right: 12,
+		left: 12,
 		backgroundColor: '#1e1e1e',
 		borderRadius: 10,
 		padding: 12,
