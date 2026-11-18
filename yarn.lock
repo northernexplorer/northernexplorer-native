@@ -8564,9 +8564,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"maplibre-gl@npm:^5.24.0":
-  version: 5.24.0
-  resolution: "maplibre-gl@npm:5.24.0"
+"maplibre-gl@npm:^5.24.1":
+  version: 5.24.1
+  resolution: "maplibre-gl@npm:5.24.1"
   dependencies:
     "@mapbox/jsonlint-lines-primitives": "npm:^2.0.2"
     "@mapbox/point-geometry": "npm:^1.1.0"
@@ -8587,7 +8587,7 @@ __metadata:
     potpack: "npm:^2.1.0"
     quickselect: "npm:^3.0.0"
     tinyqueue: "npm:^3.0.0"
-  checksum: 10c0/4ebe63987d307a8133a8cce6b3a414c2ca1b9901b98b2867590d4ce517bdc82c46900610b7693d6eeffb792271596751cf0bf40e59ee7d5e5c779bef9296cf10
+  checksum: 10c0/433353c44966edd9baa6c93e0598d69c6dad67185b92ede8e979f189ac23874a94c53cc740480332ef41d40f266777a49961a510706dbcb5d2dbc3464d9e41c4
   languageName: node
   linkType: hard
 
@@ -9302,7 +9302,7 @@ __metadata:
     expo-router: "npm:~58.0.32"
     expo-splash-screen: "npm:~58.0.14"
     geojson: "npm:^0.5.0"
-    maplibre-gl: "npm:^5.24.0"
+    maplibre-gl: "npm:^5.24.1"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
     react-map-gl: "npm:^8.1.1"
