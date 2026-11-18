@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useDispatch} from 'react-redux';
-import MapGL, {Layer, Marker, ScaleControl, Source} from 'react-map-gl/maplibre';
+import MapGL, {Layer, Marker, Source, useControl} from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {useRouter} from 'expo-router';
@@ -13,6 +13,45 @@ import {calculateDistance, formatDistance} from '../distance';
 import {MapMarkerWeb} from '~/location/Map/components/MapMarkerWeb';
 import {PointOfInterestPreviewWidget} from '~/layout/Home/components/PointOfInterestPreviewWidget';
 import {setMeasuring} from '~/location/state/map/mapSlice';
+
+class ThreeLabelScaleControl extends maplibregl.ScaleControl {
+	private updateLabels = () => {
+		const match = this._container.textContent.match(/^([\d.]+)\s*(.*)$/);
+		if (!match) return;
+		const labels = ['0', `${Number(match[1]) / 2} ${match[2]}`, `${match[1]} ${match[2]}`];
+		this._container.replaceChildren(
+			...labels.map((text, index) => {
+				const label = document.createElement('span');
+				label.textContent = text;
+				Object.assign(label.style, {
+					position: 'absolute',
+					left: `${index * 50}%`,
+					transform: `translateX(-${index * 50}%)`,
+					whiteSpace: 'nowrap',
+				});
+				return label;
+			}),
+		);
+	};
+
+	onAdd(map: maplibregl.Map) {
+		const container = super.onAdd(map);
+		Object.assign(container.style, styles.scaleControl);
+		this.updateLabels();
+		map.on('move', this.updateLabels);
+		return container;
+	}
+
+	onRemove() {
+		this._map.off('move', this.updateLabels);
+		super.onRemove();
+	}
+}
+
+function NativeStyleScaleControl() {
+	useControl(() => new ThreeLabelScaleControl(), {position: 'bottom-left'});
+	return null;
+}
 
 export function MapView({
 	baseLayer,
@@ -212,7 +251,7 @@ export function MapView({
 							/>
 						</Marker>
 					))}
-				{canUseDistanceScale && <ScaleControl position="bottom-left" />}
+				{canUseDistanceScale && <NativeStyleScaleControl />}
 			</MapGL>
 			{measuring && (
 				<div
@@ -251,6 +290,18 @@ export function MapView({
 }
 
 const styles = {
+	scaleControl: {
+		background: 'linear-gradient(to right, #000 50%, #fff 50%) bottom / 100% 5px no-repeat',
+		border: 0,
+		borderBottom: '1px solid #000',
+		color: '#000',
+		fontSize: 10,
+		padding: '0 0 6px',
+		height: '18px',
+		position: 'relative',
+		textAlign: 'center' as const,
+		textShadow: '-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff',
+	},
 	measurementButton: {
 		background: '#0088cc',
 		border: 0,
