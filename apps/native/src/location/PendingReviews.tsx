@@ -17,10 +17,11 @@ export function PendingReviews() {
 
 	const offset = (page - 1) * limit;
 
-	const {data: reviews, loading} = useApiFetch('location', 'ReviewController', 'getPending', {
+	const {data: result, loading} = useApiFetch('location', 'ReviewController', 'getPending', {
 		limit,
 		offset,
 	});
+	const reviews = result?.items;
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
@@ -101,7 +102,7 @@ export function PendingReviews() {
 				emptyIcon="chatbox-ellipses-outline"
 				onRowPress={review => router.push(`/admin/pending-reviews/${review.id}`)}
 			/>
-			<Pagination limit={limit} itemCount={reviews?.length || 0} />
+			<Pagination limit={limit} itemCount={reviews?.length || 0} totalCount={result?.totalCount} />
 		</View>
 	);
 }

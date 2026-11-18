@@ -23,13 +23,14 @@ export function PendingImages() {
 	const offset = (page - 1) * limit;
 
 	const {
-		data: images,
+		data: result,
 		loading,
 		refetch,
 	} = useApiFetch('location', 'ImageController', 'getPending', {
 		limit,
 		offset,
 	});
+	const images = result?.items;
 	const {mutate: approveMutation} = useApiMutation('location', 'ImageController', 'approve');
 	const {mutate: rejectMutation} = useApiMutation('location', 'ImageController', 'reject');
 
@@ -93,7 +94,7 @@ export function PendingImages() {
 					</View>
 				))}
 
-			<Pagination limit={limit} itemCount={images?.length || 0} />
+			<Pagination limit={limit} itemCount={images?.length || 0} totalCount={result?.totalCount} />
 
 			{selectedImage && selectedImageIndex !== null && (
 				<PhotoPreviewModal

@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {Redirect, useRouter} from 'expo-router';
+import {Redirect, useLocalSearchParams, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {RolesEnum} from '@northernexplorer/types';
 import {Spinner, Column, Table, Pagination} from '@northernexplorer/tools-web';
@@ -12,14 +12,16 @@ const limit = 20;
 export function AllUsers() {
 	const router = useRouter();
 	const authentication = useAuthentication();
-	const [page, setPage] = useState(1);
+	const params = useLocalSearchParams<{page?: string}>();
+	const page = Math.max(1, parseInt(params.page || '1', 10) || 1);
 
 	const offset = (page - 1) * limit;
 
-	const {data: users, loading} = useApiFetch('user', 'UserController', 'getAll', {
+	const {data: result, loading} = useApiFetch('user', 'UserController', 'getAll', {
 		limit,
 		offset,
 	});
+	const users = result?.items;
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
@@ -104,7 +106,7 @@ export function AllUsers() {
 				onRowPress={user => router.push(`/user/${user.username}`)}
 			/>
 
-			<Pagination limit={limit} itemCount={users?.length || 0} onPageChange={setPage} />
+			<Pagination limit={limit} itemCount={users?.length || 0} totalCount={result?.totalCount} />
 		</View>
 	);
 }
