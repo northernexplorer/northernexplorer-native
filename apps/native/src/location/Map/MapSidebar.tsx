@@ -1,231 +1,20 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View, ScrollView} from 'react-native';
-import {useDispatch} from 'react-redux';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {Link} from 'expo-router';
-import {PointOfInterestTypeEnum, VisitedFilterEnum, EntranceCostEnum, RolesEnum, SiteDifficultyEnum} from '@northernexplorer/types';
-import {SliderField, SwitchField} from '@northernexplorer/tools-web';
-import {PointOfInterestTypeDropdown} from '~/layout/Layout/components/PointOfInterestTypeDropdown';
-import {baseLayers} from '~/location/Map/baseLayers';
-import {
-	setBaseLayer,
-	setPoiTypes,
-	setVisitedFilter,
-	setMinRating,
-	setMinDifficultyLevel,
-	setMaxDifficultyLevel,
-	setMinCostLevel,
-	setMaxCostLevel,
-	setShowDrafts,
-	setMeasuring,
-} from '~/location/state/map/mapSlice';
-import {useMap} from '~/location/state/map/useMap';
-import {usePermissions} from '~/user/state/subscription';
+import {MapSettings} from '~/location/components/MapSettings';
+import {FilterSettings} from '~/location/components/FilterSettings';
+import {AdminSettings} from '~/location/components/AdminSettings';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
-import {DIFFICULTY_CONFIG, COST_OPTIONS} from '~/location/PointOfInterestDetails/components/reviewOptions';
-import {getMaxSiteDifficultyIndex} from '~/location/lib/siteDifficulty';
-
-const LAYER_TILES = [
-	{key: 'standard', label: 'Standard', layer: baseLayers.standard, icon: 'map-outline'},
-	{key: 'satellite', label: 'Satellite', layer: baseLayers.satellite, icon: 'satellite-variant'},
-	{key: 'terrain', label: 'Terrain', layer: baseLayers.terrain, icon: 'image-filter-hdr'},
-] as const;
-
-const VISITED_OPTIONS = [
-	{key: VisitedFilterEnum.All, label: 'All', icon: 'map-marker-multiple-outline'},
-	{key: VisitedFilterEnum.Visited, label: 'Visited', icon: 'map-marker-check-outline'},
-	{key: VisitedFilterEnum.Unvisited, label: 'Unvisited', icon: 'map-marker-alert-outline'},
-] as const;
-
-const RATING_OPTIONS = [
-	{label: 'Any', value: null},
-	{label: '3+', value: 3},
-	{label: '4+', value: 4},
-	{label: '5', value: 5},
-];
-
-const COST_KEYS = COST_OPTIONS.map(c => c.value as EntranceCostEnum);
 
 export function MapSidebar() {
-	const dispatch = useDispatch();
 	const authentication = useAuthentication();
-	const permissions = usePermissions();
-	const {
-		baseLayer,
-		selectedPoiTypes = [],
-		visitedFilter = VisitedFilterEnum.All,
-		minRating = null,
-		minDifficultyIndex = 0,
-		maxDifficultyIndex,
-		minCostIndex = 0,
-		maxCostIndex = COST_KEYS.length - 1,
-		showDrafts = false,
-		measuring,
-	} = useMap();
-
 	const isLoggedIn = !!authentication?.username;
-	const canChangeMapStyle = !!permissions?.navigation.changeMapStyle;
-	const canAccessRemoteDifficulty = !!permissions?.navigation.useRemoteDifficulty;
-	const isAdmin = authentication?.roles?.includes(RolesEnum.Admin);
-
-	const maxAllowedDifficultyIndex = getMaxSiteDifficultyIndex(canAccessRemoteDifficulty);
-
-	// Default to the maximum permitted index when untouched in Redux
-	const effectiveMaxDifficultyIndex = maxDifficultyIndex ?? maxAllowedDifficultyIndex;
-	const effectiveMinDifficultyIndex = minDifficultyIndex;
-
-	const bannerHref = isLoggedIn ? `/user/${authentication.username}/change-subscription` : '/user/login';
-	const bannerTitle = 'Upgrade Required to Access Advanced Map Tools';
-	const bannerSubtitle = isLoggedIn ? 'Click to find out more' : 'Start by signing in';
-
-	const handlePoiTypeChange = (_fieldName: string, newTypes: PointOfInterestTypeEnum[]) => {
-		dispatch(setPoiTypes(newTypes));
-	};
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-			<Text style={[styles.label, styles.labelDark]}>Map Style</Text>
-			<View style={[styles.tileGroup, !canChangeMapStyle && styles.disabledGroup]}>
-				{LAYER_TILES.map(item => {
-					const isActive = JSON.stringify(baseLayer) === JSON.stringify(item.layer);
-					return (
-						<TouchableOpacity
-							key={item.key}
-							activeOpacity={0.8}
-							disabled={!canChangeMapStyle}
-							onPress={() => dispatch(setBaseLayer(item.layer))}
-							style={[styles.tileCard, isActive && styles.tileCardActive]}
-						>
-							<View style={styles.tilePreview}>
-								<MaterialCommunityIcons name={item.icon} size={28} color={isActive ? 'white' : 'rgba(255,255,255,0.72)'} />
-							</View>
-							<Text style={[styles.menuText, isActive && styles.activeText]}>{item.label}</Text>
-						</TouchableOpacity>
-					);
-				})}
-			</View>
-			<Text style={[styles.label, styles.labelDark]}>Tools</Text>
-			<View style={[styles.tileGroup, !canChangeMapStyle && styles.disabledGroup]}>
-				<TouchableOpacity
-					activeOpacity={0.8}
-					accessibilityRole="button"
-					accessibilityState={{selected: canChangeMapStyle && measuring, disabled: !canChangeMapStyle}}
-					disabled={!canChangeMapStyle}
-					onPress={() => dispatch(setMeasuring(!measuring))}
-					style={[styles.measureTool, canChangeMapStyle && measuring && styles.segmentButtonActive]}
-				>
-					<MaterialCommunityIcons name="ruler" size={18} color={measuring ? 'white' : 'rgba(255,255,255,0.72)'} />
-					<Text style={[styles.segmentText, measuring && styles.segmentTextActive]}>Measure distance</Text>
-				</TouchableOpacity>
-			</View>
-
-			{!canChangeMapStyle && (
-				<Link href={bannerHref} asChild>
-					<TouchableOpacity activeOpacity={0.8}>
-						<View style={styles.banner}>
-							<Text style={styles.bannerTitle}>{bannerTitle}</Text>
-							<Text style={styles.bannerSubtitle}>{bannerSubtitle}</Text>
-						</View>
-					</TouchableOpacity>
-				</Link>
-			)}
-
-			{isLoggedIn && (
-				<View style={styles.section}>
-					<Text style={[styles.label, styles.labelDark]}>Visits</Text>
-					<View style={styles.segmentedControl}>
-						{VISITED_OPTIONS.map(option => {
-							const isActive = visitedFilter === option.key;
-							return (
-								<TouchableOpacity
-									key={option.key}
-									activeOpacity={0.8}
-									onPress={() => dispatch(setVisitedFilter(option.key))}
-									style={[styles.segmentButton, isActive && styles.segmentButtonActive]}
-								>
-									<MaterialCommunityIcons name={option.icon} size={16} color={isActive ? 'white' : 'rgba(255,255,255,0.6)'} />
-									<Text style={[styles.segmentText, isActive && styles.segmentTextActive]}>{option.label}</Text>
-								</TouchableOpacity>
-							);
-						})}
-					</View>
-				</View>
-			)}
-
-			<View style={styles.section}>
-				<Text style={[styles.label, styles.labelDark]}>Minimum Rating</Text>
-				<View style={styles.segmentedControl}>
-					{RATING_OPTIONS.map(option => {
-						const isActive = minRating === option.value;
-						return (
-							<TouchableOpacity
-								key={String(option.value)}
-								activeOpacity={0.8}
-								onPress={() => dispatch(setMinRating(option.value))}
-								style={[styles.segmentButton, isActive && styles.segmentButtonActive]}
-							>
-								<Text style={[styles.segmentText, isActive && styles.segmentTextActive]}>{option.label}</Text>
-							</TouchableOpacity>
-						);
-					})}
-				</View>
-			</View>
-
-			{/* Difficulty Slider */}
-			<View style={styles.section}>
-				<SliderField
-					label="Difficulty"
-					minimumValue={0}
-					maximumValue={Object.values(SiteDifficultyEnum).length - 1}
-					step={1}
-					values={[effectiveMinDifficultyIndex, effectiveMaxDifficultyIndex]}
-					maxInteractiveValue={maxAllowedDifficultyIndex}
-					warningLabel="Upgrade subscription to include harder difficulty tiers."
-					onValuesChange={([minVal, maxVal]) => {
-						dispatch(setMinDifficultyLevel(minVal));
-						dispatch(setMaxDifficultyLevel(maxVal));
-					}}
-					getRangeDisplayLabel={([minVal, maxVal]) => {
-						const minDiff = DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[minVal] as SiteDifficultyEnum];
-						const maxDiff = DIFFICULTY_CONFIG[Object.values(SiteDifficultyEnum)[maxVal] as SiteDifficultyEnum];
-						if (minVal === maxVal) {
-							return minDiff.label;
-						}
-						const minIsDev = minVal < 4;
-						const maxIsDev = maxVal < 4;
-						if (minIsDev && maxIsDev) {
-							return `Developed ${minDiff.levelLabel} – ${maxDiff.levelLabel}`;
-						}
-						if (!minIsDev && !maxIsDev) {
-							return `Remote ${minDiff.levelLabel} – ${maxDiff.levelLabel}`;
-						}
-						return `${minDiff.label} – ${maxDiff.label}`;
-					}}
-				/>
-			</View>
-
-			{/* Cost Slider */}
-			<View style={styles.section}>
-				<SliderField
-					label="Cost"
-					minimumValue={0}
-					maximumValue={COST_KEYS.length - 1}
-					step={1}
-					values={[minCostIndex, maxCostIndex]}
-					onValuesChange={([minVal, maxVal]) => {
-						dispatch(setMinCostLevel(minVal));
-						dispatch(setMaxCostLevel(maxVal));
-					}}
-					getRangeDisplayLabel={([minVal, maxVal]) => {
-						const minLabel = COST_OPTIONS.find(o => o.value === COST_KEYS[minVal])?.label ?? 'Free';
-						const maxLabel = COST_OPTIONS.find(o => o.value === COST_KEYS[maxVal])?.label ?? 'Any';
-						return minVal === maxVal ? minLabel : `${minLabel} – ${maxLabel}`;
-					}}
-				/>
-			</View>
-
-			<PointOfInterestTypeDropdown fieldName="poiTypes" label="Types" value={selectedPoiTypes} updateField={handlePoiTypeChange} darkMode />
-
+			<MapSettings />
+			<FilterSettings map />
 			<View style={styles.section}>
 				<Link href={isLoggedIn ? '/admin/add-point-of-interest' : '/user/login'} asChild>
 					<TouchableOpacity style={styles.suggestPoiButton} activeOpacity={0.8}>
@@ -234,23 +23,7 @@ export function MapSidebar() {
 					</TouchableOpacity>
 				</Link>
 			</View>
-
-			{/* Admin Controls Section */}
-			{isAdmin && (
-				<View style={styles.adminSection}>
-					<View style={styles.adminHeader}>
-						<MaterialCommunityIcons name="shield-outline" size={16} color="#f59e0b" />
-						<Text style={styles.adminTitle}>Admin Options</Text>
-					</View>
-					<SwitchField
-						fieldName="showDrafts"
-						label="Show Draft Sites"
-						description="Include unpublished sites on the map"
-						value={showDrafts}
-						updateField={(_name, val) => dispatch(setShowDrafts(val))}
-					/>
-				</View>
-			)}
+			<AdminSettings description="Include unpublished sites on the map" />
 		</ScrollView>
 	);
 }
@@ -262,115 +35,6 @@ const styles = StyleSheet.create({
 	},
 	section: {
 		marginTop: 4,
-	},
-	adminSection: {
-		marginTop: 8,
-		padding: 12,
-		borderRadius: 12,
-		backgroundColor: 'rgba(245, 158, 11, 0.06)',
-		borderWidth: 1,
-		borderColor: 'rgba(245, 158, 11, 0.2)',
-		gap: 8,
-	},
-	adminHeader: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 6,
-		marginBottom: 2,
-	},
-	adminTitle: {
-		fontSize: 12,
-		fontWeight: '700',
-		color: '#f59e0b',
-		textTransform: 'uppercase',
-		letterSpacing: 0.5,
-	},
-	segmentedControl: {
-		flexDirection: 'row',
-		backgroundColor: 'rgba(255,255,255,0.06)',
-		borderRadius: 10,
-		padding: 3,
-		borderWidth: 1,
-		marginTop: 5,
-		borderColor: 'rgba(255,255,255,0.1)',
-	},
-	label: {
-		fontSize: 15,
-		fontWeight: '600',
-		color: '#333',
-	},
-	labelDark: {
-		color: '#EEE',
-	},
-	segmentButton: {
-		flex: 1,
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		gap: 6,
-		paddingVertical: 8,
-		borderRadius: 8,
-	},
-	segmentButtonActive: {
-		backgroundColor: '#0088cc',
-	},
-	measureTool: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 6,
-		paddingHorizontal: 12,
-		paddingVertical: 8,
-		borderRadius: 8,
-		backgroundColor: 'rgba(255,255,255,0.06)',
-		borderWidth: 1,
-		borderColor: 'rgba(255,255,255,0.1)',
-	},
-	segmentText: {
-		color: 'rgba(255,255,255,0.6)',
-		fontSize: 12,
-		fontWeight: '500',
-	},
-	segmentTextActive: {
-		color: 'white',
-		fontWeight: '600',
-	},
-	tileGroup: {
-		flexDirection: 'row',
-		gap: 8,
-	},
-	disabledGroup: {
-		opacity: 0.4,
-		pointerEvents: 'none',
-	},
-	tileCard: {
-		alignItems: 'center',
-		borderRadius: 12,
-		borderWidth: 1,
-		borderColor: 'rgba(255,255,255,0.08)',
-		backgroundColor: 'rgba(255,255,255,0.04)',
-		padding: 4,
-	},
-	tileCardActive: {
-		backgroundColor: 'rgba(255,255,255,0.12)',
-		borderColor: 'rgba(255,255,255,0.2)',
-	},
-	tilePreview: {
-		width: 65,
-		height: 65,
-		borderRadius: 8,
-		backgroundColor: 'rgba(255,255,255,0.04)',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	menuText: {
-		color: 'rgba(255,255,255,0.72)',
-		fontSize: 11,
-		marginTop: 4,
-		marginBottom: 2,
-	},
-	activeText: {
-		color: 'white',
-		fontWeight: '600',
 	},
 	suggestPoiButton: {
 		flexDirection: 'row',
@@ -387,24 +51,5 @@ const styles = StyleSheet.create({
 		color: '#ffffff',
 		fontSize: 14,
 		fontWeight: '600',
-	},
-	banner: {
-		backgroundColor: 'rgba(255,255,255,0.04)',
-		borderRadius: 12,
-		borderWidth: 1,
-		borderColor: '#333333',
-		padding: 12,
-		marginTop: 4,
-	},
-	bannerTitle: {
-		fontSize: 14,
-		fontWeight: '600',
-		color: 'white',
-		marginBottom: 2,
-	},
-	bannerSubtitle: {
-		fontSize: 13,
-		lineHeight: 18,
-		color: 'rgba(255,255,255,0.78)',
 	},
 });
