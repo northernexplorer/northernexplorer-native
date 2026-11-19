@@ -66,7 +66,7 @@ export function Search() {
 			<View style={styles.searchForm}>
 				<TextInput
 					accessibilityLabel="Search destinations"
-					placeholder="Search destinations by name"
+					placeholder="Search destinations by name or description"
 					placeholderTextColor="#94a3b8"
 					returnKeyType="search"
 					value={searchText}
@@ -85,7 +85,7 @@ export function Search() {
 					<MaterialCommunityIcons name="map-search-outline" size={42} color="#94a3b8" />
 					<Text style={styles.messageTitle}>Find a destination</Text>
 					<Text style={styles.messageSubtitle}>
-						Search by name or submit with an empty name to browse destinations using these filters.
+						Search by name or description, or submit an empty search to browse using these filters.
 					</Text>
 				</View>
 			) : (
@@ -142,13 +142,13 @@ function SearchResults({query, page, filters, onPageChange, onRetry}: SearchResu
 				<View style={styles.messageCard}>
 					<MaterialCommunityIcons name="map-search-outline" size={42} color="#94a3b8" />
 					<Text style={styles.messageTitle}>No destinations found</Text>
-					<Text style={styles.messageSubtitle}>Try another destination name.</Text>
+					<Text style={styles.messageSubtitle}>Try another search term.</Text>
 				</View>
 			) : (
 				<>
 					<View style={styles.list}>
 						{sites.map(site => (
-							<DestinationCard key={site.id} site={site} userCoords={null} />
+							<DestinationCard key={site.id} site={site} userCoords={null} searchQuery={query} />
 						))}
 					</View>
 					<View style={styles.pagination}>

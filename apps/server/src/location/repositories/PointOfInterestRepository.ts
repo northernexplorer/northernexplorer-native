@@ -398,11 +398,12 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 	}: SearchPoisOptions): Promise<PointOfInterestType[]> {
 		const normalizedQuery = query.trim();
 		const escapedQuery = normalizedQuery.replace(/[\\%_]/g, '\\$&');
+		const pattern = `%${escapedQuery}%`;
 		const params: unknown[] = [];
 		const allowedStatuses = showDrafts ? [PublishStatusEnum.Published, PublishStatusEnum.Draft] : [PublishStatusEnum.Published];
 		const statusPlaceholders = allowedStatuses.map(() => '?').join(', ');
-		params.push(...allowedStatuses, `%${escapedQuery}%`);
-		const filters = [`h.status IN (${statusPlaceholders})`, 'h.name ILIKE ?'];
+		params.push(...allowedStatuses, pattern, pattern);
+		const filters = [`h.status IN (${statusPlaceholders})`, '(h.name ILIKE ? OR h.description ILIKE ?)'];
 
 		if (selectedPoiTypes.length > 0) {
 			const typePlaceholders = selectedPoiTypes.map(() => '?').join(', ');
@@ -445,7 +446,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 
 		const minRatingSql = minRating === undefined || minRating === null ? '' : 'HAVING COALESCE(AVG(rev.rating), 0) >= ?';
 		if (minRating !== undefined && minRating !== null) params.push(minRating);
-		params.push(limit, offset);
+		params.push(pattern, limit, offset);
 
 		const querySql = `
 			SELECT h.id
@@ -454,7 +455,7 @@ export class PointOfInterestRepository extends BaseRepository<PointOfInterest> {
 			WHERE ${filters.join('\n\t\t\t\tAND ')}
 			GROUP BY h.id, h.name
 			${minRatingSql}
-			ORDER BY h.name ASC, h.id ASC
+			ORDER BY CASE WHEN h.name ILIKE ? THEN 0 ELSE 1 END, h.name ASC, h.id ASC
 			LIMIT ? OFFSET ?
 		`;
 		const matchingRows = (await this.execute(querySql, params)) as {id: string}[];

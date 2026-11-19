@@ -4,6 +4,7 @@ import {Link} from 'expo-router';
 import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
 import {calculateHaversineDistance, getImageUrl, getUrlSafeString, ImageView} from '@northernexplorer/tools-web';
 import {PointOfInterestType} from '@northernexplorer/types';
+import {getSearchExcerpt, splitSearchMatches} from './searchHighlight';
 import {config} from '~/config';
 import {CONDITION_ICON_MAP, COST_LABEL_MAP, DIFFICULTY_CONFIG, formatEnumLabel} from '~/location/PointOfInterestDetails/components/reviewOptions';
 import {hasSiteDifficultyAccess} from '~/location/lib/siteDifficulty';
@@ -14,6 +15,7 @@ import {DifficultyLabel} from '~/location/components/DifficultyLabel';
 type Props = {
 	site: PointOfInterestType;
 	userCoords: {lat: number | string; lon: number | string} | null;
+	searchQuery?: string;
 };
 
 const getRatingLabel = (rating: number): string | null => {
@@ -25,7 +27,7 @@ const getRatingLabel = (rating: number): string | null => {
 	return null;
 };
 
-export function DestinationCard({site, userCoords}: Props) {
+export function DestinationCard({site, userCoords, searchQuery = ''}: Props) {
 	const {width} = useWindowDimensions();
 	const isCompact = width < 600;
 	const permissions = usePermissions();
@@ -61,6 +63,12 @@ export function DestinationCard({site, userCoords}: Props) {
 	const costText = site.entranceCost ? COST_LABEL_MAP[site.entranceCost].badge : null;
 	const conditionList = site.conditions ?? [];
 	const latestReviewWithText = site.reviews?.find(r => r.description && r.description.trim().length > 0);
+	const highlight = (text: string) =>
+		splitSearchMatches(text, searchQuery).map((part, index) => (
+			<Text key={index} style={part.match ? styles.searchMatch : undefined}>
+				{part.text}
+			</Text>
+		));
 
 	return (
 		<Link
@@ -127,14 +135,14 @@ export function DestinationCard({site, userCoords}: Props) {
 									</View>
 
 									{/* Title */}
-									<Text style={styles.title} numberOfLines={1}>
-										{site.name}
+									<Text style={styles.title} numberOfLines={searchQuery ? undefined : 1}>
+										{highlight(site.name)}
 									</Text>
 
 									{/* Description */}
 									{site.description ? (
-										<Text style={styles.description} numberOfLines={2}>
-											{site.description}
+										<Text style={styles.description} numberOfLines={searchQuery ? 3 : 2}>
+											{highlight(getSearchExcerpt(site.description, searchQuery))}
 										</Text>
 									) : null}
 								</View>
@@ -342,6 +350,11 @@ const styles = StyleSheet.create({
 		color: '#475569',
 		fontSize: 13,
 		lineHeight: 18,
+	},
+	searchMatch: {
+		backgroundColor: '#bae6fd',
+		color: '#0c4a6e',
+		fontWeight: '700',
 	},
 	reviewDetailsContainer: {
 		marginTop: 4,
