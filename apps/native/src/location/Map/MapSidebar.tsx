@@ -17,6 +17,7 @@ import {
 	setMinCostLevel,
 	setMaxCostLevel,
 	setShowDrafts,
+	setMeasuring,
 } from '~/location/state/map/mapSlice';
 import {useMap} from '~/location/state/map/useMap';
 import {usePermissions} from '~/user/state/subscription';
@@ -59,6 +60,7 @@ export function MapSidebar() {
 		minCostIndex = 0,
 		maxCostIndex = COST_KEYS.length - 1,
 		showDrafts = false,
+		measuring,
 	} = useMap();
 
 	const isLoggedIn = !!authentication?.username;
@@ -73,7 +75,7 @@ export function MapSidebar() {
 	const effectiveMinDifficultyIndex = minDifficultyIndex;
 
 	const bannerHref = isLoggedIn ? `/user/${authentication.username}/change-subscription` : '/user/login';
-	const bannerTitle = 'Upgrade Required to Access All Map Styles';
+	const bannerTitle = 'Upgrade Required to Access Advanced Map Tools';
 	const bannerSubtitle = isLoggedIn ? 'Click to find out more' : 'Start by signing in';
 
 	const handlePoiTypeChange = (_fieldName: string, newTypes: PointOfInterestTypeEnum[]) => {
@@ -101,6 +103,20 @@ export function MapSidebar() {
 						</TouchableOpacity>
 					);
 				})}
+			</View>
+			<Text style={[styles.label, styles.labelDark]}>Tools</Text>
+			<View style={[styles.tileGroup, !canChangeMapStyle && styles.disabledGroup]}>
+				<TouchableOpacity
+					activeOpacity={0.8}
+					accessibilityRole="button"
+					accessibilityState={{selected: canChangeMapStyle && measuring, disabled: !canChangeMapStyle}}
+					disabled={!canChangeMapStyle}
+					onPress={() => dispatch(setMeasuring(!measuring))}
+					style={[styles.measureTool, canChangeMapStyle && measuring && styles.segmentButtonActive]}
+				>
+					<MaterialCommunityIcons name="ruler" size={18} color={measuring ? 'white' : 'rgba(255,255,255,0.72)'} />
+					<Text style={[styles.segmentText, measuring && styles.segmentTextActive]}>Measure distance</Text>
+				</TouchableOpacity>
 			</View>
 
 			{!canChangeMapStyle && (
@@ -297,6 +313,17 @@ const styles = StyleSheet.create({
 	},
 	segmentButtonActive: {
 		backgroundColor: '#0088cc',
+	},
+	measureTool: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		paddingHorizontal: 12,
+		paddingVertical: 8,
+		borderRadius: 8,
+		backgroundColor: 'rgba(255,255,255,0.06)',
+		borderWidth: 1,
+		borderColor: 'rgba(255,255,255,0.1)',
 	},
 	segmentText: {
 		color: 'rgba(255,255,255,0.6)',
