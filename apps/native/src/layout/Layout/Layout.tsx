@@ -137,7 +137,13 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 
 							{/* Standard Sidebar Column */}
 							{(!isMobileFullPage || home) && (
-								<View style={[styles.sidebar, isMobileView ? styles.sidebarMobile : styles.sidebarDesktop, disableScroll && {minHeight: 0}]}>
+								<View
+									style={[
+										styles.sidebar,
+										isMobileView ? styles.sidebarMobile : styles.sidebarDesktop,
+										disableScroll && {minHeight: 0},
+									]}
+								>
 									<Sidebar key={refreshKey} components={sidebar} />
 								</View>
 							)}
