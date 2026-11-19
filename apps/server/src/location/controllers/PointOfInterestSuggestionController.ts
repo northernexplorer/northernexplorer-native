@@ -143,6 +143,12 @@ export class PointOfInterestSuggestionController extends BaseController {
 		return suggestions.map(s => this.formatSuggestion(s));
 	}
 
+	public async getAllPaginated(params: Params<Route<'getAllPaginated'>>, auth?: AuthContext): Promise<Response<Route<'getAllPaginated'>>> {
+		const items = await this.getAll(params, auth);
+		const totalCount = await this.repos.pointOfInterestSuggestion.count(params.status ? {status: params.status} : {});
+		return {items, totalCount};
+	}
+
 	public async getById(params: Params<Route<'getById'>>, auth?: AuthContext): Promise<Response<Route<'getById'>>> {
 		this.permissionService.canAccessAdmin(auth);
 		const suggestion = await this.repos.pointOfInterestSuggestion.getByIdPopulated(params.id);

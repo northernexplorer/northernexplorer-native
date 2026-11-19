@@ -23,6 +23,11 @@ export function SuggestedUpdates() {
 		offset,
 		status: statusFilter === 'ALL' ? undefined : statusFilter,
 	});
+	const {data: result} = useApiFetch('location', 'PointOfInterestSuggestionController', 'getAllPaginated', {
+		limit,
+		offset,
+		status: statusFilter === 'ALL' ? undefined : statusFilter,
+	});
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
@@ -115,7 +120,10 @@ export function SuggestedUpdates() {
 						<TouchableOpacity
 							key={status}
 							style={[styles.filterButton, isSelected && styles.filterButtonActive]}
-							onPress={() => setStatusFilter(status)}
+							onPress={() => {
+								router.setParams({page: undefined});
+								setStatusFilter(status);
+							}}
 							activeOpacity={0.7}
 						>
 							<Text style={[styles.filterButtonText, isSelected && styles.filterButtonTextActive]}>
@@ -134,7 +142,7 @@ export function SuggestedUpdates() {
 				emptyIcon="bulb-outline"
 				onRowPress={s => router.push(`/admin/suggested-updates/${s.id}`)}
 			/>
-			<Pagination limit={limit} itemCount={suggestions?.length || 0} />
+			<Pagination limit={limit} itemCount={suggestions?.length || 0} totalCount={result?.totalCount} />
 		</View>
 	);
 }

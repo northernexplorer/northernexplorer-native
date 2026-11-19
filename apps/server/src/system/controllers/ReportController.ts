@@ -153,6 +153,12 @@ export class ReportController extends BaseController {
 		return reports.map(report => this.formatReport(report));
 	}
 
+	async getAllPaginated(params: Params<Route<'getAllPaginated'>>, auth?: AuthContext): Promise<Response<Route<'getAllPaginated'>>> {
+		const items = await this.getAll(params, auth);
+		const totalCount = await this.repos.report.count(params.status ? {status: params.status} : {});
+		return {items, totalCount};
+	}
+
 	async getById(params: Params<Route<'getById'>>, auth?: AuthContext): Promise<Response<Route<'getById'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);

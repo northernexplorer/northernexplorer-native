@@ -40,6 +40,7 @@ export function AllReports() {
 		offset,
 		status: statusFilter,
 	});
+	const {data: result} = useApiFetch('system', 'ReportController', 'getAllPaginated', {limit, offset, status: statusFilter});
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
@@ -162,7 +163,10 @@ export function AllReports() {
 						<Pressable
 							key={f.label}
 							style={[styles.filterTab, isActive && styles.filterTabActive]}
-							onPress={() => setStatusFilter(f.value)}
+							onPress={() => {
+								router.setParams({page: undefined});
+								setStatusFilter(f.value);
+							}}
 						>
 							<Text style={[styles.filterTabText, isActive && styles.filterTabTextActive]}>{f.label}</Text>
 						</Pressable>
@@ -178,7 +182,7 @@ export function AllReports() {
 				emptyIcon="flag-outline"
 				onRowPress={report => router.push(`/admin/reports/${report.id}`)}
 			/>
-			<Pagination limit={limit} itemCount={reports?.length || 0} />
+			<Pagination limit={limit} itemCount={reports?.length || 0} totalCount={result?.totalCount} />
 		</View>
 	);
 }

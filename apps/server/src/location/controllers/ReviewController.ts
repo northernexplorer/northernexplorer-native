@@ -99,6 +99,15 @@ export class ReviewController extends BaseController {
 		}));
 	}
 
+	public async getPendingPaginated(
+		params: Params<Route<'getPendingPaginated'>>,
+		auth?: AuthContext,
+	): Promise<Response<Route<'getPendingPaginated'>>> {
+		const items = await this.getPending(params, auth);
+		const totalCount = await this.repos.review.count({status: ReviewStatusEnum.Pending});
+		return {items, totalCount};
+	}
+
 	public async approve(params: Params<Route<'approve'>>, auth?: AuthContext): Promise<Response<Route<'approve'>>> {
 		this.permissionService.isLoggedIn(auth);
 		this.permissionService.canAccessAdmin(auth);

@@ -22,6 +22,7 @@ export function DraftPointOfInterests() {
 		limit,
 		offset,
 	});
+	const {data: result} = useApiFetch('location', 'PointOfInterestController', 'getDraftsPaginated', {limit, offset});
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
@@ -105,7 +106,7 @@ export function DraftPointOfInterests() {
 					)
 				}
 			/>
-			<Pagination limit={limit} itemCount={sites?.length || 0} />
+			<Pagination limit={limit} itemCount={sites?.length || 0} totalCount={result?.totalCount} />
 		</View>
 	);
 }

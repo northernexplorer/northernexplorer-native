@@ -56,6 +56,10 @@ export const ReportController = {
 		},
 		response: [] as ReportType[],
 	},
+	getAllPaginated: {
+		params: {} as {limit?: number; offset?: number; status?: ReportStatusEnum},
+		response: {} as {items: ReportType[]; totalCount: number},
+	},
 	getById: {
 		params: {} as {id: string},
 		response: {} as ReportType,

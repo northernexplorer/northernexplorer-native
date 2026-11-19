@@ -30,6 +30,7 @@ export function PendingImages() {
 		limit,
 		offset,
 	});
+	const {data: result, refetch: refetchTotal} = useApiFetch('location', 'ImageController', 'getPendingPaginated', {limit, offset});
 	const {mutate: approveMutation} = useApiMutation('location', 'ImageController', 'approve');
 	const {mutate: rejectMutation} = useApiMutation('location', 'ImageController', 'reject');
 
@@ -56,6 +57,7 @@ export function PendingImages() {
 		try {
 			await approveMutation({id: imageId});
 			await refetch();
+			await refetchTotal();
 			handleNextOrCloseIndex();
 		} finally {
 			setApprovingImageId(null);
@@ -67,6 +69,7 @@ export function PendingImages() {
 		try {
 			await rejectMutation({id: imageId});
 			await refetch();
+			await refetchTotal();
 			handleNextOrCloseIndex();
 		} finally {
 			setDeletingImageId(null);
@@ -93,7 +96,7 @@ export function PendingImages() {
 					</View>
 				))}
 
-			<Pagination limit={limit} itemCount={images?.length || 0} />
+			<Pagination limit={limit} itemCount={images?.length || 0} totalCount={result?.totalCount} />
 
 			{selectedImage && selectedImageIndex !== null && (
 				<PhotoPreviewModal

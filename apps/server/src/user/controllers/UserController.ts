@@ -448,6 +448,12 @@ export class UserController extends BaseController {
 		return this.repos.user.getAll({limit: params.limit, offset: params.offset});
 	}
 
+	async getAllPaginated(params: Params<Route<'getAllPaginated'>>, auth?: AuthContext): Promise<Response<Route<'getAllPaginated'>>> {
+		const items = await this.getAll(params, auth);
+		const totalCount = await this.repos.user.count({});
+		return {items, totalCount};
+	}
+
 	async getTimeline(params: Params<Route<'getTimeline'>>): Promise<Response<Route<'getTimeline'>>> {
 		const user = await this.repos.user.getByUsername(params.username);
 		return this.repos.user.getTimeline({

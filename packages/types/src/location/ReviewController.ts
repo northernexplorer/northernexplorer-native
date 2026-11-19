@@ -104,6 +104,10 @@ export const ReviewController = {
 		params: {} as {limit?: number; offset?: number},
 		response: null as unknown as ReviewType[],
 	},
+	getPendingPaginated: {
+		params: {} as {limit?: number; offset?: number},
+		response: {} as {items: ReviewType[]; totalCount: number},
+	},
 	like: {
 		params: {} as {id: string},
 		response: null as unknown as {
