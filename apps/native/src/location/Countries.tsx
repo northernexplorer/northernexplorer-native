@@ -1,14 +1,18 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {Redirect, useRouter} from 'expo-router';
+import {Redirect, useLocalSearchParams, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {Spinner, Column, Table} from '@northernexplorer/tools-web';
+import {Spinner, Column, Table, Pagination} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 
+const limit = 20;
+
 export function Countries() {
 	const router = useRouter();
+	const params = useLocalSearchParams<{page?: string}>();
+	const page = Math.max(1, parseInt(params.page || '1', 10) || 1);
 	const authentication = useAuthentication();
 
 	const {data: countries, loading} = useApiFetch('location', 'CountryController', 'getAll', {});
@@ -17,6 +21,7 @@ export function Countries() {
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 
+	const pageCountries = countries?.slice((page - 1) * limit, page * limit);
 	type CountryItem = NonNullable<typeof countries>[number];
 
 	const columns: Column<CountryItem>[] = [
@@ -41,13 +46,14 @@ export function Countries() {
 	return (
 		<View style={styles.container}>
 			<Table
-				data={countries}
+				data={pageCountries}
 				columns={columns}
 				keyExtractor={country => country.id}
 				emptyText="No countries found."
 				emptyIcon="globe-outline"
 				onRowPress={country => router.push(`/admin/edit-country/${country.id}`)}
 			/>
+			<Pagination limit={limit} itemCount={pageCountries?.length || 0} totalCount={countries?.length} />
 		</View>
 	);
 }

@@ -186,13 +186,25 @@ export const PointOfInterestController = {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},
+	getDraftsPaginated: {
+		params: {} as {limit?: number; offset?: number},
+		response: {} as {items: PointOfInterestType[]; totalCount: number},
+	},
 	getRejected: {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
 	},
+	getRejectedPaginated: {
+		params: {} as {limit?: number; offset?: number},
+		response: {} as {items: PointOfInterestType[]; totalCount: number},
+	},
 	getPublished: {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as PointOfInterestType[],
+	},
+	getPublishedPaginated: {
+		params: {} as {limit?: number; offset?: number},
+		response: {} as {items: PointOfInterestType[]; totalCount: number},
 	},
 	search: {
 		params: {} as {

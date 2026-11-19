@@ -1,14 +1,18 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {Redirect, useRouter} from 'expo-router';
+import {Redirect, useLocalSearchParams, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {Spinner, Column, Table} from '@northernexplorer/tools-web';
+import {Spinner, Column, Table, Pagination} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 
+const limit = 20;
+
 export function Organizations() {
 	const router = useRouter();
+	const params = useLocalSearchParams<{page?: string}>();
+	const page = Math.max(1, parseInt(params.page || '1', 10) || 1);
 	const authentication = useAuthentication();
 
 	const {data: organizations, loading} = useApiFetch('location', 'OrganizationController', 'getAll', {});
@@ -17,6 +21,7 @@ export function Organizations() {
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 
+	const pageOrganizations = organizations?.slice((page - 1) * limit, page * limit);
 	type OrgItem = NonNullable<typeof organizations>[number];
 
 	const columns: Column<OrgItem>[] = [
@@ -55,13 +60,14 @@ export function Organizations() {
 	return (
 		<View style={styles.container}>
 			<Table
-				data={organizations}
+				data={pageOrganizations}
 				columns={columns}
 				keyExtractor={org => org.id}
 				emptyText="No organizations found."
 				emptyIcon="business-outline"
 				onRowPress={org => router.push(`/admin/edit-organization/${org.id}`)}
 			/>
+			<Pagination limit={limit} itemCount={pageOrganizations?.length || 0} totalCount={organizations?.length} />
 		</View>
 	);
 }

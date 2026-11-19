@@ -18,12 +18,16 @@ export function SuggestedUpdates() {
 
 	const offset = (page - 1) * limit;
 
-	const {data: result, loading} = useApiFetch('location', 'PointOfInterestSuggestionController', 'getAll', {
+	const {data: suggestions, loading} = useApiFetch('location', 'PointOfInterestSuggestionController', 'getAll', {
 		limit,
 		offset,
 		status: statusFilter === 'ALL' ? undefined : statusFilter,
 	});
-	const suggestions = result?.items;
+	const {data: result} = useApiFetch('location', 'PointOfInterestSuggestionController', 'getAllPaginated', {
+		limit,
+		offset,
+		status: statusFilter === 'ALL' ? undefined : statusFilter,
+	});
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;

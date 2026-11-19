@@ -97,6 +97,10 @@ export const ImageController = {
 		params: {} as {limit?: number; offset?: number},
 		response: null as unknown as PendingImageType[],
 	},
+	getPendingPaginated: {
+		params: {} as {limit?: number; offset?: number},
+		response: {} as {items: PendingImageType[]; totalCount: number},
+	},
 	approve: {
 		params: {} as {id: string},
 		response: null as unknown as PendingImageType,

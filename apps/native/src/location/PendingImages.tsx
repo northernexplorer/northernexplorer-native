@@ -23,14 +23,14 @@ export function PendingImages() {
 	const offset = (page - 1) * limit;
 
 	const {
-		data: result,
+		data: images,
 		loading,
 		refetch,
 	} = useApiFetch('location', 'ImageController', 'getPending', {
 		limit,
 		offset,
 	});
-	const images = result?.items;
+	const {data: result, refetch: refetchTotal} = useApiFetch('location', 'ImageController', 'getPendingPaginated', {limit, offset});
 	const {mutate: approveMutation} = useApiMutation('location', 'ImageController', 'approve');
 	const {mutate: rejectMutation} = useApiMutation('location', 'ImageController', 'reject');
 
@@ -57,6 +57,7 @@ export function PendingImages() {
 		try {
 			await approveMutation({id: imageId});
 			await refetch();
+			await refetchTotal();
 			handleNextOrCloseIndex();
 		} finally {
 			setApprovingImageId(null);
@@ -68,6 +69,7 @@ export function PendingImages() {
 		try {
 			await rejectMutation({id: imageId});
 			await refetch();
+			await refetchTotal();
 			handleNextOrCloseIndex();
 		} finally {
 			setDeletingImageId(null);

@@ -18,11 +18,11 @@ export function PublishedPointOfInterests() {
 
 	const offset = (page - 1) * limit;
 
-	const {data: result, loading} = useApiFetch('location', 'PointOfInterestController', 'getPublished', {
+	const {data: sites, loading} = useApiFetch('location', 'PointOfInterestController', 'getPublished', {
 		limit,
 		offset,
 	});
-	const sites = result?.items;
+	const {data: result} = useApiFetch('location', 'PointOfInterestController', 'getPublishedPaginated', {limit, offset});
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;

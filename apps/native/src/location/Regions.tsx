@@ -1,14 +1,18 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {Redirect, useRouter} from 'expo-router';
+import {Redirect, useLocalSearchParams, useRouter} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import {Spinner, Column, Table} from '@northernexplorer/tools-web';
+import {Spinner, Column, Table, Pagination} from '@northernexplorer/tools-web';
 import {RolesEnum} from '@northernexplorer/types';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 import {useApiFetch} from '~/core/useApiFetch';
 
+const limit = 20;
+
 export function Regions() {
 	const router = useRouter();
+	const params = useLocalSearchParams<{page?: string}>();
+	const page = Math.max(1, parseInt(params.page || '1', 10) || 1);
 	const authentication = useAuthentication();
 
 	const {data: regions, loading} = useApiFetch('location', 'RegionController', 'getAll', {});
@@ -17,6 +21,7 @@ export function Regions() {
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;
 	if (loading) return <Spinner />;
 
+	const pageRegions = regions?.slice((page - 1) * limit, page * limit);
 	type RegionItem = NonNullable<typeof regions>[number];
 
 	const columns: Column<RegionItem>[] = [
@@ -51,13 +56,14 @@ export function Regions() {
 	return (
 		<View style={styles.container}>
 			<Table
-				data={regions}
+				data={pageRegions}
 				columns={columns}
 				keyExtractor={region => region.id}
 				emptyText="No regions found."
 				emptyIcon="map-outline"
 				onRowPress={region => router.push(`/admin/edit-region/${region.id}`)}
 			/>
+			<Pagination limit={limit} itemCount={pageRegions?.length || 0} totalCount={regions?.length} />
 		</View>
 	);
 }

@@ -26,11 +26,11 @@ export function RejectedPointOfInterests() {
 
 	const offset = (page - 1) * limit;
 
-	const {data: result, loading} = useApiFetch('location', 'PointOfInterestController', 'getRejected', {
+	const {data: sites, loading} = useApiFetch('location', 'PointOfInterestController', 'getRejected', {
 		limit,
 		offset,
 	});
-	const sites = result?.items;
+	const {data: result} = useApiFetch('location', 'PointOfInterestController', 'getRejectedPaginated', {limit, offset});
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;

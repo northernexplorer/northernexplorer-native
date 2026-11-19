@@ -17,11 +17,11 @@ export function AllUsers() {
 
 	const offset = (page - 1) * limit;
 
-	const {data: result, loading} = useApiFetch('user', 'UserController', 'getAll', {
+	const {data: users, loading} = useApiFetch('user', 'UserController', 'getAll', {
 		limit,
 		offset,
 	});
-	const users = result?.items;
+	const {data: result} = useApiFetch('user', 'UserController', 'getAllPaginated', {limit, offset});
 
 	if (!authentication) return <Redirect href="/user/login" />;
 	if (!authentication.roles?.includes(RolesEnum.Admin)) return <Redirect href="404" />;

@@ -46,6 +46,27 @@ export class PointOfInterestController extends BaseController {
 	}
 	private permissionService = new PermissionService();
 
+	async getDraftsPaginated(params: Params<Route<'getDraftsPaginated'>>, auth?: AuthContext): Promise<Response<Route<'getDraftsPaginated'>>> {
+		const items = await this.getDrafts(params, auth);
+		const totalCount = await this.repos.pointOfInterest.count({status: PublishStatusEnum.Draft});
+		return {items, totalCount};
+	}
+
+	async getRejectedPaginated(params: Params<Route<'getRejectedPaginated'>>, auth?: AuthContext): Promise<Response<Route<'getRejectedPaginated'>>> {
+		const items = await this.getRejected(params, auth);
+		const totalCount = await this.repos.pointOfInterest.count({status: PublishStatusEnum.Rejected});
+		return {items, totalCount};
+	}
+
+	async getPublishedPaginated(
+		params: Params<Route<'getPublishedPaginated'>>,
+		auth?: AuthContext,
+	): Promise<Response<Route<'getPublishedPaginated'>>> {
+		const items = await this.getPublished(params, auth);
+		const totalCount = await this.repos.pointOfInterest.count({status: PublishStatusEnum.Published});
+		return {items, totalCount};
+	}
+
 	public async getNearby(params: Params<Route<'getNearby'>>, auth?: AuthContext): Promise<Response<Route<'getNearby'>>> {
 		const {
 			lat,

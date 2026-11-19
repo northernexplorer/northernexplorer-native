@@ -69,6 +69,10 @@ export const PointOfInterestSuggestionController = {
 		params: {} as {limit?: number; offset?: number; status?: SuggestionStatusEnum},
 		response: [] as PointOfInterestSuggestionType[],
 	},
+	getAllPaginated: {
+		params: {} as {limit?: number; offset?: number; status?: SuggestionStatusEnum},
+		response: {} as {items: PointOfInterestSuggestionType[]; totalCount: number},
+	},
 	getById: {
 		params: {} as {id: string},
 		response: {} as PointOfInterestSuggestionType,

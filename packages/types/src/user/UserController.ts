@@ -211,6 +211,10 @@ export const UserController = {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as UserType[],
 	},
+	getAllPaginated: {
+		params: {} as {limit?: number; offset?: number},
+		response: {} as {items: UserType[]; totalCount: number},
+	},
 	getAvatarDetails: {
 		params: {} as {username: string},
 		response: {} as AvatarDetails,

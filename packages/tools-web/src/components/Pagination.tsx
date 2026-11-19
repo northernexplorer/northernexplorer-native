@@ -2,20 +2,22 @@ import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {useLocalSearchParams, useRouter} from 'expo-router';
+import {getPaginationState} from './paginationState';
 
 type PaginationProps = {
 	limit: number;
 	itemCount: number;
+	totalCount?: number;
 	onPageChange?: (page: number) => void;
 };
 
-export function Pagination({limit, itemCount, onPageChange}: PaginationProps) {
+export function Pagination({limit, itemCount, totalCount, onPageChange}: PaginationProps) {
 	const router = useRouter();
 	const params = useLocalSearchParams<{page?: string}>();
 
 	const rawPage = params.page;
 	const currentPage = rawPage ? Math.max(1, parseInt(rawPage, 10) || 1) : 1;
-	const hasNextPage = itemCount === limit;
+	const {totalPages, hasNextPage} = getPaginationState(currentPage, limit, itemCount, totalCount);
 
 	const handlePageChange = (newPage: number) => {
 		router.setParams({
@@ -36,7 +38,10 @@ export function Pagination({limit, itemCount, onPageChange}: PaginationProps) {
 			</TouchableOpacity>
 
 			<View style={styles.pageLabelContainer}>
-				<Text style={styles.pageText}>Page {currentPage}</Text>
+				<Text style={styles.pageText}>
+					Page {currentPage}
+					{totalPages !== undefined ? ` of ${totalPages}` : ''}
+				</Text>
 			</View>
 
 			<TouchableOpacity
