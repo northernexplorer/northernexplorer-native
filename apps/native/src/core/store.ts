@@ -24,7 +24,8 @@ const appReducer = combineReducers({
 const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: UnknownAction) => {
 	if (action.type === clearAuthentication.type) {
 		AsyncStorage.removeItem('persist:root');
-		return appReducer(undefined, action);
+		const resetState = appReducer(undefined, action);
+		return {...resetState, location: state?.location ?? resetState.location};
 	}
 	return appReducer(state, action);
 };
