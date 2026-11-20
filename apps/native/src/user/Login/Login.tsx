@@ -1,12 +1,13 @@
 import React, {useState} from 'react';
 import {View, Text, Pressable, Switch, ScrollView} from 'react-native';
-import {Link, router} from 'expo-router';
+import {Link, Redirect} from 'expo-router';
 import {useDispatch} from 'react-redux';
 import {FormField} from '@northernexplorer/tools-web';
 import styles from '~/user/styles';
 import {useApiMutation} from '~/core/useApiMutation';
 import {setAuthentication} from '~/user/state/authentication/authenticationSlice';
 import {useDeviceInfo} from '~/user/Login/useDeviceInfo';
+import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 const initialFormData = {
 	username: '',
@@ -18,6 +19,7 @@ type FormData = typeof initialFormData;
 type FormKeys = keyof FormData;
 
 export function Login() {
+	const authentication = useAuthentication();
 	const [formData, setFormData] = useState<FormData>(initialFormData);
 	const [errors, setErrors] = useState<Partial<Record<FormKeys, string>>>({});
 	const dispatch = useDispatch();
@@ -58,9 +60,10 @@ export function Login() {
 		const response = await mutate({login: {password: formData.password, identifier}, device: deviceInfo});
 		if (response) {
 			dispatch(setAuthentication(response));
-			router.replace(`/user/${response.username}`);
 		}
 	};
+
+	if (authentication) return <Redirect href={`/user/${authentication.username}`} />;
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
