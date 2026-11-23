@@ -212,6 +212,18 @@ export const styles = StyleSheet.create({
 		fontSize: 14,
 		lineHeight: 20,
 	},
+	notificationViewAll: {
+		alignSelf: 'flex-end',
+		backgroundColor: '#0088cc',
+		borderRadius: 8,
+		paddingHorizontal: 12,
+		paddingVertical: 8,
+	},
+	notificationViewAllText: {
+		color: '#fff',
+		fontSize: 14,
+		fontWeight: '600',
+	},
 	footerContainer: {
 		width: '100%',
 		backgroundColor: '#1a1a1a',

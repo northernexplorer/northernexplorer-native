@@ -1,10 +1,17 @@
 import React, {useState} from 'react';
 import {Ionicons} from '@expo/vector-icons';
+import {useRouter} from 'expo-router';
 import {Modal, Pressable, Text, View} from 'react-native';
 import {styles} from '~/layout/Layout/styles';
 
 export function MenuItemNotification() {
 	const [isOpen, setIsOpen] = useState(false);
+	const router = useRouter();
+
+	const handleViewAll = () => {
+		setIsOpen(false);
+		router.push('/notifications');
+	};
 
 	return (
 		<>
@@ -28,6 +35,14 @@ export function MenuItemNotification() {
 							</Pressable>
 						</View>
 						<Text style={styles.notificationMessage}>Notifications aren’t available yet.</Text>
+						<Pressable
+							accessibilityLabel="View all notifications"
+							accessibilityRole="button"
+							onPress={handleViewAll}
+							style={styles.notificationViewAll}
+						>
+							<Text style={styles.notificationViewAllText}>View all</Text>
+						</Pressable>
 					</Pressable>
 				</Pressable>
 			</Modal>
