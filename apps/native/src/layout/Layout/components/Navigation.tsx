@@ -6,6 +6,7 @@ import {RolesEnum} from '@northernexplorer/types';
 import {MenuBranding} from './MenuBranding';
 import {styles} from '~/layout/Layout/styles';
 import {MenuItemDefault} from '~/layout/Layout/components/MenuItemDefault';
+import {MenuItemNotification} from '~/layout/Layout/components/MenuItemNotification';
 import {MenuItemUser} from '~/layout/Layout/components/MenuItemUser';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
@@ -62,7 +63,8 @@ export function Navigation() {
 							<Ionicons name="menu-outline" size={28} color="white" />
 						</Pressable>
 						<MenuBranding setIsMenuOpen={setIsMenuOpen} isDrawer={false} />
-						<View style={styles.drawerLinks}>
+						<View style={styles.mobileNavActions}>
+							<MenuItemNotification />
 							<MenuItemUser />
 						</View>
 					</>
@@ -73,6 +75,7 @@ export function Navigation() {
 						<View style={styles.desktopNavGroup}>
 							{renderLinks(false)}
 							<View style={styles.desktopLinks}>
+								<MenuItemNotification />
 								<MenuItemUser />
 							</View>
 						</View>

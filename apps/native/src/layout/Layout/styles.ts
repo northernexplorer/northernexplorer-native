@@ -176,6 +176,42 @@ export const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 16,
 	},
+	mobileNavActions: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	notificationBackdrop: {
+		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.35)',
+		alignItems: 'flex-end',
+		paddingHorizontal: 12,
+	},
+	notificationPanel: {
+		width: '100%',
+		maxWidth: 320,
+		marginTop: 64,
+		padding: 16,
+		backgroundColor: '#222222',
+		borderRadius: 12,
+		borderWidth: 1,
+		borderColor: '#444444',
+		gap: 16,
+	},
+	notificationHeader: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	notificationTitle: {
+		color: 'white',
+		fontSize: 17,
+		fontWeight: '600',
+	},
+	notificationMessage: {
+		color: 'rgba(255,255,255,0.72)',
+		fontSize: 14,
+		lineHeight: 20,
+	},
 	footerContainer: {
 		width: '100%',
 		backgroundColor: '#1a1a1a',
