@@ -1,8 +1,12 @@
 import React, {useState} from 'react';
 import {Ionicons} from '@expo/vector-icons';
-import {useRouter} from 'expo-router';
-import {Modal, Pressable, Text, View} from 'react-native';
+import {Href, useRouter} from 'expo-router';
+import {Modal, Pressable, ScrollView, Text, View} from 'react-native';
+import {Spinner} from '@northernexplorer/tools-web';
 import {styles} from '~/layout/Layout/styles';
+import {useApiFetch} from '~/core/useApiFetch';
+import {useApiMutation} from '~/core/useApiMutation';
+import {NotificationList} from '~/system/components/NotificationList';
 
 export function MenuItemNotification() {
 	const [isOpen, setIsOpen] = useState(false);
@@ -34,7 +38,7 @@ export function MenuItemNotification() {
 								<Ionicons name="close-outline" size={24} color="white" />
 							</Pressable>
 						</View>
-						<Text style={styles.notificationMessage}>Notifications aren’t available yet.</Text>
+						{isOpen && <NotificationMenuContent onClose={() => setIsOpen(false)} />}
 						<Pressable
 							accessibilityLabel="View all notifications"
 							accessibilityRole="button"
@@ -47,5 +51,35 @@ export function MenuItemNotification() {
 				</Pressable>
 			</Modal>
 		</>
+	);
+}
+
+function NotificationMenuContent({onClose}: {onClose: () => void}) {
+	const router = useRouter();
+	const {data, loading, refetch} = useApiFetch('system', 'NotificationController', 'getAllPaginated', {limit: 5, offset: 0});
+	const {mutate: markRead} = useApiMutation('system', 'NotificationController', 'markRead');
+
+	const handleMarkRead = async (id: string) => {
+		const result = await markRead({id});
+		if (result?.success) await refetch();
+	};
+
+	const handleOpenNotification = async (notification: {id: string; readAt: string | Date | null}, link: string) => {
+		if (!notification.readAt) {
+			const result = await markRead({id: notification.id});
+			if (result?.success) await refetch();
+		}
+		onClose();
+		router.push(link as Href);
+	};
+
+	if (loading || !data) return <Spinner />;
+
+	return data.items.length > 0 ? (
+		<ScrollView style={{maxHeight: 280}}>
+			<NotificationList variant="dark" notifications={data.items} onOpen={handleOpenNotification} onMarkRead={handleMarkRead} />
+		</ScrollView>
+	) : (
+		<Text style={styles.notificationMessage}>No notifications yet.</Text>
 	);
 }
