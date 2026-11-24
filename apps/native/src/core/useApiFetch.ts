@@ -21,10 +21,14 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 ) {
 	const skip = Boolean(options?.skip);
 	const {isOffline} = useIsOffline();
+	const authentication = useAuthentication();
 
 	const isSkipped = skip || params === null;
 	const serializedParams = !isSkipped && params ? JSON.stringify(params) : null;
-	const cacheKey = serializedParams !== null ? `${category}:${String(controller)}:${String(method)}:${serializedParams}` : null;
+	const cacheKey =
+		serializedParams !== null
+			? `${category}:${String(controller)}:${String(method)}:${authentication?.userId ?? 'anonymous'}:${serializedParams}`
+			: null;
 
 	const cacheKeyRef = useRef(cacheKey);
 	cacheKeyRef.current = cacheKey;
@@ -46,8 +50,6 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 	const [data, setData] = useState<GetResponse<C, K, M> | null>(() => (isSkipped ? null : getCachedData(cacheKey)));
 	const [loading, setLoading] = useState<boolean>(() => !isSkipped && !getCachedData(cacheKey));
 	const [error, setError] = useState<Error | null>(null);
-
-	const authentication = useAuthentication();
 
 	// Sync state when cacheKey or skip status changes
 	useEffect(() => {

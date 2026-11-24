@@ -9,6 +9,7 @@ import {m20261111b} from './m20261111b';
 import {m20261112} from './m20261112';
 import {m20261113b} from './m20261113b';
 import {m20261113} from './m20261113';
+import {m20261124} from './m20261124';
 
 export const m202611: Record<string, string[]> = {
 	m20261105,
@@ -22,4 +23,5 @@ export const m202611: Record<string, string[]> = {
 	m20261112,
 	m20261113,
 	m20261113b,
+	m20261124,
 };

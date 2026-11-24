@@ -9,7 +9,7 @@ import {
 	OrganizationController,
 	ImageController,
 } from '../location';
-import {ReportController, StatusController, SupportController} from '../system';
+import {NotificationController, ReportController, StatusController, SupportController} from '../system';
 import {SessionController, SubscriptionController, SubscriptionLevelController, UserController} from '../user';
 import {Repositories} from './repositories';
 import {BaseController} from './BaseController';
@@ -28,6 +28,7 @@ export const controllers: ControllerConstructor[] = [
 	RegionController,
 	ReviewController,
 	ReportController,
+	NotificationController,
 	StatusController,
 	SubscriptionController,
 	SessionController,

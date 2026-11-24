@@ -37,7 +37,7 @@ import {
 	User,
 	UserRepository,
 } from '../user';
-import {Article, ArticleRepository, Report, ReportRepository} from '../system';
+import {Article, ArticleRepository, Notification, NotificationRepository, Report, ReportRepository} from '../system';
 import {SubscriptionFeature} from '../user/entities/SubscriptionFeature';
 
 export type Repositories = ReturnType<typeof repositories>;
@@ -55,6 +55,7 @@ export function repositories(em: EntityManager) {
 		pointOfInterestFavorite: new PointOfInterestFavoriteRepository(em, PointOfInterestFavorite),
 		region: new RegionRepository(em, Region),
 		report: new ReportRepository(em, Report),
+		notification: new NotificationRepository(em, Notification),
 		review: new ReviewRepository(em, Review),
 		reviewLike: new ReviewLikeRepository(em, ReviewLike),
 		session: new SessionRepository(em, Session),

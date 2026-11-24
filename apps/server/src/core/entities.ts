@@ -11,7 +11,7 @@ import {
 	Review,
 	ReviewLike,
 } from '../location';
-import {Article, ArticleCategory, Migration, Report} from '../system';
+import {Article, ArticleCategory, Migration, Notification, Report} from '../system';
 import {WeatherCache, WeatherWarningCache} from '../environment';
 import {Avatar, Session, Subscription, SubscriptionLevel, User} from '../user';
 
@@ -23,6 +23,7 @@ export const entities = [
 	Image,
 	ImageLike,
 	Migration,
+	Notification,
 	Organization,
 	PointOfInterest,
 	PointOfInterestFavorite,
