@@ -25,9 +25,10 @@ export function useApiFetch<C extends NonEmptyCategory, K extends keyof ROUTES[C
 
 	const isSkipped = skip || params === null;
 	const serializedParams = !isSkipped && params ? JSON.stringify(params) : null;
-	const cacheKey = serializedParams !== null
-		? `${category}:${String(controller)}:${String(method)}:${authentication?.userId ?? 'anonymous'}:${serializedParams}`
-		: null;
+	const cacheKey =
+		serializedParams !== null
+			? `${category}:${String(controller)}:${String(method)}:${authentication?.userId ?? 'anonymous'}:${serializedParams}`
+			: null;
 
 	const cacheKeyRef = useRef(cacheKey);
 	cacheKeyRef.current = cacheKey;

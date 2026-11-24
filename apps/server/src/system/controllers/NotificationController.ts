@@ -16,10 +16,7 @@ export class NotificationController extends BaseController {
 		super(repos);
 	}
 
-	async getAllPaginated(
-		params: Params<Route<'getAllPaginated'>>,
-		auth?: AuthContext,
-	): Promise<Response<Route<'getAllPaginated'>>> {
+	async getAllPaginated(params: Params<Route<'getAllPaginated'>>, auth?: AuthContext): Promise<Response<Route<'getAllPaginated'>>> {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 		const requestedLimit = Number.isFinite(params.limit) ? Math.floor(params.limit!) : DEFAULT_PAGE_SIZE;
 		const requestedOffset = Number.isFinite(params.offset) ? Math.floor(params.offset!) : 0;
