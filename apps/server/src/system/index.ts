@@ -1,6 +1,7 @@
 export {StatusController} from './controllers/StatusController';
 export {SupportController} from './controllers/SupportController';
 export {ReportController} from './controllers/ReportController';
+export {NotificationController} from './controllers/NotificationController';
 
 export {Migration} from './entities/Migration';
 export {Article} from './entities/Article';
@@ -10,3 +11,4 @@ export {Notification} from './entities/Notification';
 
 export {ArticleRepository} from './repositories/ArticleRepository';
 export {ReportRepository} from './repositories/ReportRepository';
+export {NotificationRepository} from './repositories/NotificationRepository';
