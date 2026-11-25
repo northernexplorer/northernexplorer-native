@@ -1,10 +1,11 @@
-import {ComponentType, useCallback, useEffect, useState} from 'react';
+import {ComponentRef, ComponentType, useCallback, useEffect, useRef, useState} from 'react';
 import {Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {usePathname} from 'expo-router';
 import {trackEvent} from '@aptabase/react-native';
 import {styles} from './styles';
+import {ScrollContext} from './ScrollContext';
 import {Sidebar} from '~/layout/Layout/components/Sidebar';
 import {Navigation} from '~/layout/Layout/components/Navigation';
 import {Footer} from '~/layout/Layout/components/Footer';
@@ -34,6 +35,16 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
 	const [refreshKey, setRefreshKey] = useState(0);
+	const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
+	const scrollToTarget = useCallback((target: ComponentRef<typeof View>) => {
+		const content = scrollRef.current?.getInnerViewRef();
+		if (content == null) return;
+		target.measureLayout(
+			content,
+			(_x, y) => scrollRef.current?.scrollTo({y: Math.max(0, y - 20), animated: true}),
+			() => undefined,
+		);
+	}, []);
 
 	const handleRefresh = useCallback(async () => {
 		setRefreshing(true);
@@ -73,6 +84,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 
 				<View style={{flex: 1, position: 'relative'}}>
 					<ScrollView
+						ref={scrollRef}
 						style={{flex: 1}}
 						scrollEnabled={!disableScroll}
 						contentContainerStyle={{
@@ -124,7 +136,9 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 											)}
 
 											<View style={{flex: 1, width: '100%'}}>
-												<Content key={refreshKey} />
+												<ScrollContext.Provider value={scrollToTarget}>
+													<Content key={refreshKey} />
+												</ScrollContext.Provider>
 											</View>
 										</View>
 

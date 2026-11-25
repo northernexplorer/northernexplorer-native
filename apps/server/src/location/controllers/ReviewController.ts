@@ -13,6 +13,7 @@ import {BaseController} from '../../core/BaseController';
 import {Repositories} from '../../core/repositories';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
+import {Notification} from '../../system/entities/Notification';
 import {ReviewLike} from '../entities/ReviewLike';
 import {Review} from '../entities/Review';
 import {ReviewReply} from '../entities/ReviewReply';
@@ -20,6 +21,18 @@ import {ReviewReply} from '../entities/ReviewReply';
 type Route<M extends keyof ROUTES['location']['ReviewController']> = RouteDefinition<'location', 'ReviewController'>[M];
 const MAX_REPLY_LENGTH = 2000;
 const MAX_REPLY_DEPTH = 3;
+
+function urlSlug(value: string) {
+	return (
+		value
+			.toLowerCase()
+			.trim()
+			.replace(/[\s_/]+/g, '-')
+			.replace(/[^a-z0-9-]/g, '')
+			.replace(/-+/g, '-')
+			.replace(/^-+|-+$/g, '') || 'location'
+	);
+}
 
 export class ReviewController extends BaseController {
 	private reviewResponse(review: Review): ReviewType {
@@ -107,8 +120,24 @@ export class ReviewController extends BaseController {
 			depth = parent.depth + 1;
 		}
 
+		const site =
+			userId !== review.user.id
+				? await this.repos.pointOfInterest.findOneOrFail({id: review.pointOfInterest.id}, {populate: ['country', 'region']})
+				: null;
 		const user = await this.repos.user.getById(userId);
 		const reply = this.repos.reviewReply.create({review, user, text, parent, depth});
+		if (site) {
+			const path = `/${urlSlug(site.country.name)}/${urlSlug(site.region.name)}/${urlSlug(site.name)}/${site.id}`;
+			const query = new URLSearchParams({reviewId: review.id, replyId: reply.id});
+			this.persist(
+				new Notification({
+					user: review.user,
+					title: 'New reply to your review',
+					message: `${user.username} replied to your review.`,
+					link: `${path}?${query}`,
+				}),
+			);
+		}
 		await this.flush();
 		return this.replyResponse(reply);
 	}

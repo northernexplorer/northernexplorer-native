@@ -19,9 +19,11 @@ import {ReportModal} from '~/system/ReportModal';
 type ReviewsProps = {
 	data: PointOfInterestType;
 	refetch: () => void;
+	targetReviewId?: string;
+	targetReplyId?: string;
 };
 
-export function Reviews({data, refetch}: ReviewsProps) {
+export function Reviews({data, refetch, targetReviewId, targetReplyId}: ReviewsProps) {
 	const router = useRouter();
 	const authentication = useAuthentication();
 	const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
@@ -152,7 +154,10 @@ export function Reviews({data, refetch}: ReviewsProps) {
 
 				<Text style={globalStyles.description}>{review.description}</Text>
 				<ReviewLikes reviewId={review.id} currentUserId={authentication?.userId} />
-				{review.status === ReviewStatusEnum.Approved && data.status === PublishStatusEnum.Published && <ReviewReplies reviewId={review.id} />}
+				{((review.status === ReviewStatusEnum.Approved && data.status === PublishStatusEnum.Published) ||
+					review.user.id === authentication?.userId) && (
+					<ReviewReplies reviewId={review.id} targetReplyId={targetReviewId === review.id ? targetReplyId : undefined} />
+				)}
 			</View>
 		);
 	};

@@ -1,24 +1,39 @@
 import {Ionicons} from '@expo/vector-icons';
 import {ReviewReplyType} from '@northernexplorer/types';
-import {formatName} from '@northernexplorer/tools-web';
-import {useState} from 'react';
+import {formatDate, formatName} from '@northernexplorer/tools-web';
+import {Link, useRouter} from 'expo-router';
+import {ComponentRef, useContext, useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useApiMutation} from '~/core/useApiMutation';
+import {ScrollContext} from '~/layout/Layout/ScrollContext';
 import {useAuthentication} from '~/user/state/authentication/useAuthentication';
 
 type ReviewRepliesProps = {
 	reviewId: string;
+	targetReplyId?: string;
 };
 
-export function ReviewReplies({reviewId}: ReviewRepliesProps) {
+export function ReviewReplies({reviewId, targetReplyId}: ReviewRepliesProps) {
 	const authentication = useAuthentication();
+	const router = useRouter();
+	const scrollToTarget = useContext(ScrollContext);
+	const targetRef = useRef<ComponentRef<typeof View>>(null);
 	const [replyingTo, setReplyingTo] = useState<string | null | undefined>(undefined);
 	const [text, setText] = useState('');
 	const {data, loading, refetch} = useApiFetch('location', 'ReviewController', 'getReplies', {reviewId});
 	const createReplyMutation = useApiMutation('location', 'ReviewController', 'createReply');
 	const replies = data ?? [];
 	const repliesByParent = new Map<string | null, ReviewReplyType[]>();
+	const targetExists = replies.some(reply => reply.id === targetReplyId);
+
+	useEffect(() => {
+		if (!targetReplyId || !targetExists) return;
+		const frame = requestAnimationFrame(() => {
+			if (targetRef.current) scrollToTarget(targetRef.current);
+		});
+		return () => cancelAnimationFrame(frame);
+	}, [targetReplyId, targetExists, scrollToTarget]);
 
 	for (const reply of replies) {
 		const parentReplies = repliesByParent.get(reply.parentId) ?? [];
@@ -54,6 +69,7 @@ export function ReviewReplies({reviewId}: ReviewRepliesProps) {
 				style={styles.replyInput}
 			/>
 			<View style={styles.formActions}>
+				<Text style={styles.characterCount}>{text.length}/2000</Text>
 				<Pressable onPress={() => setReplyingTo(undefined)} style={styles.cancelButton}>
 					<Text style={styles.cancelText}>Cancel</Text>
 				</Pressable>
@@ -70,16 +86,26 @@ export function ReviewReplies({reviewId}: ReviewRepliesProps) {
 
 	const renderReply = (reply: ReviewReplyType) => {
 		const children = repliesByParent.get(reply.id) ?? [];
+		const isTarget = reply.id === targetReplyId;
 		return (
 			<View key={reply.id} style={[styles.reply, {marginLeft: reply.depth > 1 ? 14 : 0}]}>
-				<Text style={styles.author}>{formatName(reply.user)}</Text>
-				<Text style={styles.replyText}>{reply.text}</Text>
-				{authentication?.userId && reply.depth < 3 && replyingTo !== reply.id && (
-					<Pressable onPress={() => setReplyingTo(reply.id)} style={styles.replyAction}>
-						<Ionicons name="return-down-forward-outline" size={14} color="#0088cc" />
-						<Text style={styles.replyActionText}>Reply</Text>
-					</Pressable>
-				)}
+				<View ref={isTarget ? targetRef : undefined} collapsable={false} style={[styles.replyCard, isTarget && styles.targetReply]}>
+					<View style={styles.replyHeader}>
+						<Pressable onPress={() => router.push(`/user/${reply.user.username}`)} accessibilityRole="link">
+							<Text style={styles.author}>{formatName(reply.user)}</Text>
+						</Pressable>
+						<Text style={styles.date}>{formatDate(reply.createdAt)}</Text>
+					</View>
+					<Text style={styles.replyText}>{reply.text}</Text>
+					<View style={styles.replyActions}>
+						{authentication?.userId && reply.depth < 3 && replyingTo === undefined && (
+							<Pressable onPress={() => setReplyingTo(reply.id)} style={styles.replyAction} accessibilityRole="button">
+								<Ionicons name="return-down-forward-outline" size={14} color="#0088cc" />
+								<Text style={styles.replyActionText}>Reply</Text>
+							</Pressable>
+						)}
+					</View>
+				</View>
 				{replyingTo === reply.id && renderReplyForm()}
 				{children.map(renderReply)}
 			</View>
@@ -98,6 +124,11 @@ export function ReviewReplies({reviewId}: ReviewRepliesProps) {
 				)}
 			</View>
 			{replyingTo === null && renderReplyForm()}
+			{!authentication?.userId && (
+				<Link href="/user/login" style={styles.signIn}>
+					Sign in to join the conversation
+				</Link>
+			)}
 			{loading && replies.length === 0 ? (
 				<ActivityIndicator size="small" color="#0088cc" />
 			) : replies.length === 0 ? (
@@ -134,7 +165,23 @@ const styles = StyleSheet.create({
 		borderLeftWidth: 2,
 		borderLeftColor: '#cbd5e1',
 		paddingLeft: 10,
-		paddingVertical: 3,
+		paddingVertical: 4,
+	},
+	replyCard: {
+		backgroundColor: '#f8fafc',
+		borderRadius: 8,
+		padding: 10,
+	},
+	targetReply: {
+		backgroundColor: '#e0f2fe',
+		borderWidth: 1,
+		borderColor: '#38bdf8',
+	},
+	replyHeader: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		flexWrap: 'wrap',
+		gap: 8,
 	},
 	author: {
 		fontSize: 12,
@@ -144,7 +191,22 @@ const styles = StyleSheet.create({
 	replyText: {
 		fontSize: 13,
 		color: '#334155',
-		marginTop: 3,
+		marginTop: 6,
+		lineHeight: 19,
+	},
+	date: {
+		fontSize: 11,
+		color: '#64748b',
+	},
+	replyActions: {
+		flexDirection: 'row',
+		gap: 16,
+		marginTop: 4,
+	},
+	signIn: {
+		fontSize: 12,
+		color: '#0088cc',
+		marginTop: 8,
 	},
 	replyAction: {
 		flexDirection: 'row',
@@ -182,6 +244,11 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-end',
 		alignItems: 'center',
 		gap: 8,
+	},
+	characterCount: {
+		fontSize: 11,
+		color: '#64748b',
+		marginRight: 'auto',
 	},
 	cancelButton: {
 		paddingHorizontal: 10,
