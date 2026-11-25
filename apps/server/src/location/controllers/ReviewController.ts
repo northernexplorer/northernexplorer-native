@@ -129,14 +129,13 @@ export class ReviewController extends BaseController {
 		if (site) {
 			const path = `/${urlSlug(site.country.name)}/${urlSlug(site.region.name)}/${urlSlug(site.name)}/${site.id}`;
 			const query = new URLSearchParams({reviewId: review.id, replyId: reply.id});
-			this.persist(
-				new Notification({
-					user: review.user,
-					title: 'New reply to your review',
-					message: `${user.username} replied to your review.`,
-					link: `${path}?${query}`,
-				}),
-			);
+			const notification = new Notification({
+				user: review.user,
+				title: 'New reply to your review',
+				message: `${user.username} replied to your review.`,
+				link: `${path}?${query}`,
+			});
+			this.persist(notification);
 		}
 		await this.flush();
 		return this.replyResponse(reply);
