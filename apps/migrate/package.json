@@ -1,6 +1,6 @@
 {
 	"name": "northernexplorer-migrate",
-	"version": "2026.11.17",
+	"version": "2026.11.25",
 	"private": true,
 	"main": "dist/index.js",
 	"scripts": {
