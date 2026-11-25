@@ -1,12 +1,25 @@
-import {Params, PublishStatusEnum, Response, ReviewStatusEnum, ReviewType, RouteDefinition, ROUTES} from '@northernexplorer/types';
+import {
+	Params,
+	PublishStatusEnum,
+	Response,
+	ReviewReplyType,
+	ReviewStatusEnum,
+	ReviewType,
+	RolesEnum,
+	RouteDefinition,
+	ROUTES,
+} from '@northernexplorer/types';
 import {BaseController} from '../../core/BaseController';
 import {Repositories} from '../../core/repositories';
 import {AuthContext} from '../../core/types';
 import {PermissionService} from '../../user/services/PermisionService';
 import {ReviewLike} from '../entities/ReviewLike';
 import {Review} from '../entities/Review';
+import {ReviewReply} from '../entities/ReviewReply';
 
 type Route<M extends keyof ROUTES['location']['ReviewController']> = RouteDefinition<'location', 'ReviewController'>[M];
+const MAX_REPLY_LENGTH = 2000;
+const MAX_REPLY_DEPTH = 3;
 
 export class ReviewController extends BaseController {
 	private reviewResponse(review: Review): ReviewType {
@@ -14,6 +27,35 @@ export class ReviewController extends BaseController {
 			...review,
 			likes: review.likes.length,
 		};
+	}
+
+	private replyResponse(reply: ReviewReply): ReviewReplyType {
+		const user = reply.user;
+		return {
+			id: reply.id,
+			text: reply.text,
+			parentId: reply.parent?.id ?? null,
+			depth: reply.depth,
+			createdAt: reply.createdAt.toISOString(),
+			user: {
+				id: user.id,
+				username: user.username,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				score: user.score,
+			},
+		};
+	}
+
+	private ensureThreadAccess(review: Review, auth?: AuthContext) {
+		if (review.status === ReviewStatusEnum.Approved && review.pointOfInterest.status === PublishStatusEnum.Published) {
+			return;
+		}
+
+		const {userId} = this.permissionService.isLoggedIn(auth);
+		if (userId !== review.user.id && !auth?.roles?.includes(RolesEnum.Admin)) {
+			throw new Error("You don't have permission to view this review.");
+		}
 	}
 
 	private permissionService = new PermissionService();
@@ -27,6 +69,48 @@ export class ReviewController extends BaseController {
 		const review = await this.repos.review.getById(id);
 
 		return this.reviewResponse(review);
+	}
+
+	public async getReplies(params: Params<Route<'getReplies'>>, auth?: AuthContext): Promise<Response<Route<'getReplies'>>> {
+		const review = await this.repos.review.getById(params.reviewId);
+		this.ensureThreadAccess(review, auth);
+		const replies = await this.repos.reviewReply.getByReview(review.id);
+		return replies.map(reply => this.replyResponse(reply));
+	}
+
+	public async createReply(params: Params<Route<'createReply'>>, auth?: AuthContext): Promise<Response<Route<'createReply'>>> {
+		const {userId} = this.permissionService.isLoggedIn(auth);
+		const review = await this.repos.review.getById(params.reviewId);
+		this.ensureThreadAccess(review, auth);
+
+		if (typeof params.text !== 'string') {
+			throw new Error('Reply text is required.');
+		}
+		const text = params.text.trim();
+		if (!text) {
+			throw new Error('Reply text is required.');
+		}
+		if (text.length > MAX_REPLY_LENGTH) {
+			throw new Error(`Reply text cannot exceed ${MAX_REPLY_LENGTH} characters.`);
+		}
+
+		let parent: ReviewReply | null = null;
+		let depth = 1;
+		if (params.parentId) {
+			parent = await this.repos.reviewReply.findOne({id: params.parentId, review: review.id});
+			if (!parent) {
+				throw new Error('Reply parent does not belong to this review.');
+			}
+			if (parent.depth >= MAX_REPLY_DEPTH) {
+				throw new Error(`Replies can only be nested ${MAX_REPLY_DEPTH} comments deep.`);
+			}
+			depth = parent.depth + 1;
+		}
+
+		const user = await this.repos.user.getById(userId);
+		const reply = this.repos.reviewReply.create({review, user, text, parent, depth});
+		await this.flush();
+		return this.replyResponse(reply);
 	}
 
 	async like(params: Params<Route<'like'>>, auth?: AuthContext): Promise<Response<Route<'like'>>> {

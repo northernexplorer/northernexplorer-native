@@ -20,9 +20,11 @@ import {
 	Region,
 	RegionRepository,
 	Review,
+	ReviewReply,
 	ReviewLike,
 	ReviewLikeRepository,
 	ReviewRepository,
+	ReviewReplyRepository,
 } from '../location';
 import {
 	Avatar,
@@ -57,6 +59,7 @@ export function repositories(em: EntityManager) {
 		report: new ReportRepository(em, Report),
 		notification: new NotificationRepository(em, Notification),
 		review: new ReviewRepository(em, Review),
+		reviewReply: new ReviewReplyRepository(em, ReviewReply),
 		reviewLike: new ReviewLikeRepository(em, ReviewLike),
 		session: new SessionRepository(em, Session),
 		subscription: new SubscriptionRepository(em, Subscription),

@@ -35,6 +35,15 @@ export type ReviewSummary = {
 	status: ReviewStatusEnum;
 };
 
+export type ReviewReplyType = {
+	id: string;
+	user: UserSummary;
+	text: string;
+	parentId: string | null;
+	depth: number;
+	createdAt: string;
+};
+
 export enum ReviewRatingEnum {
 	DEFAULT = 0,
 	TERRIBLE = 1,
@@ -99,6 +108,14 @@ export const ReviewController = {
 	getById: {
 		params: {} as {id: string},
 		response: null as unknown as ReviewType,
+	},
+	getReplies: {
+		params: {} as {reviewId: string},
+		response: null as unknown as ReviewReplyType[],
+	},
+	createReply: {
+		params: {} as {reviewId: string; parentId?: string | null; text: string},
+		response: null as unknown as ReviewReplyType,
 	},
 	getPending: {
 		params: {} as {limit?: number; offset?: number},

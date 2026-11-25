@@ -17,6 +17,7 @@ export {PointOfInterestFavorite} from './entities/PointofInterestFavorite';
 export {PointOfInterestSuggestion} from './entities/PointOfInterestSuggestion';
 export {Region} from './entities/Region';
 export {Review} from './entities/Review';
+export {ReviewReply} from './entities/ReviewReply';
 export {ReviewLike} from './entities/ReviewLike';
 
 export {CityRepository} from './repositories/CityRepository';
@@ -29,4 +30,5 @@ export {PointOfInterestRepository} from './repositories/PointOfInterestRepositor
 export {PointOfInterestSuggestionRepository} from './repositories/PointOfInterestSuggestionRepository';
 export {RegionRepository} from './repositories/RegionRepository';
 export {ReviewRepository} from './repositories/ReviewRepository';
+export {ReviewReplyRepository} from './repositories/ReviewReplyRepository';
 export {ReviewLikeRepository} from './repositories/ReviewLikeRepository';
