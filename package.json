@@ -1,6 +1,6 @@
 {
 	"name": "northernexplorer-monorepo",
-	"version": "2026.11.17",
+	"version": "2026.11.25",
 	"private": true,
 	"workspaces": [
 		"apps/*",

@@ -1,6 +1,6 @@
 {
 	"name": "northernexplorer-native",
-	"version": "2026.11.17",
+	"version": "2026.11.25",
 	"private": true,
 	"scripts": {
 		"android": "expo run:android --port 7002",
