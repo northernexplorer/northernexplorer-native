@@ -110,7 +110,7 @@ export class ReviewController extends BaseController {
 		let parent: ReviewReply | null = null;
 		let depth = 1;
 		if (params.parentId) {
-			parent = await this.repos.reviewReply.findOne({id: params.parentId, review: review.id});
+			parent = await this.repos.reviewReply.findOne({id: params.parentId, review: review.id}, {populate: ['user']});
 			if (!parent) {
 				throw new Error('Reply parent does not belong to this review.');
 			}
@@ -120,22 +120,26 @@ export class ReviewController extends BaseController {
 			depth = parent.depth + 1;
 		}
 
-		const site =
-			userId !== review.user.id
-				? await this.repos.pointOfInterest.findOneOrFail({id: review.pointOfInterest.id}, {populate: ['country', 'region']})
-				: null;
+		const notificationRecipient = parent ? (parent.user.id !== userId ? parent.user : null) : review.user.id !== userId ? review.user : null;
+		const site = notificationRecipient
+			? await this.repos.pointOfInterest.findOneOrFail({id: review.pointOfInterest.id}, {populate: ['country', 'region']})
+			: null;
 		const user = await this.repos.user.getById(userId);
 		const reply = this.repos.reviewReply.create({review, user, text, parent, depth});
 		if (site) {
 			const path = `/${urlSlug(site.country.name)}/${urlSlug(site.region.name)}/${urlSlug(site.name)}/${site.id}`;
 			const query = new URLSearchParams({reviewId: review.id, replyId: reply.id});
-			const notification = new Notification({
-				user: review.user,
-				title: 'New reply to your review',
-				message: `${user.username} replied to your review.`,
-				link: `${path}?${query}`,
-			});
-			this.persist(notification);
+			const link = `${path}?${query}`;
+			if (notificationRecipient) {
+				this.persist(
+					new Notification({
+						user: notificationRecipient,
+						title: parent ? 'New reply to your reply' : 'New reply to your review',
+						message: parent ? `${user.username} replied to your reply.` : `${user.username} replied to your review.`,
+						link,
+					}),
+				);
+			}
 		}
 		await this.flush();
 		return this.replyResponse(reply);
