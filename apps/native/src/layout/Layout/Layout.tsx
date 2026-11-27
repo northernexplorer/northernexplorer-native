@@ -1,4 +1,4 @@
-import {ComponentRef, ComponentType, useCallback, useEffect, useRef, useState} from 'react';
+import {ComponentRef, ComponentType, createElement, useCallback, useEffect, useRef, useState} from 'react';
 import {Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ import {Footer} from '~/layout/Layout/components/Footer';
 import {useIsOffline} from '~/core/ConnectivityProvider';
 import {Offline} from '~/layout/Layout/components/Offline';
 import {Update} from '~/layout/Layout/components/Update';
+import {NotificationProvider} from '~/system/NotificationContext';
 
 interface Props {
 	Content: ComponentType;
@@ -77,7 +78,9 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 
 	if (isRequiredAppUpdate) return <Update />;
 
-	return (
+	return createElement(
+		NotificationProvider,
+		null,
 		<SafeAreaView style={{flex: 1, backgroundColor: '#1a1a1a'}} edges={['top', 'bottom', 'left', 'right']}>
 			<View style={{flex: 1, width: '100%', maxWidth: '100%', minWidth: 0}}>
 				<Navigation />
@@ -225,6 +228,6 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 					)}
 				</View>
 			</View>
-		</SafeAreaView>
+		</SafeAreaView>,
 	);
 }

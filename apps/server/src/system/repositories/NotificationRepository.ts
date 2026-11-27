@@ -17,6 +17,10 @@ export class NotificationRepository extends BaseRepository<Notification> {
 		return this.count({user: {id: userId}});
 	}
 
+	hasUnreadForUser(userId: string) {
+		return this.count({user: {id: userId}, readAt: null}).then(count => count > 0);
+	}
+
 	getByIdForUser(id: string, userId: string) {
 		return this.findOneOrFail({id, user: {id: userId}});
 	}

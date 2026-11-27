@@ -12,6 +12,10 @@ export const NotificationController = {
 		params: {} as {limit?: number; offset?: number},
 		response: {} as {items: NotificationType[]; totalCount: number},
 	},
+	getUnreadStatus: {
+		params: {} as Record<string, never>,
+		response: {} as {hasUnread: boolean},
+	},
 	markRead: {
 		params: {} as {id: string},
 		response: {} as {success: boolean},
