@@ -64,7 +64,7 @@ export function Layout({Content, title, subtitle, sidebar, fullPage, home, showO
 	}, [onRefresh]);
 
 	useEffect(() => {
-		if (currentPath) {
+		if (currentPath && !__DEV__) {
 			const label = title || currentPath;
 			trackEvent('screen_view', {path: currentPath, label});
 		}
