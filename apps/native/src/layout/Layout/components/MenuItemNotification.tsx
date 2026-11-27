@@ -7,10 +7,12 @@ import {styles} from '~/layout/Layout/styles';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useApiMutation} from '~/core/useApiMutation';
 import {NotificationList} from '~/system/components/NotificationList';
+import {useNotificationStatus} from '~/system/NotificationContext';
 
 export function MenuItemNotification() {
 	const [isOpen, setIsOpen] = useState(false);
 	const router = useRouter();
+	const {hasUnread} = useNotificationStatus();
 
 	const handleViewAll = () => {
 		setIsOpen(false);
@@ -20,13 +22,16 @@ export function MenuItemNotification() {
 	return (
 		<>
 			<Pressable
-				accessibilityLabel="Notifications"
+				accessibilityLabel={hasUnread ? 'Notifications, unread' : 'Notifications'}
 				accessibilityRole="button"
 				accessibilityState={{expanded: isOpen}}
 				onPress={() => setIsOpen(true)}
 				style={styles.menuItem}
 			>
-				<Ionicons name="notifications-outline" size={18} color="#d9d9d9" />
+				<View style={styles.notificationIconContainer}>
+					<Ionicons name="notifications-outline" size={18} color="#d9d9d9" />
+					{hasUnread && <View style={styles.notificationBadge} />}
+				</View>
 			</Pressable>
 
 			<Modal visible={isOpen} transparent={true} animationType="fade" onRequestClose={() => setIsOpen(false)}>
@@ -58,16 +63,23 @@ function NotificationMenuContent({onClose}: {onClose: () => void}) {
 	const router = useRouter();
 	const {data, loading, refetch} = useApiFetch('system', 'NotificationController', 'getAllPaginated', {limit: 5, offset: 0});
 	const {mutate: markRead} = useApiMutation('system', 'NotificationController', 'markRead');
+	const {refreshUnreadStatus} = useNotificationStatus();
 
 	const handleMarkRead = async (id: string) => {
 		const result = await markRead({id});
-		if (result?.success) await refetch();
+		if (result?.success) {
+			await refetch();
+			await refreshUnreadStatus();
+		}
 	};
 
 	const handleOpenNotification = async (notification: {id: string; readAt: string | Date | null}, link: string) => {
 		if (!notification.readAt) {
 			const result = await markRead({id: notification.id});
-			if (result?.success) await refetch();
+			if (result?.success) {
+				await refetch();
+				await refreshUnreadStatus();
+			}
 		}
 		onClose();
 		router.push(link as Href);

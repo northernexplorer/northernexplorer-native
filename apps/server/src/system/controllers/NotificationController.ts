@@ -41,6 +41,11 @@ export class NotificationController extends BaseController {
 		};
 	}
 
+	async getUnreadStatus(params: Params<Route<'getUnreadStatus'>>, auth?: AuthContext): Promise<Response<Route<'getUnreadStatus'>>> {
+		const {userId} = this.permissionService.isLoggedIn(auth);
+		return {hasUnread: await this.repos.notification.hasUnreadForUser(userId)};
+	}
+
 	async markRead(params: Params<Route<'markRead'>>, auth?: AuthContext): Promise<Response<Route<'markRead'>>> {
 		const {userId} = this.permissionService.isLoggedIn(auth);
 		const notification = await this.repos.notification.getByIdForUser(params.id, userId);

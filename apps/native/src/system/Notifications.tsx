@@ -5,6 +5,7 @@ import {Pagination, Spinner} from '@northernexplorer/tools-web';
 import {useApiFetch} from '~/core/useApiFetch';
 import {useApiMutation} from '~/core/useApiMutation';
 import {NotificationList} from '~/system/components/NotificationList';
+import {useNotificationStatus} from '~/system/NotificationContext';
 import styles from '~/user/styles';
 
 const limit = 20;
@@ -16,16 +17,23 @@ export function Notifications() {
 	const offset = (page - 1) * limit;
 	const {data, loading, refetch} = useApiFetch('system', 'NotificationController', 'getAllPaginated', {limit, offset});
 	const {mutate: markRead} = useApiMutation('system', 'NotificationController', 'markRead');
+	const {refreshUnreadStatus} = useNotificationStatus();
 
 	const handleMarkRead = async (id: string) => {
 		const result = await markRead({id});
-		if (result?.success) await refetch();
+		if (result?.success) {
+			await refetch();
+			await refreshUnreadStatus();
+		}
 	};
 
 	const handleOpenNotification = async (notification: {id: string; readAt: string | Date | null}, link: string) => {
 		if (!notification.readAt) {
 			const result = await markRead({id: notification.id});
-			if (result?.success) await refetch();
+			if (result?.success) {
+				await refetch();
+				await refreshUnreadStatus();
+			}
 		}
 		router.push(link as Href);
 	};

@@ -80,6 +80,20 @@ export const styles = StyleSheet.create({
 		borderRadius: 12,
 		gap: 8,
 	},
+	notificationIconContainer: {
+		position: 'relative',
+	},
+	notificationBadge: {
+		position: 'absolute',
+		top: -2,
+		right: -3,
+		width: 8,
+		height: 8,
+		borderRadius: 4,
+		backgroundColor: '#ef4444',
+		borderWidth: 1,
+		borderColor: '#1a1a1a',
+	},
 	menuItemAvatar: {
 		flexDirection: 'row',
 		alignItems: 'center',

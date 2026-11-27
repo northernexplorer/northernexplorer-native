@@ -28,7 +28,7 @@ const REJECTION_REASON_LABELS: Record<RejectionReasonEnum, string> = {
 };
 
 export function PointOfInterestDetails() {
-	const {id} = useLocalSearchParams<{id: string}>();
+	const {id, reviewId, replyId} = useLocalSearchParams<{id: string; reviewId?: string; replyId?: string}>();
 	const auth = useAuthentication();
 	const coords = useLocation();
 	const permissions = usePermissions();
@@ -227,7 +227,7 @@ export function PointOfInterestDetails() {
 						<Ionicons name="chatbox-ellipses-outline" size={20} color="#0f172a" />
 						<Text style={sectionStyles.title}>Reviews ({reviewCount})</Text>
 					</View>
-					<Reviews data={data} refetch={refetch} />
+					<Reviews data={data} refetch={refetch} targetReviewId={reviewId} targetReplyId={replyId} />
 				</View>
 			) : (
 				<View style={styles.content}>

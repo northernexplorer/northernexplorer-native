@@ -9,6 +9,7 @@ import {
 	PointOfInterestSuggestion,
 	Region,
 	Review,
+	ReviewReply,
 	ReviewLike,
 } from '../location';
 import {Article, ArticleCategory, Migration, Notification, Report} from '../system';
@@ -31,6 +32,7 @@ export const entities = [
 	Region,
 	Report,
 	Review,
+	ReviewReply,
 	ReviewLike,
 	Session,
 	Subscription,

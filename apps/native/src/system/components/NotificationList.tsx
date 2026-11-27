@@ -28,28 +28,39 @@ export function NotificationList({notifications, variant = 'light', onOpen, onMa
 
 				return (
 					<View key={notification.id} style={[styles.item, isDark && styles.darkItem]}>
-						<View style={styles.titleRow}>
+						{internalLink && (
+							<Pressable
+								style={StyleSheet.absoluteFill}
+								accessibilityRole="button"
+								accessibilityLabel={`Open notification: ${notification.title}. ${notification.message}${isUnread ? '. Unread' : ''}`}
+								onPress={() => onOpen(notification, internalLink)}
+							/>
+						)}
+						<View style={styles.titleRow} pointerEvents="none">
 							<Text style={[styles.title, isDark && styles.darkTitle]}>{notification.title}</Text>
 							{isUnread && <View accessibilityLabel="Unread" style={styles.unreadDot} />}
 						</View>
-						<Text style={[styles.message, isDark && styles.darkMessage]}>{notification.message}</Text>
-						<View style={styles.footer}>
-							<Text style={[styles.date, isDark && styles.darkDate]}>{new Date(notification.createdAt).toLocaleString()}</Text>
-							<View style={styles.actions}>
+						<Text style={[styles.message, isDark && styles.darkMessage]} pointerEvents="none">
+							{notification.message}
+						</Text>
+						<View style={styles.footer} pointerEvents="box-none">
+							<Text style={[styles.date, isDark && styles.darkDate]} pointerEvents="none">
+								{new Date(notification.createdAt).toLocaleString()}
+							</Text>
+							<View style={styles.actions} pointerEvents="box-none">
 								{internalLink && (
-									<Pressable
-										accessibilityRole="button"
-										accessibilityLabel={`Open notification: ${notification.title}`}
-										onPress={() => onOpen(notification, internalLink)}
-									>
-										<Text style={[styles.actionText, isDark && styles.darkActionText]}>Open</Text>
-									</Pressable>
+									<Text style={[styles.actionText, isDark && styles.darkActionText]} pointerEvents="none">
+										Open
+									</Text>
 								)}
 								{isUnread && (
 									<Pressable
 										accessibilityRole="button"
 										accessibilityLabel={`Mark ${notification.title} as read`}
-										onPress={() => onMarkRead(notification.id)}
+										onPress={event => {
+											event.stopPropagation();
+											onMarkRead(notification.id);
+										}}
 									>
 										<Text style={[styles.actionText, isDark && styles.darkActionText]}>Mark as read</Text>
 									</Pressable>
